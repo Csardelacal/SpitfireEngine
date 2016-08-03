@@ -4,7 +4,7 @@ php:
   - 5.6
   - 7.0
   - hhvm
-script: if [ "$TRAVIS_PHP_VERSION" == "5.5" ]; then phpunit --bootstrap spitfire/bootstrap.php --coverage-clover=coverage.clover bin/tests; else phpunit --bootstrap spitfire/bootstrap.php --coverage-clover=coverage.clover --whitelist="spitfire|bin" bin/tests; fi;
+script: if [ "$TRAVIS_PHP_VERSION" == "5.5" ]; then phpunit --bootstrap bootstrap.php --coverage-clover=coverage.clover tests; else phpunit --bootstrap bootstrap.php --coverage-clover=coverage.clover --whitelist="." tests; fi;
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
