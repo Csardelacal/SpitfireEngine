@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\cache;
 
 use spitfire\environment;
 use spitfire\exceptions\PrivateException;
