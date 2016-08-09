@@ -24,7 +24,7 @@
 	bootstrap="bootstrap.php"
 	verbose="false">
 	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
+		<whitelist processUncoveredFilesFromWhitelist="false">
 			<directory suffix=".php">.</directory>
 			<exclude>
 				<directory suffix=".php">tests</directory>
