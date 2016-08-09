@@ -81,12 +81,10 @@ abstract class Table extends Queriable
 	 * This variable holds a record cache for data accessed by id. This is useful
 	 * due to the big amount of queries that simply request an item by it's id
 	 * 
+	 * @todo This should be replaced with an actual caching mechanism
 	 * @var \Model[]
 	 */
 	protected $cache = Array();
-
-
-	protected $errors    = Array();
 
 	/**
 	 * Creates a new Database Table instance. The tablename will be used to find 
@@ -228,18 +226,6 @@ abstract class Table extends Queriable
 		$_return = $query->fetch();
 		
 		return $_return;
-	}
-	
-	public function cache(Model$model) {
-		$pk = $model->getPrimaryData();
-		if (count($pk) === 1) {
-			$this->cache[reset($pk)] = $model; 
-		}
-	}
-	
-	public function hitCache($id) {
-		if (isset($this->cache[$id])) { return $this->cache[$id]; }
-		else { return null; }
 	}
 	
 	/**
