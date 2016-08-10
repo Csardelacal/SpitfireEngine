@@ -17,11 +17,17 @@ use spitfire\exceptions\FileNotFoundException;
  */
 function get_error_page($code, $message, $moreInfo = '') {
 	$error_page = spitfire()->getCWD() . '/bin/error_pages/'.$code.'.php';
-	if (file_exists($error_page)) {
+	
+	if (php_sapi_name() === 'cli') {
+		echo $code, ': ', $message, PHP_EOL;
+	}
+	elseif (file_exists($error_page)) {
 		include $error_page;
-	} elseif (file_exists($error_page = spitfire()->getCWD() . '/bin/error_pages/default.php')) {
+	} 
+	elseif (file_exists($error_page = spitfire()->getCWD() . '/bin/error_pages/default.php')) {
 		include $error_page;
-	} else {
+	} 
+	else {
 		echo 'Error page not found. 
 			  To avoid this message please go to bin/error_pages and create '.$error_page .' with the data about the error you want.';
 		throw new FileNotFoundException('File not found: '.$error_page, 500);

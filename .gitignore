@@ -4,3 +4,4 @@ Documentation/*
 *.sublime-project
 
 *.sublime-workspace
+/nbproject/private/

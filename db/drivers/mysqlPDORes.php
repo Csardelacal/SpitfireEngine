@@ -41,7 +41,6 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 		$_record = array_map( Array($this->table->getDB()->getEncoder(), 'decode'), $data);
 		
 		$record = $this->table->newRecord($_record);
-		$this->table->cache($record);
 		return $record;
 	}
 

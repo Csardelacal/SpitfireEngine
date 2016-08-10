@@ -8,7 +8,7 @@ class NamespacedclasslocatorTest extends \PHPUnit_Framework_TestCase
 	private $locator;
 	
 	public function testNameSpacedClassLocator() {
-		$this->locator = new NamespacedClassLocator('spitfire', spitfire()->getCWD() . '/spitfire');
+		$this->locator = new NamespacedClassLocator('spitfire', SPITFIRE_BASEDIR);
 		
 		$this->assertEquals(false, $this->locator->getFilenameFor('\spitfire\somenamespace\someRandomClassThatDoesNotExist'), 
 				'If a class does not exist the test should fail.');
@@ -21,13 +21,6 @@ class NamespacedclasslocatorTest extends \PHPUnit_Framework_TestCase
 		
 		$this->assertNotEquals(false, $this->locator->getFilenameFor('\spitfire\core\router\Router'), 
 				'The class Locator in spitfire should find the router.');
-	}
-	
-	public function testLookingForControllers() {
-		$locator = new NamespacedClassLocator('', spitfire()->getCWD() . '/bin/controllers', 'Controller');
-		
-		$this->assertNotEquals(false, $locator->getFilenameFor('HomeController'), 
-				'The class Locator in spitfire should find the home controller.');
 	}
 	
 }

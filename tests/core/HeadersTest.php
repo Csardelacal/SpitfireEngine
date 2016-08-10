@@ -31,7 +31,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
 	public function testStatus() {
 		$t = new Headers();
 		$t->status('200');
-		$this->assertEquals('200 OK', $t->get('Status'));
+		$this->assertEquals('200', $t->get('Status'));
 	}
 	
 	/**
