@@ -129,7 +129,7 @@ class DomainGroup
 	 * Returns the currency object that allows localizing the currency for the 
 	 * default locale.
 	 * 
-	 * @return Currency
+	 * @return CurrencyLocalizer
 	 */
 	public function currency() {
 		return $this->getDefault()->currency();

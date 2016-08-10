@@ -127,7 +127,7 @@ function _t() {
 	
 	#If the first parameter is a Locale, then we proceed to registering it so it'll
 	#provide translations for the programs
-	if ($args[0] instanceof Locale) {
+	if (isset($args[0]) && $args[0] instanceof Locale) {
 		$locale = array_shift($args);
 		$domain = array_shift($args);
 		

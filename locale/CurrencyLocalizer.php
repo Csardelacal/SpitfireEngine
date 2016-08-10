@@ -87,23 +87,23 @@ class CurrencyLocalizer
 		}
 		else {
 			$symbol   = $currency->getSymbol();
-			$position = $this->symbolPosition;
+			$position = (int)$this->symbolPosition;
 		}
 		
 		#Format the number
 		if ($position === self::SYMBOL_DECIMALSEP) {
-			$number = number_format($amt, $currency->getDecimals(), $currency->getSymbol(), $this->thousandsSeparator);
+			$number = number_format($amt, $currency->getDecimalCount(), $currency->getSymbol(), $this->thousandsSeparator);
 		} 
 		else {
-			$number = number_format($amt, $currency->getDecimals(), $this->decimalSeparator, $this->thousandsSeparator);
+			$number = number_format($amt, $currency->getDecimalCount(), $this->decimalSeparator, $this->thousandsSeparator);
 		}
 		
 		#Depending on where the symbol is positioned we have a bunch of options.
 		switch ($position) {
-			case self::SYMBOL_BEFORE     : return $symbol . ' ' . $number;
+			case self::SYMBOL_BEFORE     : return $symbol . $number;
 			case self::SYMBOL_DECIMALSEP : return $number;
 			case self::SYMBOL_AFTER      :
-			default                      : return $number . ' ' . $symbol;
+			default                      : return $number . $symbol;
 		}
 	}
 }
