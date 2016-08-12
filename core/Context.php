@@ -10,7 +10,7 @@ use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
 use spitfire\InputSanitizer;
 use spitfire\io\session\Session;
-use spitfire\View;
+use spitfire\mvc\View;
 
 /**
  * The context is a wrapper for an Intent. Basically it describes a full request

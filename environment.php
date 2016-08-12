@@ -1,5 +1,7 @@
 <?php namespace spitfire;
 
+ trigger_error('Using deprecated environment', E_USER_DEPRECATED);
+
 /**
  * Environments are a way to store multiple settings for a single application
  * and several machines. We can even set automatic environment detection to 

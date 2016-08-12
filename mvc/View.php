@@ -1,12 +1,11 @@
-<?php namespace spitfire;
+<?php namespace spitfire\mvc;
 
-use spitfire\exceptions\PrivateException;
-use spitfire\exceptions\FileNotFoundException;
-use spitfire\mvc\MVC;
+use _SF_ViewElement;
 use spitfire\core\Context;
-use \_SF_ViewElement;
-use spitfire\registry\JSRegistry;
+use spitfire\exceptions\FileNotFoundException;
+use spitfire\exceptions\PrivateException;
 use spitfire\registry\CSSRegistry;
+use spitfire\registry\JSRegistry;
 
 class View extends MVC
 {
