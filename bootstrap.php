@@ -24,6 +24,15 @@ use spitfire\autoload\RegisteredClassLocator;
  */
 
 /*
+ * In case the scripts are run in CLI we would like to know everything that goes
+ * wrong, since this environments are usually used for testing or by devs.
+ */
+if (php_sapi_name() === 'cli') {
+	ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+}
+
+/*
  * If the locations of the spitfire and base directory are not defined we define
  * them here. This should ensure that the aplication continues to work properly
  * during testing and under windows environments that do not have proper linking
@@ -35,13 +44,13 @@ if (!defined('BASEDIR')         ) { define('BASEDIR', rtrim(dirname(dirname(__FI
 require_once SPITFIRE_BASEDIR . '/Strings.php';
 require_once SPITFIRE_BASEDIR . '/core/functions.php';
 require_once SPITFIRE_BASEDIR . '/ClassInfo.php';  //TODO: Remove - Deprecated
-require_once SPITFIRE_BASEDIR . '/autoload.php';
+require_once SPITFIRE_BASEDIR . '/autoload/Autoload.php';
 require_once SPITFIRE_BASEDIR . '/autoload/classlocator.php';
 require_once SPITFIRE_BASEDIR . '/autoload/namespacedclasslocator.php';
 
 #Create the autoload. Once started it will allow you to register classes and 
 #locators to retrieve new classes that are missing to your class-space
-$autoload = new spitfire\AutoLoad();
+$autoload = new spitfire\autoload\AutoLoad();
 
 #These are basic locators that allow spitfire to find it's own classes. Which it's 
 #gonna need to then make the user space classes work

@@ -1,5 +1,6 @@
 <?php namespace spitfire\core;
 
+use spitfire\core\Environment;
 
 class Headers
 {
@@ -53,8 +54,8 @@ class Headers
 	public function contentType($str) {
 		
 		#Check if we have a defined environment that provides a legit encoding
-		if (class_exists('\spitfire\Environment')) { $encoding = environment::get('system_encoding'); }
-		else                                       { $encoding = 'utf8'; }
+		if (class_exists('\spitfire\core\Environment')) { $encoding = Environment::get('system_encoding'); }
+		else                                            { $encoding = 'utf8'; }
 		
 		switch ($str) {
 			case 'php':

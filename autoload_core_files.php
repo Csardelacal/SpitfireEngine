@@ -1,6 +1,6 @@
 <?php
 
-use spitfire\AutoLoad;
+use spitfire\autoload\AutoLoad;
 
 
 #Define default classes and their locations

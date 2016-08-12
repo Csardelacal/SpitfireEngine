@@ -2,7 +2,7 @@
 
 use spitfire\App;
 use spitfire\core\Context;
-use spitfire\environment;
+use spitfire\core\Environment;
 use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
@@ -63,7 +63,7 @@ function db($options = null) {
 	if ($options === null && $model !== null) { return $model; }
 	
 	#If the driver is not selected we get the one we want from env.
-	if (!isset($options['db_driver'])) { $driver = environment::get('db_driver'); }
+	if (!isset($options['db_driver'])) { $driver = Environment::get('db_driver'); }
 	else                               { $driver = $options['db_driver']; }
 	
 	#Instantiate the driver
@@ -90,9 +90,9 @@ function __($str, $maxlength = false) {
 	if ($maxlength) { $str = Strings::ellipsis ($str, $maxlength); }
 	
 	if (defined('ENT_HTML5')) 
-		{ $str = htmlspecialchars($str, ENT_HTML5, environment::get('system_encoding')); }
+		{ $str = htmlspecialchars($str, ENT_HTML5, Environment::get('system_encoding')); }
 	else
-		{ $str = htmlspecialchars($str, ENT_COMPAT, environment::get('system_encoding')); }
+		{ $str = htmlspecialchars($str, ENT_COMPAT, Environment::get('system_encoding')); }
 	
 	return $str;
 }

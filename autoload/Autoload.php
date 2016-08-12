@@ -1,4 +1,4 @@
-<?php namespace spitfire;
+<?php namespace spitfire\autoload;
 
 use spitfire\autoload\RegisteredClassLocator;
 
