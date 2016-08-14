@@ -4,10 +4,7 @@ use spitfire\autoload\AutoLoad;
 
 
 #Define default classes and their locations
-AutoLoad::registerClass('spitfire\environment',                                 SPITFIRE_BASEDIR.'/environment.php');
-
 AutoLoad::registerClass('Controller',                                           SPITFIRE_BASEDIR.'/mvc/controller.php');
-AutoLoad::registerClass('spitfire\View',                                        SPITFIRE_BASEDIR.'/mvc/view.php');
 AutoLoad::registerClass('_SF_ViewElement',                                      SPITFIRE_BASEDIR.'/mvc/view_element.php');
 
 AutoLoad::registerClass('Time',                                                 SPITFIRE_BASEDIR.'/time.php');
