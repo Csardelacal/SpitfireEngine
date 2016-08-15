@@ -1,4 +1,4 @@
-<?php namespace spitfire;
+<?php 
 
  trigger_error('Using deprecated environment', E_USER_DEPRECATED);
 
@@ -11,4 +11,4 @@
  * @author  César de la Cal <cesar@magic3w.com>
  */
 
-class environment extends \spitfire\core\Environment {}
+class_alias('\spitfire\core\Environment', '\spitfire\environment');
