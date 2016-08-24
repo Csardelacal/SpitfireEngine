@@ -5,7 +5,6 @@
  * their query related tasks. It will only return different query short-hand methods
  * that help speeding simple queries.
  * 
- * @package Spitfire.storage.database
  * @author César de la Cal <cesar@magic3w.com>
  * @abstract
  */
@@ -42,7 +41,16 @@ abstract class Queriable {
 	}
 	
 	/**
+	 * Adds a "fuzzy" restriction to a field, this means that a database field can
+	 * be queried with an incomplete / partial match.
 	 * 
+	 * While fuzzy queries are interesting, their behavior is inconsistent at 
+	 * best, which makes them awful candidates for proper querying.
+	 * 
+	 * This specific method is deprecated since it does mimic too closely on MySQL's
+	 * specific behavior.
+	 * 
+	 * @deprecated since version 0.1-dev 20160824
 	 * @param String $field Name of the database field to be queried.
 	 * @param String $value Value we're looking for
 	 * @param Boolean $fuzzy Defines whether the clause should automatically
@@ -66,6 +74,10 @@ abstract class Queriable {
 	 * Allows the driver to specify a class for the queries it needs to
 	 * generate.
 	 * 
+	 * This method should be moved to the ObjectFactory where the driver can generate
+	 * objects it needs to work with.
+	 * 
+	 * @deprecated since version 0.1-dev 20160824
 	 * @return Query The query object
 	 */
 	public abstract function getQueryInstance();
