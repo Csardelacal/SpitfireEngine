@@ -1,7 +1,8 @@
 <?php namespace spitfire\cache;
 
-use spitfire\environment;
+use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\FilePermissionsException;
 
 /**
  * The filecache class allows a user to create inheriting classes that contain
@@ -83,11 +84,11 @@ abstract class FileCache
 	 * so you reduce server load.
 	 * 
 	 * @param string $filename
-	 * @throws filePermissionsException
+	 * @throws FilePermissionsException
 	 */
 	public function __construct($filename) {
 		$this->filename  = $filename;
-		$this->cache_dir = environment::get('cachefile.directory');
+		$this->cache_dir = Environment::get('cachefile.directory');
 		$this->path      = spitfire()->getCWD() . '/' . rtrim($this->cache_dir, '/') . '/' . ltrim($this->filename, '/');
 		
 		$this->initialize();
@@ -102,7 +103,7 @@ abstract class FileCache
 	 */
 	public function initialize() {
 		if (!file_exists($this->cache_dir) && !mkdir($this->cache_dir, 0777, true) && !is_writable($this->cache_dir)) {
-			throw  new filePermissionsException("Cache directory is not writable");
+			throw  new FilePermissionsException("Cache directory is not writable");
 		}
 		
 		if (file_exists($this->path)) {
@@ -193,6 +194,5 @@ abstract class FileCache
 			unlink($this->path);
 		}
 	}
-	
 	
 }

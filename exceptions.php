@@ -7,8 +7,7 @@
  * This is a great way to handle different error types (for example
  * a database error and a user not found error)
  */
-
-class filePermissionsException  extends \spitfire\exceptions\PrivateException {}
+class_alias('\spitfire\exceptions\FilePermissionsException', 'filePermissionsException');
 
 /**
  * Public Exceptions

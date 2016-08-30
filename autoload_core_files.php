@@ -11,7 +11,6 @@ AutoLoad::registerClass('Time',                                                 
 AutoLoad::registerClass('Image',                                                SPITFIRE_BASEDIR.'/image.php');
 
 #Database related imports
-AutoLoad::registerClass('spitfire\storage\database\Queriable',                  SPITFIRE_BASEDIR.'/db/queriable.php');
 AutoLoad::registerClass('spitfire\storage\database\DBField',                    SPITFIRE_BASEDIR.'/db/field.php');
 AutoLoad::registerClass('spitfire\storage\database\QueryTable',                 SPITFIRE_BASEDIR.'/db/querytable.php');
 AutoLoad::registerClass('spitfire\storage\database\QueryField',                 SPITFIRE_BASEDIR.'/db/queryfield.php');
@@ -101,12 +100,6 @@ AutoLoad::registerClass('spitfire\io\html\dateTimePicker',                      
 
 AutoLoad::registerClass('Strings',                                              SPITFIRE_BASEDIR.'/Strings.php');
 
-AutoLoad::registerClass('Locale',                                               SPITFIRE_BASEDIR.'/locale/locale.php');
-AutoLoad::registerClass('spitfire\locale\langInfo',                             SPITFIRE_BASEDIR.'/locale/lang_info.php');
-
-AutoLoad::registerClass('ComponentManager',                                     SPITFIRE_BASEDIR.'/components/componentManager.php');
-AutoLoad::registerClass('Component',                                            SPITFIRE_BASEDIR.'/components/component.php');
-
 AutoLoad::registerClass('spitfire\registry\Registry',                           SPITFIRE_BASEDIR.'/io/registry/registry.php');
 AutoLoad::registerClass('spitfire\registry\JSRegistry',                         SPITFIRE_BASEDIR.'/io/registry/jsregistry.php');
 AutoLoad::registerClass('spitfire\registry\CSSRegistry',                        SPITFIRE_BASEDIR.'/io/registry/cssregistry.php');
@@ -116,11 +109,5 @@ AutoLoad::registerClass('Pluggable',                                            
 AutoLoad::registerClass('URL',                                                  SPITFIRE_BASEDIR.'/url.php');
 AutoLoad::registerClass('absoluteURL',                                          SPITFIRE_BASEDIR.'/absoluteURL.php');
 AutoLoad::registerClass('spitfire\Context',                                     SPITFIRE_BASEDIR.'/core/context.php');
-AutoLoad::registerClass('spitfire\path\PathParser',                             SPITFIRE_BASEDIR.'/core/path/PathParser.php');
-AutoLoad::registerClass('spitfire\path\AppParser',                              SPITFIRE_BASEDIR.'/core/path/AppParser.php');
-AutoLoad::registerClass('spitfire\path\ControllerParser',                       SPITFIRE_BASEDIR.'/core/path/ControllerParser.php');
-AutoLoad::registerClass('spitfire\path\ActionParser',                           SPITFIRE_BASEDIR.'/core/path/ActionParser.php');
-AutoLoad::registerClass('spitfire\path\ObjectParser',                           SPITFIRE_BASEDIR.'/core/path/ObjectParser.php');
-AutoLoad::registerClass('session',                                              SPITFIRE_BASEDIR.'/session.php');
 
 AutoLoad::registerClass('Email',                                                SPITFIRE_BASEDIR.'/mail.php');
