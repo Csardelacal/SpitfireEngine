@@ -77,15 +77,6 @@ abstract class Table
 	 * @var DBField
 	 */
 	protected $auto_increment;
-	
-	/**
-	 * This variable holds a record cache for data accessed by id. This is useful
-	 * due to the big amount of queries that simply request an item by it's id
-	 * 
-	 * @todo This should be replaced with an actual caching mechanism
-	 * @var \Model[]
-	 */
-	protected $cache = Array();
 
 	/**
 	 * Creates a new Database Table instance. The tablename will be used to find 
