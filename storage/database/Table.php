@@ -7,7 +7,11 @@ use spitfire\storage\database\Schema;
 
 /**
  * This class simulates a table belonging to a database. This way we can query
- * and handle tables with 'compiler-friendly' code that will inform about errors
+ * and handle tables with 'compiler-friendly' code that will inform about errors.
+ * 
+ * @todo This class should be split into a DBSchema/Table class (or something along those
+ * lines) and a Collection class. The schema would manage fields and relationships
+ * while the collection maintains queries, caches and general record operations.
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */

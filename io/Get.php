@@ -63,7 +63,7 @@ class Get implements Iterator, ArrayAccess
 	 * @return string|\spitfire\io\Get
 	 */
 	public function make($value) {
-		if     ($value instanceof Get) { return $value; }
+		if     ($value instanceof Get) { return new self($value->getRaw()); }
 		elseif (is_array($value))      { return new self($value); }
 		else                           { return $value; }
 	}
@@ -249,6 +249,16 @@ class Get implements Iterator, ArrayAccess
 	 */
 	public function __set($name, $value) {
 		return $this->offsetSet($name, $value);
+	}
+	
+	/**
+	 * Clones the data in case the Get element is cloned. This prevents editions
+	 * to the object to be made global if this is desired.
+	 */
+	public function __clone() {
+		foreach ($this->data as &$f) { 
+			if ($f instanceof Get) { $f = clone $f; } 
+		}
 	}
 
 }

@@ -115,6 +115,16 @@ class Image
 		
 	}
 	
+	public function grayScale() {
+		if ($this->img instanceof \Imagick) {
+			$this->img->modulateImage(100,0,100);
+			return;
+		}
+		
+		imagefilter($this->img, IMG_FILTER_GRAYSCALE);
+		return;
+	}
+	
 	public function setCompression($compression) {
 		$this->compression = $compression;
 	}

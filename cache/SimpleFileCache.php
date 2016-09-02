@@ -7,8 +7,15 @@ use spitfire\exceptions\PrivateException;
  * instead of forcing you to create a class that inherits from FileCache and 
  * implement just one or two methods.
  * 
+ * Please note that you create the object with a closure / valid callback that
+ * the object will execute early in it's lifecycle. Even before you called 
+ * <code>getCachedData</code> the first time.
+ * 
+ * The object will therefore maintain a copy of the cached data, even if you don't
+ * explicitly access it.
+ * 
  * @author César de la Cal <cesar@magic3w.com>
- * @last-revision 2015.11.09
+ * @last-revision 2016.08.30
  * 
  */
 class SimpleFileCache extends FileCache

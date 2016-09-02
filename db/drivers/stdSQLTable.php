@@ -52,7 +52,8 @@ abstract class stdSQLTable extends Table
 			foreach ($primary as &$field) $field = $field->getName();
 			unset($field);
 			//Prepare the statement
-			$refstt = sprintf('FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE',
+			$refstt = sprintf('FOREIGN KEY %s (%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE',
+				'fk_' . rand(), #Constraint name. Temporary fix, constraints should have proper names
 				implode(', ', $fields),
 				$referencedtable,
 				implode(', ', $primary) 
