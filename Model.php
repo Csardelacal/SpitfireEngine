@@ -157,7 +157,7 @@ abstract class Model implements Serializable
 	}
 	
 	public function getQuery() {
-		$query     = $this->getTable()->queryInstance($this->getTable());
+		$query     = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTable());
 		$primaries = $this->table->getModel()->getPrimary();
 		
 		foreach ($primaries as $primary) {

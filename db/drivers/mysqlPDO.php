@@ -10,7 +10,7 @@ use spitfire\environment;
 use PDO;
 use PDOException;
 use spitfire\exceptions\PrivateException;
-use Model;
+use \spitfire\Model;
 
 /**
  * MySQL driver via PDO. This driver does <b>not</b> make use of prepared 

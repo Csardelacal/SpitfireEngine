@@ -231,9 +231,18 @@ abstract class Table
 	
 	/**
 	 * 
+	 * @deprecated since version 0.1-dev 20160902
 	 * @return \Schema
 	 */
 	public function getModel() {
+		return $this->model;
+	}
+	
+	/**
+	 * 
+	 * @return \Schema
+	 */
+	public function getSchema() {
 		return $this->model;
 	}
 	

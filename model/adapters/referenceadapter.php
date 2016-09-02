@@ -9,7 +9,7 @@ class ReferenceAdapter extends BaseAdapter
 	
 	public function dbSetData($data) {
 		$table = $this->getField()->getTarget()->getTable();
-		$query = $table->getAll();
+		$query = $table->getDb()->table($table->getModel()->getName())->getAll();
 		$physical = $this->getField()->getPhysical();
 		
 		foreach ($physical as $p) {

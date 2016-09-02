@@ -2,8 +2,10 @@
 
 namespace spitfire\storage\database\drivers;
 
+use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
 use spitfire\storage\database\Collection;
+use spitfire\storage\database\Table;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\QueryField;
 use spitfire\storage\database\QueryTable;
@@ -114,6 +116,9 @@ class MysqlPDOQuery extends Query
 	public function queryTableInstance($table) {
 		if ($table instanceof Collection) { $table = $table->getTable(); }
 		if ($table instanceof QueryTable) { $table = $table->getTable(); }
+		
+		
+		if (!$table instanceof Table) { throw new PrivateException('Did not receive a table as parameter'); }
 		
 		return new MysqlPDOQueryTable($this, $table);
 	}

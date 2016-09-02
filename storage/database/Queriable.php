@@ -21,7 +21,7 @@ abstract class Queriable {
 	 */
 	public function get($field, $value, $operator = null) {
 		#Create the query
-		$query = $this->getQueryInstance();
+		$query = $this->getTable()->getDb()->getObjectFactory()->getQueryInstance($this);
 		$query->addRestriction($field, $value, $operator);
 		#Return it
 		return $query;
@@ -36,7 +36,7 @@ abstract class Queriable {
 	 */
 	public function getAll() {
 		
-		$query = $this->getQueryInstance();
+		$query = $this->getTable()->getDb()->getObjectFactory()->getQueryInstance($this);
 		return $query;
 	}
 	

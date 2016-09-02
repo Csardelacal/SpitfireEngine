@@ -4,7 +4,7 @@ namespace spitfire\storage\database\drivers;
 
 use spitfire\storage\database\DB;
 use spitfire\storage\database\Table;
-use Model;
+use \spitfire\Model;
 
 abstract class stdSQLDriver extends DB
 {

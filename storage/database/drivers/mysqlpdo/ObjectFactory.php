@@ -108,8 +108,8 @@ class ObjectFactory implements ObjectFactoryInterface
 		return new mysqlPDOField($field, $name, $references);
 	}
 
-	public function getQueryInstance() {
-		return new MysqlPDOQuery($this);
+	public function getQueryInstance($table) {
+		return new MysqlPDOQuery($table);
 	}
 
 	public function restrictionInstance($query, DBField$field, $value, $operator = null) {

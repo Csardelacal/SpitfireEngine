@@ -71,7 +71,7 @@ class Reference extends Field
 			return $this->target = $this->getModel();
 		}
 		else {
-			return $this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getModel();
+			return $this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getModel();
 		}
 	}
 	
@@ -122,7 +122,7 @@ class Reference extends Field
 	}
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		$query = $this->getTarget()->getTable()->getAll();
+		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTarget()->getTable());
 		$query->setAliased(true);
 		
 		foreach ($this->getPhysical() as $field) {
