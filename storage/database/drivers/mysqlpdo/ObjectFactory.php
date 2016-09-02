@@ -1,10 +1,17 @@
-<?php namespace storage\database\drivers\mysqlpdo;
+<?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use spitfire\environment;
+use spitfire\exceptions\PrivateException;
+use spitfire\model\Field;
 use spitfire\storage\database\DB;
+use spitfire\storage\database\DBField;
+use spitfire\storage\database\drivers\mysqlPDOField;
+use spitfire\storage\database\drivers\MysqlPDOQuery;
+use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\ObjectFactoryInterface;
 use spitfire\storage\database\Schema;
+use spitfire\storage\database\Table;
 use TextField;
 
 /*
@@ -82,6 +89,41 @@ class ObjectFactory implements ObjectFactoryInterface
 	 */
 	public function getTableInstance(DB $db, $tablename) {
 		return new MysqlPDOTable($db, $tablename);
+	}
+	
+	/**
+	 * Creates a new MySQL PDO Field object. This receives the fields 'prototype',
+	 * name and reference (in case it references an externa field).
+	 * 
+	 * This represents an actual field in the DBMS as opposed to the ones in the 
+	 * model. That's why here we talk of "physical" fields
+	 * 
+	 * @todo  This should be moved over to a DBMS specific object factory.
+	 * @param Field   $field
+	 * @param string  $name
+	 * @param DBField $references
+	 * @return mysqlPDOField
+	 */
+	public function getFieldInstance(Field$field, $name, DBField$references = null) {
+		return new mysqlPDOField($field, $name, $references);
+	}
+
+	public function getQueryInstance() {
+		return new MysqlPDOQuery($this);
+	}
+
+	public function restrictionInstance($query, DBField$field, $value, $operator = null) {
+		return new MysqlPDORestriction($query,	$field, $value, $operator);
+	}
+
+	public function queryInstance($table) {
+		if (!$table instanceof Table) throw new PrivateException('Need a table object');
+		
+		return new MysqlPDOQuery($table);
+	}
+
+	public function makeCollection(Table $table) {
+		return new Collection($table);
 	}
 
 }

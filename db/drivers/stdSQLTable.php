@@ -63,27 +63,4 @@ abstract class stdSQLTable extends Table
 		
 		return $ret;
 	}
-
-	public function create() {
-		
-		$definitions = $this->columnDefinitions();
-		$foreignkeys = $this->foreignKeyDefinitions();
-		$pk = $this->getPrimaryKey();
-		
-		foreach($pk as &$f) { $f = '`' . $f->getName() .  '`'; }
-		
-		if (!empty($foreignkeys)) $definitions = array_merge ($definitions, $foreignkeys);
-		
-		if (!empty($pk)) $definitions[] = 'PRIMARY KEY(' . implode(', ', $pk) . ')';
-		
-		#Strip empty definitions from the list
-		$clean = array_filter($definitions);
-		
-		$stt = sprintf('CREATE TABLE %s (%s)',
-			$this,
-			implode(', ', $clean)
-			);
-		
-		return $this->getDb()->execute($stt);
-	}
 }

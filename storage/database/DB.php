@@ -117,7 +117,7 @@ abstract class DB
 	 *                 table.
 	 * 
 	 * @throws PrivateException If the table could not be found
-	 * @return Table The database table adapter
+	 * @return Collection The database table adapter
 	 */
 	public function table($tablename) {
 		
@@ -154,7 +154,7 @@ abstract class DB
 	 * 
 	 * @todo Extract these methods (makeTable, hasTable, getTableFromCache) to a separate TablePool class
 	 * @param string $tablename
-	 * @return Table
+	 * @return Collection
 	 * @throws PrivateException
 	 */
 	protected function makeTable($tablename) {
@@ -165,8 +165,9 @@ abstract class DB
 			$schema = new Schema($tablename);
 			$model = new $className();
 			$model->definitions($schema);
-
-			return $this->getTableInstance($this, $schema);
+			
+			$table = $this->getObjectFactory()->getTableInstance($this, $schema);
+			return $this->getObjectFactory()->makeCollection($table);
 		}
 		
 		throw new PrivateException('No table ' . $tablename);
@@ -215,7 +216,7 @@ abstract class DB
 	 * sake of providing a certain type. This way all SQL drivers can share some
 	 * standard components while replacing the ones they specifically need.
 	 * 
-	 * @return DatabaseObjectFactory
+	 * @return ObjectFactoryInterface
 	 */
 	abstract public function getObjectFactory();
 	

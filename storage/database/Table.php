@@ -1,11 +1,8 @@
 <?php namespace spitfire\storage\database;
 
 use CoffeeBean;
-use spitfire\environment;
+use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
-use spitfire\Model;
-use spitfire\model\Field;
-use spitfire\model\OTFModel;
 use spitfire\storage\database\Schema;
 
 /**
@@ -14,7 +11,7 @@ use spitfire\storage\database\Schema;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-abstract class Table extends Queriable
+abstract class Table
 {
 
 	/**
@@ -104,7 +101,7 @@ abstract class Table extends Queriable
 		}
 		
 		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
-		$this->tablename = environment::get('db_table_prefix') . $this->model->getTableName();
+		$this->tablename = Environment::get('db_table_prefix') . $this->model->getTableName();
 		
 		$this->makeFields();
 	}
@@ -252,21 +249,6 @@ abstract class Table extends Queriable
 		return $bean;
 	}
 	
-	abstract public function create();
-	abstract public function repair();
-	
-	/**
-	 * Creates a new record in this table
-	 * 
-	 * @return Model Record for the selected table
-	 */
-	public function newRecord($data = Array()) {
-		$classname = $this->getModel()->getName() . 'Model';
-		
-		if (class_exists($classname)) { return new $classname($this, $data); }
-		else { return new OTFModel($this, $data); }
-	}
-	
 	/**
 	 * If the table cannot handle the request it will pass it on to the db
 	 * and add itself to the arguments list.
@@ -280,31 +262,5 @@ abstract class Table extends Queriable
 		#Pass on
 		return call_user_func_array(Array($this->db, $name), $arguments);
 	}
-	
-	/**
-	 * Creates an instance of the Database field compatible with the current
-	 * DBMS
-	 * 
-	 * @return DBField Field
-	 */
-	abstract public function getFieldInstance(Field$field, $name, DBField$references = null);
-	
-	/**
-	 * Increments a value on high read/write environments. Using update can
-	 * cause data to be corrupted. Increment requires the data to be in sync
-	 * aka. stored to database.
-	 * 
-	 * @param string $key
-	 * @param int|float $diff
-	 * @throws PrivateException
-	 */
-	public abstract function increment(Model$record, $key, $diff = 1);
-	
-	public abstract function delete(Model$record);
-	public abstract function insert(Model$record);
-	public abstract function update(Model$record);
-	public abstract function restrictionInstance($query, DBField$field, $value, $operator = null);
-	public abstract function queryInstance($table);
-	public abstract function destroy();
 
 }

@@ -115,7 +115,7 @@ abstract class Field
 	public function makePhysical() {
 		#The instancing is redirected to the table
 		$table = $this->getModel()->getTable();
-		return $table->getFieldInstance($this, $this->getName());
+		return $table->getDb()->getObjectFactory()->getFieldInstance($this, $this->getName());
 	}
 	
 	/**

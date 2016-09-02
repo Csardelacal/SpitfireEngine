@@ -285,8 +285,13 @@ class mysqlPDODriver extends stdSQLDriver implements Driver
 		return $model;
 	}
 	
+	/**
+	 * 
+	 * @staticvar \storage\database\drivers\mysqlpdo\ObjectFactory $factory
+	 * @return  \storage\database\drivers\mysqlpdo\ObjectFactory
+	 */
 	public function getObjectFactory() {
 		static $factory;
-		return $factory? : $factory = new \storage\database\drivers\mysqlpdo\ObjectFactory();
+		return $factory? : $factory = new \spitfire\storage\database\drivers\mysqlpdo\ObjectFactory();
 	}
 }

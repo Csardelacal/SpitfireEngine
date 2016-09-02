@@ -325,5 +325,5 @@ abstract class Query extends RestrictionGroup
 	 */
 	public abstract function restrictionGroupInstance();
 	public abstract function queryFieldInstance($field);
-	public abstract function queryTableInstance(Table$table);
+	public abstract function queryTableInstance($table);
 }

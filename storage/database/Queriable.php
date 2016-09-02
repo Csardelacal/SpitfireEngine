@@ -61,12 +61,4 @@ abstract class Queriable {
 		$query->addRestriction($field, $value, Restriction::LIKE_OPERATOR);
 		return $query;
 	}
-	
-	/**
-	 * Allows the driver to specify a class for the queries it needs to
-	 * generate.
-	 * 
-	 * @return Query The query object
-	 */
-	public abstract function getQueryInstance();
 }
