@@ -13,11 +13,10 @@ use spitfire\exceptions\PrivateException;
  * when using several JOINs or INs. For this reason the driver has moved from
  * them back to standard querying.
  */
-class mysqlPDODriver extends stdSQLDriver
+class mysqlPDODriver extends DB
 {
 
 	private $connection    = false;
-	private $fields        = Array();
 	
 	/**@var mixed List of errors the repair() method can fix. This include:
 	 *     <ul>
