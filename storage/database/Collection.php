@@ -56,7 +56,7 @@ abstract class Collection extends Queriable
 		$classname = $this->table->getModel()->getName() . 'Model';
 		
 		if (class_exists($classname)) { return new $classname($this->getTable(), $data); }
-		else { return new OTFModel($this->getTable(), $data); }
+		else { return new \spitfire\model\OTFModel($this->getTable(), $data); }
 	}
 	
 	/**
@@ -68,14 +68,14 @@ abstract class Collection extends Queriable
 	 * @param int|float $diff
 	 * @throws PrivateException
 	 */
-	public abstract function increment(Model$record, $key, $diff = 1);
+	public abstract function increment(\spitfire\Model$record, $key, $diff = 1);
 	
 	
 	abstract public function create();
 	abstract public function repair();
-	public abstract function delete(Model$record);
-	public abstract function insert(Model$record);
-	public abstract function update(Model$record);
+	public abstract function delete(\spitfire\Model$record);
+	public abstract function insert(\spitfire\Model$record);
+	public abstract function update(\spitfire\Model$record);
 	public abstract function destroy();
 	
 	/**

@@ -60,7 +60,7 @@ class Collection extends \spitfire\storage\database\Collection
 	 * @param Model $record Database record to be deleted from the DB.
 	 * 
 	 */
-	public function delete(Model$record) {
+	public function delete(\spitfire\Model$record) {
 		$table = $this->getTable();
 		$db    = $table->getDb();
 		$key   = $record->getPrimaryData();
@@ -86,7 +86,7 @@ class Collection extends \spitfire\storage\database\Collection
 	 * @param string $key
 	 * @param int|float|double $diff
 	 */
-	public function increment(Model$record, $key, $diff = 1) {
+	public function increment(\spitfire\Model$record, $key, $diff = 1) {
 		
 		$table = $this->getTable();
 		$db    = $table->getDb();
@@ -106,7 +106,7 @@ class Collection extends \spitfire\storage\database\Collection
 		$db->execute($stt);
 	}
 
-	public function insert(Model$record) {
+	public function insert(\spitfire\Model$record) {
 		$data = $record->getData();
 		$table = $record->getTable();
 		$db = $table->getDb();
@@ -132,7 +132,7 @@ class Collection extends \spitfire\storage\database\Collection
 		return $db->getConnection()->lastInsertId();
 	}
 
-	public function update(Model$record) {
+	public function update(\spitfire\Model$record) {
 		$data  = $record->getData();
 		$table = $record->getTable();
 		$db    = $table->getDb();
@@ -161,7 +161,7 @@ class Collection extends \spitfire\storage\database\Collection
 	}
 
 	public function destroy() {
-		$this->getDb()->execute('DROP TABLE ' . $this);
+		$this->getDb()->execute('DROP TABLE ' . $this->getTable());
 	}
 
 	public function create() {
@@ -186,10 +186,6 @@ class Collection extends \spitfire\storage\database\Collection
 			);
 		
 		return $table->getDb()->execute($stt);
-	}
-
-	public function getQueryInstance() {
-		
 	}
 
 }
