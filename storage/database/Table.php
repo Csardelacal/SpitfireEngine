@@ -9,10 +9,6 @@ use spitfire\storage\database\Schema;
  * This class simulates a table belonging to a database. This way we can query
  * and handle tables with 'compiler-friendly' code that will inform about errors.
  * 
- * @todo This class should be split into a DBSchema/Table class (or something along those
- * lines) and a Collection class. The schema would manage fields and relationships
- * while the collection maintains queries, caches and general record operations.
- * 
  * @author César de la Cal <cesar@magic3w.com>
  */
 abstract class Table
@@ -76,7 +72,7 @@ abstract class Table
 	 *
 	 * @var DBField
 	 */
-	protected $auto_increment;
+	protected $autoIncrement;
 
 	/**
 	 * Creates a new Database Table instance. The tablename will be used to find 
@@ -179,13 +175,13 @@ abstract class Table
 	}
 	
 	public function getAutoIncrement() {
-		if ($this->auto_increment) { return $this->auto_increment; }
+		if ($this->autoIncrement) { return $this->autoIncrement; }
 		
 		//Implicit else
 		$fields  = $this->getFields();
 		
 		foreach($fields as $field) {
-			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->auto_increment = $field; }
+			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->autoIncrement = $field; }
 		}
 		
 		 return null;

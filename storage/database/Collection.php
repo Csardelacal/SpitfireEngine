@@ -75,11 +75,20 @@ abstract class Collection extends Queriable
 	public abstract function increment(\spitfire\Model$record, $key, $diff = 1);
 	
 	
-	abstract public function create();
-	abstract public function repair();
 	public abstract function delete(\spitfire\Model$record);
 	public abstract function insert(\spitfire\Model$record);
 	public abstract function update(\spitfire\Model$record);
+	
+	
+	/**
+	 * Creates a table on the DBMS that is capable of holding the Model's data 
+	 * appropriately. This will try to normalize the data as far as possible to 
+	 * create consistent databases.
+	 * 
+	 * @todo Move to Table
+	 */
+	abstract public function create();
+	abstract public function repair();
 	public abstract function destroy();
 	
 	/**
