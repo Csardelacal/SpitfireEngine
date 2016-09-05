@@ -47,6 +47,10 @@ abstract class Collection extends Queriable
 		return $this->table;
 	}
 	
+	public function getDb() {
+		return $this->table->getDb();
+	}
+	
 	/**
 	 * Creates a new record in this table
 	 * 
