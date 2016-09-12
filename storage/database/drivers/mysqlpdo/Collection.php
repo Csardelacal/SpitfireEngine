@@ -25,40 +25,13 @@
  */
 
 class Collection extends \spitfire\storage\database\Collection
-{
-	
-	
-
-	public function repair() {
-		$table = $this->getTable();
-		$stt = "DESCRIBE $table";
-		$fields = $table->getFields();
-		//Fetch the DB Fields and create on error.
-		try {
-			$query = $this->getDb()->execute($stt, Array(), false);
-		}
-		catch(Exception $e) {
-			return $this->create();
-		}
-		//Loop through the exiting fields
-		while (false != ($f = $query->fetch())) {
-			try {
-				$field = $this->getField($f['Field']);
-				unset($fields[$field->getName()]);
-			}
-			catch(Exception $e) {/*Ignore*/}
-		}
-		
-		foreach($fields as $field) $field->add();
-	}
-	
+{	
 	/**
 	 * Deletes this record from the database. This method's call cannot be
 	 * undone. <b>[NOTICE]</b>Usually Spitfire will cascade all the data
 	 * related to this record. So be careful calling it deliberately.
 	 * 
 	 * @param Model $record Database record to be deleted from the DB.
-	 * 
 	 */
 	public function delete(\spitfire\Model$record) {
 		$table = $this->getTable();
@@ -90,10 +63,10 @@ class Collection extends \spitfire\storage\database\Collection
 		
 		$table = $this->getTable();
 		$db    = $table->getDb();
-		$key   = $record->getPrimaryData();
+		$pk    = $record->getPrimaryData();
 		
 		$restrictions = Array();
-		foreach ($key as $k => $v) {$restrictions[] = "$k = $v";}
+		foreach ($pk as $k => $v) {$restrictions[] = "$k = $v";}
 		
 		$stt = sprintf('UPDATE %s SET `%s` = `%s` + %s WHERE %s',
 			$table, 
@@ -118,7 +91,7 @@ class Collection extends \spitfire\storage\database\Collection
 		}
 		
 		$fields = array_keys($write);
-		foreach ($fields as &$field) $field = '`' . $field . '`';
+		foreach ($fields as &$field) { $field = '`' . $field . '`'; }
 		unset($field);
 		
 		$quoted = array_map(Array($db, 'quote'), $write);
@@ -158,34 +131,6 @@ class Collection extends \spitfire\storage\database\Collection
 		
 		$this->getDb()->execute($stt);
 		
-	}
-
-	public function destroy() {
-		$this->getDb()->execute('DROP TABLE ' . $this->getTable());
-	}
-
-	public function create() {
-		
-		$table = $this->getTable();
-		$definitions = $table->columnDefinitions();
-		$foreignkeys = $table->foreignKeyDefinitions();
-		$pk = $table->getPrimaryKey();
-		
-		foreach($pk as &$f) { $f = '`' . $f->getName() .  '`'; }
-		
-		if (!empty($foreignkeys)) $definitions = array_merge ($definitions, $foreignkeys);
-		
-		if (!empty($pk)) $definitions[] = 'PRIMARY KEY(' . implode(', ', $pk) . ')';
-		
-		#Strip empty definitions from the list
-		$clean = array_filter($definitions);
-		
-		$stt = sprintf('CREATE TABLE %s (%s)',
-			$this,
-			implode(', ', $clean)
-			);
-		
-		return $table->getDb()->execute($stt);
 	}
 
 }

@@ -32,17 +32,40 @@
  * This class represents the collection, it will provide the mechanisms to CRUD 
  * records and also may provide caching for the database.
  * 
+ * @todo Collections should also provide a proper caching mechanism
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 abstract class Collection extends Queriable
 {
 	
+	/**
+	 * Contains the information about the schema used to construct the database 
+	 * table and methods for table manipulation.
+	 * 
+	 * Usually when we speak of a table in a RDBMS we talk about the combination
+	 * of schema + data which assembles the table. The spitfire table is the 
+	 * schema part and the collection the data.
+	 *
+	 * @var Table
+	 */
 	private $table;
 	
+	/**
+	 * Creates the collection. We need the table as it provides the infrastructure
+	 * for the collection to work.
+	 * 
+	 * @param Table $table
+	 */
 	public function __construct(Table$table) {
 		$this->table = $table;
 	}
 	
+	/**
+	 * Returns the table this collection uses. The table is the object providing
+	 * schema, and table operations on the RDBMS.
+	 * 
+	 * @return Table
+	 */
 	public function getTable() {
 		return $this->table;
 	}
@@ -78,18 +101,6 @@ abstract class Collection extends Queriable
 	public abstract function delete(\spitfire\Model$record);
 	public abstract function insert(\spitfire\Model$record);
 	public abstract function update(\spitfire\Model$record);
-	
-	
-	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
-	 * 
-	 * @todo Move to Table
-	 */
-	abstract public function create();
-	abstract public function repair();
-	public abstract function destroy();
 	
 	/**
 	 * While development is ongoing, we will try to recover from errors due to the 
