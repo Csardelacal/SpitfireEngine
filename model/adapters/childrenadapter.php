@@ -1,6 +1,4 @@
-<?php
-
-namespace spitfire\model\adapters;
+<?php namespace spitfire\model\adapters;
 
 use ChildrenField;
 use spitfire\Model;
@@ -29,7 +27,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$query = $this->field->getTable()->getDb()->getObjectFactory()
 				  ->queryInstance($this->field->getTarget()->getTable());
 				
-		return $query->addRestriction($this->field->getRole(), $this->parent->getQuery());
+		return $query->addRestriction($this->field->getReferencedField()->getName(), $this->parent->getQuery());
 		
 	}
 	

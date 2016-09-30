@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database\drivers;
 
+use Exception;
 
 /**
  * Represents table specific properties and methods for the MySQLPDO Driver.

@@ -63,7 +63,7 @@ class ChildrenField extends Field
 			#Since we could have several items pointing at our Schema we will be
 			#filtering the remote fields looking for candidates.
 			$candidates = array_filter($fields, function ($f) {
-				return $f instanceof \Reference && $f->getTarget() === $this;
+				return $f instanceof \Reference && $f->getTarget() === $this->getModel();
 			});
 			
 			#If there were no candidates we need to let the programmer know
