@@ -119,7 +119,7 @@ class ChildrenField extends Field
 	}
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		$query = $this->getTarget()->getTable()->getAll();
+		$query = $this->getTarget()->getTable()->getCollection()->getAll();
 		$query->setAliased(true);
 		
 		foreach ($this->getReferencedField()->getPhysical() as $p) {

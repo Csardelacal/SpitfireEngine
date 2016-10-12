@@ -43,7 +43,7 @@ class Collection extends \spitfire\storage\database\Collection
 		//Loop through the exiting fields
 		while (false != ($f = $query->fetch())) {
 			try {
-				$field = $this->getField($f['Field']);
+				$field = $table->getField($f['Field']);
 				unset($fields[$field->getName()]);
 			}
 			catch(Exception $e) {/*Ignore*/}
