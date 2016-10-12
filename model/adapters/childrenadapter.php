@@ -80,8 +80,10 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	}
 
 	public function offsetSet($offset, $value) {
-		if ($this->children === null) $this->toArray();
-		$this->children[$offset] = $value;
+		if ($this->children === null) { $this->toArray(); }
+		
+		if ($offset === null) { $this->children[] = $value; }
+		else                  { $this->children[$offset] = $value; }
 	}
 
 	public function offsetUnset($offset) {
