@@ -196,6 +196,10 @@ abstract class Table
 	 * <li>An array with the data</li>
 	 * </ul>
 	 * 
+	 * This function is intended to be used to provide controllers with prebuilt
+	 * models so they don't need to fetch it again.
+	 * 
+	 * @todo Move to collection
 	 * @param mixed $id
 	 */
 	public function getById($id) {
@@ -203,8 +207,9 @@ abstract class Table
 		if (!is_array($id)) { $id = explode(':', $id); }
 		
 		#Create a query
-		$primary = $this->getPrimaryKey();
-		$query   = $this->getQueryInstance();
+		$table   = $this;
+		$primary = $table->getPrimaryKey();
+		$query   = $table->getDb()->getObjectFactory()->getQueryInstance();
 		
 		#Add the restrictions
 		while(count($primary))
@@ -252,6 +257,17 @@ abstract class Table
 		
 		return $bean;
 	}
+	
+	/**
+	 * Creates a table on the DBMS that is capable of holding the Model's data 
+	 * appropriately. This will try to normalize the data as far as possible to 
+	 * create consistent databases.
+	 * 
+	 * @todo Move to Table
+	 */
+	abstract public function create();
+	abstract public function repair();
+	public abstract function destroy();
 	
 	/**
 	 * If the table cannot handle the request it will pass it on to the db
