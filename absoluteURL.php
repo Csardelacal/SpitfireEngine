@@ -11,7 +11,12 @@ class absoluteURL extends URL
 	
 	public $domain;
 	
-	private $proto = self::PROTO_HTTP;
+	private $proto;
+	
+	public function __construct() {
+		parent::__construct();
+		$this->proto = isset($_SERVER['HTTPS']) && $_SERVER['https'] !== 'off'? self::PROTO_HTTPS : self::PROTO_HTTP;
+	}
 	
 	/**
 	 * Set the domain name this URL points to. This is intended to address
