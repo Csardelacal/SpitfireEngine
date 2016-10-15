@@ -123,7 +123,7 @@ abstract class DB
 		
 		#If the parameter is a Model, we get it's name
 		if ($tablename instanceof Schema) {
-			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), $this->getTableInstance($this, $tablename)); } 
+			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), $this->getObjectFactory()->makeCollection($this->getObjectFactory()->getTableInstance($this, $tablename))); } 
 			else                                              { $tablename = $tablename->getName(); }
 		}
 		

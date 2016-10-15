@@ -75,7 +75,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 			}
 		}
 		
-		return $table->getAll()->addRestriction($found->getName(), $this->parent->getQuery());
+		return $table->getDB()->getObjectFactory()->getQueryInstance($table)->addRestriction($found->getName(), $this->parent->getQuery());
 		
 	}
 	
@@ -84,7 +84,8 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$bridge_fields = $this->field->getBridge()->getFields();
 
 		#Prepare a query for the records that are connected by this field
-		$query = $this->field->getBridge()->getTable()->getAll();
+		$bridge = $this->field->getBridge()->getTable();
+		$query  = $bridge->getDB()->getObjectFactory()->getQueryInstance($bridge);
 
 		#We create a group to handle many to many connections that connect to the same model
 		$group = $query->group();
