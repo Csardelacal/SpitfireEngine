@@ -70,7 +70,7 @@ class LanguageAcceptParser
 		
 		#Sometimes we wanna set a custom header (for testing, for example)
 		if (!$header) { 
-			$header = $_SERVER['HTTP_ACCEPT_LANGUAGE']; 
+			$header = isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : ''; 
 		}
 		
 		$this->default = $default;

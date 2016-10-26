@@ -157,7 +157,7 @@ abstract class Model implements Serializable
 	}
 	
 	public function getQuery() {
-		$query     = $this->getTable()->queryInstance($this->getTable());
+		$query     = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTable());
 		$primaries = $this->table->getModel()->getPrimary();
 		
 		foreach ($primaries as $primary) {
@@ -225,12 +225,12 @@ abstract class Model implements Serializable
 	}
 	
 	public function delete() {
-		$this->table->delete($this);
+		$this->table->getCollection()->delete($this);
 	}
 	
 	public function insert() {
 		#Insert the record by calling the driver.
-		$id = $this->table->insert($this);
+		$id = $this->table->getCollection()->insert($this);
 		#Get the autoincrement field
 		$ai = $this->table->getAutoIncrement();
 		
@@ -247,11 +247,11 @@ abstract class Model implements Serializable
 	}
 	
 	public function update() {
-		$this->table->update($this);
+		$this->table->getCollection()->update($this);
 	}
 	
 	public function restrictionInstance($query, DBField$field, $value, $operator = null) {
-		return $this->table->restrictionInstance($query, $field, $value, $operator);
+		return $this->table->getDb()->getObjectFactory()->restrictionInstance($query, $field, $value, $operator);
 	}
 	
 	/**

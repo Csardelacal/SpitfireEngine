@@ -1,6 +1,4 @@
-<?php
-
-namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers;
 
 use PDO;
 
@@ -40,22 +38,28 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 		if (!$data) { return null; }
 		$_record = array_map( Array($this->table->getDB()->getEncoder(), 'decode'), $data);
 		
-		$record = $this->table->newRecord($_record);
+		$record = $this->table->getDb()->table($this->table->getModel()->getName())->newRecord($_record);
 		return $record;
 	}
 
 	public function fetchAll() {
-		//TODO: Swap to fatch all
-		//$data = $this->result->fetchAll(PDO::FETCH_ASSOC);
-		$_return = Array();
+		$data = $this->result->fetchAll(PDO::FETCH_ASSOC);
 		
-		while ($data = $this->fetch()) {
-			$_return[] = $data;
+		foreach ($data as &$record) {
+			$record = $this->table->getDb()->table($this->table->getModel()->getName())->newRecord(
+				array_map( Array($this->table->getDB()->getEncoder(), 'decode'), $record)
+			);
 		}
-		return $_return;
+		
+		return $data;
 	}
 	
-
+	/**
+	 * Returns the data the way any associative adapter would return it. This allows
+	 * your app to withdraw raw data without it being treated by the framework.
+	 * 
+	 * @return mixed
+	 */
 	public function fetchArray() {
 		return $this->result->fetch(PDO::FETCH_ASSOC);
 	}

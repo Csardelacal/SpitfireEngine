@@ -75,7 +75,8 @@ class URL implements ArrayAccess
 		#Loop through the parameters checking for content.
 		foreach ($params as $param) {
 			#Check if the parameter is an array, if it is it's GET
-			if (is_array($param) || $param instanceof Get) { $this->params = $param; }
+			if ($param instanceof Get) { $this->params = clone $param; }
+			elseif (is_array($param) ) { $this->params = $param; }
 			
 			#If it's an App object, it means that it's got a special place in the Path
 			elseif ($param instanceof \spitfire\App) { $this->app = $param; }

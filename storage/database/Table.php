@@ -1,20 +1,17 @@
 <?php namespace spitfire\storage\database;
 
 use CoffeeBean;
-use spitfire\environment;
+use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
-use spitfire\Model;
-use spitfire\model\Field;
-use spitfire\model\OTFModel;
 use spitfire\storage\database\Schema;
 
 /**
  * This class simulates a table belonging to a database. This way we can query
- * and handle tables with 'compiler-friendly' code that will inform about errors
+ * and handle tables with 'compiler-friendly' code that will inform about errors.
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-abstract class Table extends Queriable
+abstract class Table
 {
 
 	/**
@@ -75,16 +72,7 @@ abstract class Table extends Queriable
 	 *
 	 * @var DBField
 	 */
-	protected $auto_increment;
-	
-	/**
-	 * This variable holds a record cache for data accessed by id. This is useful
-	 * due to the big amount of queries that simply request an item by it's id
-	 * 
-	 * @todo This should be replaced with an actual caching mechanism
-	 * @var \Model[]
-	 */
-	protected $cache = Array();
+	protected $autoIncrement;
 
 	/**
 	 * Creates a new Database Table instance. The tablename will be used to find 
@@ -104,7 +92,7 @@ abstract class Table extends Queriable
 		}
 		
 		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
-		$this->tablename = environment::get('db_table_prefix') . $this->model->getTableName();
+		$this->tablename = Environment::get('db_table_prefix') . $this->model->getTableName();
 		
 		$this->makeFields();
 	}
@@ -187,13 +175,13 @@ abstract class Table extends Queriable
 	}
 	
 	public function getAutoIncrement() {
-		if ($this->auto_increment) { return $this->auto_increment; }
+		if ($this->autoIncrement) { return $this->autoIncrement; }
 		
 		//Implicit else
 		$fields  = $this->getFields();
 		
 		foreach($fields as $field) {
-			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->auto_increment = $field; }
+			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->autoIncrement = $field; }
 		}
 		
 		 return null;
@@ -208,6 +196,10 @@ abstract class Table extends Queriable
 	 * <li>An array with the data</li>
 	 * </ul>
 	 * 
+	 * This function is intended to be used to provide controllers with prebuilt
+	 * models so they don't need to fetch it again.
+	 * 
+	 * @todo Move to collection
 	 * @param mixed $id
 	 */
 	public function getById($id) {
@@ -215,8 +207,9 @@ abstract class Table extends Queriable
 		if (!is_array($id)) { $id = explode(':', $id); }
 		
 		#Create a query
-		$primary = $this->getPrimaryKey();
-		$query   = $this->getQueryInstance();
+		$table   = $this;
+		$primary = $table->getPrimaryKey();
+		$query   = $table->getDb()->getObjectFactory()->getQueryInstance();
 		
 		#Add the restrictions
 		while(count($primary))
@@ -230,9 +223,22 @@ abstract class Table extends Queriable
 	
 	/**
 	 * 
+	 * @deprecated since version 0.1-dev 20160902
 	 * @return \Schema
 	 */
 	public function getModel() {
+		return $this->model;
+	}
+	
+	public function getCollection() {
+		return $this->db->table($this->model->getName());
+	}
+	
+	/**
+	 * 
+	 * @return \Schema
+	 */
+	public function getSchema() {
 		return $this->model;
 	}
 	
@@ -252,20 +258,16 @@ abstract class Table extends Queriable
 		return $bean;
 	}
 	
+	/**
+	 * Creates a table on the DBMS that is capable of holding the Model's data 
+	 * appropriately. This will try to normalize the data as far as possible to 
+	 * create consistent databases.
+	 * 
+	 * @todo Move to Table
+	 */
 	abstract public function create();
 	abstract public function repair();
-	
-	/**
-	 * Creates a new record in this table
-	 * 
-	 * @return Model Record for the selected table
-	 */
-	public function newRecord($data = Array()) {
-		$classname = $this->getModel()->getName() . 'Model';
-		
-		if (class_exists($classname)) { return new $classname($this, $data); }
-		else { return new OTFModel($this, $data); }
-	}
+	public abstract function destroy();
 	
 	/**
 	 * If the table cannot handle the request it will pass it on to the db
@@ -280,31 +282,5 @@ abstract class Table extends Queriable
 		#Pass on
 		return call_user_func_array(Array($this->db, $name), $arguments);
 	}
-	
-	/**
-	 * Creates an instance of the Database field compatible with the current
-	 * DBMS
-	 * 
-	 * @return DBField Field
-	 */
-	abstract public function getFieldInstance(Field$field, $name, DBField$references = null);
-	
-	/**
-	 * Increments a value on high read/write environments. Using update can
-	 * cause data to be corrupted. Increment requires the data to be in sync
-	 * aka. stored to database.
-	 * 
-	 * @param string $key
-	 * @param int|float $diff
-	 * @throws PrivateException
-	 */
-	public abstract function increment(Model$record, $key, $diff = 1);
-	
-	public abstract function delete(Model$record);
-	public abstract function insert(Model$record);
-	public abstract function update(Model$record);
-	public abstract function restrictionInstance($query, DBField$field, $value, $operator = null);
-	public abstract function queryInstance($table);
-	public abstract function destroy();
 
 }

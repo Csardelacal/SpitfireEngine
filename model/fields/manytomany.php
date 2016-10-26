@@ -46,11 +46,11 @@ class ManyToManyField extends ChildrenField
 			#Register the table
 			$this->getModel()->getTable()->getDb()->table($model);
 		} else {
-			$this->meta = $this->getTable()->getDb()->table("{$first}_{$second}")->getModel();
+			$this->meta = $this->getTable()->getDb()->table("{$first}_{$second}")->getTable()->getModel();
 		}
 		
 		#Return the remote model
-		$this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getModel();
+		$this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getModel();
 		return $this->target;
 	}
 	
@@ -80,12 +80,14 @@ class ManyToManyField extends ChildrenField
 	}
 	
 	public function getConnectorQueries(spitfire\storage\database\Query$parent) {
-		$query = $this->getTarget()->getTable()->getAll();
+		$table = $this->getTarget()->getTable();
+		$query = $table->getDb()->getObjectFactory()->getQueryInstance($table);
 		$query->setAliased(true);
 		
 		if ($this->target !== $this->getModel()) {
 			#In case the models are different we just return the connectors via a simple route.
-			$route  = $this->getBridge()->getTable()->getAll();
+			$bridge = $this->getBridge()->getTable();
+			$route  = $bridge->getDb()->getObjectFactory()->getQueryInstance($bridge);
 			$fields = $this->getBridge()->getFields();
 			$route->setAliased(true);
 			

@@ -178,6 +178,10 @@ class ActionReflector
 		
 		$file = implode(' ', func_get_args());
 		
+		if (current_context()->request->getPath()->getFormat() !== 'php') {
+			return;
+		}
+		
 		if ($file === 'none') {
 			return current_context()->view->setRenderLayout(false);
 		}
