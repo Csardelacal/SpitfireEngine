@@ -160,7 +160,7 @@ class ActionReflector
 		
 		$file = implode(' ', func_get_args());
 		
-		if ($file === 'none') {
+		if ($file == 'none') {
 			return current_context()->view->setRenderTemplate(false);
 		}
 		
