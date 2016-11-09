@@ -54,7 +54,7 @@ class AnnotationParser
 		
 		#Remove unrelated data
 		$clean    = array_filter(array_map(function ($e) {
-			$trimmed = trim($e, "\t */");
+			$trimmed = trim($e, "\r\t */");
 			return Strings::startsWith($trimmed, '@')? ltrim($trimmed, '@') : null;
 		}, $pieces));
 		

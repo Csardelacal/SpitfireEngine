@@ -102,7 +102,7 @@ class SchemaTest extends PHPUnit_Framework_TestCase
 	
 	public function testMakePhysicalFields() {
 		$schema = new \spitfire\storage\database\Schema('test');
-		$table  = db()->table($schema);
+		$table  = db()->table($schema)->getTable();
 		
 		$this->assertEquals(1, count($table->getFields()));
 	}

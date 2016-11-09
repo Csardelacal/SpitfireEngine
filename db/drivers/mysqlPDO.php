@@ -107,20 +107,6 @@ class mysqlPDODriver extends DB
 	}
 	
 	/**
-	 * Creates a new Table and returns it.
-	 * 
-	 * @deprecated since version 0.1-dev 1607020148
-	 * @param spitfire.storage.database.DB $db
-	 * @param string $tablename
-	 * @param Schema $model
-	 * @return spitfire.storage.database.drivers.MysqlPDOTable
-	 */
-	public function getTableInstance(DB$db, $tablename) {
-		trigger_error('Deprecated: Use object factory instead', E_USER_DEPRECATED);
-		return new MysqlPDOTable($db, $tablename);
-	}
-	
-	/**
 	 * Escapes a string to be used in a SQL statement. PDO offers this
 	 * functionality out of the box so there's nothing to do.
 	 * 

@@ -159,6 +159,7 @@ abstract class DB
 	 */
 	protected function makeTable($tablename) {
 		$className = $tablename . 'Model';
+		$factory   = $this->getObjectFactory();
 		
 		if (class_exists($className)) {
 			#Create a schema and a model
@@ -166,8 +167,8 @@ abstract class DB
 			$model = new $className();
 			$model->definitions($schema);
 			
-			$table = $this->getObjectFactory()->getTableInstance($this, $schema);
-			return $this->getObjectFactory()->makeCollection($table);
+			$table = $factory->getTableInstance($this, $schema);
+			return $factory->makeCollection($table);
 		}
 		
 		throw new PrivateException('No table ' . $tablename);
@@ -219,19 +220,6 @@ abstract class DB
 	 * @return ObjectFactoryInterface
 	 */
 	abstract public function getObjectFactory();
-	
-	/**
-	 * Returns an instance of the class the child tables of this class have
-	 * this is used to create them when requested by the table() method.
-	 * 
-	 * Note: This is deprecated in favor of a factory object that could generalize
-	 * driver specific object creation.
-	 * 
-	 * @abstract
-	 * @deprecated since version 0.1-dev 20160406
-	 * @return Table Instance of the table class the driver wants the system to use
-	 */
-	abstract public function getTableInstance(DB$db, $tablename);
 	
 	/**
 	 * Creates a new On The Fly Model. These allow the system to interact with a 

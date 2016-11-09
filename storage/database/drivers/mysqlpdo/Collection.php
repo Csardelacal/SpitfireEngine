@@ -28,30 +28,6 @@ class Collection extends \spitfire\storage\database\Collection
 {
 	
 	
-
-	public function repair() {
-		$table = $this->getTable();
-		$stt = "DESCRIBE $table";
-		$fields = $table->getFields();
-		//Fetch the DB Fields and create on error.
-		try {
-			$query = $this->getDb()->execute($stt, Array(), false);
-		}
-		catch(Exception $e) {
-			return $this->create();
-		}
-		//Loop through the exiting fields
-		while (false != ($f = $query->fetch())) {
-			try {
-				$field = $table->getField($f['Field']);
-				unset($fields[$field->getName()]);
-			}
-			catch(Exception $e) {/*Ignore*/}
-		}
-		
-		foreach($fields as $field) $field->add();
-	}
-	
 	/**
 	 * Deletes this record from the database. This method's call cannot be
 	 * undone. <b>[NOTICE]</b>Usually Spitfire will cascade all the data

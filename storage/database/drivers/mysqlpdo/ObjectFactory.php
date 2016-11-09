@@ -107,7 +107,13 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function getFieldInstance(Field$field, $name, DBField$references = null) {
 		return new mysqlPDOField($field, $name, $references);
 	}
-
+	
+	/**
+	 * Makes a new query on a certain table. 
+	 * 
+	 * @param Table $table
+	 * @return MysqlPDOQuery
+	 */
 	public function getQueryInstance($table) {
 		return new MysqlPDOQuery($table);
 	}
@@ -117,7 +123,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	}
 
 	public function queryInstance($table) {
-		if (!$table instanceof Table) throw new PrivateException('Need a table object');
+		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
 		return new MysqlPDOQuery($table);
 	}

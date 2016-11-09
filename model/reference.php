@@ -37,9 +37,7 @@ class Reference extends Field
 	 * data through the ORM, therefore not requiring additional user generated
 	 * queries to retrieve data.
 	 * 
-	 * @param Schema  $source
-	 * @param Schema  $target
-	 * @param string $alias
+	 * @param Schema|string $target
 	 */
 	public function __construct($target) {
 		$this->target = $target;
@@ -60,7 +58,7 @@ class Reference extends Field
 	 * Returns the target model (the parent model of the source). Which offers
 	 * it's primary keys to the target so it can reference them.
 	 * 
-	 * @return \Schema
+	 * @return Schema
 	 */
 	public function getTarget() {
 		#Check if the passed argument already is a model
@@ -111,7 +109,7 @@ class Reference extends Field
 	/**
 	 * Defines this field and all of it's children as reference fields.
 	 * 
-	 * @return type
+	 * @return string
 	 */
 	public function getDataType() {
 		return Field::TYPE_REFERENCE;

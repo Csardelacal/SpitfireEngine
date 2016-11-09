@@ -1,7 +1,7 @@
 <?php
 
 use spitfire\SpitFire;
-use spitfire\environment;
+use spitfire\core\Environment;
 
 class absoluteURL extends URL
 {
@@ -20,7 +20,7 @@ class absoluteURL extends URL
 		
 		#Set the defaults
 		$this->proto  = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? self::PROTO_HTTPS : self::PROTO_HTTP;
-		$this->domain = environment::get('server_name')? environment::get('server_name') : $_SERVER['SERVER_NAME'];
+		$this->domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
 	}
 	
 	/**
