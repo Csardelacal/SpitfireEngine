@@ -125,5 +125,9 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function makeCollection(Table $table) {
 		return new Collection($table);
 	}
+	
+	public function __call($name, $args) {
+		throw new \BadMethodCallException();
+	}
 
 }
