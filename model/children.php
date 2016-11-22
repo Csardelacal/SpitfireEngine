@@ -123,7 +123,7 @@ class ChildrenField extends Field
 		$query->setAliased(true);
 		
 		foreach ($this->getReferencedField()->getPhysical() as $p) {
-			$query->addRestriction($p, $parent->queryFieldInstance($p->getReferencedField()));
+			$query->addRestriction($parent->queryFieldInstance($p->getReferencedField()), $query->queryFieldInstance($p));
 		}
 		
 		return Array($query);

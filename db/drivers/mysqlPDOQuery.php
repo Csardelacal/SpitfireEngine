@@ -100,8 +100,8 @@ class MysqlPDOQuery extends Query
 		
 	}
 
-	public function restrictionGroupInstance() {
-		return new MysqlPDORestrictionGroup($this);
+	public function restrictionGroupInstance($parent = null) {
+		return new MysqlPDORestrictionGroup($parent? : $this);
 	}
 
 	public function restrictionInstance(QueryField$field, $value, $operator) {

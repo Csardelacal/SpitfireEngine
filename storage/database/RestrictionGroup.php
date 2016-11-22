@@ -108,7 +108,7 @@ abstract class RestrictionGroup
 	 */
 	public function group($type = self::TYPE_OR) {
 		#Create the group and set the type we need
-		$group = $this->getQuery()->restrictionGroupInstance();
+		$group = $this->getQuery()->restrictionGroupInstance($this);
 		$group->setType($type);
 		
 		#Add it to our restriction list
