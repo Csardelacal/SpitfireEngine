@@ -2,10 +2,12 @@
 
 use spitfire\App;
 use spitfire\core\Context;
-use spitfire\core\Response;
+use spitfire\core\Environment;
 use spitfire\core\Request;
+use spitfire\core\Response;
 use spitfire\exceptions\ExceptionHandler;
 use spitfire\exceptions\PrivateException;
+use Strings;
 
 if (!defined('APP_DIRECTORY')){
 	define ('APP_DIRECTORY',         'bin/apps/',        true);
@@ -54,10 +56,10 @@ class SpitFire extends App
 		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'routes.php');
 		
 		#Define the current timezone
-		date_default_timezone_set(environment::get('timezone'));
+		date_default_timezone_set(Environment::get('timezone'));
                 
 		#Set the display errors directive to the value of debug
-		ini_set("display_errors" , environment::get('debugging_mode'));
+		ini_set("display_errors" , Environment::get('debugging_mode'));
 		
 	}
 
@@ -115,7 +117,7 @@ class SpitFire extends App
 		if (empty($this->apps)) return $this;
 		
 		foreach($this->apps as $app) {
-			if (\Strings::startsWith($name, $app->getNameSpace())) {
+			if (Strings::startsWith($name, $app->getNameSpace())) {
 				return $app;
 			}
 		}
@@ -132,7 +134,7 @@ class SpitFire extends App
 	}
 	
 	public static function baseUrl(){
-		if (environment::get('base_url')) return environment::get('base_url');
+		if (Environment::get('base_url')) { return Environment::get('base_url'); }
 		list($base_url) = explode('/index.php', $_SERVER['PHP_SELF'], 2);
 		return $base_url;
 	}

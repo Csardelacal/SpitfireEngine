@@ -25,7 +25,9 @@
  */
 
 class Collection extends \spitfire\storage\database\Collection
-{	
+{
+	
+	
 	/**
 	 * Deletes this record from the database. This method's call cannot be
 	 * undone. <b>[NOTICE]</b>Usually Spitfire will cascade all the data

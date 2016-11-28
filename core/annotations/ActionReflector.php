@@ -160,7 +160,7 @@ class ActionReflector
 		
 		$file = implode(' ', func_get_args());
 		
-		if ($file === 'none') {
+		if ($file == 'none') {
 			return current_context()->view->setRenderTemplate(false);
 		}
 		
@@ -177,6 +177,10 @@ class ActionReflector
 	protected function layout() {
 		
 		$file = implode(' ', func_get_args());
+		
+		if (current_context()->request->getPath()->getFormat() !== 'php') {
+			return;
+		}
 		
 		if ($file === 'none') {
 			return current_context()->view->setRenderLayout(false);

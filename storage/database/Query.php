@@ -323,7 +323,7 @@ abstract class Query extends RestrictionGroup
 	 * 
 	 * @return spitfire\storage\database\RestrictionGroup
 	 */
-	public abstract function restrictionGroupInstance();
+	public abstract function restrictionGroupInstance($parent);
 	public abstract function queryFieldInstance($field);
 	public abstract function queryTableInstance($table);
 }

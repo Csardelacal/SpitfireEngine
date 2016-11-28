@@ -44,6 +44,7 @@ abstract class RestrictionGroup
 	 * Adds a restriction to the current query. Restraining the data a field
 	 * in it can contain.
 	 * 
+	 * @todo This method does not accept logical fields as parameters
 	 * @see http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 * @param string $fieldname
 	 * @param mixed  $value
@@ -107,7 +108,7 @@ abstract class RestrictionGroup
 	 */
 	public function group($type = self::TYPE_OR) {
 		#Create the group and set the type we need
-		$group = $this->getQuery()->restrictionGroupInstance();
+		$group = $this->getQuery()->restrictionGroupInstance($this);
 		$group->setType($type);
 		
 		#Add it to our restriction list

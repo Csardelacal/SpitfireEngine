@@ -13,7 +13,7 @@ abstract class stdSQLTable extends Table
 	 * 
 	 * @return mixed
 	 */
-	private function columnDefinitions() {
+	protected function columnDefinitions() {
 		$fields = $this->getFields();
 		foreach ($fields as $name => $f) {
 			$fields[$name] = '`'. $name . '` ' . $f->columnDefinition();
@@ -27,7 +27,7 @@ abstract class stdSQLTable extends Table
 	 * 
 	 * @return array
 	 */
-	private function foreignKeyDefinitions() {
+	protected function foreignKeyDefinitions() {
 		
 		$ret = Array();
 		$refs = $this->schema->getFields();

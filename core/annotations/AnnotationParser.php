@@ -50,11 +50,11 @@ class AnnotationParser
 		if (!is_string($raw)) { throw new BadMethodCallException('Invalid argument', 1607131552); }
 
 		#Individual lines make it easier to parse the data
-		$pieces   = explode(PHP_EOL, $raw);
+		$pieces   = explode("\n", $raw);
 		
 		#Remove unrelated data
 		$clean    = array_filter(array_map(function ($e) {
-			$trimmed = trim($e, "\t */");
+			$trimmed = trim($e, "\r\t */");
 			return Strings::startsWith($trimmed, '@')? ltrim($trimmed, '@') : null;
 		}, $pieces));
 		

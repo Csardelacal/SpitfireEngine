@@ -36,7 +36,8 @@ class BridgeAdapter
 	}
 	
 	public function makeRecord() {
-		$record = $this->parentField->getBridge()->getTable()->newRecord();
+		$bridge = $this->parentField->getBridge()->getTable();
+		$record = $bridge->getCollection()->newRecord();
 		$record->{$this->leftField} = $this->leftValue;
 		$record->{$this->rightField} = $this->rightValue;
 		return $record;

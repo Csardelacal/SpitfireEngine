@@ -63,7 +63,7 @@ class ChildrenField extends Field
 			#Since we could have several items pointing at our Schema we will be
 			#filtering the remote fields looking for candidates.
 			$candidates = array_filter($fields, function ($f) {
-				return $f instanceof \Reference && $f->getTarget() === $this;
+				return $f instanceof \Reference && $f->getTarget() === $this->getModel();
 			});
 			
 			#If there were no candidates we need to let the programmer know
@@ -119,11 +119,11 @@ class ChildrenField extends Field
 	}
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		$query = $this->getTarget()->getTable()->getAll();
+		$query = $this->getTarget()->getTable()->getCollection()->getAll();
 		$query->setAliased(true);
 		
 		foreach ($this->getReferencedField()->getPhysical() as $p) {
-			$query->addRestriction($p, $parent->queryFieldInstance($p->getReferencedField()));
+			$query->addRestriction($parent->queryFieldInstance($p->getReferencedField()), $query->queryFieldInstance($p));
 		}
 		
 		return Array($query);

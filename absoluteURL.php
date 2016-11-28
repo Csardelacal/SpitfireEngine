@@ -1,7 +1,7 @@
 <?php
 
 use spitfire\SpitFire;
-use spitfire\environment;
+use spitfire\core\Environment;
 
 class absoluteURL extends URL
 {
@@ -11,7 +11,17 @@ class absoluteURL extends URL
 	
 	public $domain;
 	
-	private $proto = self::PROTO_HTTP;
+	private $proto;
+	
+	public function __construct() {
+		#This could be written nicer in PHP7 with the splatter operator
+		$args = func_get_args();
+		call_user_func_array(array('parent', '__construct'), $args);
+		
+		#Set the defaults
+		$this->proto  = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? self::PROTO_HTTPS : self::PROTO_HTTP;
+		$this->domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
+	}
 	
 	/**
 	 * Set the domain name this URL points to. This is intended to address
@@ -40,7 +50,10 @@ class absoluteURL extends URL
 		if ($app == null) { $path = SpitFire::baseUrl() . '/assets/' . $asset_name; }
 		else { $path = SpitFire::baseUrl() . '/' . $app->getAssetsDirectory() . $asset_name; }
 		
-		return absoluteURL::getServer() . $path;
+		$proto  = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? self::PROTO_HTTPS : self::PROTO_HTTP;
+		$domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
+		
+		return $proto . '://' . $domain . $path;
 	}
 	
 	public static function canonical() {
@@ -51,19 +64,12 @@ class absoluteURL extends URL
 		#Prepend protocol and server and return it
 		return $canonical->toAbsolute();
 	}
-	
-	public static function getServer() {
-		
-		$proto  = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
-		$server = environment::get('server_name')? environment::get('server_name') : $_SERVER['SERVER_NAME'];
-		
-		return $proto . $server;
-	}
 
 	public function __toString() {
 		$rel = parent::__toString();
-		$domain = $this->domain? $this->proto . '://' . $this->domain : self::getServer();
+		$proto  = $this->proto;
+		$domain = $this->domain;
 		
-		return $domain . $rel;
+		return $proto . '://' . $domain . $rel;
 	}
 }

@@ -1,6 +1,4 @@
-<?php
-
-namespace spitfire\model\adapters;
+<?php namespace spitfire\model\adapters;
 
 use ChildrenField;
 use spitfire\Model;
@@ -29,7 +27,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$query = $this->field->getTable()->getDb()->getObjectFactory()
 				  ->queryInstance($this->field->getTarget()->getTable());
 				
-		return $query->addRestriction($this->field->getRole(), $this->parent->getQuery());
+		return $query->addRestriction($this->field->getReferencedField()->getName(), $this->parent->getQuery());
 		
 	}
 	
@@ -82,8 +80,10 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	}
 
 	public function offsetSet($offset, $value) {
-		if ($this->children === null) $this->toArray();
-		$this->children[$offset] = $value;
+		if ($this->children === null) { $this->toArray(); }
+		
+		if ($offset === null) { $this->children[] = $value; }
+		else                  { $this->children[$offset] = $value; }
 	}
 
 	public function offsetUnset($offset) {

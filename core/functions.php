@@ -54,7 +54,7 @@ function app($name, $namespace) {
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  * 
- * @return DB
+ * @return DB|spitfire\storage\database\DB
  */
 function db($options = null) {
 	static $model = null;
