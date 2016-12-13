@@ -209,7 +209,7 @@ abstract class Table
 		#Create a query
 		$table   = $this;
 		$primary = $table->getPrimaryKey();
-		$query   = $table->getDb()->getObjectFactory()->getQueryInstance();
+		$query   = $table->getDb()->getObjectFactory()->getQueryInstance($this);
 		
 		#Add the restrictions
 		while(count($primary))
