@@ -5,6 +5,8 @@
  * their query related tasks. It will only return different query short-hand methods
  * that help speeding simple queries.
  * 
+ * @deprecated Should be moved into the collection itself. At this point this class
+ *             provides nothing.
  * @author César de la Cal <cesar@magic3w.com>
  * @abstract
  */

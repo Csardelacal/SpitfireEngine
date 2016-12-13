@@ -111,6 +111,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	/**
 	 * Makes a new query on a certain table. 
 	 * 
+	 * @deprecated since 20161128 - Replacing with new naming convention
 	 * @param Table $table
 	 * @return MysqlPDOQuery
 	 */
@@ -121,7 +122,13 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function restrictionInstance($query, DBField$field, $value, $operator = null) {
 		return new MysqlPDORestriction($query,	$field, $value, $operator);
 	}
-
+	
+	/**
+	 * Makes a new query on a certain table. 
+	 * 
+	 * @param Table $table
+	 * @return MysqlPDOQuery
+	 */
 	public function queryInstance($table) {
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		

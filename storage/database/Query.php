@@ -7,10 +7,26 @@ use \spitfire\model\Field;
 abstract class Query extends RestrictionGroup
 {
 	/** 
+	 * The result for the query. Currently, this is attached to the query - this 
+	 * means that whenever the query is "re-executed" the result is overwritten 
+	 * and could potentially damage the resultset.
+	 * 
+	 * This would require a significant change in the API, since it requires the
+	 * app to not loop fetch() calls over the query but actually retrieve the 
+	 * result element and loop over that.
+	 * 
+	 * @todo This should be removed in favor of an actual collector for the results
 	 * @var spitfire\storage\database\ResultSetInterface|null
 	 */
 	protected $result;
-	/** @var \spitfire\storage\database\QueryTable  */
+	
+	/** 
+	 * The table this query is retrieving data from. This table is wrapped inside
+	 * a QueryTable object to ensure that the table can refer back to the query
+	 * when needed.
+	 * 
+	 * @var \spitfire\storage\database\QueryTable  
+	 */
 	protected $table;
 	
 	protected $page = 1;
