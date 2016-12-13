@@ -43,6 +43,9 @@ interface ObjectFactoryInterface
 	/**
 	 * Returns an instance of the class the child tables of this class have
 	 * this is used to create them when requested by the table() method.
+	 *
+	 * @param DB     $db
+	 * @param string $tablename
 	 * 
 	 * @return Table Instance of the table class the driver wants the system to use
 	 */
@@ -52,6 +55,8 @@ interface ObjectFactoryInterface
 	 * Creates a collection. These wrap the typical record operations on a table 
 	 * into a separate layer.
 	 * 
+	 * @param Table $table
+	 *
 	 * @return Collection
 	 */
 	function makeCollection(Table$table);
@@ -60,6 +65,8 @@ interface ObjectFactoryInterface
 	 * Creates a new On The Fly Model. These allow the system to interact with a 
 	 * database that was not modeled after Spitfire's models or that was not 
 	 * reverse engineered previously.
+	 *
+	 * @param string $tablename
 	 * 
 	 * @return Table Instance of the table class the driver wants the system to use
 	 */
@@ -70,9 +77,10 @@ interface ObjectFactoryInterface
 	 * DBMS. As opposed to the Logical fields, physical fields do not accept 
 	 * complex values, just basic types that any DBMS can handle.
 	 * 
-	 * @param Field $field
-	 * @param type $name
-	 * @param DBField $references
+	 * @param Field    $field
+	 * @param string   $name
+	 * @param DBField  $references
+	 *
 	 * @return DBField Field
 	 */
 	function getFieldInstance(Field$field, $name, DBField$references = null);
@@ -82,17 +90,19 @@ interface ObjectFactoryInterface
 	 * which allows to create the queries that we need to construct in order to 
 	 * retrieve data.
 	 * 
-	 * @param type $query
-	 * @param DBField $field
-	 * @param type $value
-	 * @param type $operator
+	 * @param string      $query
+	 * @param DBField     $field
+	 * @param mixed       $value
+	 * @param string|null $operator
 	 */
 	function restrictionInstance($query, DBField$field, $value, $operator = null);
 	
 	/**
-	 * Creates a new query.
+	 * Creates a new query. A query is created with a table to provide information
+	 * where the data should be retrieved some and some information on the fields
+	 * that we want it to provide.
 	 * 
-	 * @param type $table
+	 * @param Table $table
 	 */
 	function queryInstance($table);
 }

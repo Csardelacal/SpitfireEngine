@@ -65,7 +65,7 @@ class Session
 
 	public function get($key, $app = null) {
 		if ($app === null) {$app = current_context()->app;}
-		$namespace = ($app->getNameSpace())? $app->getNameSpace() : '*';
+		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
 
 		if (!session_id()) { $this->start(); }
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;

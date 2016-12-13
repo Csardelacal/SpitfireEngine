@@ -29,7 +29,7 @@ abstract class Table
 	 *
 	 * @var Schema 
 	 */
-	protected $model;
+	protected $schema;
 	
 	/**
 	 * The prefixed name of the table. The prefix is defined by the environment
@@ -85,21 +85,21 @@ abstract class Table
 		$this->db = $db;
 		
 		if ($schema instanceof Schema) {
-			$this->model = $schema;
-			$this->model->setTable($this);
+			$this->schema = $schema;
+			$this->schema->setTable($this);
 		} else {
 			throw new PrivateException('Table requires a Schema to be passed');
 		}
 		
 		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
-		$this->tablename = Environment::get('db_table_prefix') . $this->model->getTableName();
+		$this->tablename = Environment::get('db_table_prefix') . $this->schema->getTableName();
 		
 		$this->makeFields();
 	}
 	
 	public function makeFields() {
 		
-		$fields   = $this->model->getFields();
+		$fields   = $this->schema->getFields();
 		$dbfields = Array();
 		
 		foreach ($fields as $field) {
@@ -227,11 +227,11 @@ abstract class Table
 	 * @return \Schema
 	 */
 	public function getModel() {
-		return $this->model;
+		return $this->schema;
 	}
 	
 	public function getCollection() {
-		return $this->db->table($this->model->getName());
+		return $this->db->table($this->schema->getName());
 	}
 	
 	/**
@@ -239,7 +239,7 @@ abstract class Table
 	 * @return \Schema
 	 */
 	public function getSchema() {
-		return $this->model;
+		return $this->schema;
 	}
 	
 	/**
@@ -250,7 +250,7 @@ abstract class Table
 	 */
 	public function getBean($name = null) {
 		
-		if (!$name) { $beanName = $this->model->getName() . 'Bean'; }
+		if (!$name) { $beanName = $this->schema->getName() . 'Bean'; }
 		else        { $beanName = $name . 'Bean'; }
 		
 		$bean = new $beanName($this);

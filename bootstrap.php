@@ -45,8 +45,8 @@ require_once SPITFIRE_BASEDIR . '/Strings.php';
 require_once SPITFIRE_BASEDIR . '/core/functions.php';
 require_once SPITFIRE_BASEDIR . '/ClassInfo.php';  //TODO: Remove - Deprecated
 require_once SPITFIRE_BASEDIR . '/autoload/Autoload.php';
-require_once SPITFIRE_BASEDIR . '/autoload/classlocator.php';
-require_once SPITFIRE_BASEDIR . '/autoload/namespacedclasslocator.php';
+require_once SPITFIRE_BASEDIR . '/autoload/ClassLocator.php';
+require_once SPITFIRE_BASEDIR . '/autoload/NamespacedClassLocator.php';
 
 #Create the autoload. Once started it will allow you to register classes and 
 #locators to retrieve new classes that are missing to your class-space

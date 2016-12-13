@@ -220,19 +220,5 @@ abstract class DB
 	 * @return ObjectFactoryInterface
 	 */
 	abstract public function getObjectFactory();
-	
-	/**
-	 * Creates a new On The Fly Model. These allow the system to interact with a 
-	 * database that was not modeled after Spitfire's models or that was not 
-	 * reverse engineered previously.
-	 * 
-	 * Note: This is deprecated in favor of a factory object that could generalize
-	 * driver specific object creation.
-	 * 
-	 * @abstract
-	 * @deprecated since version 0.1-dev 20160406
-	 * @return Table Instance of the table class the driver wants the system to use
-	 */
-	abstract public function getOTFModel($tablename);
 
 }

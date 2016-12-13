@@ -167,7 +167,7 @@ class Route
 			$route = rtrim($route, '\/') . '/' . implode('/', $this->getParameters()->getUnparsed());
 		}
 		
-		return '/' . trim($route, '/') . ($this->parameters->getExtension() === 'php'? '/' : '.' . $this->extension);
+		return '/' . trim($route, '/') . ($this->parameters->getExtension() === 'php'? '/' : '.' . $this->parameters->getExtension());
 	}
 	
 	/**
