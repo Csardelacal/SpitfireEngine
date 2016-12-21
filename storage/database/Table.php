@@ -246,6 +246,7 @@ abstract class Table
 	 * Returns the bean this model uses to generate Forms to feed itself with data
 	 * the returned value normally is a class that inherits from CoffeeBean.
 	 * 
+	 * @deprecated since version 0.1-dev 20161220
 	 * @return CoffeeBean
 	 */
 	public function getBean($name = null) {

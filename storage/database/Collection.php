@@ -75,6 +75,22 @@ abstract class Collection extends Queriable
 	}
 	
 	/**
+	 * Returns the bean this model uses to generate Forms to feed itself with data
+	 * the returned value normally is a class that inherits from CoffeeBean.
+	 * 
+	 * @return CoffeeBean
+	 */
+	public function getBean($name = null) {
+		
+		if (!$name) { $beanName = $this->getTable()->getSchema()->getName() . 'Bean'; }
+		else        { $beanName = $name . 'Bean'; }
+		
+		$bean = new $beanName($this->getTable());
+		
+		return $bean;
+	}
+	
+	/**
 	 * Creates a new record in this table
 	 * 
 	 * @return Model Record for the selected table

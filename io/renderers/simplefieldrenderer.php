@@ -96,7 +96,14 @@ class SimpleFieldRenderer {
 		$select  = new HTMLSelect($field->getPostId(), $value);
 		$label   = new HTMLLabel($select, $field->getCaption());
 		
-		$select->addChild(new HTMLOption(null, _t('select_pick')));
+		#In order to localize this, we test if the domain is available
+		try {
+			$stdValue = _t()->domain('spitfire.beans')->say('select_default');
+		} catch (\spitfire\exceptions\PrivateException$ex) {
+			$stdValue = 'Select';
+		}
+		
+		$select->addChild(new HTMLOption(null, $stdValue . '...'));
 		$options = $field->getOptions();
 		foreach ($options as $value => $caption) {
 			$select->addChild(new HTMLOption($value, $caption));
