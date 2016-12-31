@@ -136,6 +136,8 @@ class URL implements ArrayAccess
 	 * core. It is highly recommended not to use this "reserved words" 
 	 * as parameters as they may cause the real values of these to be
 	 * overwritten when the browser requests the site linked by these.
+	 *
+	 * @return self
 	 */
 	public function setParam($param, $value) {
 		$this->params[$param] = $value;
@@ -223,13 +225,20 @@ class URL implements ArrayAccess
 		#Fall back to default behavior.
 		return $this->defaultSerializer();
 	}
-	
+
+	/**
+	 * @param string   $asset_name
+	 * @param SpitFire $app
+	 *
+	 * @return string
+	 */
 	public static function asset($asset_name, $app = null) {
 		#If there is no app defined we can use the default directory
-		if ($app === null) { return SpitFire::baseUrl() . '/assets/' . $asset_name; }
-		
 		#Otherwise use the App specific directory
-		else { return SpitFire::baseUrl() . '/' . $app->getAssetsDirectory() . $asset_name; }
+		$fpath = (!isset($app) ? ASSET_DIRECTORY : '/assets/').$asset_name;
+		$modifiedAt = filemtime($fpath);
+		$fpath .= "?$modifiedAt";
+		return SpitFire::baseUrl() . '/' . $fpath;
 	}
 	
 	public static function make($url) {

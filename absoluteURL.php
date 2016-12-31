@@ -47,8 +47,7 @@ class absoluteURL extends URL
 	}
 	
 	public static function asset($asset_name, $app = null) {
-		if ($app == null) { $path = SpitFire::baseUrl() . '/assets/' . $asset_name; }
-		else { $path = SpitFire::baseUrl() . '/' . $app->getAssetsDirectory() . $asset_name; }
+		$path = parent::asset($asset_name, $app);
 		
 		$proto  = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? self::PROTO_HTTPS : self::PROTO_HTTP;
 		$domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
