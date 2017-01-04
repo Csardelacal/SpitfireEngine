@@ -79,6 +79,13 @@ class Upload
 		return $this;
 	}
 	
+	public function get($attribute) {
+		if (!isset($this->meta[$attribute])) { return null; }
+		if (is_array($this->meta[$attribute])) { throw new PrivateException('Tried to get attribute of upload array'); }
+		
+		return $this->meta[$attribute];
+	}
+	
 	public function __get($name) {
 		if (isset($this->meta['name'][$name])) {
 			return new Upload(Array(

@@ -129,7 +129,7 @@ abstract class Collection extends Queriable
 	 */
 	public function __call($name, $arguments) {
 		#Pass on
-		trigger_error('Called Collection::__call. This should not happen', E_USER_DEPRECATED);
-		return call_user_func_array(Array($this->db, $name), $arguments);
+		trigger_error('Called Collection::__call. This should not happen. Missing argument: ' . $name, E_USER_DEPRECATED);
+		return call_user_func_array(Array($this->getDb(), $name), $arguments);
 	}
 }

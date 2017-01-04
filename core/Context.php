@@ -115,4 +115,8 @@ class Context
 		if ($_return instanceof Context) { return $_return; }
 		else                             { return $this; }
 	}
+	
+	public function __clone() {
+		$this->context = $this;
+	}
 }

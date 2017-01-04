@@ -151,7 +151,7 @@ abstract class App
 		$name = implode('\\', $this->getControllerURI($controller));
 		
 		$c = $this->getNameSpace() . $name . 'View';
-		if (!class_exists($c)) $c = 'spitfire\mvc\View';
+		if (!class_exists($c)) { $c = \spitfire\mvc\View::class; }
 		
 		return new $c($controller->context);
 	}

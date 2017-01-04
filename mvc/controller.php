@@ -39,8 +39,9 @@ abstract class Controller extends MVC
 			$context = clone $this->context;
 			$context->controller = new $controllerName($context);
 			$context->action = $action;
-			$request->object = $object;
-			$request->view   = $this->app->getView($context->controller);
+			$context->object = $object;
+			$context->view   = $this->app->getView($context->controller);
+			$context->response->setBody($context);
 			return current_context($context)->run();
 		}
 		else {

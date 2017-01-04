@@ -51,7 +51,7 @@ class View extends MVC
 		
 		$basedir    = $this->app->getTemplateDirectory();
 		
-		$controller = strtolower(implode('\\', $this->app->getControllerURI($this->controller)));
+		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $this->app->getControllerURI($this->controller)));
 		$action     = $this->action;
 		$extension  = $this->extension === 'php'? '' : '.' . $this->extension;
 		
