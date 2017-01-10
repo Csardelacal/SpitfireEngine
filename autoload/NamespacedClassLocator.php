@@ -25,16 +25,6 @@ class NamespacedClassLocator extends ClassLocator
 	private $namespace;
 	
 	/**
-	 * The directory mapped to this namespace. In case the namespace is matched the
-	 * file is looked after inside the current directory. 
-	 * 
-	 * Please note that if it matches a sub-namespace it will try to look up inside
-	 * a subdirectory of the namespace.
-	 * @var string 
-	 */
-	private $directory;
-	
-	/**
 	 * This is the type of class the Locator is looking after. In case the application
 	 * specified a suffix for a special class type (like f.e. Controllers) the 
 	 * framework may have to look in a special directory.

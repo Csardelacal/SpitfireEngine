@@ -90,6 +90,8 @@ class Driver extends DB
 			return $stt;
 		
 		} catch(PDOException $e) {
+			#Log the error that happened.
+			spitfire()->log("Captured: {$e->getCode()} - {$e->getMessage()}");
 			#Recover from exception, make error readable. Re-throw
 			$code = $e->getCode();
 			$err  = $e->errorInfo;

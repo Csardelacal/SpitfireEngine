@@ -31,7 +31,7 @@ abstract class Controller extends MVC
 		$action = $name;
 		$object = $arguments;
 		
-		if (class_exists( implode('\\', $controller) . '\\' . $action . 'Controller')) {
+		if (class_exists(strtolower(implode('\\', $controller)) . '\\' . ucfirst($action) . 'Controller')) {
 			array_push($controller, $action);
 			$action     = array_shift($object);
 			

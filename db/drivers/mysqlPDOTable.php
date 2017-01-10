@@ -47,8 +47,8 @@ class MysqlPDOTable extends stdSQLTable
 		#Strip empty definitions from the list
 		$clean = array_filter($definitions);
 		
-		$stt = sprintf('CREATE TABLE %s (%s)',
-			$this,
+		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
+			$table,
 			implode(', ', $clean)
 			);
 		

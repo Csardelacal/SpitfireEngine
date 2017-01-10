@@ -53,7 +53,7 @@ abstract class ClassLocator
 	 * @param string $name
 	 * @return string|boolean
 	 */
-	public function findFile($dir, $name, /*DEPRECATED*/$suffix = null) {
+	public function findFile($dir, $name, /*DEPRECATED*/$suffix = null) {;
 		#Check if just the name of the file is being found
 		$file = rtrim($this->basedir . '/' . $dir, '/') . '/' . $name .'.php';
 		if (file_exists($file)) { return $file; }

@@ -1,8 +1,11 @@
 <?php namespace spitfire\exceptions;
 
+use BadMethodCallException;
 use Exception;
 use spitfire\core\Environment;
+use spitfire\core\Response;
 use spitfire\exceptions\FileNotFoundException;
+use Throwable;
 
 /**
  * Output error page to browser
@@ -66,11 +69,11 @@ class ExceptionHandler {
 	
 	/**
 	 * 
-	 * @param \Throwable $e
+	 * @param \Throwable|\Exception $e
 	 */
 	public function exceptionHandle ($e) {
-		if (!$e instanceof \Exception && !$e instanceof \Throwable) {
-			throw new \BadMethodCallException('Requires throwable type to work.', 1608011002);
+		if (!$e instanceof Exception && !$e instanceof Throwable) {
+			throw new BadMethodCallException('Requires throwable type to work.', 1608011002);
 		}
 		
 		try {
@@ -78,7 +81,7 @@ class ExceptionHandler {
 
 			ob_start();
 				
-			$response = new \spitfire\core\Response(null);
+			$response = new Response(null);
 			
 			if ( $e instanceof PublicException) {
 				$previous = $e->getPrevious();
