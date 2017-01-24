@@ -5,7 +5,7 @@ use spitfire\Model;
 use spitfire\model\adapters\IntegerAdapter;
 use spitfire\validation\ValidationError;
 
-class IntegerField extends Field
+class FloatField extends Field
 {
 	
 	protected $unsigned;

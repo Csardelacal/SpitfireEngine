@@ -31,6 +31,7 @@ AutoLoad::registerClass('Schema',                                               
 AutoLoad::registerClass('OTFModel',                                             SPITFIRE_BASEDIR.'/model/onthefly.php');
 AutoLoad::registerClass('spitfire\model\Field',                                 SPITFIRE_BASEDIR.'/model/field.php');
 AutoLoad::registerClass('IntegerField',                                         SPITFIRE_BASEDIR.'/model/fields/integer.php');
+AutoLoad::registerClass('FloatField',                                           SPITFIRE_BASEDIR.'/model/fields/float.php');
 AutoLoad::registerClass('FileField',                                            SPITFIRE_BASEDIR.'/model/fields/file.php');
 AutoLoad::registerClass('TextField',                                            SPITFIRE_BASEDIR.'/model/fields/text.php');
 AutoLoad::registerClass('StringField',                                          SPITFIRE_BASEDIR.'/model/fields/string.php');
