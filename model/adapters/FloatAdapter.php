@@ -23,7 +23,7 @@ class FloatAdapter extends BaseAdapter
 			throw new PrivateException('This adapter only accepts floats and nulls');
 		}
 		//Make sure the finally stored data is an integer.
-		parent::usrSetData($data === null? null : (int)$data);
+		parent::usrSetData($data === null? null : (float)$data);
 	}
 }
 

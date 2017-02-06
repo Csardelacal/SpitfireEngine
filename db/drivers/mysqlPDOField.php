@@ -22,6 +22,8 @@ class mysqlPDOField extends DBField
 		switch ($logical->getDataType()) {
 			case Field::TYPE_INTEGER:
 				return 'INT(11)';
+			case Field::TYPE_FLOAT:
+				return 'DOUBLE';
 			case Field::TYPE_LONG:
 				return 'BIGINT';
 			case Field::TYPE_STRING:

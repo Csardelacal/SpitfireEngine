@@ -1,8 +1,9 @@
 <?php
 
-use spitfire\model\Field;
 use spitfire\Model;
-use spitfire\model\adapters\IntegerAdapter;
+use spitfire\model\adapters\FloatAdapter;
+use spitfire\model\Field;
+use spitfire\storage\database\Query;
 use spitfire\validation\ValidationError;
 
 class FloatField extends Field
@@ -30,10 +31,10 @@ class FloatField extends Field
 	}
 
 	public function getAdapter(Model $model) {
-		return new IntegerAdapter($this, $model);
+		return new FloatAdapter($this, $model);
 	}
 
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
+	public function getConnectorQueries(Query $parent) {
 		return Array();
 	}
 

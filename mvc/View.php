@@ -88,12 +88,23 @@ class View extends MVC
 	 * practice in order to reduce the need to change your coding when changing
 	 * your directory structure.
 	 * 
+	 * If the file is provided with no extension, this method will consider the
+	 * standard extension scheme for views inside spitfire
+	 * 
 	 * @param string $fileName
 	 * @throws FileNotFoundException
 	 */
 	public function setFile ($fileName) {
 		
-		if (!file_exists($fileName)) { $fileName = $this->app->getTemplateDirectory() . $fileName; }
+		if (!file_exists($fileName)) { 
+			$fileName = $this->app->getTemplateDirectory() . $fileName; 
+		}
+		
+		$extension  = ($this->extension === 'php'? '' : '.' . $this->extension) . '.php';
+		
+		if (!file_exists($fileName) && file_exists($fileName . $extension)) {
+			$fileName.= $extension;
+		}
 		
 		if (file_exists($fileName)) { $this->file = $fileName; }
 		else { throw new FileNotFoundException('File ' . $fileName . 'not found. View can\'t use it'); }
