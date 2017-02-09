@@ -29,7 +29,7 @@ class PNGQuant
 		$content = shell_exec("pngquant --quality=60-90 - < ".escapeshellarg(realpath($img)));
 
 		if (!$content) {
-			throw new PrivateException("Conversion to compressed PNG failed. Is pngquant 1.8+ installed on the server?");
+			throw new PrivateException("Conversion of {$img} to compressed PNG failed. Is pngquant 1.8+ installed on the server?");
 		}
 
 		file_put_contents($target? : $img, $content);

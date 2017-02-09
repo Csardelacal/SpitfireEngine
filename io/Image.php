@@ -48,6 +48,20 @@ class Image
 		
 	}
 	
+	public function setBackground($r, $g, $b, $alpha = 0) {
+		
+		$img = imagecreatetruecolor($this->meta[0], $this->meta[1]);
+		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));
+		imagealphablending($img, true);
+		imagesavealpha($img, true);
+		
+		$bgcolor = imagecolorallocatealpha($img, $r, $g, $b, $alpha);
+		imagefilledrectangle($img, 0, 0, $this->meta[0], $this->meta[1], $bgcolor);
+		
+		imagecopy($img, $this->img, 0, 0, 0, 0, $this->meta[0], $this->meta[1]);
+		$this->img = $img;
+	}
+	
 	public function crop($x1, $y1, $x2, $y2) {
 		
 		$width  = $x2 - $x1;
@@ -57,8 +71,10 @@ class Image
 		imagecopy($img, $this->img, 0, 0, $x1, $y1, $width, $height);
 		
 		$this->img = img;
-		return $this;
+		$this->meta[0] = $x2 - $x1;
+		$this->meta[1] = $y2 - $y1;
 		
+		return $this;
 	}
 	
 	public function fitInto ($width, $height) {
@@ -82,15 +98,16 @@ class Image
 		}
 		
 		$img = imagecreatetruecolor($width, $height);
-		imagecolortransparent($img , imagecolorallocatealpha($img , 0, 0, 0, 127));
+		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));
 		imagealphablending($img, false);
 		imagesavealpha($img, true);
 		imagecopyresampled($img, $this->img, 0, 0, $offset_x, $offset_y, $width, $height, $this->meta[0]-2*$offset_x, $this->meta[1]-2*$offset_y);
 		$this->img = $img;
 		
+		$this->meta[0] = $width;
+		$this->meta[1] = $height;
+		
 		return $this;
-		
-		
 	}
 	
 	public function resize ($width, $height = null) {
@@ -133,14 +150,23 @@ class Image
 		return $this->compression;
 	}
 	
-	public function store ($file) {
+	public function store ($file, $filetype = 'png') {
+		if (file_exists($file)) {
+			unlink ($file);
+		}
+		
 		if ($this->img instanceof Imagick) {
-			if (file_exists($file)) unlink ($file);
-			$this->img->setImageFormat('png');
+			$this->img->setImageFormat($filetype);
 			$this->img->writeimage(getcwd() . '/' . $file);
-		} else {
-			if (file_exists($file)) unlink ($file);
-			imagepng($this->img, $file, $this->compression);
+		} 
+		else {
+			switch ($filetype) {
+				case 'png':
+					imagepng($this->img, $file, $this->compression);
+					break;
+				case 'jpg':
+					imagejpeg($this->img, $file, $this->compression * 10);
+			}
 		}
 		return $file;
 	}

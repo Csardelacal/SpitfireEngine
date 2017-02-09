@@ -51,7 +51,7 @@ class Upload
 			throw new filePermissionsException('Upload directory is not writable');
 		}
 		
-		$filename = $this->uploadDir . '/' . base_convert(time(), 10, 32) . '_' . base_convert(rand(), 10, 32) . '_' . str_replace(Array('?', ' '), '', $this->meta['name']);
+		$filename = $this->uploadDir . '/' . base_convert(time(), 10, 32) . '_' . base_convert(rand(), 10, 32) . '_' . \Strings::slug($this->meta['name']);
 		
 		move_uploaded_file($this->meta['tmp_name'], $filename);
 		return $this->stored = $filename;
