@@ -22,6 +22,12 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$this->children = $data;
 	}
 	
+	/**
+	 * Returns the query that would be used to retrieve the elements for this 
+	 * adapter. This can be used to add restrictions and query the related records
+	 * 
+	 * @return \spitfire\storage\database\Query
+	 */
 	public function getQuery() {
 		
 		$query = $this->field->getTable()->getDb()->getObjectFactory()
