@@ -3,7 +3,7 @@
 abstract class SessionHandler implements SessionHandlerInterface
 {
 	
-	private $timeout = 1200;
+	private $timeout = null;
 	
 	public function __construct($timeout) {
 		$this->timeout = $timeout;
