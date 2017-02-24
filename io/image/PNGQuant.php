@@ -26,13 +26,28 @@ class PNGQuant
 			throw new FileNotFoundException("File does not exist: $img");
 		}
 		
-		$content = shell_exec("pngquant --quality=60-90 - < ".escapeshellarg(realpath($img)));
-
-		if (!$content) {
-			throw new PrivateException("Conversion of {$img} to compressed PNG failed. Is pngquant 1.8+ installed on the server?");
+		$descriptors = Array(Array('pipe', 'r'), Array('pipe', 'w'), Array('pipe', 'w'));
+		$proc = proc_open('pngquant -', $descriptors, $pipes);
+		
+		if (is_resource($proc)) {
+			fwrite($pipes[0], file_get_contents($img));
+			fclose($pipes[0]);
+			
+			$compressed_png_content = stream_get_contents($pipes[1]);
+			fclose($pipes[1]);
+			
+			$error_output = stream_get_contents($pipes[2]);
+			fclose($pipes[2]);
+			
+			$code = proc_close($proc); //Not yet being used, this is just a test
 		}
 
-		file_put_contents($target? : $img, $content);
+		if (!$compressed_png_content) {
+			die($error_output);
+			throw new PrivateException('Compressing PNG failed. Is pngquant 1.8+ installed on the server?');
+		}
+
+		file_put_contents($target? : $img, $compressed_png_content);
 		return $img;
 	}
 }
