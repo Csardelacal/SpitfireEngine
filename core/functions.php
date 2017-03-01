@@ -150,8 +150,9 @@ function current_context(Context$set = null) {
 }
 
 function validate($target = null) {
-	if ($target !== null && $target instanceof ValidatorInterface) {
-		$targets  = array_filter(func_get_args());
+	$targets  = array_filter(func_get_args());
+	
+	if (!empty($targets) && reset($targets) instanceof ValidatorInterface) {
 		$messages = Array();
 		
 		#Retrieve the messages from the validators
