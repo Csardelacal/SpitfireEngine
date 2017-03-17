@@ -66,7 +66,8 @@ class Session
 	public function get($key, $app = null) {
 		if ($app === null) {$app = current_context()->app;}
 		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
-
+		
+		if (!isset($_COOKIE[session_name()])) { return null; }
 		if (!session_id()) { $this->start(); }
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
 
@@ -107,6 +108,17 @@ class Session
 		if (session_id()) { return; }
 		$this->handler->attach();
 		session_start();
+		
+		
+		/*
+		 * This is a fallback mechanism that allows dynamic extension of sessions,
+		 * otherwise a twenty minute session would end after 20 minutes even 
+		 * if the user was actively using it.
+		 * 
+		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
+		 */
+		$lifetime = 2592000;
+		setcookie(session_name(), session_id(), time() + $lifetime, '/');
 	}
 	
 	public function destroy() {

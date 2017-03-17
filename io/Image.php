@@ -155,6 +155,10 @@ class Image
 			unlink ($file);
 		}
 		
+		if (!is_writable(dirname($file))) {
+			throw new \spitfire\exceptions\PrivateException('Invalid directory');
+		}
+		
 		if ($this->img instanceof Imagick) {
 			$this->img->setImageFormat($filetype);
 			$this->img->writeimage(getcwd() . '/' . $file);
@@ -168,6 +172,7 @@ class Image
 					imagejpeg($this->img, $file, $this->compression * 10);
 			}
 		}
+		
 		return $file;
 	}
 }

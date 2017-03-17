@@ -3,7 +3,7 @@
 abstract class SessionHandler implements SessionHandlerInterface
 {
 	
-	private $timeout = 1200;
+	private $timeout = null;
 	
 	public function __construct($timeout) {
 		$this->timeout = $timeout;
@@ -42,16 +42,6 @@ abstract class SessionHandler implements SessionHandlerInterface
 		 * will open the session and then send the cookies.
 		 */
 		$this->open($savePath, $sessionName);
-		
-		/*
-		 * This is a fallback mechanism that allows dynamic extension of sessions,
-		 * otherwise a twenty minute session would end after 20 minutes even 
-		 * if the user was actively using it.
-		 * 
-		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
-		 */
-		$lifetime = 2592000;
-		setcookie(session_name(), session_id(), time() + $lifetime, '/');
 	}
 		
 	abstract public function open($savePath, $sessionName);
