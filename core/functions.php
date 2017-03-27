@@ -184,3 +184,15 @@ function get_path_info() {
 function _def(&$a, $b) {
 	return ($a)? $a : $b;
 }
+
+/**
+ * This function is a shorthand for "new Collection" which also allows fluent
+ * usage of the collection in certain environments where the PHP version still
+ * limits that behavior.
+ * 
+ * @param mixed $elements
+ * @return \spitfire\core\Collection
+ */
+function collect($elements) {
+	return new \spitfire\core\Collection($elements);
+}
