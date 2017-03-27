@@ -2,6 +2,8 @@
 
 use filePermissionsException;
 use spitfire\exceptions\PrivateException;
+use spitfire\storage\drive\Directory;
+use Strings;
 
 /**
  * This class merges the file Uploads coming from a client into the POST array,
@@ -36,28 +38,58 @@ class Upload
 		$this->uploadDir = 'bin/usr/uploads';
 	}
 	
+	public function isOk() {
+		
+		#First, we check whether the uploaded data was nested.
+		if (is_array($this->meta['name'])) {
+			throw new PrivateException('Is an upload array');
+		}
+		
+		#If the sent data does not contain a file name the data transmitted was
+		#not proper or not properly formatted
+		if (empty($this->meta['name'])) {
+			throw new PrivateException('Nothing uploaded');
+		}
+		
+		#If the value in error is anything but 0, it will mean that PHP reported
+		#an error. Whatever that value is, it's not acceptable.
+		if ($this->meta['error'] > 0) {
+			throw new PrivateException('Upload error');
+		}
+		
+		return true;
+	}
+	
 	public function store() {
-		if (is_array($this->meta['name'])) throw new PrivateException('Is an upload array');
 		
-		if (empty($this->meta['name'])) throw new PrivateException('Nothing uploaded');
-		if ($this->meta['error'] > 0  ) throw new PrivateException('Upload error');
-		if ($this->stored) return $this->stored;
-		
-		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true)) {
-			throw new filePermissionsException('Upload directory does not exist and could not be created');
+		#If the data was already stored (this may happen in certain events where a
+		#store function is called several times) return the location of the file.
+		if ($this->stored) {
+			return $this->stored;
 		}
 		
-		if (!is_writable($this->uploadDir)) {
-			throw new filePermissionsException('Upload directory is not writable');
-		}
+		#Check if the uploaded file is ok
+		$this->isOk();
 		
-		$filename = $this->uploadDir . '/' . 
-			base_convert(time(), 10, 32) . '_' . base_convert(rand(), 10, 32) . '_' . 
-			\Strings::slug(pathinfo($this->meta['name'], PATHINFO_FILENAME)) . '.' .
-			pathinfo($this->meta['name'], PATHINFO_EXTENSION);
+		#Create the directory to write to
+		$dir = new Directory($this->uploadDir);
 		
-		move_uploaded_file($this->meta['tmp_name'], $filename);
-		return $this->stored = $filename;
+		#Ensure the directory exists and is writable.
+		if (!$dir->exists())     { $dir->create(); }
+		if (!$dir->isWritable()) { throw new filePermissionsException('Upload directory is not writable'); }
+		
+		#Assemble the different components of the filename. This will be necessary 
+		#to tell the system where to write the data to
+		$time     = base_convert(time(), 10, 32);
+		$rand     = base_convert(rand(), 10, 32);
+		$filename = Strings::slug(pathinfo($this->meta['name'], PATHINFO_FILENAME));
+		$extension= pathinfo($this->meta['name'], PATHINFO_EXTENSION);
+		
+		$path = $this->uploadDir . '/' . $time . '_' . $rand . '_' . $filename . '.' . $extension;
+		
+		#Move the file and return the path.
+		move_uploaded_file($this->meta['tmp_name'], $path);
+		return $this->stored = $path;
 	}
 	
 	public function getData() {
