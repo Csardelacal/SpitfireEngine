@@ -3,7 +3,7 @@
 class DateTime extends \DateTime {
 	
 	public function __toString() {
-		return $this->format(environment::get('datetime.format'));
+		return $this->format(core\Environment::get('datetime.format'));
 	}
 	
 }
