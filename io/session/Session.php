@@ -117,7 +117,7 @@ class Session
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
-		setcookie(session_name(), session_id(), time() + $lifetime, '/');
+		setcookie(session_name(), Session::get_session_id(), time() + $lifetime, '/');
 	}
 
 	public function destroy() {
