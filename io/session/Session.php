@@ -58,7 +58,7 @@ class Session
 		/* @var $app App */
 		$namespace = ($app->getNameSpace())? $app->getNameSpace() : '*';
 
-		if (!session_id()) { $this->start(); }
+		if (!$this->get_session_id()) { $this->start(); }
 		$_SESSION[$namespace][$key] = $value;
 
 	}
@@ -66,15 +66,15 @@ class Session
 	public function get($key, $app = null) {
 		if ($app === null) {$app = current_context()->app;}
 		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
-		
+
 		if (!isset($_COOKIE[session_name()])) { return null; }
-		if (!session_id()) { $this->start(); }
+		if (!$this->get_session_id()) { $this->start(); }
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
 
 	}
 
 	public function lock($userdata, App$app = null) {
-		
+
 		$user = Array();
 		$user['ip']       = $_SERVER['REMOTE_ADDR'];
 		$user['userdata'] = $userdata;
@@ -92,7 +92,7 @@ class Session
 
 			$this->set('_SF_Auth', $user, $app);
 			return $user['secure'];
-		} 
+		}
 		else return false;
 
 	}
@@ -101,14 +101,13 @@ class Session
 
 		$user = $this->get('_SF_Auth', $app);
 		return $user? $user['userdata'] : null;
-		
+
 	}
 
 	public function start() {
-		if (session_id()) { return; }
+		if ($this->get_session_id()) { return; }
 		$this->handler->attach();
 		session_start();
-		
 		
 		/*
 		 * This is a fallback mechanism that allows dynamic extension of sessions,
@@ -120,26 +119,37 @@ class Session
 		$lifetime = 2592000;
 		setcookie(session_name(), session_id(), time() + $lifetime, '/');
 	}
-	
+
 	public function destroy() {
 		$this->start();
 		return session_destroy();
 	}
-	
+
 	/**
 	 * This class requires to be managed in "singleton" mode, since there can only
 	 * be one session handler for the system.
-	 * 
+	 *
 	 * @staticvar Session $instance
 	 * @return Session
 	 */
 	public static function getInstance() {
 		static $instance = null;
-		
+
 		if ($instance !== null) { return $instance; }
-		
+
 		$handler = Environment::get('session.handler')? : new FileSessionHandler(spitfire()->getCWD() . DIRECTORY_SEPARATOR . SESSION_SAVE_PATH);
 		return $instance = new Session($handler);
 	}
 
+	static function get_session_id($allow_regen = true){
+		$sid = session_id();
+		if (!$sid)
+			return false;
+		if (!preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $sid)){
+			if ($allow_regen ? !session_regenerate_id() : true)
+				throw new \Exception('Session ID '.($allow_regen?'re-generation':'validation').' failed');
+			$sid = session_id();
+		}
+		return $sid;
+	}
 }

@@ -1,18 +1,20 @@
 <?php namespace spitfire\io\session;
 
+use spitfire\io\session\Session;
+
 abstract class SessionHandler implements SessionHandlerInterface
 {
-	
+
 	private $timeout = null;
-	
+
 	public function __construct($timeout) {
 		$this->timeout = $timeout;
 	}
-	
+
 	public function attach() {
 		if ($this instanceof \SessionHandlerInterface) {
 			session_set_save_handler($this);
-		} 
+		}
 		else {
 			session_set_save_handler(
 				array($this, 'start'),
@@ -24,21 +26,21 @@ abstract class SessionHandler implements SessionHandlerInterface
 			);
 		}
 	}
-	
+
 	public function getTimeout() {
 		return $this->timeout;
 	}
-	
+
 	public function setTimeout($timeout) {
 		$this->timeout = $timeout;
 		return $this;
 	}
-	
+
 	public function start($savePath, $sessionName) {
-		
+
 		/**
-		 * Open the session. The start method is kinda special, since we need to 
-		 * set the cookies right after opening it. So we register this hook that 
+		 * Open the session. The start method is kinda special, since we need to
+		 * set the cookies right after opening it. So we register this hook that
 		 * will open the session and then send the cookies.
 		 */
 		$this->open($savePath, $sessionName);
