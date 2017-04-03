@@ -30,8 +30,12 @@ class Upload
 	 * @var mixed[]
 	 */
 	private $meta;
+	/** @var string|null Contains filename if store() was called, null otherwise */
 	private $stored;
+	/** @var string Upload directory path (without trailing slash), set during construction for whatever reason? */
 	private $uploadDir;
+	/** @var bool If false validate() hasn't been called yet */
+	private $validated;
 	
 	public function __construct($meta) {
 		$this->meta      = $meta;
@@ -61,6 +65,7 @@ class Upload
 	}
 	
 	public function store() {
+		if (!$this->validated) throw new \privateException('Uploaded file left unvalidated before storing');
 		
 		#If the data was already stored (this may happen in certain events where a
 		#store function is called several times) return the location of the file.
@@ -90,6 +95,29 @@ class Upload
 		#Move the file and return the path.
 		move_uploaded_file($this->meta['tmp_name'], $path);
 		return $this->stored = $path;
+	}
+
+	/**
+	 * This function should be called before storing any uploaded file
+	 *
+	 * @param string $expect The string corresponting to the type we want to check against
+	 *
+	 * @return self
+	 */
+	public function validate($expect = 'image'){
+		switch ($expect){
+			case "image":
+				$info = getimagesize($_FILES['file']['tmp_name']);
+				if ($info === FALSE)
+					throw new UploadValidationException('The uploaded file does not appear to be an image', 1703312326);
+				if (!in_array($info[2],[IMAGETYPE_GIF,IMAGETYPE_JPEG,IMAGETYPE_PNG]))
+					throw new UploadValidationException('The uploaded file does not match any supported file type', 1703312327);
+			break;
+		}
+
+		$this->validated = true;
+
+		return $this;
 	}
 	
 	public function getData() {

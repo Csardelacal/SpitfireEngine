@@ -33,7 +33,8 @@ class Image
 				return imagecreatefromjpeg($file);
 			case IMAGETYPE_GIF: 
 				return imagecreatefromgif($file);
-			case IMAGETYPE_PSD:
+			// Disallowing PSD here too for consistency
+			/* case IMAGETYPE_PSD:
 				if (class_exists("Imagick")) {
 					set_time_limit(480);
 					$img = new Imagick();
@@ -41,7 +42,7 @@ class Image
 					$img->setImageIndex(0);
 					return $img;
 				}
-				throw new PrivateException('Spitfire requires Imagemagick to handle PSD files');
+				throw new PrivateException('Spitfire requires Imagemagick to handle PSD files'); */
 			default:
 				throw new PrivateException('Unsupported image type: ' . $this->meta[2]);
 		}
