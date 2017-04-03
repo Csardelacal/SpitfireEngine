@@ -30,14 +30,6 @@ use spitfire\autoload\RegisteredClassLocator;
 if (php_sapi_name() === 'cli') {
 	ini_set('display_errors', 1);
 	error_reporting(E_ALL);
-	
-	/*
-	 * TEMPORARY FIX FOR PHPUNIT_________________________________________________
-	 * It seems that PHPUnit is transitioning towards namespaced classnames. While
-	 * this is a very welcome change it does currently brek our tests.
-	 */
-	!class_exists('PHPUnit\Framework\TestCase') && 
-	class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
 }
 
 /*
