@@ -68,7 +68,7 @@ class Session
 		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
 
 		if (!isset($_COOKIE[session_name()])) { return null; }
-		if (!$this->get_session_id()) { $this->start(); }
+		if (!Session::sessionId()) { $this->start(); }
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
 
 	}
