@@ -1,7 +1,7 @@
 <?php namespace tests\spitfire\storage\db;
 
 use IntegerField;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDOQueryField;
@@ -10,7 +10,7 @@ use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\Schema;
 
-class RestrictionGroupTest extends PHPUnit_Framework_TestCase
+class RestrictionGroupTest extends TestCase
 {
 	
 	/**

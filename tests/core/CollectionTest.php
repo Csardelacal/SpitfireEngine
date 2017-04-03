@@ -1,10 +1,10 @@
 <?php namespace tests\core;
 
 use BadMethodCallException;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use spitfire\core\Collection;
 
-class CollectionTest extends PHPUnit_Framework_TestCase
+class CollectionTest extends TestCase
 {
 	
 	public function testAverage() {

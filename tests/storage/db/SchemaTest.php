@@ -1,10 +1,10 @@
 <?php namespace tests\storage\database;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use IntegerField;
 use spitfire\model\Field;
 
-class SchemaTest extends PHPUnit_Framework_TestCase
+class SchemaTest extends TestCase
 {
 	
 	/**

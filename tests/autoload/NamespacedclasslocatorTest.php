@@ -1,8 +1,9 @@
 <?php namespace tests\spitfire\core\autoload;
 
+use PHPUnit\Framework\TestCase;
 use spitfire\autoload\NamespacedClassLocator;
 
-class NamespacedclasslocatorTest extends \PHPUnit_Framework_TestCase
+class NamespacedclasslocatorTest extends TestCase
 {
 	
 	private $locator;
