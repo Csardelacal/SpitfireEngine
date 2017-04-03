@@ -1,7 +1,5 @@
 <?php namespace spitfire\io\session;
 
-use spitfire\io\session\Session;
-
 abstract class SessionHandler implements SessionHandlerInterface
 {
 

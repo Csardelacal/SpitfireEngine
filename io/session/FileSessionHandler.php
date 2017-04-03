@@ -46,7 +46,7 @@ class FileSessionHandler extends SessionHandler
 	}
 
 	public function read($__garbage) {
-		$id = Session::get_session_id(false);
+		$id = Session::sessionId(false);
 		$file = sprintf('%s/sess_%s', $this->directory, $id);
 
 		if (!file_exists($file)) { return ''; }
@@ -54,7 +54,7 @@ class FileSessionHandler extends SessionHandler
 	}
 
 	public function write($__garbage, $data) {
-		$id = Session::get_session_id(false);
+		$id = Session::sessionId(false);
 		return file_put_contents(sprintf('%s/sess_%s', rtrim($this->directory, '\/'), $id), $data) !== false;
 	}
 

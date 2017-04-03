@@ -117,7 +117,7 @@ class Session
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
-		setcookie(session_name(), Session::get_session_id(), time() + $lifetime, '/');
+		setcookie(session_name(), Session::sessionId(), time() + $lifetime, '/');
 	}
 
 	public function destroy() {
@@ -140,16 +140,37 @@ class Session
 		$handler = Environment::get('session.handler')? : new FileSessionHandler(spitfire()->getCWD() . DIRECTORY_SEPARATOR . SESSION_SAVE_PATH);
 		return $instance = new Session($handler);
 	}
-
-	static function get_session_id($allow_regen = true){
+	
+	/**
+	 * Returns the session ID being used. 
+	 * 
+	 * Since March 2017 the Spitfire session will validate that the session 
+	 * identifier returned is valid. A valid session ID is up to 128 characters
+	 * long and contains only alphanumeric characters, dashes and commas.
+	 * 
+	 * @todo Move to instance
+	 * 
+	 * @param boolean $allowRegen Allows the function to provide a new SID in case
+	 *                            of the session ID not being valid.
+	 * 
+	 * @return boolean
+	 * @throws \Exception
+	 */
+	public static function sessionId($allowRegen = true){
+		
+		#Get the session_id the system is using.
 		$sid = session_id();
-		if (!$sid)
-			return false;
-		if (!preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $sid)){
-			if ($allow_regen ? !session_regenerate_id() : true)
-				throw new \Exception('Session ID '.($allow_regen?'re-generation':'validation').' failed');
-			$sid = session_id();
+		
+		#If the session is valid, we return the ID and we're done.
+		if (!$sid || preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $sid)) {
+			return $sid;
 		}
+		
+		#Otherwise we'll attempt to repair the broken 
+		if (!$allowRegen || !session_regenerate_id()) {
+			throw new \Exception('Session ID ' . ($allowRegen? 'generation' : 'validation') . ' failed');
+		}
+		
 		return $sid;
 	}
 }
