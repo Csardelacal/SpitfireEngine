@@ -58,7 +58,7 @@ class Session
 		/* @var $app App */
 		$namespace = ($app->getNameSpace())? $app->getNameSpace() : '*';
 
-		if (!session_id()) { $this->start(); }
+		if (!$this->get_session_id()) { $this->start(); }
 		$_SESSION[$namespace][$key] = $value;
 
 	}
@@ -66,15 +66,15 @@ class Session
 	public function get($key, $app = null) {
 		if ($app === null) {$app = current_context()->app;}
 		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
-		
+
 		if (!isset($_COOKIE[session_name()])) { return null; }
-		if (!session_id()) { $this->start(); }
+		if (!Session::sessionId()) { $this->start(); }
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
 
 	}
 
 	public function lock($userdata, App$app = null) {
-		
+
 		$user = Array();
 		$user['ip']       = $_SERVER['REMOTE_ADDR'];
 		$user['userdata'] = $userdata;
@@ -92,7 +92,7 @@ class Session
 
 			$this->set('_SF_Auth', $user, $app);
 			return $user['secure'];
-		} 
+		}
 		else return false;
 
 	}
@@ -101,14 +101,13 @@ class Session
 
 		$user = $this->get('_SF_Auth', $app);
 		return $user? $user['userdata'] : null;
-		
+
 	}
 
 	public function start() {
-		if (session_id()) { return; }
+		if ($this->get_session_id()) { return; }
 		$this->handler->attach();
 		session_start();
-		
 		
 		/*
 		 * This is a fallback mechanism that allows dynamic extension of sessions,
@@ -118,28 +117,60 @@ class Session
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
-		setcookie(session_name(), session_id(), time() + $lifetime, '/');
+		setcookie(session_name(), Session::sessionId(), time() + $lifetime, '/');
 	}
-	
+
 	public function destroy() {
 		$this->start();
 		return session_destroy();
 	}
-	
+
 	/**
 	 * This class requires to be managed in "singleton" mode, since there can only
 	 * be one session handler for the system.
-	 * 
+	 *
 	 * @staticvar Session $instance
 	 * @return Session
 	 */
 	public static function getInstance() {
 		static $instance = null;
-		
+
 		if ($instance !== null) { return $instance; }
-		
+
 		$handler = Environment::get('session.handler')? : new FileSessionHandler(spitfire()->getCWD() . DIRECTORY_SEPARATOR . SESSION_SAVE_PATH);
 		return $instance = new Session($handler);
 	}
-
+	
+	/**
+	 * Returns the session ID being used. 
+	 * 
+	 * Since March 2017 the Spitfire session will validate that the session 
+	 * identifier returned is valid. A valid session ID is up to 128 characters
+	 * long and contains only alphanumeric characters, dashes and commas.
+	 * 
+	 * @todo Move to instance
+	 * 
+	 * @param boolean $allowRegen Allows the function to provide a new SID in case
+	 *                            of the session ID not being valid.
+	 * 
+	 * @return boolean
+	 * @throws \Exception
+	 */
+	public static function sessionId($allowRegen = true){
+		
+		#Get the session_id the system is using.
+		$sid = session_id();
+		
+		#If the session is valid, we return the ID and we're done.
+		if (!$sid || preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $sid)) {
+			return $sid;
+		}
+		
+		#Otherwise we'll attempt to repair the broken 
+		if (!$allowRegen || !session_regenerate_id()) {
+			throw new \Exception('Session ID ' . ($allowRegen? 'generation' : 'validation') . ' failed');
+		}
+		
+		return $sid;
+	}
 }

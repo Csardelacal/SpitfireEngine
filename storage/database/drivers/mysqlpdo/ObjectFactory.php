@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\environment;
+use BadMethodCallException;
+use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
 use spitfire\storage\database\DB;
@@ -140,7 +141,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	}
 	
 	public function __call($name, $args) {
-		throw new \BadMethodCallException();
+		throw new BadMethodCallException();
 	}
 
 }

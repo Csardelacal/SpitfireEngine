@@ -1,11 +1,11 @@
 <?php namespace tests\core\annotation;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use spitfire\core\annotations\AnnotationParser;
 
 
-class AnnotationParserTest extends PHPUnit_Framework_TestCase
+class AnnotationParserTest extends TestCase
 {
 	
 	public function testParser() {

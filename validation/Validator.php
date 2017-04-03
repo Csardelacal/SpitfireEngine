@@ -165,7 +165,18 @@ class Validator implements ValidatorInterface
 	}
 	
 	/**
-	 * Loops throught the list of rules this validator has testing if all of them 
+	 * Creates a validation group. This allows to create more complicated rules
+	 * that merge the results of several smaller rules.
+	 * 
+	 * @return \spitfire\validation\ValidationGroupRule
+	 */
+	public function group() {
+		$this->addRule($v = new ValidationGroupRule($this));
+		return $v;
+	}
+	
+	/**
+	 * Loops through the list of rules this validator has testing if all of them 
 	 * are satisfied by the value.
 	 * 
 	 * @param mixed $value
@@ -184,7 +195,7 @@ class Validator implements ValidatorInterface
 	 * @param \spitfire\validation\ValidationRule $rule
 	 * @param mixed $value
 	 * @return \spitfire\validation\ValidationError
-	 * @throws PrivateException If the rule returns unexpected data.
+	 * @throws \privateException If the rule returns unexpected data.
 	 */
 	protected function testRule(ValidationRule$rule, $value) {
 		$result = $rule->test($value);

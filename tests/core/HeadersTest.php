@@ -1,8 +1,9 @@
 <?php namespace tests\spitfire\core;
 
 use spitfire\core\Headers;
+use PHPUnit\Framework\TestCase;
 
-class HeadersTest extends \PHPUnit_Framework_TestCase
+class HeadersTest extends TestCase
 {
 	
 	public function testContentType() {

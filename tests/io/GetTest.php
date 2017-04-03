@@ -1,6 +1,8 @@
 <?php namespace tests\spitfire\io;
 
-class GetTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class GetTest extends TestCase
 {
 	
 	/**
