@@ -1,5 +1,8 @@
 <?php
 
+use spitfire\exceptions\PrivateException;
+use spitfire\locale\EmptyLocale;
+
 class Time
 {
 	
@@ -12,8 +15,10 @@ class Time
 	 */
 	public static function relative($time, $to = null) {
 		$to = ($to === null)? time() : $to;
-		$lang = _t()->getDefault();
 		$diff = $to - $time;
+		
+		try                          { $lang = _t()->domain('spitfire.time'); } 
+		catch (PrivateException $ex) { $lang = new EmptyLocale(); }
 		
 		if ($diff > 0) {
 			if (1 < $ret = (int)($diff / (3600*24*365))) { return $lang->say('%s years ago', $ret); }
