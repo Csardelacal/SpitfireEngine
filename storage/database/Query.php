@@ -203,8 +203,10 @@ abstract class Query extends RestrictionGroup
 	 */
 	public function count() {
 		if (!$this->groupby) {
-			$query = $this->query(Array('count(*)'), true)->fetchArray();
-			$count = $query['count(*)'];
+			//This is a temporary fix that will only count distinct values in complex
+			//queries.
+			$query = $this->query(Array('COUNT(DISTINCT ' . implode(', ', $this->table->getTable()->getPrimaryKey() ) . ')'), true)->fetchArray();
+			$count = reset($query);
 			return $this->count = (int)$count;
 		}
 		elseif(count($this->groupby) === 1) {
