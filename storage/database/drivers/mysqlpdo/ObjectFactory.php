@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\environment;
+use BadMethodCallException;
+use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
 use spitfire\storage\database\DB;
@@ -61,15 +62,15 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * build with a proper definition yourself.
 	 * 
 	 * @todo  At the time of writing this, the method does not use adequate types.
-	 * @param type $tablename
+	 * @param type $modelname
 	 * @return Schema
 	 */
-	public function getOTFModel($tablename) {
+	public function getOTFModel($modelname) {
 		#Create a Schema we can feed the data into.
-		$schema  = new Schema($tablename);
+		$schema  = new Schema($modelname);
 		
 		#Make the SQL required to read in the data
-		$sql    = sprintf('DESCRIBE `%s%s`', environment::get('db_table_prefix'), $tablename);
+		$sql    = sprintf('DESCRIBE `%s%s`', $schema->getTableName(), $modelname);
 		$fields = $this->execute($sql, false);
 		
 		while ($row = $fields->fetch()) { 
@@ -140,7 +141,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	}
 	
 	public function __call($name, $args) {
-		throw new \BadMethodCallException();
+		throw new BadMethodCallException();
 	}
 
 }

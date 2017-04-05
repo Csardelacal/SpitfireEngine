@@ -2,6 +2,8 @@
 
 use filePermissionsException;
 use spitfire\exceptions\PrivateException;
+use spitfire\storage\drive\Directory;
+use Strings;
 
 /**
  * This class merges the file Uploads coming from a client into the POST array,
@@ -28,7 +30,18 @@ class Upload
 	 * @var mixed[]
 	 */
 	private $meta;
+	
+	/** 
+	 * @var string|null Contains filename if store() was called, null otherwise 
+	 */
 	private $stored;
+	
+	/** 
+	 * Upload directory path (without trailing slash). This can be changed by 
+	 * invoking setUploadDirectory()
+	 * 
+	 * @var string 
+	 */
 	private $uploadDir;
 	
 	public function __construct($meta) {
@@ -36,28 +49,78 @@ class Upload
 		$this->uploadDir = 'bin/usr/uploads';
 	}
 	
+	public function isOk() {
+		
+		#First, we check whether the uploaded data was nested.
+		if (is_array($this->meta['name'])) {
+			throw new PrivateException('Is an upload array');
+		}
+		
+		#If the sent data does not contain a file name the data transmitted was
+		#not proper or not properly formatted
+		if (empty($this->meta['name'])) {
+			throw new PrivateException('Nothing uploaded');
+		}
+		
+		#If the value in error is anything but 0, it will mean that PHP reported
+		#an error. Whatever that value is, it's not acceptable.
+		if ($this->meta['error'] > 0) {
+			throw new PrivateException('Upload error');
+		}
+		
+		return true;
+	}
+	
 	public function store() {
-		if (is_array($this->meta['name'])) throw new PrivateException('Is an upload array');
-		
-		if (empty($this->meta['name'])) throw new PrivateException('Nothing uploaded');
-		if ($this->meta['error'] > 0  ) throw new PrivateException('Upload error');
-		if ($this->stored) return $this->stored;
-		
-		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true)) {
-			throw new filePermissionsException('Upload directory does not exist and could not be created');
+		#If the data was already stored (this may happen in certain events where a
+		#store function is called several times) return the location of the file.
+		if ($this->stored) {
+			return $this->stored;
 		}
 		
-		if (!is_writable($this->uploadDir)) {
-			throw new filePermissionsException('Upload directory is not writable');
+		#Check if the uploaded file is ok
+		$this->isOk();
+		
+		#Create the directory to write to
+		$dir = new Directory($this->uploadDir);
+		
+		#Ensure the directory exists and is writable.
+		if (!$dir->exists())     { $dir->create(); }
+		if (!$dir->isWritable()) { throw new filePermissionsException('Upload directory is not writable'); }
+		
+		#Assemble the different components of the filename. This will be necessary 
+		#to tell the system where to write the data to
+		$time     = base_convert(time(), 10, 32);
+		$rand     = base_convert(rand(), 10, 32);
+		$filename = Strings::slug(pathinfo($this->meta['name'], PATHINFO_FILENAME));
+		$extension= pathinfo($this->meta['name'], PATHINFO_EXTENSION);
+		
+		$path = $this->uploadDir . '/' . $time . '_' . $rand . '_' . $filename . '.' . $extension;
+		
+		#Move the file and return the path.
+		move_uploaded_file($this->meta['tmp_name'], $path);
+		return $this->stored = $path;
+	}
+
+	/**
+	 * This function should be called before storing any uploaded file
+	 *
+	 * @param string $expect The string corresponting to the type we want to check against
+	 *
+	 * @return self
+	 */
+	public function validate($expect = 'image'){
+		switch ($expect){
+			case "image":
+				$info = getimagesize($_FILES['file']['tmp_name']);
+				if ($info === FALSE)
+					throw new UploadValidationException('The uploaded file does not appear to be an image', 1703312326);
+				if (!in_array($info[2],[IMAGETYPE_GIF,IMAGETYPE_JPEG,IMAGETYPE_PNG]))
+					throw new UploadValidationException('The uploaded file does not match any supported file type', 1703312327);
+			break;
 		}
-		
-		$filename = $this->uploadDir . '/' . 
-			base_convert(time(), 10, 32) . '_' . base_convert(rand(), 10, 32) . '_' . 
-			\Strings::slug(pathinfo($this->meta['name'], PATHINFO_FILENAME)) . '.' .
-			pathinfo($this->meta['name'], PATHINFO_EXTENSION);
-		
-		move_uploaded_file($this->meta['tmp_name'], $filename);
-		return $this->stored = $filename;
+
+		return $this;
 	}
 	
 	public function getData() {

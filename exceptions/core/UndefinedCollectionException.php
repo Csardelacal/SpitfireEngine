@@ -1,9 +1,11 @@
-<?php namespace tests\spitfire\core\http;
+<?php namespace spitfire\exceptions\core;
+
+use Exception;
 
 /* 
  * The MIT License
  *
- * Copyright 2016 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +26,14 @@
  * THE SOFTWARE.
  */
 
-use PHPUnit\Framework\TestCase;
-
-class LanguageAcceptParserTest extends TestCase
+/**
+ * This exception is thrown when the user tries to cast an exception to array 
+ * but the collection does not provide a defined scope.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
+class UndefinedCollectionException extends Exception
 {
 	
-	/**
-	 * 
-	 * @covers \spitfire\core\http\LanguageAcceptParser::parse()
-	 * @covers \spitfire\core\http\LanguageAccept::validateFormat()
-	 * @covers \spitfire\core\http\LanguageAccept::makeLocales()
-	 * @covers \spitfire\core\http\LanguageAccept::makePriority()
-	 */
-	public function testParser() {
-		$parser = new \spitfire\core\http\LanguageAcceptParser('ru', 'da, en-gb;q=0.8, en;q=0.7');
-		$res    = $parser->parse();
-		
-		$this->assertEquals('da', reset($res)->getLanguage());
-		$this->assertEquals('ru', end($res)->getLanguage());
-		
-		$this->assertEquals('gb', $res[1]->getLocale());
-	}
 }
+

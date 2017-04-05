@@ -9,7 +9,7 @@ class FileField extends BasicField implements RenderableFieldFile
 	public function getRequestValue() {
 		$file = parent::getRequestValue();
 		
-		if ($file instanceof \spitfire\io\Upload) return $file->store();
+		if ($file instanceof \spitfire\io\Upload) return $file->validate()->store();
 		else throw new PrivateException('Not an upload');
 	}
 	

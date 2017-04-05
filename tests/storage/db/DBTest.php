@@ -1,8 +1,8 @@
 <?php namespace tests\spitfire\storage\db;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class DBTest extends PHPUnit_Framework_TestCase
+class DBTest extends TestCase
 {
 	
 	public function testdb() {

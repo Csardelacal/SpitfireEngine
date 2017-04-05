@@ -1,9 +1,9 @@
 <?php namespace tests\spitfire\io;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use spitfire\io\CharsetEncoder;
 
-class CharsetEncoderTest extends PHPUnit_Framework_TestCase
+class CharsetEncoderTest extends TestCase
 {
 	
 	public function testEncoder() {

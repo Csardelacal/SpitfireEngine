@@ -5,10 +5,11 @@
  * check that rewriting basic strings and Objects will work properly.
  */
 
+use PHPUnit\Framework\TestCase;
 use spitfire\core\router\Route;
 use spitfire\core\router\Router;
 
-class RouterTest extends \PHPUnit_Framework_TestCase
+class RouterTest extends TestCase
 {
 	
 	private $router;
