@@ -66,11 +66,11 @@ interface ObjectFactoryInterface
 	 * database that was not modeled after Spitfire's models or that was not 
 	 * reverse engineered previously.
 	 *
-	 * @param string $tablename
+	 * @param string $modelname
 	 * 
 	 * @return Table Instance of the table class the driver wants the system to use
 	 */
-	function getOTFModel($tablename);
+	function getOTFModel($modelname);
 	
 	/**
 	 * Creates an instance of the Database field compatible with the current

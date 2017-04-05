@@ -68,13 +68,18 @@ class Strings
 		else                                     return $string;
 	}
 	
+	
 	public static function strToHTML($str) {
+		$urlRegex = '/(http|https):\/\/([a-zA-z0-9\%\&\?\/\.\-_\=\+\;]+)/';
 		
-		return preg_replace_callback('/(http|https):\/\/([a-zA-z0-9\%\&\?\/\.\-_\=]+)/', function($e) {
+		#Isolate URL with spaces. We add a space after, and before a URL to prevent bogus
+		$isolated = preg_replace($urlRegex, ' $1://$2 ', $str);
+		
+		return preg_replace_callback($urlRegex, function($e) {
 			$url = $e[0];
 			$pretty = (strlen($e[2]) > 27)? substr($e[2], 0, 15) . '...' . substr($e[2], -10): $e[2];
 			return sprintf('<a href="%s">%s</a>', $url, $pretty);
-		},$str);
+		}, htmlentities($isolated));
 	}
 	
 	/**
