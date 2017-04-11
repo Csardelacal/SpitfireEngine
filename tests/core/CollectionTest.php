@@ -1,4 +1,4 @@
-<?php namespace tests\core;
+<?php namespace tests\spitfire\core;
 
 use BadMethodCallException;
 use \PHPUnit\Framework\TestCase;
@@ -39,6 +39,13 @@ class CollectionTest extends TestCase
 		$this->assertEquals($result, 3, 'The average value of 2 and 4 is expected to be 3');
 	}
 	
+	public function testExtract() {
+		$collection = new Collection([['a' => 1, 'b' => 2], ['a' => 'c', 'b' => 4]]);
+		$result     = $collection->extract('b')->avg();
+		
+		$this->assertEquals($result, 3, 'The average value of 2 and 4 is expected to be 3');
+	}
+	
 	/**
 	 * Tests whether the filtering algorithm of a collection works properly.
 	 */
@@ -49,5 +56,6 @@ class CollectionTest extends TestCase
 		$this->assertEquals(3, $collection->filter()->count());
 		$this->assertEquals(1, $collection->filter(function ($e) { return $e === 1; })->pluck());
 	}
+	
 	
 }

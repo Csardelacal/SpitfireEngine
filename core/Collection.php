@@ -2,6 +2,7 @@
 
 use ArrayAccess;
 use BadMethodCallException;
+use spitfire\exceptions\OutOfBoundsException;
 use spitfire\exceptions\OutOfRangeException;
 
 /**
@@ -104,6 +105,19 @@ class Collection implements ArrayAccess, CollectionInterface
 		if (!$this->containsOnly('number')) { throw new BadMethodCallException('Collection does contain non-numeric types'); }
 		
 		return array_sum($this->arr) / $this->count();
+	}
+	
+	/**
+	 * 
+	 * @param type $key
+	 */
+	public function extract($key) {
+		return new Collection(array_map(function ($e) use ($key) {
+			if (is_array($e))  { return isset($e[$key])? $e[$key] : null; }
+			if (is_object($e)) { return isset($e->$key)? $e->$key : null; }
+			
+			throw new OutOfBoundsException('Collection::extract requires array to contain only arrays and objects');
+		}, $this->arr));
 	}
 	
 	public function current() {
