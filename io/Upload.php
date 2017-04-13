@@ -2,6 +2,7 @@
 
 use filePermissionsException;
 use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\UploadValidationException;
 use spitfire\storage\drive\Directory;
 use Strings;
 
@@ -105,14 +106,17 @@ class Upload
 	/**
 	 * This function should be called before storing any uploaded file
 	 *
+	 * @throws UploadValidationException
+	 *
 	 * @param string $expect The string corresponting to the type we want to check against
+	 * @param string $fkey   The string key for the file in $_FILES
 	 *
 	 * @return self
 	 */
-	public function validate($expect = 'image'){
+	public function validate($expect = 'image', $fkey = 'file'){
 		switch ($expect){
 			case "image":
-				$info = getimagesize($_FILES['file']['tmp_name']);
+				$info = getimagesize($_FILES[$fkey]['tmp_name']);
 				if ($info === FALSE)
 					throw new UploadValidationException('The uploaded file does not appear to be an image', 1703312326);
 				if (!in_array($info[2],[IMAGETYPE_GIF,IMAGETYPE_JPEG,IMAGETYPE_PNG]))

@@ -16,7 +16,7 @@ abstract class Query extends RestrictionGroup
 	 * result element and loop over that.
 	 * 
 	 * @todo This should be removed in favor of an actual collector for the results
-	 * @var spitfire\storage\database\ResultSetInterface|null
+	 * @var \spitfire\storage\database\ResultSetInterface|null
 	 */
 	protected $result;
 	

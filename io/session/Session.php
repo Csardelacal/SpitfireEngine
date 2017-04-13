@@ -58,7 +58,7 @@ class Session
 		/* @var $app App */
 		$namespace = ($app->getNameSpace())? $app->getNameSpace() : '*';
 
-		if (!$this->get_session_id()) { $this->start(); }
+		if (!self::sessionId()) { $this->start(); }
 		$_SESSION[$namespace][$key] = $value;
 
 	}
@@ -68,7 +68,7 @@ class Session
 		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
 
 		if (!isset($_COOKIE[session_name()])) { return null; }
-		if (!Session::sessionId()) { $this->start(); }
+		if (!self::sessionId()) { $this->start(); }
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
 
 	}
@@ -105,7 +105,7 @@ class Session
 	}
 
 	public function start() {
-		if ($this->get_session_id()) { return; }
+		if (self::sessionId()) { return; }
 		$this->handler->attach();
 		session_start();
 		
@@ -117,7 +117,7 @@ class Session
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
-		setcookie(session_name(), Session::sessionId(), time() + $lifetime, '/');
+		setcookie(session_name(), self::sessionId(), time() + $lifetime, '/');
 	}
 
 	public function destroy() {

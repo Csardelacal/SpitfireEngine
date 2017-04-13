@@ -27,7 +27,7 @@ class Time
 			if (1 < $ret = (int)($diff / (3600*24)))     { return $lang->say('%s days ago', $ret); }
 			if (1 < $ret = (int)($diff / (3600)))        { return $lang->say('%s hours ago', $ret); }
 			if (1 < $ret = (int)($diff / (60)))          { return $lang->say('%s minutes ago', $ret); }
-			return $lang->say('%s seconds ago', $diff); 
+            return $lang->say('%s seconds ago', $diff);
 		}
 	}
 	

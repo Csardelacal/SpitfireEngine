@@ -1,6 +1,6 @@
 <?php namespace spitfire\core;
 
-use App;
+use \spitfire\App;
 use Controller;
 use publicException;
 use spitfire\cache\MemcachedAdapter;
