@@ -18,7 +18,7 @@ abstract class DBField
 	 * Contains a reference to the logical field that contains information
 	 * relevant to this field.
 	 * 
-	 * @var spitfire\model\Field 
+	 * @var \spitfire\model\Field
 	 */
 	private $logical;
 	
@@ -37,7 +37,7 @@ abstract class DBField
 	 * and generating links on the DBMS that allow the engine to optimize
 	 * queries that Spitfire generates.
 	 * 
-	 * @var spitfire\storage\database\DBField 
+	 * @var \spitfire\storage\database\DBField
 	 */
 	private $referenced;
 	

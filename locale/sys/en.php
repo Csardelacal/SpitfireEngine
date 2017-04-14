@@ -7,8 +7,9 @@ class En extends Locale
 	
 	public $comment_count   = Array('No comments', 'One comment', '%s comments');
 	
-	public $select_pick     = 'Pick'; 
-	
+	public $select_default  = 'Select';
+	public $select_pick     = 'Pick';
+
 	public $secondsago      = Array('Right now', 'One second ago', '%s seconds ago');
 	public $minutesago      = Array('Less than a minute ago', 'One minute ago', '%s minutes ago');
 	public $hoursago        = Array('Less than an hour ago', 'One hour ago', '%s hours ago');
@@ -21,4 +22,25 @@ class En extends Locale
 	public $str_too_short   = Array('', 'String should be longer than one character', 'String should be longer than %s characters');
 	public $err_not_numeric = Array('Requires a numeric value');
 	public $err_field_null  = Array('Field cannot be null');
+
+	public function say($string, $amt = null){
+		return sprintf($string, $amt);
+	}
+
+	/**
+	 * @param string $msgid
+	 *
+	 * @return string|null
+	 */
+	public function getMessage($msgid){
+		return isset($this->{$msgid}) && is_string($this->{$msgid}) ? $this->{$msgid} : null;
+	}
+
+	public function getCurrency() {
+		return '$';
+	}
+
+	public function getDateFormatter(){
+		return new DateFormatter();
+	}
 }

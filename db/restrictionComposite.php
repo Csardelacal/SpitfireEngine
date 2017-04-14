@@ -9,7 +9,7 @@ class CompositeRestriction
 	 * The parent query for this restriction. This provides information about
 	 * how it's table is currently aliased and what fields this table can provide.
 	 *
-	 * @var spitfire\storage\database\Query
+	 * @var \spitfire\storage\database\Query
 	 */
 	private $query;
 	private $field;

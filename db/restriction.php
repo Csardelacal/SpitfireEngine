@@ -2,10 +2,13 @@
 
 use spitfire\Model;
 use spitfire\exceptions\PrivateException;
+use spitfire\model\Field;
 
 abstract class Restriction
 {
+	/** @var Query */
 	private $query;
+	/** @var Field */
 	private $field;
 	private $value;
 	private $operator;
@@ -63,7 +66,7 @@ abstract class Restriction
 	
 	/**
 	 * 
-	 * @param type $query
+	 * @param Query $query
 	 * @deprecated since version 0.1-dev 1604162323
 	 */
 	public function setQuery($query) {

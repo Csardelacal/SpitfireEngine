@@ -150,7 +150,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	 * 
 	 * @param model\Field $field
 	 * @param string $caption
-	 * @return spitfire\io\beans\Field
+	 * @return \spitfire\io\beans\Field
 	 */
 	public function field($field, $caption) {
 		$logical = $this->table->getModel()->getField($field);
@@ -204,7 +204,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	/**
 	 * Returns the table using this bean to generate it's forms.
 	 * 
-	 * @return spitfire\storage\database\Table
+	 * @return \spitfire\storage\database\Table
 	 */
 	public function getTable() {
 		return $this->table;
@@ -287,14 +287,15 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	public function readPost() {
 		$this->setPostData($_POST[$this->getName()]);
 	}
-	
+
 	/**
 	 * Returns an instance of a required bean.
-	 * 
-	 * @param type $name The classname of the bean without Bean at the end of
-	 *                   the string.
-	 * 
+	 *
+	 * @param string $name The classname of the bean without Bean at the end of
+	 *                     the string.
+	 *
 	 * @return CoffeeBean
+	 * @throws \spitfire\exceptions\PrivateException
 	 */
 	public static function getBean($name) {
 		#Create a camel cased string for the class

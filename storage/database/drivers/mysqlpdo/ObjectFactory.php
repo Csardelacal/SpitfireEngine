@@ -1,7 +1,6 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use BadMethodCallException;
-use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
 use spitfire\storage\database\DB;
@@ -11,6 +10,8 @@ use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\ObjectFactoryInterface;
+use spitfire\storage\database\Query;
+use spitfire\storage\database\ResultSetInterface;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
@@ -62,8 +63,8 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * build with a proper definition yourself.
 	 * 
 	 * @todo  At the time of writing this, the method does not use adequate types.
-	 * @param type $modelname
-	 * @return Schema
+	 * @param string $modelname
+	 * @return Table
 	 */
 	public function getOTFModel($modelname) {
 		#Create a Schema we can feed the data into.
@@ -71,13 +72,14 @@ class ObjectFactory implements ObjectFactoryInterface
 		
 		#Make the SQL required to read in the data
 		$sql    = sprintf('DESCRIBE `%s%s`', $schema->getTableName(), $modelname);
+		/** @var $fields Query */
 		$fields = $this->execute($sql, false);
 		
 		while ($row = $fields->fetch()) { 
 			$schema->{$row['Field']} = new TextField(); 
 		}
 		
-		return $schema;
+		return $schema->getTable();
 	}
 	
 	/**
@@ -108,29 +110,21 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function getFieldInstance(Field$field, $name, DBField$references = null) {
 		return new mysqlPDOField($field, $name, $references);
 	}
-	
-	/**
-	 * Makes a new query on a certain table. 
-	 * 
-	 * @deprecated since 20161128 - Replacing with new naming convention
-	 * @param Table $table
-	 * @return MysqlPDOQuery
-	 */
-	public function getQueryInstance($table) {
-		return new MysqlPDOQuery($table);
-	}
 
 	public function restrictionInstance($query, DBField$field, $value, $operator = null) {
 		return new MysqlPDORestriction($query,	$field, $value, $operator);
 	}
-	
+
 	/**
-	 * Makes a new query on a certain table. 
-	 * 
+	 * Makes a new query on a certain table.
+	 *
 	 * @param Table $table
+	 *
 	 * @return MysqlPDOQuery
+	 * @throws PrivateException
 	 */
 	public function queryInstance($table) {
+		if ($table instanceof Collection){ $table = $table->getTable(); }
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
 		return new MysqlPDOQuery($table);
@@ -143,5 +137,4 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function __call($name, $args) {
 		throw new BadMethodCallException();
 	}
-
 }

@@ -1,8 +1,9 @@
 <?php namespace spitfire\storage\database;
 
-use Model;
 use Exception;
-use \spitfire\model\Field;
+use spitfire\exceptions\PrivateException;
+use spitfire\Model;
+use spitfire\model\Field;
 
 abstract class Query extends RestrictionGroup
 {
@@ -16,7 +17,7 @@ abstract class Query extends RestrictionGroup
 	 * result element and loop over that.
 	 * 
 	 * @todo This should be removed in favor of an actual collector for the results
-	 * @var spitfire\storage\database\ResultSetInterface|null
+	 * @var \spitfire\storage\database\ResultSetInterface|null
 	 */
 	protected $result;
 	
@@ -25,7 +26,7 @@ abstract class Query extends RestrictionGroup
 	 * a QueryTable object to ensure that the table can refer back to the query
 	 * when needed.
 	 * 
-	 * @var \spitfire\storage\database\QueryTable  
+	 * @var QueryTable
 	 */
 	protected $table;
 	
@@ -41,7 +42,7 @@ abstract class Query extends RestrictionGroup
 	 */
 	private $count = null;
 
-
+	/** @param Table $table */
 	public function __construct($table) {
 		$this->table = $this->queryTableInstance($table);
 		
@@ -104,19 +105,22 @@ abstract class Query extends RestrictionGroup
 	 * Since a query is the top Level of any group we can no longer climb up the 
 	 * ladder.
 	 * 
-	 * @throws \spitfire\exceptions\PrivateException
+	 * @throws PrivateException
 	 */
 	public function endGroup() {
-		throw new \spitfire\exceptions\PrivateException('Called endGroup on a query', 1604031547);
+		throw new PrivateException('Called endGroup on a query', 1604031547);
 	}
 	
 	public function getQuery() {
 		return $this;
 	}
-	
+
 	/**
 	 * Sets the ammount of results returned by the query.
+	 *
 	 * @param int $amt
+	 *
+	 * @return self
 	 */
 	public function setResultsPerPage($amt) {
 		$this->rpp = $amt;
@@ -171,9 +175,14 @@ abstract class Query extends RestrictionGroup
 		if (!$this->result) { $this->query(); }
 		
 		$data = $this->result->fetch();
-		return  $data;
+		return $data;
 	}
-	
+
+	/**
+	 * Returns a record from a databse that matches the query we sent.
+	 *
+	 * @return Model[]
+	 */
 	public function fetchAll() {
 		if (!$this->result) { $this->query(); }
 		return $this->result->fetchAll();
@@ -339,7 +348,7 @@ abstract class Query extends RestrictionGroup
 	 * the query) and when "ending the group" which basically returns the call flow
 	 * over to the query.
 	 * 
-	 * @return spitfire\storage\database\RestrictionGroup
+	 * @return \spitfire\storage\database\RestrictionGroup
 	 */
 	public abstract function restrictionGroupInstance($parent);
 	public abstract function queryFieldInstance($field);

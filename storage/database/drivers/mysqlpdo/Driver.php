@@ -73,7 +73,7 @@ class Driver extends DB
 	 * @param boolean $attemptrepair Defines whether the server should try
 	 *                    to repair any model inconsistencies the server 
 	 *                    encounters.
-	 * @return PDOStatement
+	 * @return \PDOStatement
 	 * @throws PrivateException In case the query fails for another reason
 	 *                     than the ones the system manages to fix.
 	 */

@@ -9,9 +9,11 @@ class Time
 	/**
 	 * 
 	 * @fixme lang() died and is no longer usable.
-	 * @param type $time
-	 * @param type $to
-	 * @return type
+	 *
+	 * @param int      $time
+	 * @param int|null $to
+	 *
+	 * @return string
 	 */
 	public static function relative($time, $to = null) {
 		$to = ($to === null)? time() : $to;
@@ -27,7 +29,7 @@ class Time
 			if (1 < $ret = (int)($diff / (3600*24)))     { return $lang->say('%s days ago', $ret); }
 			if (1 < $ret = (int)($diff / (3600)))        { return $lang->say('%s hours ago', $ret); }
 			if (1 < $ret = (int)($diff / (60)))          { return $lang->say('%s minutes ago', $ret); }
-			return $lang->say('%s seconds ago', $diff); 
+            return $lang->say('%s seconds ago', $diff);
 		}
 	}
 	

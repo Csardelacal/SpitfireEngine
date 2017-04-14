@@ -39,17 +39,19 @@ abstract class RestrictionGroup
 	public function setRestrictions($restrictions) {
 		$this->restrictions = $restrictions;
 	}
-	
+
 	/**
 	 * Adds a restriction to the current query. Restraining the data a field
 	 * in it can contain.
-	 * 
+	 *
 	 * @todo This method does not accept logical fields as parameters
-	 * @see http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
+	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
+	 *
 	 * @param string $fieldname
 	 * @param mixed  $value
 	 * @param string $operator
-	 * @return spitfire\storage\database\RestrictionGroup
+	 * @return RestrictionGroup
+	 * @throws \spitfire\exceptions\PrivateException
 	 */
 	public function addRestriction($fieldname, $value, $operator = '=') {
 		
@@ -102,8 +104,7 @@ abstract class RestrictionGroup
 	}
 	
 	/**
-	 * 
-	 * @param type $type
+	 * @param string $type
 	 * @return RestrictionGroup
 	 */
 	public function group($type = self::TYPE_OR) {

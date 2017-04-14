@@ -112,9 +112,9 @@ abstract class DB
 	 * querying and data-manipulation..
 	 * 
 	 * @param string|Schema $tablename Name of the table that should be used.
-	 *                 If you pass a model to this function it will automatically
-	 *                 read the name from the model and use it to find the 
-	 *                 table.
+	 *                                 If you pass a model to this function it will automatically
+	 *                                 read the name from the model and use it to find the
+	 *                                 table.
 	 * 
 	 * @throws PrivateException If the table could not be found
 	 * @return Collection The database table adapter
@@ -142,11 +142,11 @@ abstract class DB
 		catch (PrivateException$e) { /*Silently fail. The singular of this table may not exist either*/}
 		
 		#Get the OTF model
-		try {	return $this->tableCache->set($tablename, $this->getTableInstance($this, $this->getObjectFactory()->getOTFModel($tablename))); }
+		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFModel($tablename)); }
 		catch (PrivateException$e) { /*Silent failure again*/}
 		
 		#If all our ressources have come to an end... Halt it.
-		throw new PrivateException('No table ' . $tablename . ' found');
+		throw new PrivateException("No table $tablename found");
 		
 	}
 	
@@ -188,8 +188,8 @@ abstract class DB
 	/**
 	 * Allows short-hand access to tables by using: $db->tablename
 	 * 
-	 * @param String $table Name of the table
-	 * @return Table|MVC
+	 * @param string $table Name of the table
+	 * @return Collection
 	 */
 	public function __get($table) {
 		#Otherwise we try to get the table with this name

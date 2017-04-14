@@ -30,7 +30,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * callback to each of them. The value your function returns if placed in the
 	 * array.
 	 * 
-	 * @param type $callable
+	 * @param callable|array $callable
 	 * @return Collection
 	 * @throws BadMethodCallException
 	 */

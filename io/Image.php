@@ -97,6 +97,11 @@ class Image
 			$offset_y = ($this->meta[1] - $height * $ratio) / 2;
 			$offset_x = 0;
 		}
+
+		if ($offset_x == 0 && $offset_y == 0){
+			$width = min($this->meta[0], $width);
+			$height = min($this->meta[1], $height);
+		}
 		
 		$img = imagecreatetruecolor($width, $height);
 		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));

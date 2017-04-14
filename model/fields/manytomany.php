@@ -1,5 +1,6 @@
 <?php
 
+use spitfire\storage\database\DBField;
 use spitfire\storage\database\Schema;
 use spitfire\model\Field;
 use spitfire\Model;
@@ -7,21 +8,21 @@ use spitfire\model\adapters\ManyToManyAdapter;
 
 class ManyToManyField extends ChildrenField
 {
-	
+
+	/** @var Schema */
 	private $meta;
-	private $target;
 	
 	public function __construct($model) {
-		$this->target = $model;
+		parent::__construct($model, null);
 	}
 	
 	public function getRole() {
 		return parent::getModel()->getName();
 	}
 
+	/** @return Schema */
 	public function getTarget() {
-		
-		if($this->meta) { return $this->target; } //$this->meta;
+		if ($this->meta) { return $this->target; }
 		
 		$src    = $this->getModel()->getName();
 		$target = $this->target;
@@ -46,14 +47,18 @@ class ManyToManyField extends ChildrenField
 			#Register the table
 			$this->getModel()->getTable()->getDb()->table($model);
 		} else {
-			$this->meta = $this->getTable()->getDb()->table("{$first}_{$second}")->getTable()->getModel();
+			$this->meta = $this->getTable()->getDb()->table("{$first}_{$second}")->getTable()->getSchema();
 		}
 		
 		#Return the remote model
-		$this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getModel();
+		$this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getSchema();
 		return $this->target;
 	}
-	
+
+	/**
+	 * @param Schema $schema
+	 * @return DBField
+	 */
 	public function getModelField($schema) {
 		return $this->meta->getField($schema->getName());
 	}
@@ -62,7 +67,7 @@ class ManyToManyField extends ChildrenField
 	 * Returns the table that connects the two tables to form a many to many 
 	 * relationship
 	 * 
-	 * @return spitfire\storage\database\Table
+	 * @return Schema
 	 */
 	public function getBridge() {
 		if ($this->meta) { return $this->meta; }
@@ -81,13 +86,13 @@ class ManyToManyField extends ChildrenField
 	
 	public function getConnectorQueries(spitfire\storage\database\Query$parent) {
 		$table = $this->getTarget()->getTable();
-		$query = $table->getDb()->getObjectFactory()->getQueryInstance($table);
+		$query = $table->getDb()->getObjectFactory()->queryInstance($table);
 		$query->setAliased(true);
 		
 		if ($this->target !== $this->getModel()) {
 			#In case the models are different we just return the connectors via a simple route.
 			$bridge = $this->getBridge()->getTable();
-			$route  = $bridge->getDb()->getObjectFactory()->getQueryInstance($bridge);
+			$route  = $bridge->getDb()->getObjectFactory()->queryInstance($bridge);
 			$fields = $this->getBridge()->getFields();
 			$route->setAliased(true);
 			

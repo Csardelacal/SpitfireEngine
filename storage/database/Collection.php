@@ -23,6 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+use spitfire\exceptions\PrivateException;
+use spitfire\Model;
 
 /**
  * When we think about a table in a common DBMS we think of the combination of
@@ -35,7 +37,7 @@
  * @todo Collections should also provide a proper caching mechanism
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-abstract class Collection extends Queriable
+abstract class Collection
 {
 	
 	/**
@@ -73,12 +75,14 @@ abstract class Collection extends Queriable
 	public function getDb() {
 		return $this->table->getDb();
 	}
-	
+
 	/**
 	 * Returns the bean this model uses to generate Forms to feed itself with data
 	 * the returned value normally is a class that inherits from CoffeeBean.
-	 * 
-	 * @return CoffeeBean
+	 *
+	 * @param string|null $name
+	 *
+	 * @return \CoffeeBean
 	 */
 	public function getBean($name = null) {
 		
@@ -89,13 +93,15 @@ abstract class Collection extends Queriable
 		
 		return $bean;
 	}
-	
+
 	/**
 	 * Creates a new record in this table
-	 * 
+	 *
+	 * @param array $data
+	 *
 	 * @return Model Record for the selected table
 	 */
-	public function newRecord($data = Array()) {
+	public function newRecord($data = []) {
 		$classname = $this->table->getModel()->getName() . 'Model';
 		
 		if (class_exists($classname)) { return new $classname($this->getTable(), $data); }
@@ -106,26 +112,58 @@ abstract class Collection extends Queriable
 	 * Increments a value on high read/write environments. Using update can
 	 * cause data to be corrupted. Increment requires the data to be in sync
 	 * aka. stored to database.
-	 * 
-	 * @param string $key
+	 *
+	 * @param Model     $record
+	 * @param string    $key
 	 * @param int|float $diff
+	 *
 	 * @throws PrivateException
 	 */
-	public abstract function increment(\spitfire\Model$record, $key, $diff = 1);
-	
-	
-	public abstract function delete(\spitfire\Model$record);
-	public abstract function insert(\spitfire\Model$record);
-	public abstract function update(\spitfire\Model$record);
-	
+	public abstract function increment(Model$record, $key, $diff = 1);
+
 	/**
-	 * While development is ongoing, we will try to recover from errors due to the 
-	 * separation between Tables and Collections by sending all calls that were 
+	 * Creates a simple query with a simple restriction applied to it. This
+	 * is especially useful for id related queries.
+	 *
+	 * @param string      $field
+	 * @param string      $value
+	 * @param string|null $operator
+	 * @return Query
+	 */
+	public function get($field, $value, $operator = null) {
+		#Create the query
+		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this);
+		$query->addRestriction($field, $value, $operator);
+		#Return it
+		return $query;
+	}
+
+	/**
+	 * Creates an empty query that would return all data. This is a syntax
+	 * friendliness oriented method as it does exactly the same as startQuery
+	 *
+	 * @return Query
+	 */
+	public function getAll() {
+		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this);
+		return $query;
+	}
+
+	public abstract function delete(Model$record);
+	public abstract function insert(Model$record);
+	public abstract function update(Model$record);
+
+	/**
+	 * While development is ongoing, we will try to recover from errors due to the
+	 * separation between Tables and Collections by sending all calls that were
 	 * intended for a table to the table itself
-	 * 
+	 *
 	 * @todo Remove
+	 *
 	 * @param string $name
-	 * @param mixed $arguments
+	 * @param mixed  $arguments
+	 *
+	 * @return mixed
 	 */
 	public function __call($name, $arguments) {
 		#Pass on

@@ -27,7 +27,7 @@ abstract class Table
 	 * one of the key components to Spitfire's ORM as it allows the DB engine to 
 	 * create the tables automatically and to discover the data relations.
 	 *
-	 * @var Schema 
+	 * @var Schema
 	 */
 	protected $schema;
 	
@@ -75,11 +75,13 @@ abstract class Table
 	protected $autoIncrement;
 
 	/**
-	 * Creates a new Database Table instance. The tablename will be used to find 
+	 * Creates a new Database Table instance. The tablename will be used to find
 	 * the right model for the table and will be stored prefixed to this object.
-	 * 
-	 * @param DB $db
+	 *
+	 * @param DB            $db
 	 * @param string|Schema $schema
+	 *
+	 * @throws PrivateException
 	 */
 	public function __construct(DB$db, $schema) {
 		$this->db = $db;
@@ -157,7 +159,7 @@ abstract class Table
 	 * Get's the table's primary key. This will always return an array
 	 * containing the fields the Primary Key contains.
 	 * 
-	 * @return Array Name of the primary key's column
+	 * @return DBField[] Array containing the primary keys in [ 'name' => {DBField object} ] form
 	 */
 	public function getPrimaryKey() {
 		//Check if we already did this
@@ -186,7 +188,7 @@ abstract class Table
 		
 		 return null;
 	}
-	
+
 	/**
 	 * Looks for a record based on it's primary data. This can be one of the
 	 * following:
@@ -195,12 +197,14 @@ abstract class Table
 	 * <li>A string separated by : to separate those fields (SF POST standard)</li>
 	 * <li>An array with the data</li>
 	 * </ul>
-	 * 
 	 * This function is intended to be used to provide controllers with prebuilt
 	 * models so they don't need to fetch it again.
-	 * 
+	 *
 	 * @todo Move to collection
+	 *
 	 * @param mixed $id
+	 *
+	 * @return \Model
 	 */
 	public function getById($id) {
 		#If the data is a string separate by colons
@@ -209,7 +213,7 @@ abstract class Table
 		#Create a query
 		$table   = $this;
 		$primary = $table->getPrimaryKey();
-		$query   = $table->getDb()->getObjectFactory()->getQueryInstance($this);
+		$query   = $table->getDb()->getObjectFactory()->queryInstance($this);
 		
 		#Add the restrictions
 		while(count($primary))
@@ -224,7 +228,7 @@ abstract class Table
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20160902
-	 * @return \Schema
+	 * @return Schema
 	 */
 	public function getModel() {
 		return $this->schema;
@@ -236,7 +240,7 @@ abstract class Table
 	
 	/**
 	 * 
-	 * @return \Schema
+	 * @return Schema
 	 */
 	public function getSchema() {
 		return $this->schema;
@@ -269,13 +273,15 @@ abstract class Table
 	abstract public function create();
 	abstract public function repair();
 	public abstract function destroy();
-	
+
 	/**
 	 * If the table cannot handle the request it will pass it on to the db
 	 * and add itself to the arguments list.
-	 * 
+	 *
 	 * @param string $name
-	 * @param mixed $arguments
+	 * @param mixed  $arguments
+	 *
+	 * @return mixed
 	 */
 	public function __call($name, $arguments) {
 		#Add the table to the arguments for the db

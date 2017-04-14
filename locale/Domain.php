@@ -28,7 +28,7 @@ class Domain
 {
 	
 	private $name;
-	
+
 	private $locale;
 	
 	private $currency;

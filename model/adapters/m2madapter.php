@@ -4,6 +4,7 @@ use \ManyToManyField;
 use spitfire\Model;
 use \Iterator;
 use \ArrayAccess;
+use spitfire\storage\database\RestrictionGroup;
 
 /**
  * This adapter allows the user to access Many to many relations inside the 
@@ -45,7 +46,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @param ManyToManyField $field
 	 * @param Model $model
-	 * @param type $data - deprecated. Should no longer be used.
+	 * @param void $data - deprecated. Should no longer be used.
 	 */
 	public function __construct(ManyToManyField$field, Model$model, $data = null) {
 		$this->field  = $field;
@@ -75,7 +76,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 			}
 		}
 		
-		return $table->getDB()->getObjectFactory()->getQueryInstance($table)->addRestriction($found->getName(), $this->parent->getQuery());
+		return $table->getDB()->getObjectFactory()->queryInstance($table)->addRestriction($found->getName(), $this->parent->getQuery());
 		
 	}
 	
@@ -85,7 +86,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 
 		#Prepare a query for the records that are connected by this field
 		$bridge = $this->field->getBridge()->getTable();
-		$query  = $bridge->getDB()->getObjectFactory()->getQueryInstance($bridge);
+		$query  = $bridge->getDB()->getObjectFactory()->queryInstance($bridge);
 
 		#We create a group to handle many to many connections that connect to the same model
 		$group = $query->group();
@@ -93,7 +94,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 		#Write the query
 		foreach($bridge_fields as $f) {
 			$pk = $this->parent->getPrimaryData();
-			$sg = $group->group(\spitfire\storage\database\RestrictionGroup::TYPE_AND);
+			$sg = $group->group(RestrictionGroup::TYPE_AND);
 			if ($f->getTarget() === $this->field->getModel()) {
 				foreach($f->getPhysical() as $p) {$sg->addRestriction($p, array_shift($pk));}
 			}

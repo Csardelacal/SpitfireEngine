@@ -1,6 +1,8 @@
 <?php namespace spitfire\model;
 
 use spitfire\Model;
+use spitfire\storage\database\Schema;
+use spitfire\storage\database\Table;
 use spitfire\validation\ValidationError;
 
 /**
@@ -90,7 +92,7 @@ abstract class Field
 	 * Only common exception to this are the Referenced fields, which need to
 	 * generate one field for each remote primary field.
 	 *
-	 * @var spitfire\storage\database\DBField|spitfire\storage\database\DBField[] 
+	 * @var \spitfire\storage\database\DBField|\spitfire\storage\database\DBField[]
 	 */
 	private $physical;
 	
@@ -102,7 +104,7 @@ abstract class Field
 	 * data (due to be being mainly an internal function) there is no validation
 	 * being done for the type of data that is inserted. Be careful!
 	 * 
-	 * @param spitfire\storage\database\DBField|spitfire\storage\database\DBField[] $physical
+	 * @param \spitfire\storage\database\DBField|\spitfire\storage\database\DBField[] $physical
 	 */
 	public function setPhysical($physical) {
 		$this->physical = $physical;
@@ -124,7 +126,7 @@ abstract class Field
 	 * equivalent the return value will be an array, for consistency with fields
 	 * which return several ones.
 	 * 
-	 * @return spitfire\storage\database\DBField[]
+	 * @return \spitfire\storage\database\DBField[]
 	 */
 	public function getPhysical() {
 		if ($this->physical === null) { $this->physical = $this->makePhysical(); }
@@ -143,12 +145,14 @@ abstract class Field
 	public function isAutoIncrement() {
 		return $this->auto_increment;
 	}
-	
+
 	/**
 	 * Defines whether the field is used as autoincrement field. This setting
 	 * will have no effect on any field that is not an integer field.
-	 * 
+	 *
 	 * @param boolean $ai
+	 *
+	 * @return self
 	 */
 	public function setAutoIncrement($ai) {
 		$this->auto_increment = !!$ai;
@@ -193,7 +197,7 @@ abstract class Field
 	 * deliver data about which fields it's a sibling to and which fields
 	 * it refers too.
 	 * 
-	 * @return \Schema
+	 * @return Model
 	 */
 	public function getModel() {
 		return $this->model;
@@ -204,7 +208,7 @@ abstract class Field
 	 * redundant but quickens development and makes it more efficient to
 	 * find the model for the field.
 	 * 
-	 * @param \spitfire\storage\database\Schema $model
+	 * @param Model $model
 	 */
 	public function setModel($model) {
 		$this->model = $model;
@@ -214,7 +218,7 @@ abstract class Field
 	 * Returns the table this field belongs to. This is just a shortcut method 
 	 * provided to allow making logical fields and DBFields compatible.
 	 * 
-	 * @return \spitfire\storage\database\Table
+	 * @return Table
 	 */
 	public function getTable() {
 		return $this->model->getTable();
@@ -235,7 +239,7 @@ abstract class Field
 	 * also automatically set the unique flag to true.
 	 * 
 	 * @param boolean $primary
-	 * @return \spitfire\model\Field
+	 * @return self
 	 */
 	public function setPrimary($primary) {
 		$this->primary = !!$primary;
@@ -263,7 +267,7 @@ abstract class Field
 	 * the speed of database queries.
 	 * 
 	 * @param boolean $unique
-	 * @return \spitfire\model\Field
+	 * @return self
 	 */
 	public function setUnique($unique) {
 		$this->unique = $unique;
@@ -291,9 +295,9 @@ abstract class Field
 	 * to render it
 	 * 
 	 * @param \CoffeeBean $bean
-	 * @param Field $field
-	 * @param string $caption
-	 * @return \spitfire\io\beans\Field|null
+	 * @param Field       $field
+	 * @param string      $caption
+	 * @return Field|null
 	 */
 	public function getBeanField($bean, $field, $caption) {
 		return null;
