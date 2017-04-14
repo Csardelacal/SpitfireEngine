@@ -40,7 +40,7 @@ class Validator implements ValidatorInterface
 	 * Adds a rule to this validator. This way it can test the correctness of 
 	 * data varying on user's preferences.
 	 * 
-	 * @param \spitfire\validation\ValidationRule $rule
+	 * @param ValidationRule $rule
 	 * @return \spitfire\validation\Validator
 	 */
 	public function addRule(ValidationRule$rule) {
@@ -77,7 +77,7 @@ class Validator implements ValidatorInterface
 	 * Returns the list of messages that the validator has generated when testing 
 	 * it's content.
 	 * 
-	 * @return type Description
+	 * @return ValidationError[]
 	 */
 	public function getMessages() {
 		return $this->messages;
@@ -174,12 +174,10 @@ class Validator implements ValidatorInterface
 		$this->addRule($v = new ValidationGroupRule($this));
 		return $v;
 	}
-	
+
 	/**
-	 * Loops through the list of rules this validator has testing if all of them 
+	 * Loops through the list of rules this validator has testing if all of them
 	 * are satisfied by the value.
-	 * 
-	 * @param mixed $value
 	 */
 	private function iterateRules() {
 		$errors = Array();
@@ -192,10 +190,11 @@ class Validator implements ValidatorInterface
 	/**
 	 * Tests a value against a single rule.
 	 * 
-	 * @param \spitfire\validation\ValidationRule $rule
+	 * @param ValidationRule $rule
 	 * @param mixed $value
-	 * @return \spitfire\validation\ValidationError
-	 * @throws \privateException If the rule returns unexpected data.
+	 *
+	 * @return ValidationError
+	 * @throws PrivateException If the rule returns unexpected data.
 	 */
 	protected function testRule(ValidationRule$rule, $value) {
 		$result = $rule->test($value);
@@ -218,7 +217,7 @@ class Validator implements ValidatorInterface
 	 * are not required in most cases.
 	 * 
 	 * @param ValidationError[] $errors
-	 * @return \ValidationException
+	 * @return ValidationException
 	 */
 	public static function makeException($errors) {
 		$ex = new ValidationException('Validation failed', 0, $errors);

@@ -4,6 +4,7 @@ use spitfire\model\Field;
 use spitfire\Model;
 use spitfire\model\adapters\ChildrenAdapter;
 use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\Schema;
 
 /**
  * The children field allows the application to maintain a relationship in the 
@@ -14,9 +15,15 @@ use spitfire\exceptions\PrivateException;
  */
 class ChildrenField extends Field
 {
-	private $role;
-	private $target;
-	
+	/** @var string|null */
+	protected $role;
+	/** @var string|Schema|Model */
+	protected $target;
+
+	/**
+	 * @param string|Schema|Model $target
+	 * @param string              $role
+	 */
 	public function __construct($target, $role) {
 		$this->target = $target;
 		$this->role   = $role;

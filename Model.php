@@ -2,6 +2,8 @@
 
 use Serializable;
 use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\Query;
+use spitfire\storage\database\Restriction;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use spitfire\storage\database\DBField;
@@ -21,7 +23,7 @@ abstract class Model implements Serializable
 	 * around the array that allows to validate data on the go and to alert the 
 	 * programmer about inconsistent types.
 	 * 
-	 * @var spitfire\model\adapters\AdapterInterface[] 
+	 * @var \spitfire\model\adapters\AdapterInterface[]
 	 */
 	private $data;
 	
@@ -55,13 +57,14 @@ abstract class Model implements Serializable
 		$this->makeAdapters();
 		$this->populateAdapters($data);
 	}
-	
+
 	/**
 	 * This method is used to generate the 'template' for the table that allows
 	 * spitfire to automatically generate tables and allows it to check the types
 	 * of data and fix tables.
-	 * 
-	 * @return \spitfire\db\Schema
+	 *
+	 * @param Schema $schema
+	 * @return Schema
 	 * @abstract
 	 */
 	public abstract function definitions(Schema$schema);
@@ -105,7 +108,7 @@ abstract class Model implements Serializable
 	/**
 	 * Returns the fields that compound the primary key of this record.
 	 * 
-	 * @return DBField[]|spitfire\storage\database\DBField[]
+	 * @return DBField[]
 	 */
 	public function getUniqueFields() {
 		return $this->table->getPrimaryKey();
@@ -140,7 +143,8 @@ abstract class Model implements Serializable
 	 */
 	public function getUniqueRestrictions() {
 		$primaries    = $this->table->getPrimaryKey();
-		$query        = $this->table->getQueryInstance();
+		/** @var $query Query */
+		$query        = $this->table->getQuery();
 		$restrictions = Array();
 		$values       = Array();
 		
@@ -171,7 +175,7 @@ abstract class Model implements Serializable
 	/**
 	 * Returns the table this record belongs to.
 	 * 
-	 * @return spitfire\storage\database\Table
+	 * @return \spitfire\storage\database\Table
 	 */
 	public function getTable() {
 		return $this->table;

@@ -27,15 +27,13 @@ class MemoryCache implements CacheInterface
 	}
 	
 	/**
-	 * 
-	 * @param type $key
+	 * @param string $key
 	 */
 	public function delete($key) {
 		unset($this->data[$key]);
 	}
 	
 	/**
-	 * 
 	 * @param string $key
 	 * @param \Closure|null $fallback
 	 * @return mixed

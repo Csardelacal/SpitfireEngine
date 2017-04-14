@@ -61,7 +61,8 @@ class Schema
 	 * requiring you to integrate with any concrete engine but writing code
 	 * that SF will translate.
 	 * 
-	 * @param Table $table
+	 * @param string $name
+	 * @param Table  $table
 	 */
 	public final function __construct($name, Table$table = null) {
 		#Define the Model's table as the one just received
@@ -211,8 +212,8 @@ class Schema
 	 * methods for performance reasons. In this case you can use the field()
 	 * method.
 	 * 
-	 * @param type $name
-	 * @param \spitfire\model\Field $value
+	 * @param string $name
+	 * @param Field  $value
 	 */
 	public function __set($name, $value) {
 		

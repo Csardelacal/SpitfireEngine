@@ -59,7 +59,7 @@ class Pattern
 	 * The pattern to be tested. In case the router is testing for a wildcard this
 	 * will contain the name of the parameter to be return in case of a success.
 	 *
-	 * @var string
+	 * @var null|string|array|\Closure
 	 */
 	private $pattern;
 	
@@ -136,8 +136,8 @@ class Pattern
 	 * return false if the pattern is not optional or the string being tested is 
 	 * not empty.
 	 * 
-	 * @param type $str
-	 * @return type
+	 * @param string $str
+	 * @return array|false
 	 */
 	public function testOptional($str) {
 		if ($this->optional && empty($str)) {
@@ -190,7 +190,7 @@ class Pattern
 	 * * Array's will be searched for a match
 	 * * Strings will be splitted by pipe characters (|) and then searched
 	 * 
-	 * @param type $value
+	 * @param mixed $value
 	 * @return boolean
 	 */
 	public function testPattern($value) {
@@ -202,7 +202,7 @@ class Pattern
 			return empty($this->pattern) || in_array($value, $this->pattern);
 		#If the pattern has been passed as a closure it will execute it and return the value
 		} elseif ($this->pattern instanceof \Closure) {
-			return $this->pattern($value);
+			return ($this->pattern)($value);
 		#Otherwise
 		} else {
 			return in_array($value, explode('|', $this->pattern));
@@ -213,7 +213,7 @@ class Pattern
 	 * Defines the pattern to be used to test. This can be either a string, closure
 	 * or an array.
 	 * 
-	 * @param type $pattern
+	 * @param null|string|array|\Closure $pattern
 	 */
 	public function setPattern($pattern) {
 		$this->pattern = $pattern;

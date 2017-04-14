@@ -75,7 +75,7 @@ class ManyToManyField extends Field implements RenderableFieldSelect, Renderable
 	 * 
 	 * This method returns $this to allow method chaining.
 	 * 
-	 * @return spitfire\io\beans\ChildBean
+	 * @return \spitfire\io\beans\ChildBean
 	 */
 	public function setMinimumEntries($amt) {
 		$this->min_entries = $amt;

@@ -96,13 +96,15 @@ interface ObjectFactoryInterface
 	 * @param string|null $operator
 	 */
 	function restrictionInstance($query, DBField$field, $value, $operator = null);
-	
+
 	/**
 	 * Creates a new query. A query is created with a table to provide information
 	 * where the data should be retrieved some and some information on the fields
 	 * that we want it to provide.
-	 * 
-	 * @param Table $table
+	 *
+	 * @param Table|Collection $table
+	 *
+	 * @return Query
 	 */
 	function queryInstance($table);
 }

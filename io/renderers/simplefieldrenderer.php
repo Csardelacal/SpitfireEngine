@@ -1,11 +1,15 @@
 <?php namespace spitfire\io\renderers;
 
+use spitfire\exceptions\PrivateException;
+use spitfire\io\beans\BasicField;
 use spitfire\io\html\HTMLTextArea;
 use spitfire\io\html\HTMLLabel;
 use spitfire\io\html\HTMLDiv;
 use spitfire\io\html\HTMLInput;
 use spitfire\io\html\HTMLSelect;
 use spitfire\io\html\HTMLOption;
+use spitfire\model\Field;
+use spitfire\validation\ValidationError;
 
 class SimpleFieldRenderer {
 	
@@ -16,22 +20,22 @@ class SimpleFieldRenderer {
 		$array = $field instanceof RenderableFieldArray;
 		$type  = null;
 		
-		if ($field instanceof RenderableFieldDateTime) { $type = 'DateTime'; }
-		if ($field instanceof RenderableFieldDouble)   { $type = 'Double'; }
-		if ($field instanceof RenderableFieldFile)     { $type = 'File'; }
-		if ($field instanceof RenderableFieldGroup)    { $type = 'Group'; }
-		if ($field instanceof RenderableFieldInteger)  { $type = 'Integer'; }
-		if ($field instanceof RenderableFieldRTF)      { $type = 'RTF'; }
-		if ($field instanceof RenderableFieldString)   { $type = 'String'; }
-		if ($field instanceof RenderableFieldText)     { $type = 'Text'; }
-		if ($field instanceof RenderableFieldHidden)   { $type = 'Hidden'; }
-		if ($field instanceof RenderableFieldSelect)   { $type = 'Select'; }
-		if ($field instanceof RenderableFieldBoolean)  { $type = 'Boolean'; }
+		if      ($field instanceof RenderableFieldDateTime) { $type = 'DateTime'; }
+		else if ($field instanceof RenderableFieldDouble)   { $type = 'Double'; }
+		else if ($field instanceof RenderableFieldFile)     { $type = 'File'; }
+		else if ($field instanceof RenderableFieldGroup)    { $type = 'Group'; }
+		else if ($field instanceof RenderableFieldInteger)  { $type = 'Integer'; }
+		else if ($field instanceof RenderableFieldRTF)      { $type = 'RTF'; }
+		else if ($field instanceof RenderableFieldString)   { $type = 'String'; }
+		else if ($field instanceof RenderableFieldText)     { $type = 'Text'; }
+		else if ($field instanceof RenderableFieldHidden)   { $type = 'Hidden'; }
+		else if ($field instanceof RenderableFieldSelect)   { $type = 'Select'; }
+		else if ($field instanceof RenderableFieldBoolean)  { $type = 'Boolean'; }
 		
 		$method = 'renderForm' . $type . ($array?'Array':'');
 		
 		if (!method_exists($this, $method) || !$type) {
-			throw new \spitfire\exceptions\PrivateException('Renderer has no method: ' . $method);
+			throw new PrivateException('Renderer has no method: ' . $method);
 		}
 		
 		return $this->$method($field);
@@ -99,7 +103,7 @@ class SimpleFieldRenderer {
 		#In order to localize this, we test if the domain is available
 		try {
 			$stdValue = _t()->domain('spitfire.beans')->say('select_default');
-		} catch (\spitfire\exceptions\PrivateException$ex) {
+		} catch (PrivateException$ex) {
 			$stdValue = 'Select';
 		}
 		
@@ -191,7 +195,11 @@ class SimpleFieldRenderer {
 		
 		return new HTMLDiv($label, $select, Array('class' => 'field'));
 	}
-	
+
+	/**
+	 * @param BasicField $field
+	 * @return string
+	 */
 	public function renderMultiReferencedField($field) {
 		$records = $field->getValue();
 		
@@ -241,8 +249,8 @@ class SimpleFieldRenderer {
 	 * This method is to be removed as it is a duplicate of the one found in the
 	 * parent element
 	 * 
-	 * @param type $field
-	 * @param type $errors
+	 * @param string $field
+	 * @param ValidationError[] $errors
 	 * @return null
 	 */
 	public function getErrorsFor($field, $errors) {

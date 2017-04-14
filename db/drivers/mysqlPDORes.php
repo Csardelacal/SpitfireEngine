@@ -23,7 +23,7 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 	 * This is a reference to the table this resultset belongs to. This allows
 	 * Spitfire to retrieve data about the model and the fields the datatype has.
 	 *
-	 * @var spitfire\storage\database\Table 
+	 * @var \spitfire\storage\database\Table
 	 */
 	private $table;
 	

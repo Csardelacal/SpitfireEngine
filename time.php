@@ -9,9 +9,11 @@ class Time
 	/**
 	 * 
 	 * @fixme lang() died and is no longer usable.
-	 * @param type $time
-	 * @param type $to
-	 * @return type
+	 *
+	 * @param int      $time
+	 * @param int|null $to
+	 *
+	 * @return string
 	 */
 	public static function relative($time, $to = null) {
 		$to = ($to === null)? time() : $to;
