@@ -130,7 +130,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	public function toArray() {
 		if ($this->children) return $this->children;
-		$this->children = $this->getQuery()->fetchAll();
+		$this->children = $this->getQuery()->fetchAll()->toArray();
 		return $this->children;
 	}
 

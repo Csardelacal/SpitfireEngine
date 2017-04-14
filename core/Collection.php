@@ -203,8 +203,17 @@ class Collection implements ArrayAccess, CollectionInterface
 		return array_shift($this->arr);
 	}
 	
+	/**
+	 * Indicates whether the current element in the Iterator is valid. To achieve
+	 * this we use the key() function in PHP which will return the key the array
+	 * is currently forwarded to or (which is interesting to us) NULL in the event
+	 * that the array has been forwarded past it's end.
+	 * 
+	 * @see key
+	 * @return boolean
+	 */
 	public function valid() {
-		return !!key($this->arr);
+		return null !== key($this->arr);
 	}
 	
 	public function toArray() {

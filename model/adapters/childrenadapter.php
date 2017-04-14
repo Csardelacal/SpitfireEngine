@@ -45,7 +45,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	public function toArray() {
 		if ($this->children !== null) { return $this->children; }
-		$this->children = $this->getQuery()->fetchAll();
+		$this->children = $this->getQuery()->fetchAll()->toArray();
 		return $this->children;
 	}
 

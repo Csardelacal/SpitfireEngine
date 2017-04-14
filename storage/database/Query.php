@@ -3,7 +3,7 @@
 use Exception;
 use spitfire\exceptions\PrivateException;
 use spitfire\Model;
-use spitfire\model\Field;
+use spitfire\model\Field as LogicalField;
 
 abstract class Query extends RestrictionGroup
 {
@@ -17,6 +17,7 @@ abstract class Query extends RestrictionGroup
 	 * result element and loop over that.
 	 * 
 	 * @todo This should be removed in favor of an actual collector for the results
+	 * @deprecated since version 0.1-dev 20170414
 	 * @var \spitfire\storage\database\ResultSetInterface|null
 	 */
 	protected $result;
@@ -56,6 +57,7 @@ abstract class Query extends RestrictionGroup
 	 * @param string $fieldname
 	 * @param string $value
 	 * @param string $operator
+	 * @deprecated since version 0.1-dev 20170414
 	 * @return Query
 	 */
 	public function addRestriction($fieldname, $value, $operator = '=') {
@@ -135,6 +137,7 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	/**
+	 * @deprecated since version 0.1-dev 20170414
 	 * @param int $page The page of results currently displayed.
 	 * @return boolean Returns if the page se is valid.
 	 */
@@ -145,12 +148,13 @@ abstract class Query extends RestrictionGroup
 		return true;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170414
+	 * @return type
+	 */
 	public function getPage() {
 		return $this->page;
-	}
-	
-	public function getErrors() {
-		return $this->table->getErrors();
 	}
 	
 	//@TODO: Add a decent way to sorting fields that doesn't resort to this awful thing.
@@ -169,6 +173,7 @@ abstract class Query extends RestrictionGroup
 	/**
 	 * Returns a record from a database that matches the query we sent.
 	 * 
+	 * @deprecated since version 0.1-dev 20170414
 	 * @return Model
 	 */
 	public function fetch() {
@@ -233,7 +238,7 @@ abstract class Query extends RestrictionGroup
 	 * Defines a column or array of columns the system will be using to group 
 	 * data when generating aggregates.
 	 * 
-	 * @param Field|Field[]|null $column
+	 * @param LogicalField|FieLogicalFieldld[]|null $column
 	 * @return Query Description
 	 */
 	public function aggregateBy($column) {
@@ -293,9 +298,47 @@ abstract class Query extends RestrictionGroup
 		return $this->getTable() . implode(',', $this->getRestrictions());
 	}
 	
+	/**
+	 * This method is used to clean empty restriction groups and restrictions from
+	 * a query. This allows to 'optimize' the speed of SQL due to removing potentially
+	 * unnecessary joins and subqueries.
+	 * 
+	 * @todo This function needs to go.
+	 * @deprecated since version 0.1-dev 201704142031
+	 * @param Restriction|CompositeRestriction|RestrictionGroup $restriction
+	 * @return boolean
+	 */
+	public static function restrictionFilter($restriction) {
+		#In case the data contained is a restriction we consider it valid.
+		#Restrictions can by default not be empty (they always have a field attached)
+		if ($restriction instanceof Restriction) {
+			return true;
+		}
+		
+		#Composite restrictions are the most common source of possible empty elements
+		#If they contain a query and it is empty it will not add any value to the query
+		if ($restriction instanceof CompositeRestriction) {
+			return true;
+		}
+		
+		#Restriction groups that are empty will not do anything useful and maybe 
+		#even generate invalid SQL like '() AND' so we clean them beforehand.
+		if ($restriction instanceof RestrictionGroup) {
+			$restrictions = array_filter($restriction->getRestrictions(), Array(get_class(), __METHOD__));
+			
+			if (empty($restrictions)) {
+				return false;
+			}
+			else {
+				$restriction->setRestrictions($restrictions);
+				return true;
+			}
+		}
+	}
+	
 	public abstract function execute($fields = null);
 	public abstract function restrictionInstance(QueryField$field, $value, $operator);
-	public abstract function compositeRestrictionInstance(Field$field = null, $value, $operator);
+	public abstract function compositeRestrictionInstance(LogicalField$field = null, $value, $operator);
 	
 	/**
 	 * Creates a new instance of a restriction group for this query. The instance

@@ -16,7 +16,7 @@ class Pattern
 	/**
 	 * Indicates the pattern is not a wildcard but either a static value or a 
 	 * series of values separated by '|'. This pattern will return an empty array
-	 * in case of a succesful test.
+	 * in case of a successful test.
 	 */
 	const WILDCARD_NONE    = 0;
 	
@@ -64,9 +64,10 @@ class Pattern
 	private $pattern;
 	
 	/**
-	 * Indicates whether the Pattern has to e satisfied or not. In case it is optional
-	 * this variable may contain true (incase the default value was left empty)
-	 * or the content that is to be assumed in case nothing was set.
+	 * Indicates whether the Pattern must to be satisfied or not.
+	 * 
+	 * If the pattern is optional this variable may contain boolean(true), it may
+	 * also contain the default value to be returned if left empty.
 	 *
 	 * @var boolean|string
 	 */
@@ -87,7 +88,7 @@ class Pattern
 	 * This function will check if a pattern is optional. This means that it will
 	 * return a valid result when it receives an empty value.
 	 * 
-	 * Please note that if it receieves a value and it's not valid it will return
+	 * Please note that if it receives a value and it's not valid it will return
 	 * an error.
 	 * 
 	 * @param string $pattern
@@ -95,9 +96,11 @@ class Pattern
 	 */
 	protected function extractOptional($pattern) {
 		
-		if (substr($pattern, -1) === '?') {
-			$this->optional = true;
-			$pattern        = substr($pattern, 0, -1);
+		$pos = strpos($pattern, '?');
+		
+		if ($pos !== false) {
+			$this->optional = substr($pattern, $pos)? : true;
+			$pattern        = substr($pattern, 0, $pos);
 		}
 		
 		return $pattern;
@@ -106,7 +109,7 @@ class Pattern
 	/**
 	 * Assigns the type variable and/or pattern that is to be matched by reading
 	 * a URL string that can be passed to the router as string. Even though the 
-	 * router's matching mechanism is really basic it should be suffcient.
+	 * router's matching mechanism is really basic it should be sufficient.
 	 * 
 	 * @param string $pattern
 	 */
@@ -187,8 +190,8 @@ class Pattern
 	/**
 	 * Returns whether the pattern was matched. This depends on the type of pattern.
 	 * * If it's a Closure the result of the closure will determined if it's ok
-	 * * Array's will be searched for a match
-	 * * Strings will be splitted by pipe characters (|) and then searched
+	 * * Arrays will be searched for a match
+	 * * Strings will be split by pipe characters (|) and then searched
 	 * 
 	 * @param mixed $value
 	 * @return boolean
@@ -197,14 +200,21 @@ class Pattern
 		#If the pattern is null then it is always valid
 		if ($this->pattern === null) {
 			return true;
+		}
+		
 		#If the pattern is an array then we search it for the value
-		} elseif (is_array($this->pattern)) {
+		elseif (is_array($this->pattern)) {
 			return empty($this->pattern) || in_array($value, $this->pattern);
+		}
+		
 		#If the pattern has been passed as a closure it will execute it and return the value
-		} elseif ($this->pattern instanceof \Closure) {
-			return ($this->pattern)($value);
+		elseif ($this->pattern instanceof \Closure) {
+			$t = $this->pattern; //This workaround is a necessity for PHP5 based systems
+			return $t($value);
+		}
+		
 		#Otherwise
-		} else {
+		else {
 			return in_array($value, explode('|', $this->pattern));
 		}
 	}

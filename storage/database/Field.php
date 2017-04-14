@@ -112,9 +112,9 @@ abstract class Field
 	 * Defines which logical field this belongs to. The logical field is the one 
 	 * in charge to provide data about the field and the data it contains.
 	 * 
-	 * @param Field $logical
+	 * @param LogicalField $logical
 	 */
-	public function setLogicalField(Field$logical) {
+	public function setLogicalField(LogicalField$logical) {
 		$this->logical = $logical;
 	}
 	
