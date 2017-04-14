@@ -1,8 +1,6 @@
-<?php
+<?php namespace spitfire\storage\database;
 
-namespace spitfire\storage\database;
-
-use spitfire\model\Field;
+use spitfire\model\Field as LogicalField;
 
 /**
  * The 'database field' class is an adapter used to connect logical fields 
@@ -12,7 +10,7 @@ use spitfire\model\Field;
  * This class should be extended by each driver to allow it to use them in an 
  * efficient manner for them.
  */
-abstract class DBField
+abstract class Field
 {
 	/**
 	 * Contains a reference to the logical field that contains information
@@ -37,7 +35,7 @@ abstract class DBField
 	 * and generating links on the DBMS that allow the engine to optimize
 	 * queries that Spitfire generates.
 	 * 
-	 * @var \spitfire\storage\database\DBField
+	 * @var \spitfire\storage\database\Field
 	 */
 	private $referenced;
 	
@@ -50,9 +48,9 @@ abstract class DBField
 	 * 
 	 * @param \spitfire\model\Field $logical
 	 * @param string $name
-	 * @param \spitfire\storage\database\DBField $references
+	 * @param \spitfire\storage\database\Field $references
 	 */
-	public function __construct(Field$logical, $name, DBField$references = null) {
+	public function __construct(LogicalField$logical, $name, Field$references = null) {
 		$this->logical = $logical;
 		$this->name = $name;
 		$this->referenced = $references;
@@ -82,7 +80,7 @@ abstract class DBField
 	 * establish relations. In case this field does not reference any other
 	 * it'll return null.
 	 * 
-	 * @return \spitfire\storage\database\DBField|null
+	 * @return \spitfire\storage\database\Field|null
 	 */
 	public function getReferencedField() {
 		return $this->referenced;
@@ -92,9 +90,9 @@ abstract class DBField
 	 * Defines which field is referenced by this one, this allows the DBMS to set
 	 * relations from one field to another and enforce referential integrity.
 	 * 
-	 * @param \spitfire\storage\database\DBField $referenced
+	 * @param \spitfire\storage\database\Field $referenced
 	 */
-	public function setReferencedField(DBField$referenced) {
+	public function setReferencedField(Field$referenced) {
 		$this->referenced = $referenced;
 	}
 

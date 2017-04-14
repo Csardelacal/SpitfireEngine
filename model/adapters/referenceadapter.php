@@ -13,7 +13,7 @@ class ReferenceAdapter extends BaseAdapter
 		$physical = $this->getField()->getPhysical();
 		
 		foreach ($physical as $p) {
-			/* @var $p \spitfire\storage\database\DBField */
+			/* @var $p \spitfire\storage\database\Field */
 			$query->addRestriction($p->getReferencedField()->getName(), $data[$p->getName()]);
 		}
 		

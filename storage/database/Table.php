@@ -44,7 +44,7 @@ abstract class Table
 	 * shortcut to avoid looping through model-fields everytime a query is
 	 * performed.
 	 *
-	 * @var DBField[] 
+	 * @var Field[] 
 	 */
 	protected $fields;
 	
@@ -61,7 +61,7 @@ abstract class Table
 	 * is empty when the table is constructed and collects the primary key's fields
 	 * once they are requested for the first time.
 	 * 
-	 * @var DBField[]|null
+	 * @var Field[]|null
 	 */
 	protected $primaryK;
 	
@@ -70,7 +70,7 @@ abstract class Table
 	 * the autonumeric field. This will usually be the ID that the DB refers to 
 	 * when working with the table.
 	 *
-	 * @var DBField
+	 * @var Field
 	 */
 	protected $autoIncrement;
 
@@ -117,7 +117,7 @@ abstract class Table
 	 * has defined a custom set of fields to work with, this function will
 	 * return the overriden fields.
 	 * 
-	 * @return DBField[] The fields this table handles.
+	 * @return Field[] The fields this table handles.
 	 */
 	public function getFields() {
 		return $this->fields;
@@ -125,7 +125,7 @@ abstract class Table
 	
 	public function getField($name) {
 		#If the data we get is already a DBField check it belongs to this table
-		if ($name instanceof DBField) {
+		if ($name instanceof Field) {
 			if ($name->getTable() === $this) { return $name; }
 			else { throw new PrivateException('Field ' . $name . ' does not belong to ' . $this); }
 		}
@@ -159,7 +159,7 @@ abstract class Table
 	 * Get's the table's primary key. This will always return an array
 	 * containing the fields the Primary Key contains.
 	 * 
-	 * @return DBField[] Array containing the primary keys in [ 'name' => {DBField object} ] form
+	 * @return Field[] Array containing the primary keys in [ 'name' => {DBField object} ] form
 	 */
 	public function getPrimaryKey() {
 		//Check if we already did this

@@ -32,11 +32,11 @@ class TableTest extends TestCase
 	}
 	
 	public function testGetField() {
-		$this->assertInstanceOf(\spitfire\storage\database\DBField::class, $this->table->getField('field1'));
-		$this->assertInstanceOf(\spitfire\storage\database\DBField::class, $this->table->getField('field2'));
+		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getField('field1'));
+		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getField('field2'));
 		
 		//This checks that the table identifies and returns when an object is provided
-		$this->assertInstanceOf(\spitfire\storage\database\DBField::class, $this->table->getField($this->table->getField('field2')));
+		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getField($this->table->getField('field2')));
 	}
 	
 	/**

@@ -1,6 +1,6 @@
 <?php
 
-use spitfire\storage\database\DBField;
+use spitfire\storage\database\Field as PhysicalField;
 use spitfire\storage\database\Schema;
 use spitfire\model\Field;
 use spitfire\Model;
@@ -57,7 +57,7 @@ class ManyToManyField extends ChildrenField
 
 	/**
 	 * @param Schema $schema
-	 * @return DBField
+	 * @return PhysicalField
 	 */
 	public function getModelField($schema) {
 		return $this->meta->getField($schema->getName());

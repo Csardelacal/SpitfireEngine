@@ -2,11 +2,10 @@
 
 use Serializable;
 use spitfire\exceptions\PrivateException;
-use spitfire\storage\database\Query;
 use spitfire\storage\database\Restriction;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
-use spitfire\storage\database\DBField;
+use spitfire\storage\database\Field;
 
 /**
  * This class allows to track changes on database data along the use of a program
@@ -108,7 +107,7 @@ abstract class Model implements Serializable
 	/**
 	 * Returns the fields that compound the primary key of this record.
 	 * 
-	 * @return DBField[]
+	 * @return Field[]
 	 */
 	public function getUniqueFields() {
 		return $this->table->getPrimaryKey();
@@ -254,7 +253,7 @@ abstract class Model implements Serializable
 		$this->table->getCollection()->update($this);
 	}
 	
-	public function restrictionInstance($query, DBField$field, $value, $operator = null) {
+	public function restrictionInstance($query, Field$field, $value, $operator = null) {
 		return $this->table->getDb()->getObjectFactory()->restrictionInstance($query, $field, $value, $operator);
 	}
 	

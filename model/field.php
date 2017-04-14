@@ -92,7 +92,7 @@ abstract class Field
 	 * Only common exception to this are the Referenced fields, which need to
 	 * generate one field for each remote primary field.
 	 *
-	 * @var \spitfire\storage\database\DBField|\spitfire\storage\database\DBField[]
+	 * @var \spitfire\storage\database\Field|\spitfire\storage\database\Field[]
 	 */
 	private $physical;
 	
@@ -104,7 +104,7 @@ abstract class Field
 	 * data (due to be being mainly an internal function) there is no validation
 	 * being done for the type of data that is inserted. Be careful!
 	 * 
-	 * @param \spitfire\storage\database\DBField|\spitfire\storage\database\DBField[] $physical
+	 * @param \spitfire\storage\database\Field|\spitfire\storage\database\Field[] $physical
 	 */
 	public function setPhysical($physical) {
 		$this->physical = $physical;
@@ -126,7 +126,7 @@ abstract class Field
 	 * equivalent the return value will be an array, for consistency with fields
 	 * which return several ones.
 	 * 
-	 * @return \spitfire\storage\database\DBField[]
+	 * @return \spitfire\storage\database\Field[]
 	 */
 	public function getPhysical() {
 		if ($this->physical === null) { $this->physical = $this->makePhysical(); }

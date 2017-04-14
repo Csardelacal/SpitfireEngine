@@ -2,16 +2,14 @@
 
 use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
-use spitfire\model\Field;
+use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\DBField;
+use spitfire\storage\database\Field;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\ObjectFactoryInterface;
-use spitfire\storage\database\Query;
-use spitfire\storage\database\ResultSetInterface;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
@@ -66,7 +64,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @param string $modelname
 	 * @return Table
 	 */
-	public function getOTFModel($modelname) {
+	public function getOTFSchema($modelname) {
 		#Create a Schema we can feed the data into.
 		$schema  = new Schema($modelname);
 		
@@ -104,14 +102,14 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @todo  This should be moved over to a DBMS specific object factory.
 	 * @param Field   $field
 	 * @param string  $name
-	 * @param DBField $references
+	 * @param Field $references
 	 * @return mysqlPDOField
 	 */
-	public function getFieldInstance(Field$field, $name, DBField$references = null) {
+	public function getFieldInstance(LogicalField$field, $name, Field$references = null) {
 		return new mysqlPDOField($field, $name, $references);
 	}
 
-	public function restrictionInstance($query, DBField$field, $value, $operator = null) {
+	public function restrictionInstance($query, Field$field, $value, $operator = null) {
 		return new MysqlPDORestriction($query,	$field, $value, $operator);
 	}
 

@@ -11,7 +11,6 @@ AutoLoad::registerClass('Time',                                                 
 AutoLoad::registerClass('Image',                                                SPITFIRE_BASEDIR.'/image.php');
 
 #Database related imports
-AutoLoad::registerClass('spitfire\storage\database\DBField',                    SPITFIRE_BASEDIR.'/db/field.php');
 AutoLoad::registerClass('spitfire\storage\database\QueryTable',                 SPITFIRE_BASEDIR.'/db/querytable.php');
 AutoLoad::registerClass('spitfire\storage\database\QueryField',                 SPITFIRE_BASEDIR.'/db/queryfield.php');
 AutoLoad::registerClass('spitfire\storage\database\Restriction',                SPITFIRE_BASEDIR.'/db/restriction.php');

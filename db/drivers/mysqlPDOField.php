@@ -1,12 +1,10 @@
-<?php
+<?php namespace spitfire\storage\database\drivers;
 
-namespace spitfire\storage\database\drivers;
-
-use spitfire\model\Field;
-use spitfire\storage\database\DBField;
+use spitfire\model\Field as LogicalField;
+use spitfire\storage\database\Field;
 use \Reference;
 
-class mysqlPDOField extends DBField
+class mysqlPDOField extends Field
 {
 	
 	public function columnType() {
@@ -20,21 +18,21 @@ class mysqlPDOField extends DBField
 		}
 		
 		switch ($logical->getDataType()) {
-			case Field::TYPE_INTEGER:
+			case LogicalField::TYPE_INTEGER:
 				return 'INT(11)';
-			case Field::TYPE_FLOAT:
+			case LogicalField::TYPE_FLOAT:
 				return 'DOUBLE';
-			case Field::TYPE_LONG:
+			case LogicalField::TYPE_LONG:
 				return 'BIGINT';
-			case Field::TYPE_STRING:
+			case LogicalField::TYPE_STRING:
 				return "VARCHAR({$logical->getLength()})";
-			case Field::TYPE_FILE:
+			case LogicalField::TYPE_FILE:
 				return "VARCHAR(255)";
-			case Field::TYPE_TEXT:
+			case LogicalField::TYPE_TEXT:
 				return "TEXT";
-			case Field::TYPE_DATETIME:
+			case LogicalField::TYPE_DATETIME:
 				return "DATETIME";
-			case Field::TYPE_BOOLEAN:
+			case LogicalField::TYPE_BOOLEAN:
 				return "TINYINT(4)";
 		}
 	}

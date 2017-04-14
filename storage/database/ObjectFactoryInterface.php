@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\model\Field;
+use spitfire\model\Field as LogicalField;
 
 /*
  * The MIT License
@@ -70,7 +70,7 @@ interface ObjectFactoryInterface
 	 * 
 	 * @return Table Instance of the table class the driver wants the system to use
 	 */
-	function getOTFModel($modelname);
+	function getOTFSchema($modelname);
 	
 	/**
 	 * Creates an instance of the Database field compatible with the current
@@ -79,11 +79,11 @@ interface ObjectFactoryInterface
 	 * 
 	 * @param Field    $field
 	 * @param string   $name
-	 * @param DBField  $references
+	 * @param Field  $references
 	 *
-	 * @return DBField Field
+	 * @return Field Field
 	 */
-	function getFieldInstance(Field$field, $name, DBField$references = null);
+	function getFieldInstance(LogicalField$field, $name, Field$references = null);
 	
 	/**
 	 * Creates a new restriction. This combines a query with a field and a value
@@ -91,11 +91,11 @@ interface ObjectFactoryInterface
 	 * retrieve data.
 	 * 
 	 * @param string      $query
-	 * @param DBField     $field
+	 * @param Field     $field
 	 * @param mixed       $value
 	 * @param string|null $operator
 	 */
-	function restrictionInstance($query, DBField$field, $value, $operator = null);
+	function restrictionInstance($query, Field$field, $value, $operator = null);
 
 	/**
 	 * Creates a new query. A query is created with a table to provide information

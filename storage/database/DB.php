@@ -5,7 +5,6 @@ use spitfire\cache\MemoryCache;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\CharsetEncoder;
-use spitfire\mvc\MVC;
 use Strings;
 
 /**
@@ -142,7 +141,7 @@ abstract class DB
 		catch (PrivateException$e) { /*Silently fail. The singular of this table may not exist either*/}
 		
 		#Get the OTF model
-		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFModel($tablename)); }
+		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFSchema($tablename)); }
 		catch (PrivateException$e) { /*Silent failure again*/}
 		
 		#If all our ressources have come to an end... Halt it.
