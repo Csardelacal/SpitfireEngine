@@ -84,10 +84,25 @@ class Collection implements ArrayAccess, CollectionInterface
 		}
 	}
 	
+	/**
+	 * Reports whether the collection is empty.
+	 * 
+	 * @return boolean
+	 */
 	public function isEmpty() {
 		return empty($this->arr);
 	}
 	
+	/**
+	 * Filters the collection using a callback. This allows a collection to shed
+	 * values that are not useful to the programmer.
+	 * 
+	 * Please note that this will return a copy of the collection and the original
+	 * collection will remain unmodified.
+	 * 
+	 * @param callable $callback
+	 * @return \spitfire\core\Collection
+	 */
 	public function filter($callback = null) {
 		#If there was no callback defined, then we filter the array without params
 		if ($callback === null) { return new Collection(array_filter($this->arr)); }
@@ -96,20 +111,48 @@ class Collection implements ArrayAccess, CollectionInterface
 		return new Collection(array_filter($this->arr, $callback));
 	}
 	
+	/**
+	 * Counts the number of elements inside the collection.
+	 * 
+	 * @return int
+	 */
 	public function count() {
 		return count($this->arr);
 	}
 	
-	public function avg() {
+	/**
+	 * Adds up the elements in the collection. Please note that this method will
+	 * double check to see if all the provided elements are actually numeric and
+	 * can be added together.
+	 * 
+	 * @return int|float
+	 * @throws BadMethodCallException
+	 */
+	public function sum() {
 		if ($this->isEmpty())               { throw new BadMethodCallException('Collection is empty'); }
 		if (!$this->containsOnly('number')) { throw new BadMethodCallException('Collection does contain non-numeric types'); }
 		
-		return array_sum($this->arr) / $this->count();
+		return array_sum($this->arr);
 	}
 	
 	/**
+	 * Returns the average value of the elements inside the collection.
 	 * 
-	 * @param type $key
+	 * @throws BadMethodCallException If the collection contains non-numeric values
+	 * @return int|float
+	 */
+	public function avg() {
+		return $this->sum() / $this->count();
+	}
+	
+	/**
+	 * Extracts a certain key from every element in the collection. This requires
+	 * every element in the collection to be either an object or an array.
+	 * 
+	 * The method does not accept values that are neither array nor object, but 
+	 * will return null if the key is undefined in the array or object being used.
+	 * 
+	 * @param mixed $key
 	 */
 	public function extract($key) {
 		return new Collection(array_map(function ($e) use ($key) {
@@ -166,6 +209,10 @@ class Collection implements ArrayAccess, CollectionInterface
 	
 	public function toArray() {
 		return $this->arr;
+	}
+	
+	public function __isset($name) {
+		return isset($this->arr[$name]);
 	}
 
 }
