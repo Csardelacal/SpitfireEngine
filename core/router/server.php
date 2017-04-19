@@ -78,5 +78,9 @@ class Server extends Routable
 	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x03) {
 		return $this->routes[] = new Route($this, $pattern, $target, $method, $protocol);
 	}
+	
+	public function getRoutes() {
+		return $this->routes;
+	}
 
 }

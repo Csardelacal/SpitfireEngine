@@ -99,7 +99,7 @@ class Pattern
 		$pos = strpos($pattern, '?');
 		
 		if ($pos !== false) {
-			$this->optional = substr($pattern, $pos)? : true;
+			$this->optional = substr($pattern, $pos + 1)? : true;
 			$pattern        = substr($pattern, 0, $pos);
 		}
 		
@@ -144,8 +144,7 @@ class Pattern
 	 */
 	public function testOptional($str) {
 		if ($this->optional && empty($str)) {
-			if ($this->type === self::WILDCARD_NONE) {return Array();}
-			else { return Array($this->name => null);}
+			return Array($this->name => $this->optional !== true? $this->optional : null);
 		}
 		
 		return false;
@@ -227,5 +226,13 @@ class Pattern
 	 */
 	public function setPattern($pattern) {
 		$this->pattern = $pattern;
+	}
+	
+	public function getName() {
+		return $this->name;
+	}
+	
+	public function getPattern() {
+		return $this->pattern;
 	}
 }

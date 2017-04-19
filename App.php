@@ -179,10 +179,19 @@ abstract class App
 		$ns       = $this->URISpace? '/' . $this->URISpace : '';
 		$uriSpace = $this->URISpace;
 		
-		Router::getInstance()->request($ns, function (Parameters$params) use ($uriSpace) {
+		$default = Router::getInstance()->request($ns, function (Parameters$params) use ($uriSpace) {
 			$args = $params->getUnparsed();
 			return new Path($uriSpace, array_shift($args), array_shift($args), $args, $params->getExtension());
 		});
+		
+		$default->setReverser(new core\router\reverser\ClosureReverser(function ($app, $controller, $action, $object, $env) {
+			$app = $app->getNameSpace();
+			
+			if ($controller === (array)core\Environment::get('default_controller')) { $controller = Array(); }
+			if ($action     ===        core\Environment::get('default_action'))     { $action     = ''; }
+			
+			return '/' . trim(implode('/', array_filter(array_merge([$app], (array)$controller, [$action], $object))), '/');
+		}));
 	}
 	
 	abstract public function enable();

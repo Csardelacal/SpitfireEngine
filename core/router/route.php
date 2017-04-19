@@ -2,6 +2,8 @@
 
 use Closure;
 use spitfire\core\Path;
+use spitfire\core\router\reverser\RouteReverserFactory;
+use Strings;
 
 /**
  * A route is a class that rewrites a URL path (route) that matches a
@@ -30,6 +32,7 @@ class Route
 	const METHOD_POST   = 0x02;
 	const METHOD_PUT    = 0x04;
 	const METHOD_DELETE = 0x08;
+	const METHOD_HEAD   = 0x10;
 	
 	/**
 	 * This var holds a reference to a route server (an object containing a pattern
@@ -44,6 +47,8 @@ class Route
 	private $parameters;
 	private $method;
 	private $protocol;
+	
+	private $reverser;
 	
 	/**
 	 * A route is a pattern Spitfire uses to redirect an URL to something else.
@@ -62,6 +67,8 @@ class Route
 		$this->newRoute  = $new_route;
 		$this->method    = $method;
 		$this->protocol  = $proto;
+		
+		$this->reverser  = RouteReverserFactory::make($new_route, $pattern);
 		
 		$this->patternStr = $pattern;
 		$array = explode('/', $pattern);
@@ -163,7 +170,7 @@ class Route
 		$route = $this->getParameters()->replaceInString($this->newRoute);
 		
 		#If the URL doesn't enforce to be finished pass on the unparsed parameters
-		if (!\Strings::endsWith($this->newRoute, '/')) {
+		if (!Strings::endsWith($this->newRoute, '/')) {
 			$route = rtrim($route, '\/') . '/' . implode('/', $this->getParameters()->getUnparsed());
 		}
 		
@@ -216,5 +223,23 @@ class Route
 		$array = array_keys($this->parameters);
 		array_walk($array, function(&$e) {$e = ':' . $e;});
 		return $array;
+	}
+	
+	/**
+	 * 
+	 * @return reverser\RouteReverserInterface
+	 */
+	public function getReverser() {
+		return $this->reverser;
+	}
+	
+	/**
+	 * 
+	 * @param reverser\RouteReverserInterface $reverser
+	 * @return Route
+	 */
+	public function setReverser($reverser) {
+		$this->reverser = $reverser;
+		return $this;
 	}
 }

@@ -112,4 +112,18 @@ class RouterTest extends TestCase
 		$this->assertEquals(Array('test'), $path->getObject());
 	}
 	
+	public function testOptionalParameters() {
+		$router = $this->router;
+		$router->get('/test/:param1?optional', Array('controller' => 'param1'));
+		
+		$p1 = $router->rewrite('localhost', '/test/provided', 'GET', Route::PROTO_HTTP);
+		$p2 = $router->rewrite('localhost', '/test/',         'GET', Route::PROTO_HTTP);
+		$p3 = $router->rewrite('localhost', '/some/',         'GET', Route::PROTO_HTTP);
+		
+		$this->assertEquals('provided', $p1->getController());
+		$this->assertEquals('optional', $p2->getController());
+		
+		$this->assertEquals(false, $p3);
+	}
+	
 }
