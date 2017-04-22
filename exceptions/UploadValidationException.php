@@ -1,7 +1,4 @@
 <?php namespace spitfire\exceptions;
 
 
-class PublicException extends \Exception
-{
-	
-}
+class UploadValidationException extends PrivateException {}
