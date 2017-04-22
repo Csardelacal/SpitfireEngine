@@ -116,7 +116,7 @@ class Upload
 	public function validate($expect = 'image', $fkey = 'file'){
 		switch ($expect){
 			case "image":
-				$info = getimagesize($_FILES[$fkey]['tmp_name']);
+				$info = getimagesize($this->meta['tmp_name']);
 				if ($info === FALSE)
 					throw new UploadValidationException('The uploaded file does not appear to be an image', 1703312326);
 				if (!in_array($info[2],[IMAGETYPE_GIF,IMAGETYPE_JPEG,IMAGETYPE_PNG]))
