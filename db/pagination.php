@@ -21,11 +21,12 @@ class Pagination
 {
 	private $query;
 	private $maxJump = 3;
-	
-	private $url       = false;
+
+	/** @var URL */
+	private $url;
+	private $pageCount;
 	private $param     = 'page';
 	private $pages     = Array();
-	private $pageCount = null;
 	
 	public function __construct(Query $query = null, $name = null) {
 		if ($query !== null && $query->getResultsPerPage() < 1) {
@@ -59,13 +60,18 @@ class Pagination
 	 * @return URL
 	 */
 	public function getURL() {
-		if ($this->url) {
+		if (isset($this->url)) {
 			return $this->url;
 		} else {
 			return $this->url = URL::current();
 		}
 	}
-	
+
+	/**
+	 * @param int $page
+	 *
+	 * @return URL
+	 */
 	public function makeURL($page) {
 		if (!$this->isValidPageNumber($page)) return null;
 		

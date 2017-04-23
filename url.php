@@ -203,38 +203,42 @@ class URL implements ArrayAccess
 	 */
 	public function __toString() {
 		try {
-		$router = \spitfire\core\router\Router::getInstance();
-		$routes = array_merge($router->server()->getRoutes(), $router->getRoutes());
-		$url    = false;
-		
-		while($url === false && !empty($routes)) {
-			/*@var $route spitfire\core\router\Route*/
-			$route = array_shift($routes);
-			
-			$rev = $route->getReverser();
-			if ($rev === null) { continue; }
-			
-			$url = $rev->reverse(
-				$this->path->getApp(), 
-				$this->path->getController(), 
-				$this->path->getAction(), 
-				$this->path->getObject(), 
-				$this->path->getParameters());
+			$router = \spitfire\core\router\Router::getInstance();
+			/** @var $routes \spitfire\core\router\Route[] */
+			$routes = array_merge($router->server()->getRoutes(), $router->getRoutes());
+			$url    = false;
+
+			while($url === false && !empty($routes)) {
+				/*@var $route spitfire\core\router\Route*/
+				$route = array_shift($routes);
+
+				$rev = $route->getReverser();
+				if ($rev === null) { continue; }
+
+				$url = $rev->reverse(
+					$this->path->getApp(),
+					$this->path->getController(),
+					$this->path->getAction(),
+					$this->path->getObject(),
+					$this->path->getParameters());
+			}
+
+			#If the extension provided is special, we print it
+			if ($this->path->getFormat() !== 'php') { $url.= ".{$this->path->getFormat()}"; }
+
+			if ($this->params instanceof Get) {
+				$url.= '?' . http_build_query($this->params->getRaw());
+			}
+			elseif (!empty($this->params)) {
+				$url.= '?' . http_build_query($this->params);
+			}
+
+			return $url;
 		}
-		
-		#If the extension provided is special, we print it
-		if ($this->path->getFormat() !== 'php') { $url.= ".{$this->path->getFormat()}"; }
-		
-		if ($this->params instanceof Get) {
-			$url.= '?' . http_build_query($this->params->getRaw());
+		catch (\Throwable$e) {
+			error_log($e->getMessage()."\n".$e->getTraceAsString());
+			die('Unrecoverable error while converting URL to string, check error log for details.');
 		}
-		elseif (!empty($this->params)) {
-			$url.= '?' . http_build_query($this->params);
-		}
-		
-		return $url;
-		} catch (\Throwable$e) { die ($e->getMessage() . $e->getFile() . $e->getLine()); }
-		
 	}
 
 	/**
