@@ -70,7 +70,7 @@ class Strings
 	
 	
 	public static function strToHTML($str) {
-		$urlRegex = '/(http|https):\/\/([a-zA-z0-9\%\&\?\/\.\-_\=\+\;]+)/';
+		$urlRegex = '#(http|https)://([a-zA-z0-9%&?/.\-_=+;@]+)#';
 		
 		#Isolate URL with spaces. We add a space after, and before a URL to prevent bogus
 		$isolated = preg_replace($urlRegex, ' $1://$2 ', $str);
