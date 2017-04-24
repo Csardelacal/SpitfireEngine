@@ -185,8 +185,6 @@ abstract class App
 		});
 		
 		$default->setReverser(new core\router\reverser\ClosureReverser(function ($app, $controller, $action, $object, $env) {
-			$app = $app->getNameSpace();
-			
 			if ($controller === (array)core\Environment::get('default_controller')) { $controller = Array(); }
 			if ($action     ===        core\Environment::get('default_action'))     { $action     = ''; }
 			

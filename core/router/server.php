@@ -16,6 +16,7 @@ class Server extends Routable
 	private $router;
 	private $pattern;
 	private $parameters;
+	/** @var Route[] */
 	private $routes = Array();
 	
 	public function __construct($pattern, Router$router) {

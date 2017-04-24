@@ -261,4 +261,8 @@ class Get implements Iterator, ArrayAccess
 		}
 	}
 
+	public function __toString(){
+		return http_build_query($this->data);
+	}
+
 }

@@ -38,7 +38,7 @@ class Route
 	 * This var holds a reference to a route server (an object containing a pattern
 	 * to match virtualhosts) that isolates this route from the others.
 	 * 
-	 * @var \spitfire\router\Routable 
+	 * @var \spitfire\core\router\Routable
 	 */
 	private $server;
 	private $pattern;
@@ -56,7 +56,7 @@ class Route
 	 * directly send back a response or assign a custom controller, action and 
 	 * object to the request.
 	 * 
-	 * @param \spitfire\router\Routable $server The server this route belongs to
+	 * @param \spitfire\core\router\Routable $server The server this route belongs to
 	 * @param string $pattern
 	 * @param string $new_route
 	 * @param string $method
@@ -181,6 +181,9 @@ class Route
 	 * This method allows the router to use an array as target for the rewriting
 	 * instead of another string or path.
 	 *
+	 * @param Parameters $parameters
+	 *
+	 * @return Path
 	 */
 	protected function rewriteArray($parameters) {
 		$route = $this->newRoute;
