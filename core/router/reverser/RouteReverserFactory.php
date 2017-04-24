@@ -19,8 +19,8 @@ class RouteReverserFactory
 		foreach ($pattern as /*@var $e Pattern*/$e) {
 			$k = array_search(':' . $e->getName(), $for);
 			
-			if ($k) { $target[] = function ($app, $controller, $action, $object) use ($k) { return is_array($$k)? implode($$k) : $$k; }; }
-			else    { $target[] = function () use ($e) { return explode('|', $e->getPattern())[0]; }; }
+			if ($k) { $target[] = function ($app, $controller, $action, $object) use ($k) { return is_array($$k)? implode('', $$k) : $$k; }; }
+			else    { $target[] = function () use ($e) { return $e->getPattern()[0]; }; }
 		}
 		
 		return new ClosureReverser(function ($app, $controller, $action, $object, $env) use ($for, $target) {

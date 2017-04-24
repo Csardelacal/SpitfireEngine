@@ -12,4 +12,6 @@ interface ServerReverserInterface
 	 * @return bool|string The rewriten server URI or 
 	 */
 	function reverse($parameters);
+	
+	function getServer();
 }

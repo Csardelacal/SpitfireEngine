@@ -107,7 +107,7 @@ AutoLoad::registerClass('spitfire\registry\CSSRegistry',                        
 AutoLoad::registerClass('Pluggable',                                            SPITFIRE_BASEDIR.'/plugins/pluggable.php');
 
 AutoLoad::registerClass('URL',                                                  SPITFIRE_BASEDIR.'/url.php');
-AutoLoad::registerClass('absoluteURL',                                          SPITFIRE_BASEDIR.'/absoluteURL.php');
+AutoLoad::registerClass('AbsoluteURL',                                          SPITFIRE_BASEDIR.'/AbsoluteURL.php');
 AutoLoad::registerClass('spitfire\Context',                                     SPITFIRE_BASEDIR.'/core/context.php');
 
 AutoLoad::registerClass('Email',                                                SPITFIRE_BASEDIR.'/mail.php');

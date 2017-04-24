@@ -51,8 +51,9 @@ class Router extends Routable
 	 * @return Server
 	 */
 	public function server($address = null) {
-		if ($address === null && isset($_SERVER['HTTP_HOST'])) { $address = $_SERVER['HTTP_HOST']; }
-		else { $address = 'localhost'; }
+		if ($address === null) {
+			$address = isset($_SERVER['HTTP_HOST'])? $_SERVER['HTTP_HOST'] : 'localhost';
+		}
 		
 		if (isset($this->servers[$address])) { return $this->servers[$address]; }
 		return $this->servers[$address] = new Server($address, $this);
@@ -79,6 +80,10 @@ class Router extends Routable
 	 */
 	public function getRoutes() {
 		return $this->routes;
+	}
+	
+	public function getServers() {
+		return $this->servers;
 	}
 	
 	/**

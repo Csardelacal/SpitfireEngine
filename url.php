@@ -165,36 +165,6 @@ class URL implements ArrayAccess
 	}
 	
 	/**
-	 * This function allows Spitfire to generate URL strings that a browser can 
-	 * use to follow to another location within the application.
-	 * 
-	 * Please note that this is the default behavior that generates URL like
-	 * /baseURL/app/controller/action/object.extension?parameter=a
-	 * 
-	 * @return string
-	 */
-	protected function defaultSerializer() {
-		
-		$path = $this->path;
-		if ($this->app) { array_unshift ($path, $this->app->getURISpace()); }
-		
-		#Create the URL full path (base URL + Request path)
-		$str =  rtrim(SpitFire::baseUrl(), '\/') . '/' . implode('/', array_filter($path));
-		
-		#If the extension provided is special, we print it
-		if ($this->extension !== 'php') { $str.= ".$this->extension"; }
-		
-		if ($this->params instanceof Get) {
-			$str.= '?' . http_build_query($this->params->getRaw());
-		}
-		elseif (!empty($this->params)) {
-			$str.= '?' . http_build_query($this->params);
-		}
-		
-		return $str;
-	}
-	
-	/**
 	 * Serializes the URL. This method ill check if a custom serializer was defined
 	 * and will then use the appropriate serializer OR fall back to the default 
 	 * one.
@@ -202,9 +172,7 @@ class URL implements ArrayAccess
 	 * @see URL::defaultSerializer() For the standard behavior.
 	 */
 	public function __toString() {
-		try {
-		$router = \spitfire\core\router\Router::getInstance();
-		$routes = array_merge($router->server()->getRoutes(), $router->getRoutes());
+		$routes = $this->getRoutes();
 		$url    = false;
 		
 		while($url === false && !empty($routes)) {
@@ -224,6 +192,7 @@ class URL implements ArrayAccess
 		
 		#If the extension provided is special, we print it
 		if ($this->path->getFormat() !== 'php') { $url.= ".{$this->path->getFormat()}"; }
+		else                                    { $url.= '/'; }
 		
 		if ($this->params instanceof Get) {
 			$url.= '?' . http_build_query($this->params->getRaw());
@@ -232,9 +201,7 @@ class URL implements ArrayAccess
 			$url.= '?' . http_build_query($this->params);
 		}
 		
-		return $url;
-		} catch (\Throwable$e) { die ($e->getMessage() . $e->getFile() . $e->getLine()); }
-		
+		return '/' . implode('/', array_filter([trim(SpitFire::baseUrl(), '/'), ltrim($url, '/')]));
 	}
 
 	/**
@@ -300,6 +267,11 @@ class URL implements ArrayAccess
 		$t->setPath($this->path);
 		
 		return $t;
+	}
+	
+	public function getRoutes() {
+		$router = \spitfire\core\router\Router::getInstance();
+		return array_merge($router->server()->getRoutes(), $router->getRoutes());
 	}
 
 	public function offsetExists($offset) {

@@ -1,27 +1,17 @@
 <?php
 
-use spitfire\SpitFire;
 use spitfire\core\Environment;
 
-class absoluteURL extends URL
+class AbsoluteURL extends URL
 {
 	
 	const PROTO_HTTP  = 'http';
 	const PROTO_HTTPS = 'https';
 	
-	public $domain;
+	private $domain;
 	
-	private $proto;
+	private $proto    = self::PROTO_HTTP;
 	
-	public function __construct() {
-		#This could be written nicer in PHP7 with the splatter operator
-		$args = func_get_args();
-		call_user_func_array(array('parent', '__construct'), $args);
-		
-		#Set the defaults
-		$this->proto  = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? self::PROTO_HTTPS : self::PROTO_HTTP;
-		$this->domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
-	}
 	
 	/**
 	 * Set the domain name this URL points to. This is intended to address
@@ -63,11 +53,37 @@ class absoluteURL extends URL
 		#Prepend protocol and server and return it
 		return $canonical->toAbsolute();
 	}
+	
+	public function getRoutes() {
+		#Check whether the domain is a string. 
+		#Because if that's the case we don't need it
+		if (!is_array($this->domain))          { return parent::getRoutes(); }
+		if (null == $r = $this->getReverser()) { return parent::getRoutes(); }
+		if (!$r->reverse($this->domain))       { return parent::getRoutes(); }
+		
+		return $r->getServer()->getRoutes();
+	}
+	
+	public function getReverser() {
+		
+		$router  = \spitfire\core\router\Router::getInstance();
+		$servers = $router->getServers();
+		
+		foreach ($servers as $s) {
+			/*@var $s \spitfire\core\router\Server*/
+			
+			if ($s->getReverser()->reverse($this->domain)) {
+				return $s->getReverser();
+			}
+		}
+		
+		return null;
+	}
 
 	public function __toString() {
-		$rel = parent::__toString();
+		$rel    = parent::__toString();
 		$proto  = $this->proto;
-		$domain = $this->domain;
+		$domain = is_array($this->domain)? $this->getReverser()->reverse($this->domain) : $this->domain;
 		
 		return $proto . '://' . $domain . $rel;
 	}
