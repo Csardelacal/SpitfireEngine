@@ -8,9 +8,9 @@ class AbsoluteURL extends URL
 	const PROTO_HTTP  = 'http';
 	const PROTO_HTTPS = 'https';
 	
-	private $domain;
+	protected $domain;
 	
-	private $proto    = self::PROTO_HTTP;
+	protected $proto    = self::PROTO_HTTP;
 	
 	
 	/**
@@ -72,8 +72,6 @@ class AbsoluteURL extends URL
 		$servers = $router->getServers();
 		
 		foreach ($servers as $s) {
-			/*@var $s \spitfire\core\router\Server*/
-			
 			if ($s->getReverser()->reverse($this->domain)) {
 				return $s->getReverser();
 			}
@@ -85,7 +83,7 @@ class AbsoluteURL extends URL
 	public function __toString() {
 		$rel    = parent::__toString();
 		$proto  = $this->proto;
-		$domain = is_array($this->domain)? $this->getReverser()->reverse($this->domain) : $this->domain;
+		$domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
 		
 		return $proto . '://' . $domain . $rel;
 	}

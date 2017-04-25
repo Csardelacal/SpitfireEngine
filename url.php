@@ -19,13 +19,13 @@ class URL implements ArrayAccess
 	 * @var \spitfire\core\Path Contains information about the controller / action
 	 * / object combination that will be used for this URL.
 	 */
-	private $path;
+	protected $path;
 	
 	/**
 	 * @var mixed|Get[] Contains data about the _GET parameters this URL will pass
 	 * to the system if invoked by the user.
 	 */
-	private $params = Array();
+	protected $params = Array();
 	
 	/**
 	 * This static method allows your application to provide a custom serializer
@@ -38,10 +38,10 @@ class URL implements ArrayAccess
 	private static $serializer = null;
 
 	/** @var string */
-	private $extension;
+	protected $extension;
 
 	/** @var \spitfire\App */
-	private $app;
+	protected $app;
 
 	/**
 	 * Creates a new URL. Use this class to generate dynamic URLs or to pass
@@ -70,10 +70,10 @@ class URL implements ArrayAccess
 		
 		#Extract the app
 		if (reset($params) instanceof spitfire\App || $sf->appExists(reset($params))) {
-			$app = array_shift($params);
+			$this->app = array_shift($params);
 		}
 		else {
-			$app = $sf;
+			$this->app = $sf;
 		}
 		
 		#Get the controller, and the action
@@ -90,7 +90,7 @@ class URL implements ArrayAccess
 		
 		$this->params = array_shift($params);
 		$environment  = array_shift($params);
-		$this->path   = new \spitfire\core\Path($app, $controller, $action, $object, 'php', $environment);
+		$this->path   = new \spitfire\core\Path($this->app, $controller, $action, $object, 'php', $environment);
 	}
 	
 	public function setExtension($extension) {

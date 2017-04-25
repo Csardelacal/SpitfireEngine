@@ -29,7 +29,7 @@ class Server extends Routable
 	
 	/**
 	 * 
-	 * @throws spitfire\router\RouteMismatchException If the path does not match
+	 * @throws \spitfire\core\router\RouteMismatchException If the path does not match
 	 * @param array $pattern
 	 * @param array $array
 	 */
