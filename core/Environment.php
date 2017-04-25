@@ -19,7 +19,7 @@ class Environment
 		#Maintenance related settings.
 		'maintenance_enabled'      => false,
 		'maintenance_controller'   => 'maintenance',
-		'debugging_mode'           => true, //TODO: Change for stable
+		'debug_mode'           => true, //TODO: Change for stable
 		
 		#Database settings
 		'db_driver'                => 'mysqlPDO',

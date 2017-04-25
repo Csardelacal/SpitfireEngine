@@ -15,8 +15,11 @@ use Throwable;
  * to use it will throw an exception informing that no error
  * page could be found.
  * 
- * @param mixed $code
+ * @param mixed  $code
  * @param string $message
+ * @param string $moreInfo
+ *
+ * @throws \spitfire\exceptions\FileNotFoundException
  */
 function get_error_page($code, $message, $moreInfo = '') {
 	$error_page = spitfire()->getCWD() . '/bin/error_pages/'.$code.'.php';
