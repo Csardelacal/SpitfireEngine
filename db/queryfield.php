@@ -1,12 +1,10 @@
-<?php
+<?php namespace spitfire\storage\database;
 
-namespace spitfire\storage\database;
-
-use spitfire\model\Field;
+use spitfire\model\Field as Logical;
 
 abstract class QueryField
 {
-	/** @var Field */
+	/** @var Logical */
 	private $field;
 	/** @var Query */
 	private $query;
@@ -28,7 +26,7 @@ abstract class QueryField
 	}
 
 	/**
-	 * @return Field
+	 * @return Logical
 	 */
 	public function getField() {
 		return $this->field;
@@ -38,7 +36,7 @@ abstract class QueryField
 	 * @return bool
 	 */
 	public function isLogical() {
-		return $this->field instanceof Field;
+		return $this->field instanceof Logical;
 	}
 	
 	public function getPhysical() {

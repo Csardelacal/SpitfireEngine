@@ -95,8 +95,8 @@ class ExceptionHandler {
 				
 				$response->getHeaders()->status(500);
 				
-				if (Environment::get('debugging_mode')) get_error_page(500, $e->getMessage(), $trace );
-				else                                    get_error_page(500, 'Server error');
+				if (Environment::get('debug_mode')) { get_error_page(500, $e->getMessage(), $trace ); }
+				else                                { get_error_page(500, 'Server error'); }
 			}
 			$response->getHeaders()->send();
 			if(ob_get_length()) ob_flush();

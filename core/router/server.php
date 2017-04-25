@@ -80,6 +80,10 @@ class Server extends Routable
 		return $this->routes[] = new Route($this, $pattern, $target, $method, $protocol);
 	}
 	
+	public function getReverser() {
+		return new reverser\BaseServerReverser($this->pattern, $this);
+	}
+	
 	public function getRoutes() {
 		return $this->routes;
 	}
