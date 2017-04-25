@@ -7,11 +7,11 @@ interface ServerReverserInterface
 {
 	
 	/**
-	 * 
 	 * @param string[] $parameters
-	 * @return bool|string The rewriten server URI or 
+	 * @return bool|string The rewriten server URI or
 	 */
 	function reverse($parameters);
-	
+
+	/** @return \spitfire\core\router\Server */
 	function getServer();
 }

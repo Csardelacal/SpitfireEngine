@@ -1,16 +1,25 @@
 <?php namespace spitfire\core\router\reverser;
 
+use spitfire\core\router\Pattern;
+use spitfire\core\router\Server;
+
 class BaseServerReverser implements ServerReverserInterface
 {
-	
+	/** @var Pattern[] */
 	private $pattern;
+	/** @var Server */
 	private $server;
-	
+
+	/**
+	 * @param Pattern[] $pattern
+	 * @param Server    $server
+	 */
 	public function __construct($pattern, $server) {
 		$this->pattern = $pattern;
 		$this->server  = $server;
 	}
-	
+
+	/** @inheritdoc */
 	public function reverse($parameters) {
 		$result = Array();
 		
@@ -25,6 +34,7 @@ class BaseServerReverser implements ServerReverserInterface
 		return implode('.', $result);
 	}
 
+	/** @inheritdoc */
 	public function getServer() {
 		return $this->server;
 	}

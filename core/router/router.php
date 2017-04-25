@@ -81,7 +81,13 @@ class Router extends Routable
 	public function getRoutes() {
 		return $this->routes;
 	}
-	
+
+	/**
+	 * Returns the list of routes. This is usually called by the "Server" to
+	 * retrieve generic routes
+	 *
+	 * @return Server[]
+	 */
 	public function getServers() {
 		return $this->servers;
 	}
