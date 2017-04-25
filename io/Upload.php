@@ -1,6 +1,7 @@
 <?php namespace spitfire\io;
 
 use filePermissionsException;
+use spitfire\core\Filesize;
 use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\UploadValidationException;
 use spitfire\storage\drive\Directory;
@@ -106,14 +107,12 @@ class Upload
 	/**
 	 * This function should be called before storing any uploaded file
 	 *
-	 * @throws UploadValidationException
-	 *
 	 * @param string $expect The string corresponting to the type we want to check against
-	 * @param string $fkey   The string key for the file in $_FILES
 	 *
 	 * @return self
+	 * @throws UploadValidationException
 	 */
-	public function validate($expect = 'image', $fkey = 'file'){
+	public function validate($expect = 'image'){
 		switch ($expect){
 			case "image":
 				$info = getimagesize($this->meta['tmp_name']);
@@ -148,6 +147,28 @@ class Upload
 		$this->uploadDir = $to;
 		return $this;
 	}
+
+	/**
+	 * Returns the maximum uploadable file size
+	 *
+	 * @param Filesize[] $sizes An array of Filesize instances, for use with tests
+	 *
+	 * @return Filesize
+	 */
+	static function getMaxUploadSize($sizes = null){
+		if (!isset($sizes))
+			$sizes = [
+				Filesize::parse(ini_get('post_max_size')),
+				Filesize::parse(ini_get('upload_max_filesize')),
+			];
+
+		// Sort ascending based on bytes
+		uasort($sizes, function(Filesize$a, Filesize$b){
+			return $a->bytes > $b->bytes ? 1 : ($a->bytes < $b->bytes ? -1 : 0);
+		});
+
+		return $sizes[0];
+	}
 	
 	public function get($attribute) {
 		if (!isset($this->meta[$attribute])) { return null; }
@@ -181,5 +202,4 @@ class Upload
 		return $files;
 		
 	}
-	
 }
