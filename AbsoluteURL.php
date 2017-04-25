@@ -21,7 +21,7 @@ class AbsoluteURL extends URL
 	 * be useless.
 	 * 
 	 * @param string $domain The domain of the URL. I.e. www.google.com
-	 * @return absoluteURL
+	 * @return self
 	 */
 	public function setDomain($domain) {
 		$this->domain = $domain;
@@ -31,11 +31,13 @@ class AbsoluteURL extends URL
 	public function getDomain() {
 		return $this->domain;
 	}
-	
+
+	/** @return self */
 	public static function current() {
 		return new self(get_path_info(), $_GET);
 	}
-	
+
+	/** @inheritdoc */
 	public static function asset($asset_name, $app = null) {
 		$path = parent::asset($asset_name, $app);
 		

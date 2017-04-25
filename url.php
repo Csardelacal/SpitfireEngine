@@ -36,7 +36,13 @@ class URL implements ArrayAccess
 	 * @var Closure
 	 */
 	private static $serializer = null;
-	
+
+	/** @var string */
+	private $extension;
+
+	/** @var \spitfire\App */
+	private $app;
+
 	/**
 	 * Creates a new URL. Use this class to generate dynamic URLs or to pass
 	 * URLs as parameters. For consistency (double base prefixes and this
@@ -259,7 +265,7 @@ class URL implements ArrayAccess
 	}
 	
 	public function toAbsolute() {
-		$t = new absoluteURL();
+		$t = new AbsoluteURL();
 		
 		$t->setApp($this->app);
 		$t->setExtension($this->extension);
