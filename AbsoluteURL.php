@@ -8,9 +8,9 @@ class AbsoluteURL extends URL
 	const PROTO_HTTP  = 'http';
 	const PROTO_HTTPS = 'https';
 	
-	protected $domain;
+	private $domain;
 	
-	protected $proto    = self::PROTO_HTTP;
+	private $proto    = self::PROTO_HTTP;
 	
 	
 	/**
@@ -20,8 +20,13 @@ class AbsoluteURL extends URL
 	 * for sharing / email links where the URL without server name would
 	 * be useless.
 	 * 
+	 * Since April 2017, you can provide this method with an array of parameters
+	 * that the router parses when handling a request. This allows your application
+	 * to not only manage custom server names but also to write URLs pointing
+	 * there depending on your settings.
+	 * 
 	 * @param string $domain The domain of the URL. I.e. www.google.com
-	 * @return self
+	 * @return absoluteURL
 	 */
 	public function setDomain($domain) {
 		$this->domain = $domain;
@@ -31,13 +36,24 @@ class AbsoluteURL extends URL
 	public function getDomain() {
 		return $this->domain;
 	}
-
-	/** @return self */
+	
+	/**
+	 * 
+	 * @return string
+	 */
+	public function getServerName() {
+		
+		if (empty($this->domain)) { 
+			return Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME']; 
+		}
+		
+		return is_array($this->domain)? $this->getReverser()->reverse($this->domain) : $this->domain;
+	}
+	
 	public static function current() {
 		return new self(get_path_info(), $_GET);
 	}
-
-	/** @inheritdoc */
+	
 	public static function asset($asset_name, $app = null) {
 		$path = parent::asset($asset_name, $app);
 		
@@ -72,6 +88,8 @@ class AbsoluteURL extends URL
 		$servers = $router->getServers();
 		
 		foreach ($servers as $s) {
+			/*@var $s \spitfire\core\router\Server*/
+			
 			if ($s->getReverser()->reverse($this->domain)) {
 				return $s->getReverser();
 			}
@@ -83,7 +101,7 @@ class AbsoluteURL extends URL
 	public function __toString() {
 		$rel    = parent::__toString();
 		$proto  = $this->proto;
-		$domain = Environment::get('server_name')? Environment::get('server_name') : $_SERVER['SERVER_NAME'];
+		$domain = $this->getServerName();
 		
 		return $proto . '://' . $domain . $rel;
 	}

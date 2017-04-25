@@ -19,13 +19,13 @@ class URL implements ArrayAccess
 	 * @var \spitfire\core\Path Contains information about the controller / action
 	 * / object combination that will be used for this URL.
 	 */
-	protected $path;
+	private $path;
 	
 	/**
 	 * @var mixed|Get[] Contains data about the _GET parameters this URL will pass
 	 * to the system if invoked by the user.
 	 */
-	protected $params = Array();
+	private $params = Array();
 	
 	/**
 	 * This static method allows your application to provide a custom serializer
@@ -38,10 +38,10 @@ class URL implements ArrayAccess
 	private static $serializer = null;
 
 	/** @var string */
-	protected $extension;
+	private $extension;
 
 	/** @var \spitfire\App */
-	protected $app;
+	private $app;
 
 	/**
 	 * Creates a new URL. Use this class to generate dynamic URLs or to pass
