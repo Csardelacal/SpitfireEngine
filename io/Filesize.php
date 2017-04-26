@@ -24,7 +24,7 @@ class Filesize
 	}
 
 	/**
-	 * Parses the size provides as a string and returns a Filesize instance or 
+	 * Parses the size provided as a string and returns a Filesize instance or 
 	 * throws on failure.
 	 *
 	 * @param string $str
