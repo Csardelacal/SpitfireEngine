@@ -1,9 +1,7 @@
 <?php namespace tests\spitfire;
 
-use AbsoluteURL;
 use PHPUnit\Framework\TestCase;
 use spitfire\core\router\Router;
-use URL;
 use function spitfire;
 
 class URLTest extends TestCase
@@ -26,35 +24,39 @@ class URLTest extends TestCase
 	
 	public function testBlankSerializer() {
 		
-		$url = new URL();
+		$url = url();
 		$this->assertEquals('/', strval($url));
 	}
 	
 	public function testBlankSerializer2() {
-		$url = new URL('home', 'index');
+		$url = url('home', 'index');
 		$this->assertEquals('/', strval($url));
 	}
 	
 	public function testAnotherSerializer() {
-		$url = new URL('account', 'test');
+		$url = url('account', 'test');
 		$this->assertEquals('/account/test/', strval($url));
 	}
 	
 	public function testAnotherSerializerWithParams() {
-		$url = new URL('account', 'test', ['a' => 3]);
+		$url = url('account', 'test', ['a' => 3]);
 		$this->assertEquals('/account/test/?a=3', strval($url));
 	}
 	
 	public function testArrayReverser() {
-		$this->assertEquals('/url/my/',       strval(new URL('test',  'my', 'url')));
-		$this->assertEquals('/test2/my/url/', strval(new URL('test2', 'my', 'url')));
+		$this->assertEquals('/url/my/',       strval(url('test',  'my', 'url')));
+		$this->assertEquals('/test2/my/url/', strval(url('test2', 'my', 'url')));
 	}
 	
 	public function testServerReverser() {
-		$absURL = new AbsoluteURL('test', 'a', 'a');
-		$absURL->setDomain(['lang' => 'en', 'tld' => 'test']);
-		
+		$absURL = url('test', 'a', 'a')->absolute(['lang' => 'en', 'tld' => 'test']);
 		$this->assertEquals('http://en.test.com/hello/', strval($absURL));
+		$this->assertNotEquals('http://en.test.com/hello/', strval(url('test', 'a', 'b')->absolute(['lang' => 'en', 'tld' => 'test'])));
+	}
+	
+	public function testServerReverser2() {
+		$absURL = url('test', 'a', 'a')->absolute('test.com');
+		$this->assertEquals('http://test.com/a/a/', strval($absURL));
 	}
 	
 }

@@ -19,12 +19,17 @@ class BaseServerReverser implements ServerReverserInterface
 		$this->server  = $server;
 	}
 
-	/** @inheritdoc */
+	/** 
+	 * @inheritdoc 
+	 * 
+	 * Servers are relatively easy to parse, they allow to set parameters via 
+	 * certain pieces of the URL. This allows, for example, to set localization 
+	 * based on a subdomain of the app.
+	 */
 	public function reverse($parameters) {
 		$result = Array();
 		
 		foreach ($this->pattern as $p) {
-			echo $p->getName(), is_array($p->getPattern()) ? implode('|', $p->getPattern()) : $p->getPattern(), PHP_EOL;
 			/*@var $p \spitfire\core\router\Pattern*/
 			if     (!$p->getName())                    { $result[] = $p->getPattern()[0]; }
 			elseif (isset($parameters[$p->getName()])) { $result[] = $parameters[$p->getName()]; }

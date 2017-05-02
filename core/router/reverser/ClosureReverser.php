@@ -11,11 +11,16 @@ class ClosureReverser implements RouteReverserInterface
 		$this->closure = $c;
 	}
 
-	/** @inheritdoc */
+	/** 
+	 * @inheritdoc 
+	 */
 	public function reverse($app, $controller, $action, $object, $additional = Array()) {
 		$c = $this->closure;
-		if ($app instanceof App)
-			$app = $app->getNameSpace();
+		
+		#If the application is providing an app object to reverse the route, then
+		#it should be returned to it's string format.
+		if ($app instanceof App) {	$app = $app->getNameSpace(); }
+		
 		return $c($app, $controller, $action, $object, $additional);
 	}
 

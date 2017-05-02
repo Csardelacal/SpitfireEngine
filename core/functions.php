@@ -1,8 +1,10 @@
 <?php
 
 use spitfire\App;
+use spitfire\core\Collection;
 use spitfire\core\Context;
 use spitfire\core\Environment;
+use spitfire\core\http\URL;
 use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
@@ -55,7 +57,7 @@ function app($name, $namespace) {
  * to store data. We could consider this a little DB handler factory.
  *
  * @param array $options
- * @return DB|\spitfire\storage\database\DB
+ * @return DB|DB
  */
 function db($options = null) {
 	static $model = null;
@@ -192,8 +194,61 @@ function _def(&$a, $b) {
  * limits that behavior.
  * 
  * @param mixed $elements
- * @return \spitfire\core\Collection
+ * @return Collection
  */
 function collect($elements) {
-	return new \spitfire\core\Collection($elements);
+	return new Collection($elements);
+}
+
+
+/**
+ * Creates a new URL. Use this class to generate dynamic URLs or to pass
+ * URLs as parameters. For consistency (double base prefixes and this
+ * kind of misshaps aren't funny) use this object to pass or receive URLs
+ * as paramaters.
+ * 
+ * Please note that when passing a URL that contains the URL as a string like
+ * "/hello/world?a=b&c=d" you cannot pass any other parameters. It implies that
+ * you already have a full URL.
+ * 
+ * You can pass any amount of parameters to this class,
+ * the constructor will try to automatically parse the URL as good as possible.
+ * <ul>
+ *		<li>Arrays are used as _GET</li>
+ * 	<li>App objects are used to identify the namespace</li>
+ *		<li>Strings that contain / or ? will be parsed and added to GET and path</li>
+ *		<li>The rest of strings will be pushed to the path.</li>
+ * </ul>
+ */
+function url() {
+	#Get the parameters the first time
+	$sf     = spitfire();
+	$params = func_get_args();
+
+	#Extract the app
+	if (reset($params) instanceof App || $sf->appExists(reset($params))) {
+		$app = array_shift($params);
+	}
+	else {
+		$app = $sf;
+	}
+
+	#Get the controller, and the action
+	$controller = null;
+	$action     = null;
+	$object     = Array();
+
+	#Get the object
+	while(!empty($params) && !is_array(reset($params)) ) {
+		if     (!$controller) { $controller = array_shift($params); }
+		elseif (!$action)     { $action     = array_shift($params); }
+		else                  { $object[]   = array_shift($params); }
+	}
+	
+	#Get potential environment variables that can be used for additional information
+	#like loccalization
+	$get          = array_shift($params);
+	$environment  = array_shift($params);
+	
+	return new URL($app, $controller, $action, $object, 'php', $get, $environment);
 }
