@@ -15,6 +15,15 @@ class AbsoluteURL extends URL
 	
 	private $proto    = self::PROTO_HTTP;
 	
+	/**
+	 * The reverser property acts as a cache, removing the need to cycle through
+	 * the different reversers and their rules to check if they're a fit 
+	 * candidate.
+	 *
+	 * @var \spitfire\core\router\reverser\ServerReverserInterface
+	 */
+	private $reverser = null;
+	
 	
 	/**
 	 * Set the domain name this URL points to. This is intended to address
@@ -32,7 +41,8 @@ class AbsoluteURL extends URL
 	 * @return absoluteURL
 	 */
 	public function setDomain($domain) {
-		$this->domain = $domain;
+		$this->domain   = $domain;
+		$this->reverser = null;
 		return $this;
 	}
 	
@@ -83,27 +93,32 @@ class AbsoluteURL extends URL
 	public function getRoutes() {
 		#Check whether the domain is a string. 
 		#Because if that's the case we don't need it
-		if (!is_array($this->domain))          { return parent::getRoutes(); }
-		if (null == $r = $this->getReverser()) { return parent::getRoutes(); }
-		if (!$r->reverse($this->domain))       { return parent::getRoutes(); }
+		if (!is_array($this->domain))    { return parent::getRoutes(); }
+		if (!$this->getReverser())       { return parent::getRoutes(); }
 		
-		return $r->getServer()->getRoutes();
+		return $this->getReverser()->getServer()->getRoutes();
 	}
 	
 	public function getReverser() {
+		#First, check if we already have a reverser ready
+		#This should increase performance notably.
+		if ($this->reverser !== null) { return $this->reverser; }
 		
+		#Get the servers we registered for the router
 		$router  = Router::getInstance();
 		$servers = $router->getServers();
 		
 		foreach ($servers as $s) {
 			/*@var $s Server*/
+			/*@var $r BaseServerReverser*/
+			$r = $s->getReverser();
 			
-			if ($s->getReverser()->reverse($this->domain)) {
-				return $s->getReverser();
+			if ($r->reverse($this->domain)) {
+				return $this->reverser = $r;
 			}
 		}
 		
-		return null;
+		return $this->reverser = null;
 	}
 
 	public function __toString() {
