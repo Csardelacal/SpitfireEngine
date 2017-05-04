@@ -34,7 +34,7 @@ class AbsoluteURL extends URL
 
 	/** @return self */
 	public static function current() {
-		return new self(get_path_info(), $_GET);
+		return new self(getPathInfo(), $_GET);
 	}
 
 	/** @inheritdoc */

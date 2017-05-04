@@ -170,16 +170,19 @@ function validate($target = null) {
 	}
 }
 
-function get_path_info() {
-	if (isset($_SERVER['PATH_INFO'])) {
-		return $_SERVER['PATH_INFO'];
-	} elseif (isset($_SERVER['REQUEST_URI'])) {
-		$base_url = spitfire()->baseUrl();
-		list($path) = explode('?', substr($_SERVER['REQUEST_URI'], strlen($base_url)));
-		if (strlen($path) !== 0) { return $path; }
-	}
+/**
+ * Retrieves the current path from the request. This will retrieve the path 
+ * without query string or document root.
+ * 
+ * @see http://www.spitfirephp.com/wiki/index.php/NgiNX_Configuration For NGiNX setup
+ * @return string
+ */
+function getPathInfo() {
+	$base_url = spitfire()->baseUrl();
+	list($path) = explode('?', substr($_SERVER['REQUEST_URI'], strlen($base_url)));
 	
-	return  '/';
+	if (strlen($path) !== 0) { return $path; }
+	else                     { return  '/';  }
 }
 
 function _def(&$a, $b) {
