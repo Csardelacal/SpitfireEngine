@@ -177,14 +177,14 @@ class URL implements ArrayAccess
 	}
 	
 	public static function current() {
-		$path = get_path_info();
+		$path = getPathInfo();
 		$refl = new ReflectionClass('URL');
 		return $refl->newInstanceArgs(array_values(array_merge(explode('/', $path), Array($_GET))));
 	}
 	
 	public static function canonical() {
 		$ctx = current_context();
-		$canonical = new self();
+		$canonical = new self($ctx->app);
 		$path = $canonical->getPath();
 		
 		if (!$ctx) { 
@@ -203,7 +203,7 @@ class URL implements ArrayAccess
 		return $canonical;
 	}
 	
-	public function absolute($domain) {
+	public function absolute($domain = null) {
 		$t = new AbsoluteURL($this->getApp());
 		
 		$t->setExtension($this->getExtension());

@@ -71,7 +71,7 @@ class ObjectFactory implements ObjectFactoryInterface
 		#Make the SQL required to read in the data
 		$sql    = sprintf('DESCRIBE `%s%s`', $schema->getTableName(), $modelname);
 		/** @var $fields Query */
-		$fields = $this->execute($sql, false);
+		$fields = db()->execute($sql, false);
 		
 		while ($row = $fields->fetch()) { 
 			$schema->{$row['Field']} = new TextField(); 

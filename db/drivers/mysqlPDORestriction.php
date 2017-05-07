@@ -5,7 +5,7 @@ namespace spitfire\storage\database\drivers;
 use \spitfire\storage\database\Restriction;
 use \spitfire\storage\database\Query;
 use \Exception;
-use \Model;
+use spitfire\Model;
 use spitfire\exceptions\PrivateException;
 
 class MysqlPDORestriction extends Restriction

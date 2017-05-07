@@ -87,7 +87,7 @@ class AbsoluteURL extends URL
 		$canonical = URL::canonical();
 		
 		#Prepend protocol and server and return it
-		return $canonical->toAbsolute();
+		return $canonical->absolute();
 	}
 	
 	public function getRoutes() {
