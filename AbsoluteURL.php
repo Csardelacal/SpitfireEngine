@@ -17,9 +17,16 @@ class AbsoluteURL extends spitfire\core\http\AbsoluteURL
 	
 	public function __construct() {
 
+<<<<<<< HEAD
 		#Get the parameters the first time
 		$sf     = spitfire();
 		$params = func_get_args();
+=======
+	/** @return self */
+	public static function current() {
+		return new self(getPathInfo(), $_GET);
+	}
+>>>>>>> feature/router-update
 
 		#Extract the app
 		if (reset($params) instanceof App || $sf->appExists(reset($params))) {

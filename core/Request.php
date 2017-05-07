@@ -231,7 +231,7 @@ class Request
 		$headers = $_SERVER;
 		
 		$https   = isset($_SERVER['HTTPS'])? 'on' : '';
-		$path    = Router::getInstance()->rewrite($_SERVER['HTTP_HOST'], get_path_info(), $_SERVER['REQUEST_METHOD'], $https);
+		$path    = Router::getInstance()->rewrite($_SERVER['HTTP_HOST'], getPathInfo(), $_SERVER['REQUEST_METHOD'], $https);
 		
 		if ($path instanceof Path) { return new Request($path, $get, $post, $cookie, $headers, $_SERVER['REQUEST_METHOD'], $https); }
 		else                       { return $path; }
