@@ -111,6 +111,7 @@ class Route
 			switch ($method){
 				case 'GET' :   $method = self::METHOD_GET; break;
 				case 'POST':   $method = self::METHOD_POST; break;
+				case 'HEAD':   $method = self::METHOD_HEAD; break;
 				case 'PUT' :   $method = self::METHOD_PUT; break;
 				case 'DELETE': $method = self::METHOD_DELETE; break;
 			}
