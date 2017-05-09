@@ -1,7 +1,7 @@
 <?php namespace spitfire\io;
 
 use filePermissionsException;
-use spitfire\core\Filesize;
+use spitfire\io\Filesize;
 use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\UploadValidationException;
 use spitfire\storage\drive\Directory;
