@@ -164,7 +164,7 @@ class Upload
 
 		// Sort ascending based on bytes
 		uasort($sizes, function(Filesize$a, Filesize$b){
-			return $a->bytes > $b->bytes ? 1 : ($a->bytes < $b->bytes ? -1 : 0);
+			return $a->getSize() > $b->getSize() ? 1 : ($a->getSize() < $b->getSize() ? -1 : 0);
 		});
 
 		return $sizes[0];

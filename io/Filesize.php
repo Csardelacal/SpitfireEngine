@@ -22,6 +22,10 @@ class Filesize
 	public function __construct($value){
 		$this->bytes = $value;
 	}
+	
+	public function getSize() {
+		return $bytes;
+	}
 
 	/**
 	 * Parses the size provided as a string and returns a Filesize instance or 
