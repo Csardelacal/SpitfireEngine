@@ -3,7 +3,6 @@
 use spitfire\core\Environment;
 use spitfire\core\router\Router;
 use spitfire\core\router\Server;
-use function get_path_info;
 
 class AbsoluteURL extends URL
 {
@@ -69,7 +68,7 @@ class AbsoluteURL extends URL
 	}
 	
 	public static function current() {
-		return new self(get_path_info(), $_GET);
+		return new self(getPathInfo(), $_GET);
 	}
 	
 	public static function asset($asset_name, $app = null) {
