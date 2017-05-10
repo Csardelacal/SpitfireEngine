@@ -8,9 +8,6 @@ use spitfire\core\router\Router;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\Get;
 use spitfire\SpitFire;
-use const ASSET_DIRECTORY;
-use function current_context;
-use function get_path_info;
 
 /**
  * 

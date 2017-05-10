@@ -59,7 +59,7 @@ class SpitFire extends App
 		date_default_timezone_set(Environment::get('timezone'));
                 
 		#Set the display errors directive to the value of debug
-		ini_set("display_errors" , Environment::get('debug_mode'));
+		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
 		
 	}
 

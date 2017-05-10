@@ -24,7 +24,7 @@ class Filesize
 	}
 	
 	public function getSize() {
-		return $bytes;
+		return $this->bytes;
 	}
 
 	/**
