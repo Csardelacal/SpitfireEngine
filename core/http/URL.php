@@ -1,6 +1,5 @@
 <?php namespace spitfire\core\http;
 
-use ArrayAccess;
 use ReflectionClass;
 use spitfire\core\Path;
 use spitfire\core\router\Route;
@@ -16,7 +15,7 @@ use spitfire\SpitFire;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-class URL implements ArrayAccess
+class URL
 {
 	/**
 	 * @var Path Contains information about the controller / action
@@ -215,23 +214,4 @@ class URL implements ArrayAccess
 		return array_merge($router->server()->getRoutes(), $router->getRoutes());
 	}
 
-	public function offsetExists($offset) {
-		if (is_numeric($offset)) { return isset($this->path[$offset]); }
-		else                     { return isset($this->params[$offset]); }
-	}
-
-	public function offsetGet($offset) {
-		if (is_numeric($offset)) { return $this->path[$offset]; }
-		else                     { return $this->params[$offset]; }
-	}
-
-	public function offsetSet($offset, $value) {
-		if (is_numeric($offset)) { return $this->path[$offset] = $value; }
-		else                     { return $this->params[$offset] = $value; }
-	}
-
-	public function offsetUnset($offset) {
-		if (is_numeric($offset)) { unset($this->path[$offset]); }
-		else                     { unset( $this->params[$offset]); }
-	}
 }
