@@ -174,9 +174,7 @@ class URL implements ArrayAccess
 	}
 	
 	public static function current() {
-		$path = getPathInfo();
-		$refl = new ReflectionClass(URL::class);
-		return $refl->newInstanceArgs(array_values(array_merge(explode('/', $path), Array($_GET))));
+		return URL::canonical();
 	}
 	
 	public static function canonical() {
