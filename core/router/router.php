@@ -68,7 +68,7 @@ class Router extends Routable
 	 * @param int                  $method
 	 * @return Route
 	 */
-	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x03) {
+	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x13) {
 		return $this->routes[] = new Route($this, $pattern, $target, $method, $protocol);
 	}
 	
