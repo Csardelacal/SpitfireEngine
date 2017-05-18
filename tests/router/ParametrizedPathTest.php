@@ -1,4 +1,8 @@
-<?php namespace spitfire\core\router;
+<?php namespace tests\spitfire\core\router;
+
+use PHPUnit\Framework\TestCase;
+use spitfire\core\router\ParametrizedPath;
+use spitfire\core\router\Pattern;
 
 /* 
  * The MIT License
@@ -24,11 +28,25 @@
  * THE SOFTWARE.
  */
 
-/**
- * The request path finder class allows the application to define both routes 
- * and redirections.
- */
-class RequestPathfinder
+class ParametrizedPathTest extends TestCase
 {
+	
+	public function testReplacement() {
+		$pp = new ParametrizedPath(new Pattern(':app'), new Pattern(':controller'), new Pattern(':action'), new Pattern(':object'));
+		$path = $pp->replace(['app' => 'a', 'controller' => 'b', 'action' => 'c', 'object' => 'd']);
+		
+		$this->assertEquals('a', $path->getApp());
+		$this->assertEquals('b', $path->getController()[0]);
+		$this->assertEquals('c', $path->getAction());
+	}
+	
+	public function testReplacementArrays() {
+		$pp = new ParametrizedPath(new Pattern(':app'), [new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
+		$path = $pp->replace(['app' => 'a', 'c1' => 'b1', 'c2' => 'b2', 'action' => 'c', 'object' => 'd']);
+		
+		$this->assertEquals('a',  $path->getApp());
+		$this->assertEquals('b2', $path->getController()[0]);
+		$this->assertEquals('c',  $path->getAction());
+	}
 	
 }

@@ -10,8 +10,11 @@ use Strings;
  * route or pattern (old_route) into a new route that the system can 
  * use (new_route) to handle the current request.
  * 
+ * A Route will only accept Closures, Responses or Paths (including arrays that
+ * can be interpreted as Paths by the translation class) as the target.
  * 
- * @todo The route needs to test for the current protocol.
+ * @todo Define translate class for array to Path translation
+ * @todo Define parameter class to replace inside Paths
  * @author César de la Cal <cesar@magic3w.com>
  */
 class Route

@@ -12,7 +12,7 @@ class Router extends Routable
 {
 	
 	private $servers = Array();
-	private $routes  = Array();
+	private $rules   = Array();
 	
 	/**
 	 * This rewrites a request into a Path (or in given cases, a Response). This 
@@ -69,7 +69,7 @@ class Router extends Routable
 	 * @return Route
 	 */
 	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x13) {
-		return $this->routes[] = new Route($this, $pattern, $target, $method, $protocol);
+		return $this->rules[] = new Route($this, $pattern, $target, $method, $protocol);
 	}
 	
 	/**
@@ -79,7 +79,7 @@ class Router extends Routable
 	 * @return Route[]
 	 */
 	public function getRoutes() {
-		return $this->routes;
+		return $this->rules;
 	}
 
 	/**
