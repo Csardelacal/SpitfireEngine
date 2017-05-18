@@ -163,6 +163,11 @@ class Collection implements ArrayAccess, CollectionInterface
 		}, $this->arr));
 	}
 	
+	public function push($element) {
+		$this->arr[] = $element;
+		return $element;
+	}
+	
 	public function current() {
 		return current($this->arr);
 	}
