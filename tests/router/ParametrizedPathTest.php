@@ -49,4 +49,18 @@ class ParametrizedPathTest extends TestCase
 		$this->assertEquals('c',  $path->getAction());
 	}
 	
+	public function testExtract() {
+		$pp = new ParametrizedPath(new Pattern(':app'), [new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
+		$vars = $pp->extract(new \spitfire\core\Path('app', ['c1', 'c2'], 'action', ['o1']));
+		
+		$this->assertEquals('app', $vars->getParameter('app'));
+	}
+	
+	public function testExtract2() {
+		$pp = new ParametrizedPath(new Pattern(':app'), [new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
+		$vars = $pp->extract(new \spitfire\core\Path('app', ['c1', 'c2'], 'action', ['o1', 'o2']));
+		
+		$this->assertEquals('app', $vars->getParameter('app'));
+	}
+	
 }
