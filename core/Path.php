@@ -1,5 +1,8 @@
 <?php namespace spitfire\core;
 
+use spitfire\App;
+use spitfire\core\router\Pattern;
+
 /**
  * The Path represents the set of data that Spitfire can obtain by parsing the 
  * path_info variable generated when using the framework. This object will provide
@@ -70,18 +73,18 @@
 	  * the expected response format and the parameters it took from the URL.
 	  * 
 	  * 
-	  * @param string $app
-	  * @param string|array|null  $controller
-	  * @param string $action
-	  * @param array  $object
-	  * @param string $format
-	  * @param array  $parameters
+	  * @param string|Pattern $app
+	  * @param string[]|Pattern[]|Pattern|string|null  $controller
+	  * @param string|Pattern $action
+	  * @param string[]|Pattern[]|string|Pattern  $object
+	  * @param string[]|string $format
+	  * @param string[]|Pattern[] $parameters
 	  */
 	 public function __construct($app, $controller, $action, $object, $format = 'php', $parameters = Array()) {
 		 $this->app        = $app;
-		 $this->controller = $controller && !is_array($controller)? [$controller] : $controller;
+		 $this->controller = is_array($controller)? array_filter($controller) : [$controller];
 		 $this->action     = $action;
-		 $this->object     = $object && !is_array($object)? [$object] : $object;
+		 $this->object     = is_array($object)? array_filter($object) : [$object];
 		 $this->format     = $format;
 		 $this->parameters = $parameters;
 	 }
@@ -102,12 +105,12 @@
 	  * this from the app in case you wanna use it.
 	  * 
 	  * @param string $app
-	  * @return \spitfire\core\Path
+	  * @return Path
 	  */
 	 public function setApp($app) {
 		 #If the App is actually an App and the user didn't read the doc, we will
 		 #forgive him.
-		 if ($app instanceof \spitfire\App) {
+		 if ($app instanceof App) {
 			 $app = $app->getNameSpace();
 		 }
 		 $this->app = $app;
@@ -175,7 +178,7 @@
 	  * controller name of \some\randomController would be Array(some, random).
 	  * 
 	  * @param string[] $controller
-	  * @return \spitfire\core\Path
+	  * @return Path
 	  */
 	 public function setController($controller) {
 		 $this->controller = $controller;
@@ -186,7 +189,7 @@
 	  * The name of the action that should be used to respond to the request.
 	  * 
 	  * @param string $action
-	  * @return \spitfire\core\Path
+	  * @return Path
 	  */
 	 public function setAction($action) {
 		 $this->action = $action;
@@ -198,7 +201,7 @@
 	  * parameters that will be sent to the action method of the controller.
 	  * 
 	  * @param string[] $object
-	  * @return \spitfire\core\Path
+	  * @return Path
 	  */
 	 public function setObject($object) {
 		 $this->object = $object;
@@ -211,7 +214,7 @@
 	  * html, if it's an API you could use JSON, XML or RSS output.
 	  * 
 	  * @param string $format
-	  * @return \spitfire\core\Path
+	  * @return Path
 	  */
 	 public function setFormat($format) {
 		 $this->format = $format;
@@ -229,7 +232,7 @@
 	  * define parameters in seemingly random positions of a route.
 	  * 
 	  * @param string[] $parameters
-	  * @return \spitfire\core\Path
+	  * @return Path
 	  */
 	 public function setParameters($parameters) {
 		 $this->parameters = $parameters;
