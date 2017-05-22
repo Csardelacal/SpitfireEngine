@@ -235,4 +235,12 @@ class Pattern
 	public function getPattern() {
 		return $this->pattern;
 	}
+	
+	public function isOptional() {
+		return $this->optional !== false;
+	}
+	
+	public function getDefault() {
+		return $this->optional;
+	}
 }
