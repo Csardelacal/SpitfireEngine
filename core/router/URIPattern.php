@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\router;
 
+use spitfire\exceptions\PrivateException;
 use Strings;
 
 /* 
@@ -82,6 +83,73 @@ class URIPattern
 		}
 		
 		return $params;
+	}
+	
+	/**
+	 * 
+	 * @param type $parameters
+	 * @return type
+	 * @throws PrivateException
+	 * @throws RouteMismatchException
+	 */
+	public function reverse($parameters) {
+		
+		/*
+		 * If the data we're receiving is a parameters object, then we'll extract
+		 * the raw data from it in order to work with it.
+		 */
+		$params = $parameters instanceof Parameters? $parameters->getParameters() : $parameters;
+		$add    = $parameters instanceof Parameters? $parameters->getUnparsed() : [];
+		
+		/*
+		 * If there is parameters that exceed the predefined length then we drop
+		 * them if the route does not support them.
+		 */
+		if (!empty($add) && !$this->open) {
+			throw new PrivateException('This route rejects additional params', 1705221031);
+		}
+		
+		/*
+		 * Prepare a pair of variables we need for the loop. First of all we need
+		 * to ensure that we have an array to write the replacements to, and then
+		 * we need a counter to make sure that all the parameters given were also
+		 * used.
+		 */
+		$replaced = [];
+		$left     = count($params);
+		
+		/*
+		 * Loop over the patterns and test the parameters. There's one quirk - the
+		 * system assumes that a parameter is never used twice but won't fail
+		 * gracefully if the user ignores that restriction.
+		 */
+		foreach($this->patterns as $p) {
+			
+			#Static URL elements
+			if(!$p->getName()) { 
+				$replaced[] = $p->getPattern()[0]; 
+				continue;
+			}
+			
+			/*
+			 * For non static URL elements we check whether the appropriate parameter
+			 * is defined. Then we test it and if the parameter was defined we will
+			 * accept it.
+			 */
+			$defined  = !isset($params[$p->getName()])? $params[$p->getName()] : null;
+			$replaced = array_merge($replaced, $p->test($defined));
+			$defined? $left-- : null;
+		}
+		
+		/*
+		 * Leftover parameters indicate that the system was unable to reverse the 
+		 * route properly
+		 */
+		if ($left) {
+			throw new PrivateException('Parameter count exceeded pattern count', 1705221044);
+		}
+		
+		return '/' . implode('/', array_merge($replaced, $add)) . '/';
 	}
 	
 }

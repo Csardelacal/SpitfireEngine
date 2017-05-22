@@ -80,15 +80,18 @@ class ParametrizedPath extends Path
 		/*
 		 * Since we have to loop over several elements we use a function that we 
 		 * then can call anonymously.
+		 * 
+		 * The lenient parameter indicates that the source array can be larger 
+		 * than the pattern array and provide overflow data.
 		 */
-		$fn = function($a, $b) {
+		$fn = function($a, $b, $lenient = false) {
 			$_ret = [];
 			
 			/*
 			 * First we check whether the patterns are compatible in the first place
 			 * by verifying that the length of the arrays is equal.
 			 */
-			if (count($a) > count($b)) {
+			if ( count($a) > count($b) || (!$lenient && count($a) !== count($b)) ) {
 				throw new PrivateException('Array too short', 1705212217); 
 			}
 			
@@ -105,7 +108,7 @@ class ParametrizedPath extends Path
 		$p->addParameters($fn([$this->getApp()],        [$from->getApp()]));
 		$p->addParameters($fn($this->getController(),   $from->getController()));
 		$p->addParameters($fn([$this->getAction()],     [$from->getAction()]));
-		$p->addParameters($fn($this->getObject(),       $from->getObject()));
+		$p->addParameters($fn($this->getObject(),       $from->getObject(), true));
 		$p->addParameters($fn([$this->getParameters()], [$from->getParameters()]));
 		$p->setUnparsed(array_slice($from->getObject(), count($this->getObject())));
 		
