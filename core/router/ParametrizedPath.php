@@ -95,7 +95,7 @@ class ParametrizedPath extends Path
 				throw new PrivateException('Array too short', 1705212217); 
 			}
 			
-			for($i = 0; $i < count($a); $i++) {
+			for($i = 0, $c = count($a); $i < $c; $i++) {
 				if ($a[$i] instanceof Pattern && $a[$i]->getName()) {
 					$_ret[$a[$i]->getName()] = $b[$i];
 				}
@@ -135,17 +135,14 @@ class ParametrizedPath extends Path
 		 * valid data.
 		 */
 		if (is_array($src)) {
-			$copy = [];
-			foreach ($src as $a => $b) { $copy[$a] = self::replaceIn($b, $data); } 
-			return $copy;
+			return array_map(function($e) use ($data) { return self::replaceIn($e, $data); }, $src);
 		}
 		
 		if ($src instanceof Pattern) {
 			$name = $src->getName();
 			
-			if (!$name)              { return $src->getPattern()[0]; }
-			if (isset($data[$name])) { return $data[$name]; }
-			else                     { throw new PrivateException('Invalid parameter: ' . $name, 1705181741); }
+			if (!$name) { return $src->getPattern()[0]; }
+			else        { return current($src->test($data[$name])); }
 		}
 		
 		if (is_scalar($src) || empty($src)) {
