@@ -142,7 +142,7 @@ class ParametrizedPath extends Path
 			$name = $src->getName();
 			
 			if (!$name) { return $src->getPattern()[0]; }
-			else        { return current($src->test($data[$name])); }
+			else        { return current($src->test($data[$name]?? null)); }
 		}
 		
 		if (is_scalar($src) || empty($src)) {
@@ -153,11 +153,43 @@ class ParametrizedPath extends Path
 	}
 	
 	/**
+	 * Converts an array into a patterned path. This allows the programmer to 
+	 * write a slicker array markup than having to instance the patterns.
 	 * 
-	 * @todo Implement
+	 * These are valid indexes in the array:
+	 * <ul>
+	 * <li>app</li>
+	 * <li>controller</li>
+	 * <li>action</li>
+	 * <li>object</li>
+	 * <li>parameters</li>
+	 * </ul>
+	 * 
+	 * 
+	 * @param string[][] $arr An array containing string arrays for the pattern replacement
+	 * @return ParametrizedPath
 	 */
-	public static function fromArray() {
+	public static function fromArray($arr) {
 		
+		/**
+		 * Convert all the elements in the array to patterns so we can feed it into
+		 * the new object
+		 */
+		foreach($arr as &$e) {
+			$e = array_map(function ($e) { return new Pattern($e); }, $e);
+		}
+		
+		/**
+		 * Instance the new parameterized path that contains the given elements
+		 */
+		return new ParametrizedPath(
+			$arr['app']?? null, 
+			$arr['controller']?? [], 
+			$arr['action']?? null, 
+			$arr['object']?? [], 
+			null,
+			$arr['parameters']
+		);
 	}
 	
 }
