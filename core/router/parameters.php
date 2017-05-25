@@ -58,6 +58,7 @@ class Parameters
 	 */
 	public function addParameters($params) {
 		$this->parameters = array_merge($this->parameters, $params);
+		return $this;
 	}
 	
 	/**
@@ -115,6 +116,7 @@ class Parameters
 	 */
 	public function setUnparsed($unparsed) {
 		$this->unparsed = $unparsed;
+		return $this;
 	}
 
 	/**

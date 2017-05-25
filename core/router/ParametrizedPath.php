@@ -28,6 +28,11 @@ use spitfire\exceptions\PrivateException;
  * THE SOFTWARE.
  */
 
+/**
+ * The parameterized path is a class that intends to hold patterns inside the 
+ * components of the Path. These patterns allow it to extract the parameters 
+ * from a given path and to assemble a proper path from the parameters.
+ */
 class ParametrizedPath extends Path
 {
 	
@@ -73,8 +78,12 @@ class ParametrizedPath extends Path
 	}
 	
 	/**
+	 * Extracts data from the given Path into a series of parameters. These can, 
+	 * for example, then be used to either sequence a URI using URIPattern.
 	 * 
-	 * @return mixed
+	 * This function does not detect conflicting parameters, broken 
+	 * 
+	 * @return Parameters
 	 */
 	public function extract(Path$from) {
 		/*
@@ -95,6 +104,10 @@ class ParametrizedPath extends Path
 				throw new PrivateException('Array too short', 1705212217); 
 			}
 			
+			/**
+			 * Loop over the patterns to assemble the data that we can extract.
+			 * This will give us an indexed array at the end.
+			 */
 			for($i = 0, $c = count($a); $i < $c; $i++) {
 				if ($a[$i] instanceof Pattern && $a[$i]->getName()) {
 					$_ret[$a[$i]->getName()] = $b[$i];
@@ -104,6 +117,10 @@ class ParametrizedPath extends Path
 			return $_ret;
 		};
 		
+		/*
+		 * Use the closure we just defined to work our way through the class' 
+		 * internal data.
+		 */
 		$p = new Parameters();
 		$p->addParameters($fn([$this->getApp()],        [$from->getApp()]));
 		$p->addParameters($fn($this->getController(),   $from->getController()));
@@ -180,13 +197,19 @@ class ParametrizedPath extends Path
 		}
 		
 		/**
-		 * Instance the new parameterized path that contains the given elements
+		 * Instance the new parameterized path that contains the given elements.
+		 * We use defaults to prevent the function from failing if a certain 
+		 * element is not present, this makes the function more convenient but 
+		 * harder to debug.
+		 * 
+		 * This is our first dib into testing with PHP 7 - it's the first instance
+		 * of code that requires the new version to function.
 		 */
 		return new ParametrizedPath(
 			$arr['app']?? null, 
-			$arr['controller']?? [], 
+			$arr['controller']?? null, 
 			$arr['action']?? null, 
-			$arr['object']?? [], 
+			$arr['object']?? null, 
 			null,
 			$arr['parameters']
 		);

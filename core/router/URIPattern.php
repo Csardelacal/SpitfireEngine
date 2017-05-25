@@ -34,13 +34,27 @@ use Strings;
 class URIPattern
 {
 	/**
+	 * The patterns used by this class to test the URL it receives. 
 	 *
 	 * @var Pattern[]
 	 */
 	private $patterns;
 	
+	/**
+	 * Indicates whether this is an open ended pattern. This implies that it'll
+	 * accept URL that are longer than the patterns it can test with (these 
+	 * additional parameters will get appended to the object).
+	 *
+	 * @var boolean
+	 */
 	private $open;
 	
+	/**
+	 * Instances a new URI Pattern. This class allows your application to test 
+	 * whether a URL matches the pattern you gave to the constructor.
+	 * 
+	 * @param string $pattern
+	 */
 	public function __construct($pattern) {
 		/*
 		 * If the pattern ends in a slash it's not considered open ended, this is
@@ -55,6 +69,15 @@ class URIPattern
 		$this->patterns = array_map(function ($e) { return new Pattern($e); }, array_filter(explode('/', $pattern)));
 	}
 	
+	/**
+	 * Tests whether a given $uri matches the patterns that this object holds.
+	 * Please note that if the URI is too long and the pattern is not open
+	 * ended it will throw a missmatch exception.
+	 * 
+	 * @param string $uri
+	 * @return \spitfire\core\router\Parameters
+	 * @throws RouteMismatchException
+	 */
 	public function test($uri) {
 		$pieces = array_filter(explode('/', $uri));
 		$params = new Parameters();
@@ -86,6 +109,8 @@ class URIPattern
 	}
 	
 	/**
+	 * Takes a parameter list and constructs a string URI from the combination
+	 * of patterns and parameters.
 	 * 
 	 * @param type $parameters
 	 * @return type
