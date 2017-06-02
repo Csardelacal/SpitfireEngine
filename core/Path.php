@@ -73,10 +73,10 @@ use spitfire\core\router\Pattern;
 	  * the expected response format and the parameters it took from the URL.
 	  * 
 	  * 
-	  * @param string|Pattern $app
+	  * @param string|Pattern|null $app
 	  * @param string[]|Pattern[]|Pattern|string|null  $controller
-	  * @param string|Pattern $action
-	  * @param string[]|Pattern[]|string|Pattern  $object
+	  * @param string|Pattern|null $action
+	  * @param string[]|Pattern[]|string|Pattern|null  $object
 	  * @param string[]|string $format
 	  * @param string[]|Pattern[] $parameters
 	  */
