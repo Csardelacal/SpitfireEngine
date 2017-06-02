@@ -160,13 +160,14 @@ class Pattern
 	 * @throws RouteMismatchException
 	 */
 	public function testString($str) {
-		switch ($this->type) {
-			case self::WILDCARD_NUMERIC:
-				if (((int)$str) !== 0 && $this->testPattern($str)) { return Array($this->name => $str); } break;
-			case self::WILDCARD_STRING:
-				if (is_string($str)   && $this->testPattern($str)) { return Array($this->name => filter_var($str, FILTER_SANITIZE_STRING)); } break;
-			default:
-				if ($this->testPattern($str)) { return $this->name? Array($this->name => $str) : Array(); } break;
+		#Numeric patterns need to be made re-tested to ensure that they're actually numeric
+		if ($this->type === self::WILDCARD_NUMERIC && !is_numeric($str)) {
+			throw new RouteMismatchException('Expected number for ' . $this->name);
+		}
+		
+		#Check whether the pattern is correct
+		if ($this->testPattern($str)) { 
+			return Array($this->name => $str);
 		}
 		
 		#If the pattern wasn't matched throw us out of it
@@ -240,6 +241,28 @@ class Pattern
 		return $this->optional !== false;
 	}
 	
+	/**
+	 * Returns whether the pattern parses a variable out of the strings it 
+	 * receives. This allows the app to check whether the pattern can return
+	 * data.
+	 * 
+	 * Usually this doesn't make much of a difference, since nameless patterns
+	 * return the exact same data (except for it being empty), but it allows the 
+	 * application to check whether a given set of data is missing. It also allows
+	 * it to list variables that a URIpattern would return / accept.
+	 * 
+	 * @return bool
+	 */
+	public function isVariable() {
+		return $this->name !== null;
+	}
+	
+	/**
+	 * Returns bool(false) if the pattern is not optional and the value if it is
+	 * optional. It's recommended to test whether 
+	 * 
+	 * @return false|string
+	 */
 	public function getDefault() {
 		return $this->optional;
 	}

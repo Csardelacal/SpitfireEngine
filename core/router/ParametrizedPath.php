@@ -132,6 +132,17 @@ class ParametrizedPath extends Path
 		return $p;
 	}
 	
+	/**
+	 * Returns a collection of the patterns this path holds. Please note that some
+	 * 'patterns' may be almost literals and have no other use than enforcing a 
+	 * certain string somewhere.
+	 * 
+	 * If you do wish to check whether a pattern is used for a parameter you can
+	 * use getName() on that pattern to get the variable name it'd fill in or a
+	 * null value if it does not contain a parameter.
+	 * 
+	 * @return Collection
+	 */
 	public function getPatterns() {
 		#Extract the patterns
 		$patterns = new Collection(array_merge(
@@ -145,6 +156,16 @@ class ParametrizedPath extends Path
 		return $patterns->filter(function ($e) { return $e instanceof Pattern; });
 	}
 	
+	/**
+	 * Recursively walks an array of data and replaces patterns with the data 
+	 * provided to it. 
+	 * 
+	 * @todo Recursively walking arrays should not be a task that this function implemtns
+	 * @param Pattern $src
+	 * @param mixed $data
+	 * @return Pattern
+	 * @throws PrivateException
+	 */
 	private static function replaceIn($src, $data) {
 		
 		/*
