@@ -167,7 +167,7 @@ class Pattern
 		
 		#Check whether the pattern is correct
 		if ($this->testPattern($str)) { 
-			return Array($this->name => $str);
+			return $this->name? [$this->name => $str] : [];
 		}
 		
 		#If the pattern wasn't matched throw us out of it
