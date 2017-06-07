@@ -95,7 +95,7 @@ class RouterTest extends TestCase
 		
 		#Test if the rewriting succeeded and the data was written in the right spot
 		$path  = $router->rewrite('localhost', '/another/test', 'GET', Route::PROTO_HTTP);
-		$this->assertEquals('another', $path->getController());
+		$this->assertEquals('another', current($path->getController()));
 		$this->assertEquals('test',    $path->getAction());
 	}
 	
@@ -107,7 +107,7 @@ class RouterTest extends TestCase
 		
 		#Test if the rewriting succeeded and the data was written in the right spot
 		$path  = $router->rewrite('localhost', '/another/test', 'GET', Route::PROTO_HTTP);
-		$this->assertEquals('another',     $path->getController());
+		$this->assertEquals('another',     current($path->getController()));
 		$this->assertEquals('something',   $path->getAction());
 		$this->assertEquals(Array('test'), $path->getObject());
 	}
@@ -120,10 +120,20 @@ class RouterTest extends TestCase
 		$p2 = $router->rewrite('localhost', '/test/',         'GET', Route::PROTO_HTTP);
 		$p3 = $router->rewrite('localhost', '/some/',         'GET', Route::PROTO_HTTP);
 		
-		$this->assertEquals('provided', $p1->getController());
-		$this->assertEquals('optional', $p2->getController());
+		$this->assertEquals('provided', current($p1->getController()));
+		$this->assertEquals('optional', current($p2->getController()));
 		
 		$this->assertEquals(false, $p3);
+	}
+	
+	public function testExtraction() {
+		$router  = $this->router;
+		$reverse = \spitfire\core\router\ParametrizedPath::fromArray(['controller' => ':p']);
+		$router->get('/test/:param1', Array('controller' => 'param1'));
+		
+		$rewrite = $router->rewrite('localhost', '/test/provided', 'GET', Route::PROTO_HTTP);
+		$data = $reverse->extract($rewrite);
+		$this->assertEquals('provided', $data->getParameter('p'));
 	}
 	
 }

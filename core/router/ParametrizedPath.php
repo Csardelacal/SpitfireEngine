@@ -101,6 +101,7 @@ class ParametrizedPath extends Path
 			 * by verifying that the length of the arrays is equal.
 			 */
 			if ( count($a) > count($b) || (!$lenient && count($a) !== count($b)) ) {
+				var_dump($a);
 				throw new PrivateException('Array too short', 1705212217); 
 			}
 			
@@ -214,7 +215,7 @@ class ParametrizedPath extends Path
 		 * the new object
 		 */
 		foreach($arr as &$e) {
-			$e = array_map(function ($e) { return new Pattern($e); }, $e);
+			$e = is_array($e)? array_map(function ($e) { return new Pattern($e); }, $e) : [new Pattern($e)];
 		}
 		
 		/**
@@ -232,7 +233,7 @@ class ParametrizedPath extends Path
 			$arr['action']?? null, 
 			$arr['object']?? null, 
 			null,
-			$arr['parameters']
+			$arr['parameters']?? []
 		);
 	}
 	

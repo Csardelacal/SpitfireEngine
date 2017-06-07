@@ -82,9 +82,9 @@ use spitfire\core\router\Pattern;
 	  */
 	 public function __construct($app, $controller, $action, $object, $format = 'php', $parameters = Array()) {
 		 $this->app        = $app;
-		 $this->controller = is_array($controller)? array_filter($controller) : [$controller];
+		 $this->controller = array_filter(is_array($controller)? $controller : [$controller]);
 		 $this->action     = $action;
-		 $this->object     = is_array($object)? array_filter($object) : [$object];
+		 $this->object     = array_filter(is_array($object)? $object : [$object]);
 		 $this->format     = $format;
 		 $this->parameters = $parameters;
 	 }
@@ -181,7 +181,7 @@ use spitfire\core\router\Pattern;
 	  * @return Path
 	  */
 	 public function setController($controller) {
-		 $this->controller = $controller;
+		 $this->controller = array_filter(is_array($controller)? $controller : [$controller]);
 		 return $this;
 	 }
 	 
