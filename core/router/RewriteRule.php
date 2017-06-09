@@ -5,6 +5,30 @@ use spitfire\core\Path;
 use spitfire\core\router\reverser\RouteReverserFactory;
 use Strings;
 
+/* 
+ * The MIT License
+ *
+ * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 /**
  * A route is a class that rewrites a URL path (route) that matches a
  * route or pattern (old_route) into a new route that the system can 
@@ -17,7 +41,7 @@ use Strings;
  * @todo Define parameter class to replace inside Paths
  * @author César de la Cal <cesar@magic3w.com>
  */
-class Route
+abstract class RewriteRule
 {
 	/* These constants are meant for evaluating if a request should be answered 
 	 * depending on if the request is done via HTTP(S). This is especially useful
@@ -51,8 +75,6 @@ class Route
 	private $method;
 	private $protocol;
 	
-	private $reverser;
-	
 	/**
 	 * A route is a pattern Spitfire uses to redirect an URL to something else.
 	 * It can 'redirect' (without it being a 302) a request to a new URL, it can
@@ -61,7 +83,7 @@ class Route
 	 * 
 	 * @param \spitfire\core\router\Routable $server The server this route belongs to
 	 * @param string $pattern
-	 * @param Closure|ParametrizedPath $new_route
+	 * @param Closure|ParametrizedPath|array $new_route
 	 * @param string $method
 	 * @param int    $proto
 	 */
@@ -71,27 +93,8 @@ class Route
 		$this->method    = $method;
 		$this->protocol  = $proto;
 		
-		$this->reverser  = RouteReverserFactory::make($new_route, $pattern);
-		
 		$this->patternStr = $pattern;
 		$this->pattern    = new URIPattern($pattern);
-	}
-	
-	/**
-	 * Tests all the elements of a pattern to see whether the tested route is 
-	 * valid or not and to fetch the parameters for it. In case the route and the
-	 * URL match we will have an array of parameters in the route that allow us
-	 * to customize a request.
-	 * 
-	 * @throws RouteMismatchException In case the route was not valid.
-	 * @param Pattern[] $pattern
-	 * @param string[] $array
-	 */
-	protected function patternWalk($pattern, $array) {
-		foreach ($pattern as $p) {
-			$this->parameters->addParameters($p->test(array_shift($array)));
-		}
-		$this->parameters->setUnparsed($array);
 	}
 	
 	/**
@@ -117,31 +120,6 @@ class Route
 	}
 	
 	/**
-	 * Tests if a URL matches the current Route. If so it will return true and you
-	 * can use the parameters in it.
-	 * 
-	 * @param string $URI
-	 * @return boolean
-	 */
-	public function testURI($URI) {
-		$array = array_filter(explode('/', $URI));
-		
-		$this->parameters = new Parameters();
-		
-		#Check the extension
-		$last = explode('.', array_pop($array));
-		$this->parameters->setExtension(isset($last[1])? array_pop($last) : 'php');
-		array_push($array, implode('.', $last));
-		
-		try {
-			$this->patternWalk($this->pattern, $array);
-			return true;
-		} catch(RouteMismatchException $e) {
-			return false;
-		}
-	}
-	
-	/**
 	 * Tests whether the requested protocol (HTTPS or not) is accepted by this
 	 * route. We use once again binary masks to test the protocol. This means that
 	 * we can either use HTTP (01), HTTPS (10) or both (11) which will translate
@@ -161,62 +139,9 @@ class Route
 	}
 	
 	public function test($URI, $method, $protocol) {
-		return $this->testURI($URI) && $this->testMethod($method) && $this->testProto($protocol);
+		return $this->pattern->test($URI) && $this->testMethod($method) && $this->testProto($protocol);
 	}
 	
-	protected function rewriteString() {
-		$route = $this->getParameters()->replaceInString($this->newRoute);
-		
-		#If the URL doesn't enforce to be finished pass on the unparsed parameters
-		if (!Strings::endsWith($this->newRoute, '/')) {
-			$route = rtrim($route, '\/') . '/' . implode('/', $this->getParameters()->getUnparsed());
-		}
-		
-		return '/' . trim($route, '/') . ($this->parameters->getExtension() === 'php'? '/' : '.' . $this->parameters->getExtension());
-	}
-	
-	/**
-	 * This method allows the router to use an array as target for the rewriting
-	 * instead of another string or path.
-	 *
-	 * @param Parameters $parameters
-	 *
-	 * @return Path
-	 */
-	protected function rewriteArray($parameters) {
-		$route = $this->newRoute;
-		$path  = new Path(null, null, null, null, $this->parameters->getExtension(), null);
-		
-		if (isset($route['app']       )) {
-			$app = $parameters->getParameter($route['app']);
-			$path->setApp($parameters->getParameter($app? $app: $route['app']));
-		}
-		
-		if (isset($route['controller'])) { 
-			$controller = $parameters->getParameter($route['controller']);
-			$path->setController($controller? $controller : $route['controller']);
-		}
-		
-		if (isset($route['action']))     { 
-			$action = $parameters->getParameter($route['action']); 
-			$path->setAction( $action? $action : $route['action']);
-		}
-		
-		//TODO: Sometimes several URL fragments should add up to a Object, this is not possible yet 
-		if (isset($route['object']))     { $path->setObject(Array($parameters->getParameter($route['object']))); }
-		else                             { $path->setObject($parameters->getUnparsed()); }
-		
-		return $path;
-	}
-	
-	public function rewrite($URI, $method, $protocol, $server) {
-		if ($this->test($URI, $method, $protocol)) {
-			if (is_string($this->newRoute))         {return $this->rewriteString();}
-			if ($this->newRoute instanceof Closure) {return call_user_func_array($this->newRoute, Array($this->parameters, $server->getParameters()));}
-			if (is_array($this->newRoute))          {return $this->rewriteArray($server->getParameters()->merge($this->parameters)); }
-		}
-		return false;
-	}
 	
 	public function getParameters($keys = false) {
 		if (!$keys) { return $this->parameters; }
@@ -228,19 +153,24 @@ class Route
 	
 	/**
 	 * 
-	 * @return reverser\RouteReverserInterface
+	 * @return URIPattern
 	 */
-	public function getReverser() {
-		return $this->reverser;
+	public function getTarget() {
+		return $this->newRoute;
 	}
 	
 	/**
 	 * 
-	 * @param reverser\RouteReverserInterface $reverser
-	 * @return Route
+	 * @return URIPattern
 	 */
-	public function setReverser($reverser) {
-		$this->reverser = $reverser;
-		return $this;
+	public function getSource() {
+		return $this->pattern;
 	}
+	
+	/**
+	 * 
+	 * @todo Server parameter should be a Parameter set provided by the server IMO
+	 * Need to check whether the server itself could have any impact on it
+	 */
+	abstract public function rewrite($URI, $method, $protocol, $server);
 }
