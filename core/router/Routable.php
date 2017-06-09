@@ -108,7 +108,7 @@ abstract class Routable
 		 * redirection.
 		 */
 		if (is_string($target) || $target instanceof URIPattern) { 
-			return $this->redirections->push(URIPattern::make($target)); //TODO: Extend this to actually build a redirection
+			return $this->redirections->push(new Route($this->getServer(), URIPattern::make($pattern), URIPattern::make($target), $method, $protocol));
 		}
 		
 		/*
@@ -119,6 +119,16 @@ abstract class Routable
 		if ($target instanceof Path || $target instanceof Response || 
 		    $target instanceof Closure || $target instanceof ParametrizedPath) { 
 			return $this->routes->push(new Route($this->getServer(), URIPattern::make($pattern), $target, $method, $protocol)); 
+		}
+		
+		/*
+		 * If the target is an array then we need to build the Parametrized path
+		 * that the array represents and use that instead of the array.
+		 */
+		if (is_array($target)) {
+			return $this->routes->push(
+				new Route($this->getServer(), URIPattern::make($pattern), 
+				ParametrizedPath::fromArray($target), $method, $protocol));
 		}
 	}
 }
