@@ -1,13 +1,16 @@
 <?php namespace spitfire\core\router\reverser;
 
 use Closure;
+use spitfire\core\router\ParametrizedPath;
 use spitfire\core\router\Pattern;
+use Strings;
 
 class RouteReverserFactory
 {
 	
 	public static function make($for, $from) {
 		if ($for instanceof Closure) { return null; }
+		if ($for instanceof ParametrizedPath) { return self::makeFromPath($for, $from); }
 		if (is_array($for))          { return self::makeFromArray($for, $from); }
 		if (is_string($for))         { return null; }
 	}
@@ -42,11 +45,29 @@ class RouteReverserFactory
 			 * case we'll return false and be done.
 			 */
 			foreach ($for as $k => $e) {
-				if (\Strings::startsWith($e, ':')) { continue; }
+				if (Strings::startsWith($e, ':')) { continue; }
 				if ((array)$$k != (array)$e)       { return false; }
 			}
 			
 			return '/' . implode('/', array_map(function ($e) use($app, $controller, $action, $object) { return $e($app, $controller, $action, $object); }, $target));
+		});
+	}
+	
+	/**
+	 * 
+	 * @param ParametrizedPath $for
+	 * @param type $from
+	 * @return \spitfire\core\router\reverser\ClosureReverser
+	 */
+	public static function makeFromPath($for, $from) {
+		$p = \spitfire\core\router\URIPattern::make($from);
+		
+		return new ClosureReverser(function ($app, $controller, $action, $object) use ($for, $p) {
+			try {
+				return $p->reverse($for->extract(new \spitfire\core\Path($app, $controller, $action, $object)));
+			} catch (\Exception$e) {
+				return false;
+			}
 		});
 	}
 	

@@ -26,6 +26,11 @@ abstract class Routable
 	 */
 	private $redirections;
 	
+	public function __construct() {
+		$this->routes = new Collection();
+		$this->redirections = new Collection();
+	}
+	
 	/**
 	 * This method adds a route for any request that is sent either via GET or POST
 	 * this are the most standard and common behaviors and the ones recommended
@@ -108,7 +113,7 @@ abstract class Routable
 		 * redirection.
 		 */
 		if (is_string($target) || $target instanceof URIPattern) { 
-			return $this->redirections->push(new Route($this->getServer(), URIPattern::make($pattern), URIPattern::make($target), $method, $protocol));
+			return $this->redirections->push(new Redirection($this, URIPattern::make($pattern), URIPattern::make($target), $method, $protocol));
 		}
 		
 		/*
@@ -118,7 +123,7 @@ abstract class Routable
 		 */
 		if ($target instanceof Path || $target instanceof Response || 
 		    $target instanceof Closure || $target instanceof ParametrizedPath) { 
-			return $this->routes->push(new Route($this->getServer(), URIPattern::make($pattern), $target, $method, $protocol)); 
+			return $this->routes->push(new Route($this, URIPattern::make($pattern), $target, $method, $protocol)); 
 		}
 		
 		/*
@@ -127,8 +132,16 @@ abstract class Routable
 		 */
 		if (is_array($target)) {
 			return $this->routes->push(
-				new Route($this->getServer(), URIPattern::make($pattern), 
+				new Route($this, URIPattern::make($pattern), 
 				ParametrizedPath::fromArray($target), $method, $protocol));
 		}
+	}
+	
+	public function getRedirections() {
+		return $this->redirections;
+	}
+	
+	public function getRoutes() {
+		return $this->routes;
 	}
 }

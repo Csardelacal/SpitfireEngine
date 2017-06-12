@@ -16,8 +16,6 @@ class Server extends Routable
 	private $router;
 	private $pattern;
 	private $parameters;
-	/** @var Route[] */
-	private $routes = Array();
 	
 	public function __construct($pattern, Router$router) {
 		$array = explode('.', $pattern);
@@ -25,6 +23,8 @@ class Server extends Routable
 		$this->pattern = $array;
 		
 		$this->router  = $router;
+		
+		parent::__construct();
 	}
 	
 	/**
@@ -60,9 +60,14 @@ class Server extends Routable
 		if (!$this->test($server)) { return false; }
 		
 		#Combine routes from the router and server
-		$routes = array_merge($this->routes, $this->router->getRoutes());
+		$routes = array_merge($this->getRedirections()->toArray(), $this->getRoutes()->toArray(), $this->router->getRoutes()->toArray());
 		#Test the routes
-		foreach ($routes as $route) {
+		foreach ($routes as $route) { /*@var $route Route*/
+			
+			#Verify whether the route is valid at all
+			if (!$route->test($url, $method, $protocol)) { continue; }
+			
+			#Check whether the route can rewrite the request
 			$rewrite = $route->rewrite($url, $method, $protocol, $this);
 
 			if ( ($rewrite instanceof Path)) { return $rewrite; }
@@ -75,17 +80,9 @@ class Server extends Routable
 		if ($this->parameters === false) { return new Parameters(); }
 		return $this->parameters;
 	}
-
-	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x13) {
-		return $this->routes[] = new Route($this, $pattern, $target, $method, $protocol);
-	}
 	
 	public function getReverser() {
 		return new reverser\BaseServerReverser($this->pattern, $this);
-	}
-	
-	public function getRoutes() {
-		return $this->routes;
 	}
 
 }

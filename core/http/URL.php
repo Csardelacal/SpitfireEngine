@@ -211,7 +211,7 @@ class URL
 	
 	public function getRoutes() {
 		$router = Router::getInstance();
-		return array_merge($router->server()->getRoutes(), $router->getRoutes());
+		return array_merge($router->server()->getRoutes()->toArray(), $router->getRoutes()->toArray());
 	}
 
 }

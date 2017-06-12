@@ -74,7 +74,7 @@ class Route
 		$this->reverser  = RouteReverserFactory::make($new_route, $pattern);
 		
 		$this->patternStr = $pattern;
-		$this->pattern    = new URIPattern($pattern);
+		$this->pattern    = URIPattern::make($pattern);
 	}
 	
 	/**
@@ -161,7 +161,12 @@ class Route
 	}
 	
 	public function test($URI, $method, $protocol) {
-		return $this->testURI($URI) && $this->testMethod($method) && $this->testProto($protocol);
+		try {
+			return $this->pattern->test($URI) && $this->testMethod($method) && $this->testProto($protocol);
+		}
+		catch (\spitfire\core\router\RouteMismatchException$e) {
+			return false;
+		}
 	}
 	
 	protected function rewriteString() {
@@ -214,6 +219,7 @@ class Route
 			if (is_string($this->newRoute))         {return $this->rewriteString();}
 			if ($this->newRoute instanceof Closure) {return call_user_func_array($this->newRoute, Array($this->parameters, $server->getParameters()));}
 			if (is_array($this->newRoute))          {return $this->rewriteArray($server->getParameters()->merge($this->parameters)); }
+			if ($this->newRoute instanceof ParametrizedPath) { return $this->newRoute->replace($server->getParameters()->merge($this->pattern->test($URI))); }
 		}
 		return false;
 	}

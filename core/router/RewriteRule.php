@@ -94,7 +94,7 @@ abstract class RewriteRule
 		$this->protocol  = $proto;
 		
 		$this->patternStr = $pattern;
-		$this->pattern    = new URIPattern($pattern);
+		$this->pattern    = URIPattern::make($pattern);
 	}
 	
 	/**

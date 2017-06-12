@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\router;
 
+use spitfire\core\router\reverser\RouteReverserInterface;
+
 /**
  * A route is a class that rewrites a URL path (route) that matches a
  * route or pattern (old_route) into a new route that the system can 
@@ -20,12 +22,12 @@ class Redirection extends RewriteRule
 	
 	public function __construct(Routable $server, $pattern, $new_route, $method, $proto = Route::PROTO_ANY) {
 		parent::__construct($server, $pattern, $new_route, $method, $proto);
-		$this->reverser = null; //TODO: Redirection reverser
+		$this->reverser = $this;
 	}
 	
 	/**
 	 * 
-	 * @return reverser\RouteReverserInterface
+	 * @return RouteReverserInterface
 	 */
 	public function getReverser() {
 		return $this->reverser;
@@ -33,7 +35,7 @@ class Redirection extends RewriteRule
 	
 	/**
 	 * 
-	 * @param reverser\RouteReverserInterface $reverser
+	 * @param RouteReverserInterface $reverser
 	 * @return Route
 	 */
 	public function setReverser($reverser) {
@@ -51,6 +53,19 @@ class Redirection extends RewriteRule
 	 */
 	public function rewrite($URI, $method, $protocol, $server) {
 		return $this->getTarget()->reverse($this->getSource()->test($URI));
+	}
+	
+	/**
+	 * Takes a URL that may match the target URL and if it does, take the params
+	 * and construct a source compatible URL.
+	 * 
+	 * @throws RouteMismatchException
+	 * @throws \spitfire\exceptions\PrivateException
+	 * @param  string $uri
+	 * @return string
+	 */
+	public function reverse($uri) {
+		return $this->getSource()->reverse($this->getTarget()->test($uri));
 	}
 
 }
