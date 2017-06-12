@@ -12,7 +12,6 @@ class Router extends Routable
 {
 	
 	private $servers = Array();
-	private $rules   = Array();
 	
 	/**
 	 * This rewrites a request into a Path (or in given cases, a Response). This 
@@ -57,29 +56,6 @@ class Router extends Routable
 		
 		if (isset($this->servers[$address])) { return $this->servers[$address]; }
 		return $this->servers[$address] = new Server($address, $this);
-	}
-	
-	/**
-	 * Adds a new Route to the App. This redirects certain requests to a different
-	 * controller than the default route would do.
-	 * 
-	 * @param string               $pattern
-	 * @param string|closure|array $target
-	 * @param int                  $method
-	 * @return Route
-	 */
-	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x13) {
-		return $this->rules[] = new Route($this, $pattern, $target, $method, $protocol);
-	}
-	
-	/**
-	 * Returns the list of routes. This is usually called by the "Server" to 
-	 * retrieve generic routes
-	 * 
-	 * @return Route[]
-	 */
-	public function getRoutes() {
-		return $this->rules;
 	}
 
 	/**

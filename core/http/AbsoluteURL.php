@@ -95,7 +95,7 @@ class AbsoluteURL extends URL
 		if (!is_array($this->domain))    { return parent::getRoutes(); }
 		if (!$this->getReverser())       { return parent::getRoutes(); }
 		
-		return $this->getReverser()->getServer()->getRoutes();
+		return $this->getReverser()->getServer()->getRoutes()->toArray();
 	}
 	
 	public function getReverser() {

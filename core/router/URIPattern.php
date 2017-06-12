@@ -66,7 +66,7 @@ class URIPattern
 		 * The patterns allow the system to test the URL piece by piece, making it
 		 * more granular.
 		 */
-		$this->patterns = array_map(function ($e) { return new Pattern($e); }, array_filter(explode('/', $pattern)));
+		$this->patterns = array_values(array_map(function ($e) { return new Pattern($e); }, array_filter(explode('/', $pattern))));
 	}
 	
 	/**
@@ -161,7 +161,7 @@ class URIPattern
 			 * is defined. Then we test it and if the parameter was defined we will
 			 * accept it.
 			 */
-			$defined  = !isset($params[$p->getName()])? $params[$p->getName()] : null;
+			$defined  = isset($params[$p->getName()])? $params[$p->getName()] : null;
 			$replaced = array_merge($replaced, $p->test($defined));
 			$defined? $left-- : null;
 		}
@@ -174,7 +174,13 @@ class URIPattern
 			throw new PrivateException('Parameter count exceeded pattern count', 1705221044);
 		}
 		
-		return '/' . implode('/', array_merge($replaced, $add)) . '/';
+		return implode('/', array_merge($replaced, $add));
+	}
+	
+	public static function make($str) {
+		if ($str instanceof URIPattern) { return $str; }
+		elseif (is_string($str)) { return new URIPattern($str); }
+		else { throw new \InvalidArgumentException('Invalid pattern for URIPattern::make', 1706091621); }
 	}
 	
 }

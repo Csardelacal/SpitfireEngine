@@ -26,7 +26,7 @@ class RouterTest extends TestCase
 	public function testCreateRoute() {
 		
 		$route  = $this->router->get('/test', 'test2');
-		$this->assertInstanceOf('\spitfire\core\router\Route', $route);
+		$this->assertInstanceOf('\spitfire\core\router\Redirection', $route);
 	}
 	
 	/**
@@ -83,7 +83,7 @@ class RouterTest extends TestCase
 		$router = $this->router;
 		
 		#Rewrite a parameter based URL into an array
-		$route = $router->get('/:param1/:param2', Array('controller' => 'param1', 'action' => 'param2'));
+		$route = $router->get('/:param1/:param2', Array('controller' => ':param1', 'action' => ':param2'));
 		
 		#Test whether matching works for the array string
 		$this->assertEquals(true, $route->test('/another/test', 'GET', Route::PROTO_HTTP, $router->server()));
@@ -103,7 +103,7 @@ class RouterTest extends TestCase
 		$router = $this->router;
 		
 		#Rewrite a parameter based URL into an array
-		$router->get('/:param1/:param2', Array('controller' => 'param1', 'action' => 'something', 'object' => 'param2'));
+		$router->get('/:param1/:param2', Array('controller' => ':param1', 'action' => 'something', 'object' => ':param2'));
 		
 		#Test if the rewriting succeeded and the data was written in the right spot
 		$path  = $router->rewrite('localhost', '/another/test', 'GET', Route::PROTO_HTTP);
@@ -114,7 +114,7 @@ class RouterTest extends TestCase
 	
 	public function testOptionalParameters() {
 		$router = $this->router;
-		$router->get('/test/:param1?optional', Array('controller' => 'param1'));
+		$router->get('/test/:param1?optional', Array('controller' => ':param1'));
 		
 		$p1 = $router->rewrite('localhost', '/test/provided', 'GET', Route::PROTO_HTTP);
 		$p2 = $router->rewrite('localhost', '/test/',         'GET', Route::PROTO_HTTP);
@@ -129,7 +129,7 @@ class RouterTest extends TestCase
 	public function testExtraction() {
 		$router  = $this->router;
 		$reverse = \spitfire\core\router\ParametrizedPath::fromArray(['controller' => ':p']);
-		$router->get('/test/:param1', Array('controller' => 'param1'));
+		$router->get('/test/:param1', Array('controller' => ':param1'));
 		
 		$rewrite = $router->rewrite('localhost', '/test/provided', 'GET', Route::PROTO_HTTP);
 		$data = $reverse->extract($rewrite);

@@ -50,8 +50,8 @@ class ParametrizedPath extends Path
 		 * extract the additional (so called 'unparsed') parameters
 		 */
 		if ($data instanceof Parameters) {
-			$data = $data->getParameters();
 			$add  = $data->getUnparsed();
+			$data = $data->getParameters();
 		}
 		/*
 		 * Arrays have no additional data so we do not need to splice them.
@@ -101,7 +101,6 @@ class ParametrizedPath extends Path
 			 * by verifying that the length of the arrays is equal.
 			 */
 			if ( count($a) > count($b) || (!$lenient && count($a) !== count($b)) ) {
-				var_dump($a);
 				throw new PrivateException('Array too short', 1705212217); 
 			}
 			
@@ -110,7 +109,7 @@ class ParametrizedPath extends Path
 			 * This will give us an indexed array at the end.
 			 */
 			for($i = 0, $c = count($a); $i < $c; $i++) {
-				if ($a[$i] instanceof Pattern && $a[$i]->getName()) {
+				if ($a[$i] instanceof Pattern && $a[$i]->test($b[$i]) && $a[$i]->getName()) {
 					$_ret[$a[$i]->getName()] = $b[$i];
 				}
 			}
@@ -230,7 +229,7 @@ class ParametrizedPath extends Path
 		return new ParametrizedPath(
 			$arr['app']?? null, 
 			$arr['controller']?? null, 
-			$arr['action']?? null, 
+			isset($arr['action'])? reset($arr['action']) : null, 
 			$arr['object']?? null, 
 			null,
 			$arr['parameters']?? []
