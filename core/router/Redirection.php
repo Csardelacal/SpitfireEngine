@@ -52,7 +52,15 @@ class Redirection extends RewriteRule
 	 * @return string New route
 	 */
 	public function rewrite($URI, $method, $protocol, $server) {
-		return $this->getTarget()->reverse($this->getSource()->test($URI));
+		try {
+			return $this->getTarget()->reverse($this->getSource()->test($URI));
+		} 
+		catch (\spitfire\core\router\RouteMismatchException$e) {
+			return false;
+		}
+		catch (\spitfire\exceptions\PrivateException$e) {
+			return false;
+		}
 	}
 	
 	/**
