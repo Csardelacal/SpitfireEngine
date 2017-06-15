@@ -141,7 +141,7 @@ class URL
 		
 		#If the extension provided is special, we print it
 		if ($this->path->getFormat() !== 'php') { $url.= ".{$this->path->getFormat()}"; }
-		else                                    { $url.= '/'; }
+		else                                    { $url = rtrim($url, '/') . '/'; }
 		
 		if ($this->params instanceof Get) {
 			$url.= '?' . http_build_query($this->params->getRaw());

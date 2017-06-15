@@ -174,7 +174,7 @@ class URIPattern
 			throw new PrivateException('Parameter count exceeded pattern count', 1705221044);
 		}
 		
-		return implode('/', array_merge($replaced, $add));
+		return '/' . implode('/', array_merge($replaced, $add)) . '/';
 	}
 	
 	public static function make($str) {
