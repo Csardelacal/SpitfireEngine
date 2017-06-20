@@ -1,9 +1,6 @@
 <?php namespace spitfire\core\router;
 
 use Closure;
-use spitfire\core\Path;
-use spitfire\core\router\reverser\RouteReverserFactory;
-use Strings;
 
 /* 
  * The MIT License
@@ -65,7 +62,7 @@ abstract class RewriteRule
 	 * This var holds a reference to a route server (an object containing a pattern
 	 * to match virtualhosts) that isolates this route from the others.
 	 * 
-	 * @var \spitfire\core\router\Routable
+	 * @var Routable
 	 */
 	private $server;
 	private $pattern;
@@ -81,7 +78,7 @@ abstract class RewriteRule
 	 * directly send back a response or assign a custom controller, action and 
 	 * object to the request.
 	 * 
-	 * @param \spitfire\core\router\Routable $server The server this route belongs to
+	 * @param Routable $server The server this route belongs to
 	 * @param string $pattern
 	 * @param Closure|ParametrizedPath|array $new_route
 	 * @param string $method
@@ -139,7 +136,15 @@ abstract class RewriteRule
 	}
 	
 	public function test($URI, $method, $protocol) {
-		return $this->pattern->test($URI) && $this->testMethod($method) && $this->testProto($protocol);
+		try {
+			#First we test the URI. Since the URI will throw an exception, we need 
+			#to catch it and return false.
+			$this->pattern->test($URI);
+			return $this->testMethod($method) && $this->testProto($protocol);
+		}
+		catch (RouteMismatchException$e) {
+			return false;
+		}
 	}
 	
 	

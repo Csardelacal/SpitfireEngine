@@ -73,7 +73,7 @@ use spitfire\core\router\Pattern;
 	  * the expected response format and the parameters it took from the URL.
 	  * 
 	  * 
-	  * @param string|Pattern|null $app
+	  * @param string|Pattern|App|null $app
 	  * @param string[]|Pattern[]|Pattern|string|null  $controller
 	  * @param string|Pattern|null $action
 	  * @param string[]|Pattern[]|string|Pattern|null  $object
@@ -81,7 +81,7 @@ use spitfire\core\router\Pattern;
 	  * @param string[]|Pattern[] $parameters
 	  */
 	 public function __construct($app, $controller, $action, $object, $format = 'php', $parameters = Array()) {
-		 $this->app        = $app;
+		 $this->app        = $app instanceof App? $app->getURISpace() : $app;
 		 $this->controller = array_filter(is_array($controller)? $controller : [$controller]);
 		 $this->action     = $action;
 		 $this->object     = array_filter(is_array($object)? $object : [$object]);
@@ -204,7 +204,7 @@ use spitfire\core\router\Pattern;
 	  * @return Path
 	  */
 	 public function setObject($object) {
-		 $this->object = $object;
+		 $this->object = array_filter(is_array($object)? $object : [$object]);
 		 return $this;
 	 }
 	 

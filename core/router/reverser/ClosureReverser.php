@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\router\reverser;
 
-use spitfire\App;
+use spitfire\core\Path;
 
 class ClosureReverser implements RouteReverserInterface
 {
@@ -14,14 +14,9 @@ class ClosureReverser implements RouteReverserInterface
 	/** 
 	 * @inheritdoc 
 	 */
-	public function reverse($app, $controller, $action, $object, $additional = Array()) {
+	public function reverse(Path$path) {
 		$c = $this->closure;
-		
-		#If the application is providing an app object to reverse the route, then
-		#it should be returned to it's string format.
-		if ($app instanceof App) {	$app = $app->getNameSpace(); }
-		
-		return $c($app, $controller, $action, $object, $additional);
+		return $c($path);
 	}
 
 }
