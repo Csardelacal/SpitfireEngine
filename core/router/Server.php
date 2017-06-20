@@ -1,6 +1,8 @@
 <?php namespace spitfire\core\router;
 
 use spitfire\core\Path;
+use spitfire\core\Response;
+use spitfire\core\router\reverser\BaseServerReverser;
 
 /**
  * A server in Spitfire's router is a certain virtual host the application is 
@@ -29,7 +31,7 @@ class Server extends Routable
 	
 	/**
 	 * 
-	 * @throws \spitfire\core\router\RouteMismatchException If the path does not match
+	 * @throws RouteMismatchException If the path does not match
 	 * @param array $pattern
 	 * @param array $array
 	 */
@@ -60,7 +62,11 @@ class Server extends Routable
 		if (!$this->test($server)) { return false; }
 		
 		#Combine routes from the router and server
-		$routes = array_merge($this->getRedirections()->toArray(), $this->getRoutes()->toArray(), $this->router->getRoutes()->toArray());
+		$routes = array_merge(
+				  $this->getRedirections()->toArray(), $this->router->getRedirections()->toArray(),
+				  $this->getRoutes()->toArray(), $this->router->getRoutes()->toArray()
+		);
+		
 		#Test the routes
 		foreach ($routes as $route) { /*@var $route Route*/
 			
@@ -70,7 +76,7 @@ class Server extends Routable
 			#Check whether the route can rewrite the request
 			$rewrite = $route->rewrite($url, $method, $protocol, $this);
 
-			if ( ($rewrite instanceof Path)) { return $rewrite; }
+			if ( $rewrite instanceof Path || $rewrite instanceof Response) { return $rewrite; }
 			if ( $rewrite !== false)         { $url = $rewrite; }
 		}
 	}
@@ -82,7 +88,7 @@ class Server extends Routable
 	}
 	
 	public function getReverser() {
-		return new reverser\BaseServerReverser($this->pattern, $this);
+		return new BaseServerReverser($this->pattern, $this);
 	}
 
 }

@@ -13,9 +13,16 @@ class URLTest extends TestCase
 		\spitfire\core\Environment::get()->set('base_url', '/');
 		
 		if (!$this->setup) {
+			#Create a route with parameters
 			Router::getInstance()->request('/:a/:b', ['controller' => 'test', 'action' => ':b', 'object' => ':a']);
 			
+			#Create a route for a specific server with parameters
 			Router::getInstance()->server(':lang.:tld.com')->request('/hello/', ['controller' => 'test', 'action' => 'a', 'object' => 'a']);
+			
+			#Create a redirection
+			Router::getInstance()->request('/about', '/static/about');
+			Router::getInstance()->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
+			
 			spitfire()->createRoutes();
 			
 			$this->setup = true;
@@ -57,6 +64,14 @@ class URLTest extends TestCase
 	public function testServerReverser2() {
 		$absURL = url('test', 'a', 'a')->absolute('test.com');
 		$this->assertEquals('http://test.com/a/a/', strval($absURL));
+	}
+	
+	public function testRedirectionReverser() {
+		$urla = url('content', 'page', 'about');
+		$urlb = url('content', 'page', 'me');
+		
+		$this->assertEquals('/static/me/', strval($urlb));
+		$this->assertEquals('/about/', strval($urla));
 	}
 	
 }

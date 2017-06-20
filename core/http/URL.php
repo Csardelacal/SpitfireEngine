@@ -131,12 +131,12 @@ class URL
 			$rev = $route->getReverser();
 			if ($rev === null) { continue; }
 			
-			$url = $rev->reverse(
-				$this->path->getApp(), 
-				$this->path->getController(), 
-				$this->path->getAction(), 
-				$this->path->getObject(), 
-				$this->path->getParameters());
+			$url = $rev->reverse($this->path);
+		}
+		
+		foreach ($this->getRedirections() as $red) {
+			try { $url = $red->reverse($url); }
+			catch (\Exception$e) { /*Ignore*/ }
 		}
 		
 		#If the extension provided is special, we print it
@@ -209,7 +209,20 @@ class URL
 	
 	public function getRoutes() {
 		$router = Router::getInstance();
-		return array_merge($router->server()->getRoutes()->toArray(), $router->getRoutes()->toArray());
+		return array_merge(
+			$router->server()->getRoutes()->toArray(), $router->getRoutes()->toArray()
+		);
+	}
+	
+	/**
+	 * 
+	 * @return \spitfire\core\router\Redirection[]
+	 */
+	public function getRedirections() {
+		$router = Router::getInstance();
+		return array_merge(
+			$router->server()->getRedirections()->toArray(), $router->getRedirections()->toArray()
+		);
 	}
 
 }

@@ -70,10 +70,13 @@ class SchemaTest extends TestCase
 	 * 
 	 * Unsetting a field is usually only needed when working with very special case
 	 * schemas or when using different PKs than the default _id
+	 * 
 	 */
 	public function testUnsettingField() {
 		$a = new \spitfire\storage\database\Schema('test');
 		unset($a->_id);
+		
+		$this->assertEquals(null, isset($a->_id));
 	}
 	
 	/**

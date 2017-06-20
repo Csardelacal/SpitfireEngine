@@ -160,31 +160,31 @@ abstract class App
 		return $this->getBaseDir() . 'controllers/';
 	}
 	
-	public function getLocale($locale) {
-		
-		if (empty($locale)) throw new PrivateException('Empty locale');
-		
-		$c = $this->getNameSpace() . $locale . 'Locale';
-		
-		if (!class_exists($c)) {
-			throw new PrivateException('Not a valid locale for this app');
-		}
-		
-		$reflection = new ReflectionClass($c);
-		if ($reflection->isAbstract()) throw new PublicException("Page not found", 404, new PrivateException("Abstract Locale", 0) );
-		return new $c();
-	}
-	
+	/**
+	 * Creates the default routes for this application. Spitfire will assume that
+	 * a /app/controller/action/object type of path is what you wish to use for
+	 * your app. If you'd rather have custom rules - feel free to override these.
+	 */
 	public function createRoutes() {
 		$ns       = $this->URISpace? '/' . $this->URISpace : '';
 		$uriSpace = $this->URISpace;
 		
+		#The default route just returns a path based on app/controller/action/object
+		#If your application does not wish this to happen, please override createRoutes
+		#with your custome code.
 		$default = Router::getInstance()->request($ns, function (Parameters$params) use ($uriSpace) {
 			$args = $params->getUnparsed();
 			return new Path($uriSpace, array_shift($args), array_shift($args), $args, $params->getExtension());
 		});
 		
-		$default->setReverser(new core\router\reverser\ClosureReverser(function ($app, $controller, $action, $object, $env) {
+		#The reverser for the default route is rather simple again. 
+		#It will concatenate app, controller and action
+		$default->setReverser(new core\router\reverser\ClosureReverser(function (Path$path) {
+			$app        = $path->getApp();
+			$controller = $path->getController();
+			$action     = $path->getAction();
+			$object     = $path->getObject();
+			
 			if ($controller === (array)core\Environment::get('default_controller')) { $controller = Array(); }
 			if ($action     ===        core\Environment::get('default_action'))     { $action     = ''; }
 			
