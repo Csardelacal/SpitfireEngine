@@ -118,15 +118,14 @@ class AbsoluteURL extends URL
 		 */
 		elseif($this->domain) {
 			$router = Router::getInstance();
-			return $router->server()->getRoutes()? : $router->getRoutes();
+			return $router->server()->getRoutes()->toArray()? : $router->getRoutes()->toArray();
 		}
 		
 		/*
 		 * Otherwise we use the globals.
 		 */
 		else {
-			return parent::getRoutes(); 
-			
+			return parent::getRoutes();
 		}
 	}
 	
