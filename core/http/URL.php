@@ -204,9 +204,9 @@ class URL
 	
 	public function getRoutes() {
 		$router = Router::getInstance();
-		return array_merge(
+		return array_filter(array_merge(
 			$router->server()->getRoutes()->toArray(), $router->getRoutes()->toArray()
-		);
+		));
 	}
 	
 	/**
