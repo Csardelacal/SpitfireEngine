@@ -173,30 +173,23 @@ class URL
 	}
 	
 	public static function current() {
-		$path = getPathInfo();
-		$refl = new ReflectionClass(URL::class);
-		return $refl->newInstanceArgs(array_values(array_merge(explode('/', $path), Array($_GET))));
-	}
-	
-	public static function canonical() {
 		$ctx = current_context();
-		$canonical = new self($ctx->app);
-		$path = $canonical->getPath();
 		
 		if (!$ctx) { 
 			throw new PrivateException("No context for URL generation"); 
 		}
 		
-		$path->setController($ctx->app->getControllerURI($ctx->controller));
-		$path->setAction($ctx->action);
-		$path->setObject($ctx->object);
+		return new URL($ctx->app, $ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET);
+	}
+	
+	public static function canonical() {
+		$ctx = current_context();
 		
-		$canonical->setParams($_GET->getCanonical());
+		if (!$ctx) { 
+			throw new PrivateException("No context for URL generation"); 
+		}
 		
-		#Add the object to the Path we generated so far and set it as Path
-		$canonical->setExtension($ctx->request->getPath()->getFormat());
-		
-		return $canonical;
+		return new URL($ctx->app, $ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET->getCanonical());
 	}
 	
 	public function absolute($domain = null) {
