@@ -41,7 +41,7 @@ class AbsoluteURL extends URL
 	 */
 	public function setDomain($domain) {
 		$this->domain   = $domain;
-		$this->reverser = null;
+		$this->reverser = $this->getReverser();
 		return $this;
 	}
 	
@@ -55,8 +55,22 @@ class AbsoluteURL extends URL
 	 */
 	public function getServerName() {
 		
-		if (is_array($this->domain) && $r = $this->getReverser()) {
-			return $r->reverse($this->domain);
+		/*
+		 * The user provided parameters as the domain, therefore he expects Spitfire
+		 * to look up a valid server for the route.
+		 */
+		if (is_array($this->domain)) {
+			
+			/*
+			 * Given an array as path and no reverser means that the user provided 
+			 * parameters for an impossible route and therefore the application 
+			 * cannot properly continue.
+			 */
+			if (!$this->reverser) {
+				throw new \spitfire\exceptions\PrivateException('No server found for given params', 1706212055);
+			}
+			
+			return $this->reverser->reverse($this->domain);
 		}
 		
 		if (is_string($this->domain)) {
@@ -90,18 +104,35 @@ class AbsoluteURL extends URL
 	}
 	
 	public function getRoutes() {
-		#Check whether the domain is a string. 
-		#Because if that's the case we don't need it
-		if (!is_array($this->domain))    { return parent::getRoutes(); }
-		if (!$this->getReverser())       { return parent::getRoutes(); }
+		/*
+		 * If the developer provided a set of parameters to reverse the route we
+		 * use those.
+		 */
+		if ($this->reverser) { 
+			return $this->getReverser()->getServer()->getRoutes()->toArray();
+		}
 		
-		return $this->getReverser()->getServer()->getRoutes()->toArray();
+		/*
+		 * Otherwise, if the dev provided a server which potentially has no routes,
+		 * then we return either the server's routes or the default ones.
+		 */
+		elseif($this->domain) {
+			$router = Router::getInstance();
+			return $router->server()->getRoutes()? : $router->getRoutes();
+		}
+		
+		/*
+		 * Otherwise we use the globals.
+		 */
+		else {
+			return parent::getRoutes(); 
+			
+		}
 	}
 	
 	public function getReverser() {
-		#First, check if we already have a reverser ready
-		#This should increase performance notably.
-		if ($this->reverser !== null) { return $this->reverser; }
+		#If the user didn't pass parameters, this operation is worthless.
+		if (!is_array($this->domain)) { return null; }
 		
 		#Get the servers we registered for the router
 		$router  = Router::getInstance();
