@@ -31,7 +31,10 @@ class Parameters
 	/**
 	 * The extension that was parsed from a URL. This is considered a parameter in
 	 * the context of the URL - since the route can provide it as additional information.
+	 * 
+	 * This shouldn't be a part of the parameters
 	 *
+	 * @deprecated since version 0.1-dev 20170622
 	 * @var string
 	 */
 	private $extension  = 'php';

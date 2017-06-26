@@ -79,7 +79,7 @@ class URIPattern
 	 * @throws RouteMismatchException
 	 */
 	public function test($uri) {
-		$pieces = array_filter(explode('/', $uri));
+		$pieces = is_array($uri)? $uri : array_filter(explode('/', $uri));
 		$params = new Parameters();
 		
 		/*

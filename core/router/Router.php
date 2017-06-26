@@ -34,9 +34,14 @@ class Router extends Routable
 		#Loop through the servers to find valid routes
 		$servers = $this->servers;
 		
+		#Split up the URL, get the extension
+		$url     = pathinfo($route, PATHINFO_DIRNAME) . '/' . pathinfo($route, PATHINFO_BASENAME);
+		$ext     = pathinfo($route, PATHINFO_EXTENSION);
+		
+		#Loop over the servers
 		foreach ($servers as $box) { /* @var $box Server */
-			if (false !== $t = $box->rewrite($server, $route, $method, $protocol)) {
-				return $t;
+			if (false !== $t = $box->rewrite($server, $url, $method, $protocol)) {
+				return $t instanceof \spitfire\core\Path? $t->setFormat($ext) : $t;
 			}
 		}
 		#Implicit else.
