@@ -22,6 +22,9 @@ class Router extends Routable
 	 * one that can be used to respond to the request it will stop looking for
 	 * another possible rewrite.
 	 * 
+	 * @todo The extension should be passed down to the servers (and therefore 
+	 * the routes) to allow the routes to respond to different requests properly.
+	 * 
 	 * @param string $server
 	 * @param string $route
 	 * @param string $method
@@ -40,7 +43,10 @@ class Router extends Routable
 		
 		#Loop over the servers
 		foreach ($servers as $box) { /* @var $box Server */
-			if (false !== $t = $box->rewrite($server, $url, $method, $protocol)) {
+			if (false !== $t = $box->rewrite($server, $url, $method, $protocol, $ext)) {
+				/**
+				 * @fixme In a future, the extension should be written to the path elsewhere
+				 */
 				return $t instanceof \spitfire\core\Path? $t->setFormat($ext) : $t;
 			}
 		}

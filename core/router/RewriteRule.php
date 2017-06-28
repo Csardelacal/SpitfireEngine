@@ -68,7 +68,6 @@ abstract class RewriteRule
 	private $pattern;
 	private $patternStr;
 	private $newRoute;
-	private $parameters;
 	private $method;
 	private $protocol;
 	
@@ -145,15 +144,6 @@ abstract class RewriteRule
 		catch (RouteMismatchException$e) {
 			return false;
 		}
-	}
-	
-	
-	public function getParameters($keys = false) {
-		if (!$keys) { return $this->parameters; }
-		
-		$array = array_keys($this->parameters);
-		array_walk($array, function(&$e) {$e = ':' . $e;});
-		return $array;
 	}
 	
 	/**

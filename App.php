@@ -174,7 +174,7 @@ abstract class App
 		#with your custome code.
 		$default = Router::getInstance()->request($ns, function (Parameters$params) use ($uriSpace) {
 			$args = $params->getUnparsed();
-			return new Path($uriSpace, array_shift($args), array_shift($args), $args, $params->getExtension());
+			return new Path($uriSpace, array_shift($args), array_shift($args), $args);
 		});
 		
 		#The reverser for the default route is rather simple again. 

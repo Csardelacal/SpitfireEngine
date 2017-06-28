@@ -13,8 +13,6 @@ use spitfire\core\router\reverser\RouteReverserInterface;
  * A Route will only accept Closures, Responses or Paths (including arrays that
  * can be interpreted as Paths by the translation class) as the target.
  * 
- * @todo Define translate class for array to Path translation
- * @todo Define parameter class to replace inside Paths
  * @author César de la Cal <cesar@magic3w.com>
  */
 class Route extends RewriteRule
@@ -37,66 +35,23 @@ class Route extends RewriteRule
 	const METHOD_DELETE = 0x08;
 	const METHOD_HEAD   = 0x10;
 	
-	private $parameters;
-	
 	private $reverser = null;
 	
 	/**
-	 * Tests all the elements of a pattern to see whether the tested route is 
-	 * valid or not and to fetch the parameters for it. In case the route and the
-	 * URL match we will have an array of parameters in the route that allow us
-	 * to customize a request.
-	 * 
-	 * @throws RouteMismatchException In case the route was not valid.
-	 * @param Pattern[] $pattern
-	 * @param string[] $array
-	 */
-	protected function patternWalk($pattern, $array) {
-		foreach ($pattern as $p) {
-			$this->parameters->addParameters($p->test(array_shift($array)));
-		}
-		$this->parameters->setUnparsed($array);
-	}
-	
-	/**
-	 * Tests if a URL matches the current Route. If so it will return true and you
-	 * can use the parameters in it.
 	 * 
 	 * @param string $URI
-	 * @return boolean
+	 * @param string $method
+	 * @param string $protocol
+	 * @param Parameters $server
+	 * @param string $extension
+	 * @return \spitfire\core\Path|\spitfire\core\Response
 	 */
-	public function testURI($URI) {
-		$array = array_filter(explode('/', $URI));
+	public function rewrite($URI, $method, $protocol, $server, $extension = 'php') {
+		$params = $this->getSource()->test($URI);
 		
-		$this->parameters = new Parameters();
+		if ($this->getTarget() instanceof Closure) {return call_user_func_array($this->getTarget(), Array($params, $server->getParameters()));}
+		if ($this->getTarget() instanceof ParametrizedPath) { return $this->getTarget()->replace($server->getParameters()->merge($this->getSource()->test($URI))); }
 		
-		#Check the extension
-		$last = explode('.', array_pop($array));
-		$this->parameters->setExtension(isset($last[1])? array_pop($last) : 'php');
-		array_push($array, implode('.', $last));
-		
-		try {
-			$this->patternWalk($this->getSource(), $array);
-			return true;
-		} catch(RouteMismatchException $e) {
-			return false;
-		}
-	}
-	
-	public function rewrite($URI, $method, $protocol, $server) {
-		if ($this->test($URI, $method, $protocol)) {
-			if ($this->getTarget() instanceof Closure) {return call_user_func_array($this->getTarget(), Array($this->parameters, $server->getParameters()));}
-			if ($this->getTarget() instanceof ParametrizedPath) { return $this->getTarget()->replace($server->getParameters()->merge($this->getSource()->test($URI))); }
-		}
-		return false;
-	}
-	
-	public function getParameters($keys = false) {
-		if (!$keys) { return $this->parameters; }
-		
-		$array = array_keys($this->parameters);
-		array_walk($array, function(&$e) {$e = ':' . $e;});
-		return $array;
 	}
 	
 	/**
