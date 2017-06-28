@@ -83,15 +83,6 @@ class URIPattern
 		$params = new Parameters();
 		
 		/*
-		 * Extract the extension. To do so, we check whether the last element on 
-		 * the URI has a dot in it, extract the extension and push the element 
-		 * back onto the array.
-		 */
-		$last = explode('.', array_pop($pieces));
-		$params->setExtension(isset($last[1])? array_pop($last) : 'php');
-		array_push($pieces, implode('.', $last));
-		
-		/*
 		 * Walk the patterns and test whether they're all satisfied. Remember that
 		 * test raises an Exception when unsatisfied, so there's no need to check -
 		 * if the code runs the route was satisfied
