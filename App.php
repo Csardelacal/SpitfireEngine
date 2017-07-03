@@ -172,9 +172,9 @@ abstract class App
 		#The default route just returns a path based on app/controller/action/object
 		#If your application does not wish this to happen, please override createRoutes
 		#with your custome code.
-		$default = Router::getInstance()->request($ns, function (Parameters$params) use ($uriSpace) {
+		$default = Router::getInstance()->request($ns, function (Parameters$params, Parameters$server, $extension) use ($uriSpace) {
 			$args = $params->getUnparsed();
-			return new Path($uriSpace, array_shift($args), array_shift($args), $args);
+			return new Path($uriSpace, array_shift($args), array_shift($args), $args, $extension);
 		});
 		
 		#The reverser for the default route is rather simple again. 
