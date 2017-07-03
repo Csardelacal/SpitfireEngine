@@ -49,8 +49,23 @@ class Route extends RewriteRule
 	public function rewrite($URI, $method, $protocol, $server, $extension = 'php') {
 		$params = $this->getSource()->test($URI);
 		
-		if ($this->getTarget() instanceof Closure) {return call_user_func_array($this->getTarget(), Array($params, $server->getParameters()));}
-		if ($this->getTarget() instanceof ParametrizedPath) { return $this->getTarget()->replace($server->getParameters()->merge($this->getSource()->test($URI))); }
+		/*
+		 * Closures are the most flexible way to handle requests. They allow to 
+		 * determine how the application should react depending on any of the
+		 * request's components.
+		 */
+		if ($this->getTarget() instanceof Closure) {
+			return call_user_func_array($this->getTarget(), Array($params, $server, $extension, $method, $protocol));
+		}
+		
+		/*
+		 * When using a parameterized path, the idea is to replace the parameters
+		 * we extracted from the URL and construct a valid Path that can then be
+		 * used to answer the request.
+		 */
+		if ($this->getTarget() instanceof ParametrizedPath) {
+			return $this->getTarget()->replace($server->merge($params))->setFormat($extension);
+		}
 		
 	}
 	

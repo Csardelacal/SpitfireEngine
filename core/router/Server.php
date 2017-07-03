@@ -44,22 +44,23 @@ class Server extends Routable
 		
 		$this->parameters = new Parameters();
 		$this->parameters->addParameters($parameters);
+		
+		return $this->parameters;
 	}
 	
 	public function test($servername) {
 		$array = explode('.', $servername);
 		
 		try {
-			$this->patternWalk($this->pattern, $array);
-			return true;
+			return $this->patternWalk($this->pattern, $array);
 		} catch(RouteMismatchException $e) {
 			return false;
 		}
 	}
 	
-	public function rewrite($server, $url, $method, $protocol) {
+	public function rewrite($server, $url, $method, $protocol, $extension = null) {
 		#If the server doesn't match we don't continue
-		if (!$this->test($server)) { return false; }
+		if (!($params = $this->test($server))) { return false; }
 		
 		#Combine routes from the router and server
 		$routes = array_merge(
@@ -74,7 +75,7 @@ class Server extends Routable
 			if (!$route->test($url, $method, $protocol)) { continue; }
 			
 			#Check whether the route can rewrite the request
-			$rewrite = $route->rewrite($url, $method, $protocol, $this);
+			$rewrite = $route->rewrite($url, $method, $protocol, $params, $extension);
 
 			if ( $rewrite instanceof Path || $rewrite instanceof Response) { return $rewrite; }
 			if ( $rewrite !== false)         { $url = $rewrite; }

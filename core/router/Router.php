@@ -44,10 +44,7 @@ class Router extends Routable
 		#Loop over the servers
 		foreach ($servers as $box) { /* @var $box Server */
 			if (false !== $t = $box->rewrite($server, $url, $method, $protocol, $ext)) {
-				/**
-				 * @fixme In a future, the extension should be written to the path elsewhere
-				 */
-				return $t instanceof \spitfire\core\Path? $t->setFormat($ext) : $t;
+				return $t;
 			}
 		}
 		#Implicit else.
