@@ -1,7 +1,10 @@
 <?php namespace spitfire\core\annotations;
 
-use ReflectionClass;
+use Controller;
 use Exception;
+use ReflectionClass;
+use spitfire\exceptions\PublicException;
+use function current_context;
 
 /**
  * This tool allows to parse annotations for an action. An action is a method of
@@ -122,7 +125,7 @@ class ActionReflector
 	 * request.
 	 * 
 	 * @return mixed
-	 * @throws \publicException If the user is throwing a request with one method
+	 * @throws PublicException If the user is throwing a request with one method
 	 *			that is not accepted.
 	 */
 	protected function method() {
@@ -133,7 +136,7 @@ class ActionReflector
 			}
 		}
 		
-		throw new \publicException("No valid request", 400);
+		throw new PublicException("No valid request", 400);
 	}
 	
 	/**
