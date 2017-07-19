@@ -119,8 +119,14 @@ class Collection extends \spitfire\storage\database\Collection
 		$write = Array();
                 
 		foreach ($data as $value) {
+			#If the data we want to write to the database is already there and 
+			#properly synced, we just skip it.
+			if ($value->isSynced()) { continue; }
+			
 			$write = array_merge($write, $value->dbGetData());
 		}
+		
+		if (empty($write)) { return; }
 		
 		$quoted = Array();
 		foreach ($write as $f => $v) { $quoted[] = "{$table->getField($f)} = {$db->quote($v)}"; }
