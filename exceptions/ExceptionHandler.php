@@ -66,7 +66,6 @@ class ExceptionHandler {
 		self::$instance = $this;
 		
 		set_exception_handler( Array($this, 'exceptionHandle'));
-		set_error_handler    ( Array($this, 'errorHandle'), error_reporting() );
 		register_shutdown_function( Array($this, 'shutdownHook'));
 	}
 	
@@ -109,27 +108,6 @@ class ExceptionHandler {
 			echo '<!--'.$e->getMessage().'-->';
 			ob_flush();
 			die();
-		}
-	}
-
-	public function errorHandle ($errno, $errstr, $errfile, $errline, $scope) {
-		if (!error_reporting()) { return false; }
-		
-		switch ($errno) {
-			case E_ERROR:
-			case E_CORE_ERROR:
-			case E_COMPILE_ERROR:
-			case E_USER_ERROR:
-			case E_PARSE:
-				while(ob_get_clean());
-				echo getcwd();
-				get_error_page(500, "Error $errno: $errstr in $errfile [$errline]", print_r(debug_print_backtrace(), 1) );
-				return false;
-			case E_DEPRECATED:
-				echo "Deprecated function is being used.";
-				return false;
-			default:
-				return false;
 		}
 	}
 	

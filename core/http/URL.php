@@ -1,6 +1,5 @@
 <?php namespace spitfire\core\http;
 
-use ArrayAccess;
 use ReflectionClass;
 use spitfire\core\Path;
 use spitfire\core\router\Route;
@@ -8,9 +7,6 @@ use spitfire\core\router\Router;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\Get;
 use spitfire\SpitFire;
-use const ASSET_DIRECTORY;
-use function current_context;
-use function get_path_info;
 
 /**
  * 
@@ -19,7 +15,7 @@ use function get_path_info;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-class URL implements ArrayAccess
+class URL
 {
 	/**
 	 * @var Path Contains information about the controller / action
@@ -177,9 +173,7 @@ class URL implements ArrayAccess
 	}
 	
 	public static function current() {
-		$path = getPathInfo();
-		$refl = new ReflectionClass(URL::class);
-		return $refl->newInstanceArgs(array_values(array_merge(explode('/', $path), Array($_GET))));
+		return URL::canonical();
 	}
 	
 	public static function canonical() {
@@ -218,23 +212,4 @@ class URL implements ArrayAccess
 		return array_merge($router->server()->getRoutes(), $router->getRoutes());
 	}
 
-	public function offsetExists($offset) {
-		if (is_numeric($offset)) { return isset($this->path[$offset]); }
-		else                     { return isset($this->params[$offset]); }
-	}
-
-	public function offsetGet($offset) {
-		if (is_numeric($offset)) { return $this->path[$offset]; }
-		else                     { return $this->params[$offset]; }
-	}
-
-	public function offsetSet($offset, $value) {
-		if (is_numeric($offset)) { return $this->path[$offset] = $value; }
-		else                     { return $this->params[$offset] = $value; }
-	}
-
-	public function offsetUnset($offset) {
-		if (is_numeric($offset)) { unset($this->path[$offset]); }
-		else                     { unset( $this->params[$offset]); }
-	}
 }
