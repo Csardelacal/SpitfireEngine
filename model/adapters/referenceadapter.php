@@ -32,7 +32,18 @@ class ReferenceAdapter extends BaseAdapter
 			$query->addRestriction($p->getReferencedField()->getName(), $data[$p->getName()]);
 		}
 		
-		$this->remote = $this->query  = $query->fetch();
+		$this->query  = $query;
+		
+		/*
+		 * We clone this in order to prevent the query from generating race 
+		 * conditions when having multiple objects. This is one of those instances
+		 * where I hate myself for having included the result set object in the 
+		 * query.
+		 * 
+		 * TODO: This should stop being an issue once the resultset object has been
+		 * moved out of the query.
+		 */
+		$this->remote = clone $this->query;
 	}
 	
 	public function dbGetData() {
@@ -85,8 +96,8 @@ class ReferenceAdapter extends BaseAdapter
 	}
 	
 	public function isSynced() {
-		$ma = $this->remote instanceof Query? $this->remote->fetch() : $this->remote;
-		$mb = $this->query  instanceof Query? $this->query->fetch()  : $this->query;
+		$this->remote = $ma = $this->remote instanceof Query? $this->remote->fetch() : $this->remote;
+		$this->query  = $mb = $this->query  instanceof Query? $this->query->fetch()  : $this->query;
 		
 		$pka = $ma? $ma->getPrimaryData() : null;
 		$pkb = $mb? $mb->getPrimaryData() : null;
