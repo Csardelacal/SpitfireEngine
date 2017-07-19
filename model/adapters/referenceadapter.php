@@ -1,10 +1,25 @@
 <?php namespace spitfire\model\adapters;
 
-use spitfire\Model;
 use spitfire\exceptions\PrivateException;
+use spitfire\Model;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\Query;
+use spitfire\storage\database\Restriction;
 
 class ReferenceAdapter extends BaseAdapter
 {
+	
+	/**
+	 *
+	 * @var Query|Model
+	 */
+	private $remote;
+	
+	
+	/**
+	 *
+	 * @var Query|Model
+	 */
 	private $query;
 	
 	public function dbSetData($data) {
@@ -13,11 +28,11 @@ class ReferenceAdapter extends BaseAdapter
 		$physical = $this->getField()->getPhysical();
 		
 		foreach ($physical as $p) {
-			/* @var $p \spitfire\storage\database\Field */
+			/* @var $p Field */
 			$query->addRestriction($p->getReferencedField()->getName(), $data[$p->getName()]);
 		}
 		
-		$this->query = $query;
+		$this->remote = $this->query  = $query->fetch();
 	}
 	
 	public function dbGetData() {
@@ -31,12 +46,12 @@ class ReferenceAdapter extends BaseAdapter
 			foreach ($physical as $p) {
 				$_return[$p->getName()] = $modeldata[$p->getReferencedField()->getName()];
 			}
-		} elseif ($this->query instanceof \spitfire\storage\database\Query) {
+		} elseif ($this->query instanceof Query) {
 			$restrictions = $this->query->getRestrictions();
 			foreach ($restrictions as $r) {
-				/* @var $r \spitfire\storage\database\Restriction */
+				/* @var $r Restriction */
 				foreach ($physical as $p) {
-					if ($r instanceof \spitfire\storage\database\Restriction && $r->getField()->getField() === $p->getReferencedField()) {
+					if ($r instanceof Restriction && $r->getField()->getField() === $p->getReferencedField()) {
 						$_return[$p->getName()] = $r->getValue();
 					}
 				}
@@ -53,7 +68,7 @@ class ReferenceAdapter extends BaseAdapter
 	}
 	
 	public function usrGetData() {
-		if ($this->query instanceof \spitfire\storage\database\Query) {
+		if ($this->query instanceof Query) {
 			return $this->query = $this->query->fetch();
 		} else {
 			return $this->query;
@@ -67,6 +82,33 @@ class ReferenceAdapter extends BaseAdapter
 		}
 		//Make sure the finally stored data is an integer.
 		$this->query = $data;
+	}
+	
+	public function isSynced() {
+		$ma = $this->remote instanceof Query? $this->remote->fetch() : $this->remote;
+		$mb = $this->query  instanceof Query? $this->query->fetch()  : $this->query;
+		
+		$pka = $ma? $ma->getPrimaryData() : null;
+		$pkb = $mb? $mb->getPrimaryData() : null;
+		
+		return $pka == $pkb;
+	}
+	
+	
+	/**
+	 * Sets the data as stored to the database and therefore as synced. After 
+	 * committing, rolling back will return the current value.
+	 */
+	public function commit() {
+		$this->remote = $this->query;
+	}
+	
+	/**
+	 * Resets the data to the status the database holds. This is especially 
+	 * interesting if you want to undo certain changes.
+	 */
+	public function rollback() {
+		$this->query = $this->remote;
 	}
 }
 
