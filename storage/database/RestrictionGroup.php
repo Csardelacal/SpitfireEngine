@@ -10,7 +10,7 @@ use spitfire\exceptions\PrivateException;
  * A restriction group contains a set of restrictions (or restriction groups)
  * that can be used by the database to generate more complex queries.
  * 
- * This groups can be diferent of two different types, they can be 'OR' or 'AND',
+ * This groups can be different of two different types, they can be 'OR' or 'AND',
  * changing the behavior of the group by making it more or less restrictive. This
  * OR and AND types are known from most DBMS.
  */
@@ -182,12 +182,19 @@ abstract class RestrictionGroup extends Collection
 	/**
 	 * When cloning a restriction group we need to ensure that the new restrictions
 	 * are assigned to the parent, and not some other object.
+	 * 
+	 * TODO: This would be potentially much simpler if the collection provided a 
+	 * walk method that would allow to modify the elements from within.
 	 */
 	public function __clone() {
-		foreach ($this as &$r) { 
+		$restrictions = $this->getRestrictions();
+		
+		foreach ($restrictions as &$r) { 
 			$r = clone $r; 
 			$r->setParent($this);
 		}
+		
+		$this->reset()->add($restrictions);
 	}
 
 	abstract public function __toString();
