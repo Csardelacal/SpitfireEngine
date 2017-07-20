@@ -27,14 +27,29 @@ abstract class RestrictionGroup extends Collection
 		parent::__construct($restrictions);
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170720
+	 * @param type $r
+	 */
 	public function removeRestriction($r) {
 		parent::remove($r);
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170720
+	 * @param type $restriction
+	 */
 	public function putRestriction($restriction) {
 		parent::push($restriction);
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170720
+	 * @param type $restrictions
+	 */
 	public function setRestrictions($restrictions) {
 		parent::reset();
 		parent::add($restrictions);
@@ -78,15 +93,31 @@ abstract class RestrictionGroup extends Collection
 		return $this;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170720
+	 * @param type $restrictions
+	 */
 	public function getRestrictions() {
 		return parent::toArray();
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170720
+	 * @param type $index
+	 */
 	public function getRestriction($index) {
 		return parent::offsetGet($index);
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170720
+	 * @return type
+	 */
 	public function getConnectingRestrictions() {
+		trigger_error('Method RestrictionGroup::getConnectingRestrictions() is deprecated', E_USER_DEPRECATED);
 		$_ret = Array();
 		
 		foreach ($this->toArray() as $r) { $_ret = array_merge($_ret, $r->getConnectingRestrictions());}
