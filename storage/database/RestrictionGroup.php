@@ -1,5 +1,11 @@
 <?php namespace spitfire\storage\database;
 
+use Exception;
+use InvalidArgumentException;
+use Reference;
+use spitfire\core\Collection;
+use spitfire\exceptions\PrivateException;
+
 /**
  * A restriction group contains a set of restrictions (or restriction groups)
  * that can be used by the database to generate more complex queries.
@@ -8,36 +14,30 @@
  * changing the behavior of the group by making it more or less restrictive. This
  * OR and AND types are known from most DBMS.
  */
-abstract class RestrictionGroup
+abstract class RestrictionGroup extends Collection
 {
 	const TYPE_OR  = 'OR';
 	const TYPE_AND = 'AND';
 	
-	/**
-	 * The restrictions that this element groups. This allows any application to
-	 * create trees of restrictions that a developer can use to query the database.
-	 *
-	 * @var Restriction|RestrictionGroup[]
-	 */
-	private $restrictions;
 	private $parent;
 	private $type = self::TYPE_OR;
 	
 	public function __construct(RestrictionGroup$parent = null, $restrictions = Array() ) {
-		$this->parent       = $parent;
-		$this->restrictions = $restrictions;
+		$this->parent = $parent;
+		parent::__construct($restrictions);
 	}
 	
 	public function removeRestriction($r) {
-		unset($this->restrictions[array_search($r, $this->restrictions)]);
+		parent::remove($r);
 	}
 	
 	public function putRestriction($restriction) {
-		$this->restrictions[] = $restriction;
+		parent::push($restriction);
 	}
 	
 	public function setRestrictions($restrictions) {
-		$this->restrictions = $restrictions;
+		parent::reset();
+		parent::add($restrictions);
 	}
 
 	/**
@@ -51,7 +51,7 @@ abstract class RestrictionGroup
 	 * @param mixed  $value
 	 * @param string $operator
 	 * @return RestrictionGroup
-	 * @throws \spitfire\exceptions\PrivateException
+	 * @throws PrivateException
 	 */
 	public function addRestriction($fieldname, $value, $operator = '=') {
 		
@@ -61,41 +61,41 @@ abstract class RestrictionGroup
 			$field = $fieldname instanceof QueryField? $fieldname : $this->getQuery()->getTable()->getField($fieldname);
 			$restriction = $this->getQuery()->restrictionInstance($this->getQuery()->queryFieldInstance($field), $value, $operator);
 			
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			#Otherwise we create a complex restriction for a logical field.
 			$field = $this->getQuery()->getTable()->getModel()->getField($fieldname);
 			
-			if ($fieldname instanceof \Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getModel())
+			if ($fieldname instanceof Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getModel())
 			{ $field = $fieldname; }
 			
 			#If the fieldname was not null, but the field is null - it means that the system could not find the field and is kicking back
-			if ($field === null && $fieldname!== null) { throw new \spitfire\exceptions\PrivateException('No field ' . $fieldname, 1602231949); }
+			if ($field === null && $fieldname!== null) { throw new PrivateException('No field ' . $fieldname, 1602231949); }
 			
 			$restriction = $this->getQuery()->compositeRestrictionInstance($field, $value, $operator);
 		}
 		
-		$this->restrictions[] = $restriction;
+		parent::push($restriction);
 		return $this;
 	}
 	
 	public function getRestrictions() {
-		return $this->restrictions;
+		return parent::toArray();
 	}
 	
 	public function getRestriction($index) {
-		return $this->restrictions[$index];
+		return parent::offsetGet($index);
 	}
 	
 	public function getConnectingRestrictions() {
 		$_ret = Array();
 		
-		foreach ($this->restrictions as $r) { $_ret = array_merge($_ret, $r->getConnectingRestrictions());}
+		foreach ($this->toArray() as $r) { $_ret = array_merge($_ret, $r->getConnectingRestrictions());}
 		
 		return $_ret;
 	}
 	
 	public function filterCompositeRestrictions() {
-		$restrictions = $this->restrictions;
+		$restrictions = $this->toArray();
 		
 		foreach ($restrictions as $r) {
 			if ($r instanceof CompositeRestriction) {	$this->removeRestriction($r); }
@@ -113,7 +113,7 @@ abstract class RestrictionGroup
 		$group->setType($type);
 		
 		#Add it to our restriction list
-		return $this->restrictions[] = $group;
+		return $this->push($group);
 	}
 	
 	public function endGroup() {
@@ -149,7 +149,7 @@ abstract class RestrictionGroup
 			return $this;
 		}
 		else {
-			throw new \InvalidArgumentException("Restriction groups can only be of type AND or OR");
+			throw new InvalidArgumentException("Restriction groups can only be of type AND or OR");
 		}
 	}
 	
@@ -184,7 +184,7 @@ abstract class RestrictionGroup
 	 * are assigned to the parent, and not some other object.
 	 */
 	public function __clone() {
-		foreach ($this->restrictions as &$r) { 
+		foreach ($this as &$r) { 
 			$r = clone $r; 
 			$r->setParent($this);
 		}

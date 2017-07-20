@@ -71,7 +71,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * <ul>
 	 * 
 	 * @param string $type Base type or class name to check.
-	 * @return type
+	 * @return boolean
 	 */
 	public function containsOnly($type) {
 		switch($type) {
@@ -161,6 +161,21 @@ class Collection implements ArrayAccess, CollectionInterface
 			
 			throw new OutOfBoundsException('Collection::extract requires array to contain only arrays and objects');
 		}, $this->arr));
+	}
+	
+	public function add($elements) {
+		$this->arr+= $elements;
+		return $this;
+	}
+	
+	public function remove($element) {
+		unset($this->arr[array_search($element, $this->arr)]);
+		return $this;
+	}
+	
+	public function reset() {
+		$this->arr = [];
+		return $this;
 	}
 	
 	public function current() {
