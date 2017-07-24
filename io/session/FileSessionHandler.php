@@ -6,6 +6,8 @@ class FileSessionHandler extends SessionHandler
 {
 
 	private $directory;
+	
+	private $handle;
 
 	public function __construct($directory, $timeout = null) {
 		$this->directory = $directory;
@@ -13,6 +15,7 @@ class FileSessionHandler extends SessionHandler
 	}
 
 	public function close() {
+		flock($this->handle, LOCK_UN);
 		return true;
 	}
 
@@ -36,7 +39,9 @@ class FileSessionHandler extends SessionHandler
 	}
 
 	public function open($savePath, $sessionName) {
-		if (empty($this->directory)) { $this->directory = $savePath; }
+		if (empty($this->directory)) { 
+			$this->directory = $savePath; 
+		}
 
 		if (!is_dir($this->directory) && !mkdir($this->directory, 0777, true)) {
 			throw new \spitfire\exceptions\FileNotFoundException($this->directory . 'does not exist and could not be created');
@@ -50,6 +55,10 @@ class FileSessionHandler extends SessionHandler
 		$file = sprintf('%s/sess_%s', $this->directory, $id);
 
 		if (!file_exists($file)) { return ''; }
+		
+		$this->handle = fopen($file, 'r');
+		flock($this->handle, LOCK_EX);
+		
 		return (string)file_get_contents($file);
 	}
 
