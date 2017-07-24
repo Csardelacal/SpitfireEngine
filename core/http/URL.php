@@ -139,6 +139,10 @@ class URL
 			catch (\Exception$e) { /*Ignore*/ }
 		}
 		
+		if (empty(trim($url, '/')) && $this->path->getFormat() !== 'php') {
+			$url = $rev->reverse($this->path, true);
+		}
+		
 		#If the extension provided is special, we print it
 		if ($this->path->getFormat() !== 'php') { $url.= ".{$this->path->getFormat()}"; }
 		else                                    { $url = rtrim($url, '/') . '/'; }

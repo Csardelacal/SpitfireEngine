@@ -179,14 +179,14 @@ abstract class App
 		
 		#The reverser for the default route is rather simple again. 
 		#It will concatenate app, controller and action
-		$default->setReverser(new core\router\reverser\ClosureReverser(function (Path$path) {
+		$default->setReverser(new core\router\reverser\ClosureReverser(function (Path$path, $explicit = false) {
 			$app        = $path->getApp();
 			$controller = $path->getController();
 			$action     = $path->getAction();
 			$object     = $path->getObject();
 			
-			if ($controller === (array)core\Environment::get('default_controller')) { $controller = Array(); }
-			if ($action     ===        core\Environment::get('default_action'))     { $action     = ''; }
+			if ($controller === (array)core\Environment::get('default_controller') && !$explicit) { $controller = Array(); }
+			if ($action     ===        core\Environment::get('default_action')     && !$explicit) { $action     = ''; }
 			
 			return '/' . trim(implode('/', array_filter(array_merge([$app], (array)$controller, [$action], $object))), '/');
 		}));

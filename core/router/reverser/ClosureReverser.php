@@ -14,9 +14,9 @@ class ClosureReverser implements RouteReverserInterface
 	/** 
 	 * @inheritdoc 
 	 */
-	public function reverse(Path$path) {
+	public function reverse(Path$path, $explicit = false) {
 		$c = $this->closure;
-		return $c($path);
+		return $c($path, $explicit);
 	}
 
 }

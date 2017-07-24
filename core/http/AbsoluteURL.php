@@ -82,7 +82,13 @@ class AbsoluteURL extends URL
 	}
 	
 	public static function current() {
-		return new self(getPathInfo(), $_GET);
+		$ctx = current_context();
+		
+		if (!$ctx) { 
+			throw new PrivateException("No context for URL generation"); 
+		}
+		
+		return new self($ctx->app, $ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET);
 	}
 	
 	public static function asset($asset_name, $app = null) {
