@@ -110,6 +110,7 @@ class SpitFire extends App
 	}
 	
 	public function appExists($namespace) {
+		if (!is_string($namespace)) { return false; }
 		return isset($this->apps[$namespace]);
 	}
 	

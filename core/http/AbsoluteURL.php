@@ -88,7 +88,7 @@ class AbsoluteURL extends URL
 			throw new PrivateException("No context for URL generation"); 
 		}
 		
-		return new self($ctx->app, $ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET);
+		return new self($ctx->app, $ctx->app->getControllerURI($ctx->controller), $ctx->action, $ctx->object, $ctx->extension, $_GET);
 	}
 	
 	public static function asset($asset_name, $app = null) {
