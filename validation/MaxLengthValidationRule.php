@@ -53,9 +53,13 @@ class MaxLengthValidationRule implements ValidationRule
 	 * @return \spitfire\validation\ValidationError|boolean
 	 */
 	public function test($value) {
-		if (strlen($value) > $this->length) {
+		if (function_exists('mb_strlen')) {
+			return mb_strlen($value) > $this->length? new ValidationError($this->message, $this->extendedMessage) : false;
+		}
+		elseif (strlen($value) > $this->length) {
 			return new ValidationError($this->message, $this->extendedMessage);
 		}
+		
 		return false;
 	}
 

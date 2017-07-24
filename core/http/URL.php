@@ -183,7 +183,7 @@ class URL
 			throw new PrivateException("No context for URL generation"); 
 		}
 		
-		return new URL($ctx->app, $ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET);
+		return new URL($ctx->app, $ctx->app->getControllerURI($ctx->controller), $ctx->action, $ctx->object, $ctx->extension, $_GET);
 	}
 	
 	public static function canonical() {
