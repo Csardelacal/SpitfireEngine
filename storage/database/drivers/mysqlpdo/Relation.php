@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class Collection extends \spitfire\storage\database\Collection
+class Relation extends \spitfire\storage\database\Relation
 {
 	
 	

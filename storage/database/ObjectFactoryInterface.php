@@ -52,14 +52,14 @@ interface ObjectFactoryInterface
 	function getTableInstance(DB$db, $tablename);
 	
 	/**
-	 * Creates a collection. These wrap the typical record operations on a table 
+	 * Creates a relation. These wrap the typical record operations on a table 
 	 * into a separate layer.
 	 * 
 	 * @param Table $table
 	 *
-	 * @return Collection
+	 * @return Relation
 	 */
-	function makeCollection(Table$table);
+	function makeRelation(Table$table);
 	
 	/**
 	 * Creates a new On The Fly Model. These allow the system to interact with a 
@@ -102,7 +102,7 @@ interface ObjectFactoryInterface
 	 * where the data should be retrieved some and some information on the fields
 	 * that we want it to provide.
 	 *
-	 * @param Table|Collection $table
+	 * @param Table|Relation $table
 	 *
 	 * @return Query
 	 */

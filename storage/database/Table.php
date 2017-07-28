@@ -32,6 +32,14 @@ abstract class Table
 	protected $schema;
 	
 	/**
+	 * Provides access to the table's record operations. Basically, a relational
+	 * table is composed of schema + relation (data).
+	 *
+	 * @var Relation
+	 */
+	private $relation;
+	
+	/**
 	 * The prefixed name of the table. The prefix is defined by the environment
 	 * and allows to have several environments on the same database.
 	 *
@@ -86,12 +94,19 @@ abstract class Table
 	public function __construct(DB$db, $schema) {
 		$this->db = $db;
 		
-		if ($schema instanceof Schema) {
-			$this->schema = $schema;
-			$this->schema->setTable($this);
-		} else {
+		if (!$schema instanceof Schema) {
 			throw new PrivateException('Table requires a Schema to be passed');
 		}
+		
+		#Attach the schema to this table
+		$this->schema = $schema;
+		$this->schema->setTable($this);
+		
+		#Create a database table layout (physical schema)
+		##TODO##
+		
+		#Create the relation
+		$this->relation = $this->db->getObjectFactory()->makeRelation($this);
 		
 		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
 		$this->tablename = Environment::get('db_table_prefix') . $this->schema->getTableName();

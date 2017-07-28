@@ -122,17 +122,17 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @throws PrivateException
 	 */
 	public function queryInstance($table) {
-		if ($table instanceof Collection){ $table = $table->getTable(); }
+		if ($table instanceof Relation){ $table = $table->getTable(); }
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
 		return new MysqlPDOQuery($table);
 	}
 
-	public function makeCollection(Table $table) {
-		return new Collection($table);
+	public function makeRelation(Table $table) {
+		return new Relation($table);
 	}
 	
 	public function __call($name, $args) {
-		throw new BadMethodCallException();
+		throw new BadMethodCallException("Called ObjectFactory::$name. Method does not exist");
 	}
 }

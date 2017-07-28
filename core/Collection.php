@@ -21,7 +21,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	 */
 	public function __construct($e = null) {
 		if ($e === null)                  {	$this->arr = []; }
-		elseif ($e instanceof Collection) { $this->arr = $e->toArray(); }
+		elseif ($e instanceof Relation) { $this->arr = $e->toArray(); }
 		elseif (is_array($e))             { $this->arr = $e; }
 		else                              { $this->arr = [$e]; }
 	}
