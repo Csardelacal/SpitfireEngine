@@ -43,6 +43,8 @@ interface ObjectFactoryInterface
 	/**
 	 * Returns an instance of the class the child tables of this class have
 	 * this is used to create them when requested by the table() method.
+	 * 
+	 * @deprecated since version 0.1-dev 20170801
 	 *
 	 * @param DB     $db
 	 * @param string $tablename
@@ -60,6 +62,16 @@ interface ObjectFactoryInterface
 	 * @return Relation
 	 */
 	function makeRelation(Table$table);
+	
+	/**
+	 * Creates a table layout to generate an appropriate schema for the DBMS to 
+	 * store the data.
+	 * 
+	 * @param Table $table
+	 * 
+	 * @return LayoutInterface The layout for the table
+	 */
+	function makeLayout(Table$table);
 	
 	/**
 	 * Creates a new On The Fly Model. These allow the system to interact with a 
