@@ -255,6 +255,14 @@ abstract class Table
 	
 	/**
 	 * 
+	 * @return LayoutInterface
+	 */
+	public function getLayout(): LayoutInterface {
+		return $this->layout;
+	}
+	
+	/**
+	 * 
 	 * @return Schema
 	 */
 	public function getSchema() {

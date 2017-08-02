@@ -66,6 +66,6 @@ class MysqlPDOTable extends stdSQLTable
 	 *                of a query.
 	 */
 	public function __toString() {
-		return "`{$this->tablename}`";
+		return strval($this->getLayout());
 	}
 }

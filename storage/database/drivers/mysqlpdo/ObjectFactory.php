@@ -4,11 +4,12 @@ use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\Field;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDOTable;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
@@ -135,4 +136,9 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function __call($name, $args) {
 		throw new BadMethodCallException("Called ObjectFactory::$name. Method does not exist");
 	}
+
+	public function makeLayout(Table $table): LayoutInterface {
+		return new Layout($table);
+	}
+
 }

@@ -1,6 +1,8 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use spitfire\core\Environment;
+use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Table;
 
@@ -107,7 +109,7 @@ class Layout implements LayoutInterface
 	public function getField($name) {
 		#If the data we get is already a DBField check it belongs to this table
 		if ($name instanceof Field) {
-			if ($name->getTable() === $this) { return $name; }
+			if ($name->getTable() === $this->table) { return $name; }
 			else { throw new PrivateException('Field ' . $name . ' does not belong to ' . $this); }
 		}
 		
@@ -128,6 +130,16 @@ class Layout implements LayoutInterface
 
 	public function repair() {
 		
+	}
+	
+	/**
+	 * Returns the name of a table as DB Object reference (with quotes).
+	 * 
+	 * @return string The name of the table escaped and ready for use inside
+	 *                of a query.
+	 */
+	public function __toString() {
+		return "`{$this->tablename}`";
 	}
 
 }
