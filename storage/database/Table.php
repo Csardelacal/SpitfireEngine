@@ -11,7 +11,7 @@ use spitfire\storage\database\Schema;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-abstract class Table
+class Table
 {
 
 	/**
@@ -83,6 +83,7 @@ abstract class Table
 	 */
 	public function __construct(DB$db, $schema) {
 		$this->db = $db;
+		$factory = $this->db->getObjectFactory();
 		
 		if (!$schema instanceof Schema) {
 			throw new PrivateException('Table requires a Schema to be passed');
@@ -93,36 +94,16 @@ abstract class Table
 		$this->schema->setTable($this);
 		
 		#Create a database table layout (physical schema)
-		$this->layout = $this->db->getObjectFactory()->makeLayout($this);
+		$this->layout = $factory->makeLayout($this);
 		
 		#Create the relation
-		$this->relation = $this->db->getObjectFactory()->makeRelation($this);
-		
-		
-		$this->makeFields();
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20170801
-	 */
-	public function makeFields() {
-		
-		$fields   = $this->schema->getFields();
-		$dbfields = Array();
-		
-		foreach ($fields as $field) {
-			$physical = $field->getPhysical();
-			while ($phys = array_shift($physical)) { $dbfields[$phys->getName()] = $phys; }
-		}
-		
-		$this->fields = $dbfields;
+		$this->relation = $factory->makeRelation($this);
 	}
 	
 	/**
 	 * Fetch the fields of the table the database works with. If the programmer
 	 * has defined a custom set of fields to work with, this function will
-	 * return the overriden fields.
+	 * return the overridden fields.
 	 * 
 	 * @return Field[] The fields this table handles.
 	 */
@@ -166,7 +147,7 @@ abstract class Table
 		if ($this->primaryK !== null) { return $this->primaryK; }
 		
 		//Implicit else
-		$fields  = $this->getFields();
+		$fields  = $this->layout->getFields();
 		$pk      = Array();
 		
 		foreach($fields as $name => $field) {
@@ -180,7 +161,7 @@ abstract class Table
 		if ($this->autoIncrement) { return $this->autoIncrement; }
 		
 		//Implicit else
-		$fields  = $this->getFields();
+		$fields  = $this->layout->getFields();
 		
 		foreach($fields as $field) {
 			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->autoIncrement = $field; }

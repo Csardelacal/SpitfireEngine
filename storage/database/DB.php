@@ -122,7 +122,7 @@ abstract class DB
 		
 		#If the parameter is a Model, we get it's name
 		if ($tablename instanceof Schema) {
-			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), $this->getObjectFactory()->getTableInstance($this, $tablename)); } 
+			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), new Table($this, $tablename)); } 
 			else                                              { $tablename = $tablename->getName(); }
 		}
 		
@@ -158,7 +158,6 @@ abstract class DB
 	 */
 	protected function makeTable($tablename) {
 		$className = $tablename . 'Model';
-		$factory   = $this->getObjectFactory();
 		
 		if (class_exists($className)) {
 			#Create a schema and a model
@@ -166,7 +165,7 @@ abstract class DB
 			$model = new $className();
 			$model->definitions($schema);
 			
-			return $factory->getTableInstance($this, $schema);
+			return new Table($this, $schema);
 		}
 		
 		throw new PrivateException('No table ' . $tablename);
