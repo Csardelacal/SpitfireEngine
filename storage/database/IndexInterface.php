@@ -25,49 +25,49 @@
  */
 
 /**
- * The layout is basically a list of columns + indexes that makes up the schema
- * of a relation in a relational database.
- * 
- * A driver can implement this interface to provide common operations on it's 
- * tables for spitfire to run.
+ * This interface allows the database driver to provide the system with indexes
+ * it can understand. These indexes will be fed back to the driver in the event
+ * the system detects a missing table. Allowing the driver to assemble the table
+ * properly.
  */
-interface LayoutInterface
+interface IndexInterface
 {
 	
 	/**
-	 * Returns the name the DBMS should use to name this table. The implementing
-	 * class should respect user configuration including db_table_prefix
+	 * Returns an array of fields, please note that your driver should respect 
+	 * the order on these. The order of the fields may affect query performance
+	 * heavily on a relational model.
+	 * 
+	 * @return Field
+	 */
+	function getFields(): Field;
+	
+	/**
+	 * Returns a name for the index. In most DBMS this is optional, but allows 
+	 * for better understanding of the schema.
 	 * 
 	 * @return string
 	 */
-	function getTableName() : string;
+	function getName() : string;
 	
 	/**
+	 * Indicates whether this is a unique index. Therefore requesting the DBMS to
+	 * enforce no-duplicates on the index.
 	 * 
-	 * @param string $name
-	 * @return Field
-	 */
-	function getField($name) : Field;
-	
-	/**
+	 * A driver requesting this value should always OR this value with isPrimary()
+	 * like $index->isOptional() || $index->isPrimary() to know whether a index
+	 * is unique.
 	 * 
-	 * @return Field[] The columns in this database table
+	 * @see IndexInterface::isPrimary()
+	 * @return bool
 	 */
-	function getFields();
+	function isUnique() : bool;
 	
 	/**
+	 *	Indicates whether this index is primary. If your index returns this value
+	 * as true, the isUnique() value will be overriden by the system internally.
 	 * 
-	 * @return IndexInterface[] The indexes in this layout
+	 * @return bool
 	 */
-	function getIndexes();
-	
-	
-	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
-	 */
-	function create();
-	function repair();
-	function destroy();
+	function isPrimary() : bool;
 }

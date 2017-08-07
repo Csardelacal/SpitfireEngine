@@ -74,13 +74,14 @@ interface ObjectFactoryInterface
 	function makeLayout(Table$table);
 	
 	/**
-	 * Creates a new On The Fly Model. These allow the system to interact with a 
+	 * Creates a new On The Fly Schema. These allow the system to interact with a 
 	 * database that was not modeled after Spitfire's models or that was not 
 	 * reverse engineered previously.
 	 *
 	 * @param string $modelname
 	 * 
 	 * @return Table Instance of the table class the driver wants the system to use
+	 * @todo Rename to generateSchema
 	 */
 	function getOTFSchema($modelname);
 	
@@ -94,6 +95,7 @@ interface ObjectFactoryInterface
 	 * @param Field  $references
 	 *
 	 * @return Field Field
+	 * @todo Rename to makeField
 	 */
 	function getFieldInstance(LogicalField$field, $name, Field$references = null);
 	
@@ -106,6 +108,9 @@ interface ObjectFactoryInterface
 	 * @param Field     $field
 	 * @param mixed       $value
 	 * @param string|null $operator
+	 * 
+	 * @return Restriction|CompositeRestriction
+	 * @todo Rename to makeRestriction
 	 */
 	function restrictionInstance($query, Field$field, $value, $operator = null);
 
@@ -117,6 +122,7 @@ interface ObjectFactoryInterface
 	 * @param Table|Relation $table
 	 *
 	 * @return Query
+	 * @todo Rename to makeQuery
 	 */
 	function queryInstance($table);
 }

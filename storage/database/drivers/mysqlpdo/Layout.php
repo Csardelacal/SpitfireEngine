@@ -60,7 +60,7 @@ class Layout implements LayoutInterface
 	 * An array of indexes that this table defines to manage it's queries and 
 	 * data.
 	 *
-	 * @var \spitfire\storage\database\Index[]
+	 * @var \spitfire\storage\database\IndexInterface[]
 	 */
 	private $indexes;
 	
