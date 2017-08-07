@@ -87,6 +87,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * 
 	 * @param DB $db
 	 * @param string $tablename
+	 * @deprecated since version 0.1-dev 20170807
 	 * @return MysqlPDOTable
 	 */
 	public function getTableInstance(DB $db, $tablename) {
