@@ -30,6 +30,13 @@ use spitfire\storage\database\Table;
  * THE SOFTWARE.
  */
 
+/**
+ * The MySQL PDO driver for the table layouts. This allows Spitfire to create,
+ * destroy and repair tables on a MySQL or MariaDB database.
+ * 
+ * @todo This driver contains a lot of legacy code imported from the previous
+ * iteration and would require a lot of fixing and maintaining.
+ */
 class Layout implements LayoutInterface
 {
 	/**
@@ -88,11 +95,30 @@ class Layout implements LayoutInterface
 	}
 	
 	public function create() {
+		$table = $this;
+		$definitions = $table->columnDefinitions();
+		$foreignkeys = $table->foreignKeyDefinitions();
+		$pk = $table->getPrimaryKey();
 		
+		foreach($pk as &$f) { $f = '`' . $f->getName() .  '`'; }
+		
+		if (!empty($foreignkeys)) $definitions = array_merge ($definitions, $foreignkeys);
+		
+		if (!empty($pk)) $definitions[] = 'PRIMARY KEY(' . implode(', ', $pk) . ')';
+		
+		#Strip empty definitions from the list
+		$clean = array_filter($definitions);
+		
+		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
+			$table,
+			implode(', ', $clean)
+			);
+		
+		return $table->getDb()->execute($stt);
 	}
 
 	public function destroy() {
-		
+		$this->getDb()->execute('DROP TABLE ' . $this->tablename);
 	}
 	
 	/**
@@ -125,11 +151,89 @@ class Layout implements LayoutInterface
 	}
 
 	public function getTableName() : string {
-		
+		return $this->tablename;
 	}
 
 	public function repair() {
+		$table = $this;
+		$stt = "DESCRIBE $table";
+		$fields = $table->getFields();
+		//Fetch the DB Fields and create on error.
+		try {
+			$query = $this->getDb()->execute($stt, Array(), false);
+		}
+		catch(Exception $e) {
+			return $this->create();
+		}
+		//Loop through the exiting fields
+		while (false != ($f = $query->fetch())) {
+			try {
+				$field = $this->getField($f['Field']);
+				unset($fields[$field->getName()]);
+			}
+			catch(Exception $e) {/*Ignore*/}
+		}
 		
+		foreach($fields as $field) $field->add();
+	}
+	
+	/**
+	 * Creates the column definitions for each column
+	 * 
+	 * @return mixed
+	 */
+	protected function columnDefinitions() {
+		$fields = $this->getFields();
+		foreach ($fields as $name => $f) {
+			$fields[$name] = '`'. $name . '` ' . $f->columnDefinition();
+		}
+		return $fields;
+	}
+	
+	/**
+	 * Creates a list of definitions for CONSTRAINTS defined by the references
+	 * this table's model makes to other models.
+	 * 
+	 * @return array
+	 */
+	protected function foreignKeyDefinitions() {
+		
+		$ret = Array();
+		$refs = $this->schema->getFields();
+		
+		foreach ($refs as $name => $ref) {
+			if (!$ref instanceof Reference) unset($refs[$name]);
+		}
+		
+		if (empty($refs)) return Array();
+		
+		foreach ($refs as $ref) {
+			//Check the integrity of the remote table
+			if ($ref->getTarget() !== $this->schema) {
+				$this->getDb()->table($ref->getTarget())->getTable()->repair();
+			}
+			
+			#Get the fields the model references from $ref
+			$fields = $ref->getPhysical();
+			foreach ($fields as &$field) $field = $field->getName();
+			unset($field);
+			#Get the table that represents $ref
+			$referencedtable = $ref->getTarget()->getTable();
+			$primary = $referencedtable->getPrimaryKey();
+			foreach ($primary as &$field) $field = $field->getName();
+			unset($field);
+			//Prepare the statement
+			$refstt = sprintf('FOREIGN KEY %s (%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE',
+				'fk_' . rand(), #Constraint name. Temporary fix, constraints should have proper names
+				implode(', ', $fields),
+				$referencedtable,
+				implode(', ', $primary) 
+				);
+			
+			$ret[] = $refstt;
+		}
+		
+		return $ret;
 	}
 	
 	/**
