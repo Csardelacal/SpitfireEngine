@@ -56,6 +56,8 @@ interface LayoutInterface
 	function getFields();
 	
 	/**
+	 * This method needs to get the lost of indexes from the logical Schema and 
+	 * convert them to physical indexes for the DBMS to manage.
 	 * 
 	 * @return IndexInterface[] The indexes in this layout
 	 */

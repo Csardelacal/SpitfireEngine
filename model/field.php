@@ -198,7 +198,11 @@ abstract class Field
 	public function getNullable() {
 		return $this->nullable;
 	}
-
+	
+	
+	public function getSchema() {
+		return $this->model;
+	}
 
 	
 	/**
@@ -206,7 +210,7 @@ abstract class Field
 	 * deliver data about which fields it's a sibling to and which fields
 	 * it refers too.
 	 * 
-	 * @return Model
+	 * @return Schema
 	 */
 	public function getModel() {
 		return $this->model;
@@ -217,7 +221,7 @@ abstract class Field
 	 * redundant but quickens development and makes it more efficient to
 	 * find the model for the field.
 	 * 
-	 * @param Model $model
+	 * @param Schema $model
 	 */
 	public function setModel($model) {
 		$this->model = $model;

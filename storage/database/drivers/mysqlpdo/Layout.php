@@ -106,7 +106,7 @@ class Layout implements LayoutInterface
 		return $this->fields;
 	}
 	
-	public function getField($name) {
+	public function getField($name) : Field {
 		#If the data we get is already a DBField check it belongs to this table
 		if ($name instanceof Field) {
 			if ($name->getTable() === $this->table) { return $name; }
@@ -119,12 +119,12 @@ class Layout implements LayoutInterface
 		#The field could not be found in the Database
 		throw new PrivateException('Field ' . $name . ' does not exist in ' . $this);
 	}
-
+	
 	public function getIndexes() {
 		//TODO Implement
 	}
 
-	public function getTableName() {
+	public function getTableName() : string {
 		
 	}
 

@@ -59,6 +59,14 @@ class Collection implements ArrayAccess, CollectionInterface
 		return array_reduce($this->arr, $callback, $initial);
 	}
 	
+	public function has($idx) {
+		return isset($this->arr[$idx]);
+	}
+	
+	public function contains($e) {
+		return array_search($e, $this->arr);
+	}
+	
 	/**
 	 * This function checks whether a collection contains only elements with a 
 	 * given type. This function also accepts base types.

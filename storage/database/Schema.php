@@ -1,10 +1,12 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\model\Field;
-use spitfire\storage\database\Table;
-use spitfire\storage\database\Query;
-use spitfire\exceptions\PrivateException;
 use IntegerField;
+use spitfire\core\Collection;
+use spitfire\exceptions\PrivateException;
+use spitfire\model\Field;
+use spitfire\model\Index;
+use spitfire\storage\database\Query;
+use spitfire\storage\database\Table;
 
 /**
  * A Schema is a class used to define how Spitfire stores data into a DBMS. We
@@ -36,6 +38,8 @@ class Schema
 	 */
 	private $fields;
 	
+	private $indexes;
+	
 	/**
 	 * Contains a reference to the table this model is 'templating'. This 
 	 * means that the current model is attached to said table and offers to 
@@ -66,14 +70,19 @@ class Schema
 	 */
 	public final function __construct($name, Table$table = null) {
 		#Define the Model's table as the one just received
-		$this->table = $table;
-		$this->name  = $name;
+		$this->table   = $table;
+		$this->name    = $name;
 		
 		#Create a field called ID that automatically identifies records 
 		$this->_id = new IntegerField(true);
+		$this->_id->setAutoIncrement(true);
 		
-		#Define _id as primary key and auto_increment
-		$this->_id->setPrimary(true)->setAutoIncrement(true);
+		#Create a default index for the primary key
+		$pk = new Index([$this->_id]);
+		$pk->setPrimary(true);
+		
+		#Create the index collection
+		$this->indexes = new Collection([$pk]);
 	}
 
 	/**
@@ -250,7 +259,15 @@ class Schema
 	 * @throws PrivateException
 	 */
 	public function __unset($name) {
-		if (isset($this->fields[$name])) { unset($this->fields[$name]); }
+		if (isset($this->fields[$name])) { 
+			$f = $this->fields[$name];
+			unset($this->fields[$name]);
+			
+			#Find an index that may contain the field and remove it too
+			$this->indexes = $this->indexes->filter(function ($e) use ($f) {
+				return $e->contains($f);
+			});
+		}
 		else { throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found'); }
 	}
 	
