@@ -102,7 +102,7 @@ class CompositeRestriction
 			foreach ($fields = $this->getField()->getPhysical() as $field) {
 				$f = $this->getQuery()->queryFieldInstance($field);
 				$v = null;
-				$r = $this->getQuery()->restrictionInstance($f, $v, 'IS');
+				$r = $this->getQuery()->restrictionInstance($f, $v, $this->operator);
 				$restrictions[] = $r;
 			}
 			return $restrictions;

@@ -139,6 +139,10 @@ class Layout implements LayoutInterface
 			else { throw new PrivateException('Field ' . $name . ' does not belong to ' . $this); }
 		}
 		
+		if (is_object($name)) {
+			throw new PrivateException('Expected a field name, got an object', 1708101329);
+		}
+		
 		#Otherwise search for it in the fields list
 		if (isset($this->fields[(string)$name])) { return $this->fields[(string)$name]; }
 		

@@ -245,7 +245,7 @@ abstract class Field
 	 * @return boolean
 	 */
 	public function isPrimary() {
-		return $this->primary;
+		return $this->primary || $this->auto_increment;
 	}
 	
 	/**

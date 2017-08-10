@@ -27,7 +27,7 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 	 */
 	private $table;
 	
-	public function __construct(MysqlPDOTable$table, $stt) {
+	public function __construct(\spitfire\storage\database\Table$table, $stt) {
 		$this->result = $stt;
 		$this->table = $table;
 	}

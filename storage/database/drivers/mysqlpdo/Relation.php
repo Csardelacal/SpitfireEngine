@@ -99,7 +99,7 @@ class Relation extends \spitfire\storage\database\Relation
 		$quoted = array_map(Array($db, 'quote'), $write);
 		
 		$stt = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-			$table,
+			$table->getLayout(),
 			implode(', ', $fields),
 			implode(', ', $quoted)
 			);
@@ -132,7 +132,7 @@ class Relation extends \spitfire\storage\database\Relation
 		foreach ($write as $f => $v) { $quoted[] = "{$table->getField($f)} = {$db->quote($v)}"; }
 		
 		$stt = sprintf('UPDATE %s SET %s WHERE %s',
-			$table, 
+			$table->getLayout(), 
 			implode(', ', $quoted),
 			implode(' AND ', $restrictions)
 		);

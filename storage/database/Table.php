@@ -221,7 +221,7 @@ class Table
 	 * @return Relation
 	 */
 	public function getCollection() {
-		return $this->db->table($this->schema->getName());
+		return $this->relation;
 	}
 	
 	/**
@@ -265,6 +265,18 @@ class Table
 		$bean = new $beanName($this);
 		
 		return $bean;
+	}
+	
+	public function get($field, $value, $operator = '=') {
+		return $this->relation->get($field, $value, $operator);
+	}
+	
+	public function getAll() {
+		return $this->relation->getAll();
+	}
+	
+	public function newRecord($data = Array()) {
+		return $this->relation->newRecord($data);
 	}
 
 	/**

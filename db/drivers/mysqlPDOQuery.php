@@ -22,7 +22,7 @@ class MysqlPDOQuery extends Query
 		
 		$selectstt    = 'SELECT';
 		$fromstt      = 'FROM';
-		$tablename    = $this->getTable();
+		$tablename    = $this->getTable()->getLayout();
 		$wherestt     = 'WHERE';
 		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
 		$restrictions = array_filter($this->getRestrictions(), Array('spitfire\storage\database\Query', 'restrictionFilter'));
