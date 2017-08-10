@@ -11,7 +11,13 @@ use spitfire\exceptions\OutOfRangeException;
  */
 class Collection implements ArrayAccess, CollectionInterface
 {
-	private $arr;
+	
+	/**
+	 * The elements that this collection maintains.
+	 * 
+	 * @var mixed
+	 */
+	private $items;
 	
 	/**
 	 * The collection element allows to extend array functionality to provide
@@ -20,10 +26,10 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * @param Collection|mixed $e
 	 */
 	public function __construct($e = null) {
-		if ($e === null)                  {	$this->arr = []; }
-		elseif ($e instanceof Relation) { $this->arr = $e->toArray(); }
-		elseif (is_array($e))             { $this->arr = $e; }
-		else                              { $this->arr = [$e]; }
+		if ($e === null)                  {	$this->items = []; }
+		elseif ($e instanceof Relation)   { $this->items = $e->toArray(); }
+		elseif (is_array($e))             { $this->items = $e; }
+		else                              { $this->items = [$e]; }
 	}
 	
 	/**
@@ -45,7 +51,7 @@ class Collection implements ArrayAccess, CollectionInterface
 			throw new BadMethodCallException('Invalid callable provided to collection::each()', 1703221329); 
 		}
 		
-		return new Collection(array_map($callable, $this->arr));
+		return new Collection(array_map($callable, $this->items));
 	}
 	
 	/**
@@ -56,15 +62,15 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * @return mixed
 	 */
 	public function reduce($callback, $initial = null) {
-		return array_reduce($this->arr, $callback, $initial);
+		return array_reduce($this->items, $callback, $initial);
 	}
 	
 	public function has($idx) {
-		return isset($this->arr[$idx]);
+		return isset($this->items[$idx]);
 	}
 	
 	public function contains($e) {
-		return array_search($e, $this->arr);
+		return array_search($e, $this->items);
 	}
 	
 	/**
@@ -99,7 +105,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * @return boolean
 	 */
 	public function isEmpty() {
-		return empty($this->arr);
+		return empty($this->items);
 	}
 	
 	/**
@@ -114,10 +120,10 @@ class Collection implements ArrayAccess, CollectionInterface
 	 */
 	public function filter($callback = null) {
 		#If there was no callback defined, then we filter the array without params
-		if ($callback === null) { return new Collection(array_filter($this->arr)); }
+		if ($callback === null) { return new Collection(array_filter($this->items)); }
 		
 		#Otherwise we use the callback parameter to filter the array
-		return new Collection(array_filter($this->arr, $callback));
+		return new Collection(array_filter($this->items, $callback));
 	}
 	
 	/**
@@ -126,7 +132,17 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * @return int
 	 */
 	public function count() {
-		return count($this->arr);
+		return count($this->items);
+	}
+	
+	/**
+	 * Combines the elements in the collection to a string separated by the glue
+	 * parameter.
+	 * 
+	 * @param string $glue
+	 */
+	public function join($glue = '') {
+		return implode($glue, $this->items);
 	}
 	
 	/**
@@ -141,7 +157,7 @@ class Collection implements ArrayAccess, CollectionInterface
 		if ($this->isEmpty())               { throw new BadMethodCallException('Collection is empty'); }
 		if (!$this->containsOnly('number')) { throw new BadMethodCallException('Collection does contain non-numeric types'); }
 		
-		return array_sum($this->arr);
+		return array_sum($this->items);
 	}
 	
 	/**
@@ -169,67 +185,67 @@ class Collection implements ArrayAccess, CollectionInterface
 			if (is_object($e)) { return isset($e->$key)? $e->$key : null; }
 			
 			throw new OutOfBoundsException('Collection::extract requires array to contain only arrays and objects');
-		}, $this->arr));
+		}, $this->items));
 	}
 	
 	public function push($element) {
-		$this->arr[] = $element;
+		$this->items[] = $element;
 		return $element;
 	}
 	
 	public function add($elements) {
-		$this->arr+= $elements;
+		$this->items+= $elements;
 		return $this;
 	}
 	
 	public function remove($element) {
-		unset($this->arr[array_search($element, $this->arr)]);
+		unset($this->items[array_search($element, $this->items)]);
 		return $this;
 	}
 	
 	public function reset() {
-		$this->arr = [];
+		$this->items = [];
 		return $this;
 	}
 	
 	public function current() {
-		return current($this->arr);
+		return current($this->items);
 	}
 	
 	public function key() {
-		return key($this->arr);
+		return key($this->items);
 	}
 	
 	public function next() {
-		return next($this->arr);
+		return next($this->items);
 	}
 	
 	public function offsetExists($offset) {
-		return array_key_exists($offset, $this->arr);
+		return array_key_exists($offset, $this->items);
 	}
 	
 	public function offsetGet($offset) {
-		if (!array_key_exists($offset, $this->arr)) {
+		if (!array_key_exists($offset, $this->items)) {
 			throw new OutOfRangeException('Undefined index: ' . $offset, 1703221322);
 		}
 		
-		return $this->arr[$offset];
+		return $this->items[$offset];
 	}
 	
 	public function offsetSet($offset, $value) {
-		$this->arr[$offset] = $value;
+		$this->items[$offset] = $value;
 	}
 	
 	public function offsetUnset($offset) {
-		unset($this->arr[$offset]);
+		unset($this->items[$offset]);
 	}
 	
 	public function rewind() {
-		return reset($this->arr);
+		return reset($this->items);
 	}
 	
 	public function pluck() {
-		return array_shift($this->arr);
+		return array_shift($this->items);
 	}
 	
 	/**
@@ -242,15 +258,15 @@ class Collection implements ArrayAccess, CollectionInterface
 	 * @return boolean
 	 */
 	public function valid() {
-		return null !== key($this->arr);
+		return null !== key($this->items);
 	}
 	
 	public function toArray() {
-		return $this->arr;
+		return $this->items;
 	}
 	
 	public function __isset($name) {
-		return isset($this->arr[$name]);
+		return isset($this->items[$name]);
 	}
 
 }
