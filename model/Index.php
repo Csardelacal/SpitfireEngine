@@ -36,10 +36,40 @@ use spitfire\core\Collection;
 class Index
 {
 	
+	/**
+	 * The fields that the index contains. Please note that many DBMS (basically 
+	 * all of them) are sensitive to the order in which the fields are provided
+	 * to the index and they will therefore perform better (or worse) when used 
+	 * properly.
+	 *
+	 * @var Collection
+	 */
 	private $fields;
+	
+	/**
+	 * The name to be given to this index. This will be then suggested to the 
+	 * DBMS. This does not guarantee to be the name the system will end up choosing.
+	 *
+	 * @var string
+	 */
 	private $name;
+	
+	/**
+	 * Indicates whether this index is unique. Please note that spitfire will 
+	 * override this setting to bool(true) if the index is also primary.
+	 *
+	 * @var bool 
+	 */
 	private $unique = false;
-	private $isPrimary = false;
+	
+	/**
+	 * Indicates whether this key is a primary key. Every table can only have one 
+	 * primary key and it is required to have one to create relations between the
+	 * tables.
+	 *
+	 * @var bool
+	 */
+	private $primary = false;
 	
 	/**
 	 * Creates a new index for the schema.
@@ -48,7 +78,6 @@ class Index
 	 */
 	public function __construct($fields = null) {
 		$this->fields = new Collection($fields);
-		$this->name = 'idx_' . $this->fields->rewind()->getSchema()->getName() . rand(0, 9999);
 	}
 	
 	public function getFields() {
@@ -60,15 +89,40 @@ class Index
 	}
 	
 	public function getName() {
-		return $this->name;
+		/*
+		 * If the index already has a name we roll with that.
+		 */
+		if(!empty($this->name)) { return $this->name; }
+		
+		/*
+		 * Get the table name, this way we can generate a meaningful index name
+		 * when it's written to the database.
+		 */
+		$tablename  = $this->fields->rewind()->getSchema()->getName();
+		
+		/*
+		 * Implode the names of the fields being passed to the index. This way the 
+		 * 
+		 */
+		$imploded = $this->fields->each(function ($e) { 
+			return $e->getName();
+		})->join('_');
+		
+		/*
+		 * Generate a name from the fields for the index
+		 * - All indexes are identified by idx
+		 * - Then comes the table name
+		 * - Lastly we add the fields composing the index
+		 */
+		$this->name = 'idx_' . $tablename . '_' . $imploded;
 	}
 	
-	public function getUnique() {
-		return $this->unique;
+	public function isUnique() {
+		return $this->unique || $this->primary;
 	}
 	
 	public function isPrimary() {
-		return $this->isPrimary;
+		return $this->primary;
 	}
 	
 	public function setFields($fields) {
@@ -91,7 +145,7 @@ class Index
 	}
 	
 	public function setPrimary($isPrimary) {
-		$this->isPrimary = $isPrimary;
+		$this->primary = $isPrimary;
 		return $this;
 	}
 }
