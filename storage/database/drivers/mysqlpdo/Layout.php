@@ -1,8 +1,11 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
+use Exception;
+use Reference;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Field;
+use spitfire\storage\database\IndexInterface;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Table;
 
@@ -67,7 +70,7 @@ class Layout implements LayoutInterface
 	 * An array of indexes that this table defines to manage it's queries and 
 	 * data.
 	 *
-	 * @var \spitfire\storage\database\IndexInterface[]
+	 * @var IndexInterface[]
 	 */
 	private $indexes;
 	
@@ -95,9 +98,9 @@ class Layout implements LayoutInterface
 	}
 	
 	public function create() {
-		$table = $this;
-		$definitions = $table->columnDefinitions();
-		$foreignkeys = $table->foreignKeyDefinitions();
+		$table = $this->table;
+		$definitions = $this->columnDefinitions();
+		$foreignkeys = $this->foreignKeyDefinitions();
 		$pk = $table->getPrimaryKey();
 		
 		foreach($pk as &$f) { $f = '`' . $f->getName() .  '`'; }
@@ -110,7 +113,7 @@ class Layout implements LayoutInterface
 		$clean = array_filter($definitions);
 		
 		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
-			$table,
+			$table->getLayout(),
 			implode(', ', $clean)
 			);
 		
@@ -159,12 +162,12 @@ class Layout implements LayoutInterface
 	}
 
 	public function repair() {
-		$table = $this;
-		$stt = "DESCRIBE $table";
+		$table = $this->table;
+		$stt = "DESCRIBE {$this}";
 		$fields = $table->getFields();
 		//Fetch the DB Fields and create on error.
 		try {
-			$query = $this->getDb()->execute($stt, Array(), false);
+			$query = $table->getDb()->execute($stt, Array(), false);
 		}
 		catch(Exception $e) {
 			return $this->create();
@@ -203,7 +206,8 @@ class Layout implements LayoutInterface
 	protected function foreignKeyDefinitions() {
 		
 		$ret = Array();
-		$refs = $this->schema->getFields();
+		$refs = $this->table->getSchema()->getFields();
+		
 		
 		foreach ($refs as $name => $ref) {
 			if (!$ref instanceof Reference) unset($refs[$name]);
@@ -214,7 +218,7 @@ class Layout implements LayoutInterface
 		foreach ($refs as $ref) {
 			//Check the integrity of the remote table
 			if ($ref->getTarget() !== $this->schema) {
-				$this->getDb()->table($ref->getTarget())->getTable()->repair();
+				$this->table->getDb()->table($ref->getTarget())->getLayout()->repair();
 			}
 			
 			#Get the fields the model references from $ref
@@ -230,7 +234,7 @@ class Layout implements LayoutInterface
 			$refstt = sprintf('FOREIGN KEY %s (%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE',
 				'fk_' . rand(), #Constraint name. Temporary fix, constraints should have proper names
 				implode(', ', $fields),
-				$referencedtable,
+				$referencedtable->getLayout(),
 				implode(', ', $primary) 
 				);
 			

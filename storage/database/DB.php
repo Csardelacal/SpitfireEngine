@@ -102,7 +102,7 @@ abstract class DB
 	public function repair() {
 		$tables = $this->tableCache->getAll();
 		foreach ($tables as $table) {
-			$table->getTable()->repair();
+			$table->getLayout()->repair();
 		}
 	}
 	
