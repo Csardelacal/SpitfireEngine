@@ -80,14 +80,34 @@ class Index
 		$this->fields = new Collection($fields);
 	}
 	
+	/**
+	 * Return the field collection
+	 * 
+	 * @return Collection containing the <code>Field</code>s in this index
+	 */
 	public function getFields() {
 		return $this->fields;
 	}
 	
+	/**
+	 * Indicates whether a field is contained in this index. This allows an app
+	 * to check whether it needs to remove an index when a field is removed.
+	 * 
+	 * @param \spitfire\model\Field $f
+	 * @return bool
+	 */
 	public function contains(Field$f) {
 		return $this->fields->contains($f);
 	}
 	
+	/**
+	 * Returns the name of the index (if given) and generates a standard name for
+	 * the index when there is none. The format for these is
+	 * 
+	 * idx_tablename_field1_field2
+	 * 
+	 * @return string
+	 */
 	public function getName() {
 		/*
 		 * If the index already has a name we roll with that.
