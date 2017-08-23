@@ -59,7 +59,7 @@ class FileSessionHandler extends SessionHandler
 
 		if (!file_exists($file)) { return ''; }
 		
-		$this->handle = fopen($file, 'r+');
+		$this->handle = fopen($file, 'r');
 		flock($this->handle, LOCK_EX);
 		
 		$this->src = (string)fread($this->handle, filesize($file));
@@ -68,18 +68,16 @@ class FileSessionHandler extends SessionHandler
 
 	public function write($__garbage, $data) {
 		
-		if (!$this->handle) {
-			$id = Session::sessionId(false);
-			$this->handle = fopen(sprintf('%s/sess_%s', $this->directory, $id), 'w+');
-		}
-		
 		if ($data === $this->src) {
 			return true;
 		}
 		
-		ftruncate($this->handle, 0);
-		rewind($this->handle);
-		return fwrite($this->handle, $data) !== false;
+		$id = Session::sessionId(false);
+		$handle = fopen(sprintf('%s/sess_%s', $this->directory, $id), 'w+');
+		
+		ftruncate($handle, 0);
+		rewind($handle);
+		return fwrite($handle, $data) !== false;
 	}
 
 }
