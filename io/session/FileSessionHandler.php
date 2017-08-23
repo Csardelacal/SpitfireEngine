@@ -83,16 +83,3 @@ class FileSessionHandler extends SessionHandler
 	}
 
 }
-
-/*
- * Migrated the session handler to regular old file writes, I hope this 
-will prevent the app from making an excessive amount of syscalls on 
-behalf of the session.
-
-I'm also testing not writing the session if the data is already 
-available. Which should reduce disk IO too.
-
-Not 100 % certain how smart linux is about this. Maybe if the file was
-opened for writing but not actually written, it will not flush the file
-to drive.
- */
