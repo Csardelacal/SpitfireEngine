@@ -1,7 +1,10 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
+use Reference;
+use spitfire\cache\MemoryCache;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
+use spitfire\model\Index;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Table;
@@ -67,7 +70,7 @@ class Layout implements LayoutInterface
 	 * An array of indexes that this table defines to manage it's queries and 
 	 * data.
 	 *
-	 * @var \spitfire\storage\database\IndexInterface[]
+	 * @var MemoryCache
 	 */
 	private $indexes;
 	
@@ -91,7 +94,8 @@ class Layout implements LayoutInterface
 			while ($phys = array_shift($physical)) { $columns[$phys->getName()] = $phys; }
 		}
 		
-		$this->fields = $columns;
+		$this->fields  = $columns;
+		$this->indexes = new MemoryCache();
 	}
 	
 	public function create() {
@@ -150,8 +154,28 @@ class Layout implements LayoutInterface
 		throw new PrivateException('Field ' . $name . ' does not exist in ' . $this);
 	}
 	
+	/**
+	 * 
+	 * @return Collection <Index>
+	 */
 	public function getIndexes() {
-		//TODO Implement
+		
+		return $this->indexes->get('indexes', function() {
+			$logical = $this->table->getSchema()->getIndexes();
+			$logical->each(function (Index$e) {
+				$arr = [];
+
+				/**
+				 * Each field has one / many physical fields that need to be brought into
+				 * the physical index to be generated.
+				 */
+				$e->getFields()->each(function ($p) use ($arr) { 
+					$arr = array_merge($arr, $e->getPhysicalFields()); 
+				});
+
+				return new Index($arr);
+			});
+		});
 	}
 
 	public function getTableName() : string {

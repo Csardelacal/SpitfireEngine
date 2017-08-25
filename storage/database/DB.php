@@ -116,7 +116,7 @@ abstract class DB
 	 *                                 table.
 	 * 
 	 * @throws PrivateException If the table could not be found
-	 * @return Relation The database table adapter
+	 * @return Table The database table adapter
 	 */
 	public function table($tablename) {
 		

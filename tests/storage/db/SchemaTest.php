@@ -107,6 +107,6 @@ class SchemaTest extends TestCase
 		$schema = new \spitfire\storage\database\Schema('test');
 		$table  = db()->table($schema);
 		
-		$this->assertEquals(1, count($table->getFields()));
+		$this->assertEquals(1, count($table->getLayout()->getFields()));
 	}
 }

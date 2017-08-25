@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\database;
 
+use spitfire\core\Collection;
+
 /* 
  * The MIT License
  *
@@ -59,7 +61,7 @@ interface LayoutInterface
 	 * This method needs to get the lost of indexes from the logical Schema and 
 	 * convert them to physical indexes for the DBMS to manage.
 	 * 
-	 * @return IndexInterface[] The indexes in this layout
+	 * @return Collection (IndexInterface) The indexes in this layout
 	 */
 	function getIndexes();
 	

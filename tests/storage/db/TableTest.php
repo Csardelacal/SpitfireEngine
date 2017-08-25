@@ -32,11 +32,11 @@ class TableTest extends TestCase
 	}
 	
 	public function testGetField() {
-		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getField('field1'));
-		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getField('field2'));
+		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getLayout()->getField('field1'));
+		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getLayout()->getField('field2'));
 		
 		//This checks that the table identifies and returns when an object is provided
-		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getField($this->table->getField('field2')));
+		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getLayout()->getField($this->table->getLayout()->getField('field2')));
 	}
 	
 	/**
@@ -53,12 +53,12 @@ class TableTest extends TestCase
 		$schema = new \spitfire\storage\database\Schema('test\storage\database\Table\notreal');
 		$this->db->table($schema);
 		$schema->field = new \IntegerField();
-		$this->table->getField(new \spitfire\storage\database\drivers\mysqlPDOField($schema->field, 'notexisting'));
+		$this->table->getLayout()->getField(new \spitfire\storage\database\drivers\mysqlPDOField($schema->field, 'notexisting'));
 	}
 
 
 	public function testFieldTypes() {
-		$this->assertEquals(\spitfire\model\Field::TYPE_STRING, $this->table->getField('field2')->getLogicalField()->getDataType());
+		$this->assertEquals(\spitfire\model\Field::TYPE_STRING, $this->table->getLayout()->getField('field2')->getLogicalField()->getDataType());
 	}
 	
 }

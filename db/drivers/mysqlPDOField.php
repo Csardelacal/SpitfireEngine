@@ -66,7 +66,7 @@ class mysqlPDOField extends Field
 	}
 
 	public function __toString() {
-		return "`{$this->getTable()->getTableName()}`.`{$this->getName()}`";
+		return "`{$this->getTable()->getLayout()->getTableName()}`.`{$this->getName()}`";
 	}
 	
 }

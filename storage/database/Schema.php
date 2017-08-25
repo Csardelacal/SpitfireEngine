@@ -38,6 +38,11 @@ class Schema
 	 */
 	private $fields;
 	
+	/**
+	 * The indexes the table can use to optimize the search performance.
+	 *
+	 * @var Collection <Index>
+	 */
 	private $indexes;
 	
 	/**
@@ -198,9 +203,19 @@ class Schema
 	}
 	
 	/**
+	 * Returns the collection of indexes that are contained in this model.
+	 * 
+	 * @return Collection <Index>
+	 */
+	public function getIndexes() {
+		return $this->indexes;
+	}
+	
+	/**
 	 * Returns a list of fields which compound the primary key of this model.
 	 * The primary key is a set of records that identify a unique record.
 	 * 
+	 * @deprecated since version 0.1-dev 20170824
 	 * @return Field[]
 	 */
 	public function getPrimary() {
