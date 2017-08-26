@@ -159,7 +159,7 @@ class Index
 		return $this;
 	}
 	
-	public function setUnique($unique) {
+	public function unique($unique = true) {
 		$this->unique = $unique;
 		return $this;
 	}

@@ -38,9 +38,9 @@ interface IndexInterface
 	 * the order on these. The order of the fields may affect query performance
 	 * heavily on a relational model.
 	 * 
-	 * @return Field
+	 * @return Field[]
 	 */
-	function getFields(): Field;
+	function getFields();
 	
 	/**
 	 * Returns a name for the index. In most DBMS this is optional, but allows 

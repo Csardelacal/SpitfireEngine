@@ -202,6 +202,14 @@ class Schema
 		//Do nothing, this is meant for overriding
 	}
 	
+	public function index() {
+		$fields = func_get_args();
+		$index = new Index($fields);
+		
+		$this->indexes->push($index);
+		return $index;
+	}
+	
 	/**
 	 * Returns the collection of indexes that are contained in this model.
 	 * 

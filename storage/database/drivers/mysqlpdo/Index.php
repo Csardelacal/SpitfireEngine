@@ -30,24 +30,44 @@ use spitfire\storage\database\IndexInterface;
 class Index implements IndexInterface
 {
 	
-	public function __construct($fields) {
-		;
+	private $fields;
+	
+	private $name;
+	
+	private $primary;
+	
+	private $unique;
+	
+	public function __construct($fields, $name, $primary, $unique) {
+		$this->fields = $fields;
+		$this->name = $name;
+		$this->primary = $primary;
+		$this->unique = $unique;
 	}
 	
-	public function getFields(): Field {
-		
+	public function getFields() {
+		return $this->fields;
 	}
 
 	public function getName(): string {
-		
+		return $this->name;
 	}
 
 	public function isPrimary(): bool {
-		
+		return !!$this->primary;
 	}
 
 	public function isUnique(): bool {
-		
+		return $this->primary || $this->unique;
+	}
+	
+	public function definition() {
+		return sprintf(
+			'%s %s ON %s',
+			$this->primary? 'PRIMARY KEY' : ($this->unique? 'UNIQUE INDEX' : 'INDEX'),
+			$this->getName()? : '',
+			implode(', ', $this->getFields())
+		);
 	}
 
 }

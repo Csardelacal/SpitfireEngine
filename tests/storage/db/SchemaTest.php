@@ -77,6 +77,7 @@ class SchemaTest extends TestCase
 		unset($a->_id);
 		
 		$this->assertEquals(null, isset($a->_id));
+		$this->assertEquals(0, $a->getIndexes()->count());
 	}
 	
 	/**
@@ -108,5 +109,37 @@ class SchemaTest extends TestCase
 		$table  = db()->table($schema);
 		
 		$this->assertEquals(1, count($table->getLayout()->getFields()));
+	}
+	
+	/*
+	 * Ensures that the schema creates a bunch of indexes that the system can read
+	 * appropriately and therefore process as expected.
+	 */
+	public function testMakeIndex() {
+		/*
+		 * Prepare a test schema with a bunch of fields.
+		 */
+		$schema = new \spitfire\storage\database\Schema('test');
+		$schema->a = new \IntegerField();
+		$schema->b = new \IntegerField();
+		
+		/*
+		 * Index the two columns we just created.
+		 */
+		$index = $schema->index($schema->a, $schema->b)->unique();
+		
+		/*
+		 * Run assertions to ensure that the index was properly created and 
+		 * every component works as expected.
+		 */
+		$this->assertInstanceOf(\spitfire\model\Index::class, $index);
+		$this->assertEquals(2, $schema->getIndexes()->count());
+		$this->assertEquals(true, $index->isUnique());
+		
+		/*
+		 * Since the schema only contains the primary and a unique key, every key
+		 * in the bunch should be unique.
+		 */
+		$schema->getIndexes()->each(function ($e) { $this->assertEquals(true, $e->isUnique()); });
 	}
 }
