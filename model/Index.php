@@ -118,7 +118,7 @@ class Index
 		 * Get the table name, this way we can generate a meaningful index name
 		 * when it's written to the database.
 		 */
-		$tablename  = $this->fields->rewind()->getSchema()->getName();
+		$tablename  = $this->fields->rewind()->getSchema()->getTableName();
 		
 		/*
 		 * Implode the names of the fields being passed to the index. This way the 
@@ -134,7 +134,7 @@ class Index
 		 * - Then comes the table name
 		 * - Lastly we add the fields composing the index
 		 */
-		$this->name = 'idx_' . $tablename . '_' . $imploded;
+		return $this->name = 'idx_' . $tablename . '_' . $imploded;
 	}
 	
 	public function isUnique() {

@@ -15,7 +15,7 @@ class MemoryCache implements CacheInterface
 	 *
 	 * @var mixed 
 	 */
-	private $data;
+	private $data = [];
 	
 	/**
 	 * 

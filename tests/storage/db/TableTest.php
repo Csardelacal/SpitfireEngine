@@ -55,6 +55,29 @@ class TableTest extends TestCase
 		$schema->field = new \IntegerField();
 		$this->table->getLayout()->getField(new \spitfire\storage\database\drivers\mysqlPDOField($schema->field, 'notexisting'));
 	}
+	
+	public function testCreate() {
+		
+		
+		$schema1 = new \spitfire\storage\database\Schema('test\storage\database\Table\Create1');
+		$schema2 = new \spitfire\storage\database\Schema('test\storage\database\Table\Create2');
+		
+		$schema2->a = new \Reference('test\storage\database\Table\Create1');
+		
+		$table1 = $this->db->table($schema1);
+		$table2 = $this->db->table($schema2);
+		
+		$table2->getLayout()->destroy();
+		$table1->getLayout()->destroy();
+		
+		$table1->getLayout()->create();
+		$table2->getLayout()->create();
+		
+		$this->assertInstanceOf(\spitfire\storage\database\Table::class, $table2);
+		
+		$table2->getLayout()->destroy();
+		$table1->getLayout()->destroy();
+	}
 
 
 	public function testFieldTypes() {

@@ -42,11 +42,6 @@ class mysqlPDOField extends Field
 		
 		if (!$this->getLogicalField()->getNullable())    $definition.= " NOT NULL ";
 		if ($this->getLogicalField()->isAutoIncrement()) $definition.= "AUTO_INCREMENT ";
-		if ($this->getLogicalField()->isUnique())        $definition.= "UNIQUE ";
-		
-		/*if (null != $ref = $this->getReferencedField()) {
-			$definition.= 'REFERENCES ' . $ref . ' ON DELETE CASCADE ON UPDATE CASCADE';
-		}/**/
 		
 		return $definition;
 	}

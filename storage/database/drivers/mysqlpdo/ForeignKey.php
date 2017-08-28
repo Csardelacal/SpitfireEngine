@@ -1,7 +1,8 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\model\Index as LogicalIndex;
-use spitfire\storage\database\IndexInterface;
+use spitfire\core\Collection;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\ForeignKeyInterface;
 
 /* 
  * The MIT License
@@ -27,62 +28,34 @@ use spitfire\storage\database\IndexInterface;
  * THE SOFTWARE.
  */
 
-/**
- * The MySQLPDO friendly implementation of indexes.
- * 
- */
-class Index implements IndexInterface
+class ForeignKey extends Index implements ForeignKeyInterface
 {
 	
-	private $logical;
-	
-	public function __construct(LogicalIndex$index) {
-		$this->logical = $index;
-	}
-	
-	public function getFields() {
-		/*
-		 * Prepare an array for the fields.
-		 */
-		$arr = new \spitfire\core\Collection();
-
-		/**
-		 * Each field has one / many physical fields that need to be brought into
-		 * the physical index to be generated.
-		 */
-		$this->logical->getFields()->each(function ($p) use ($arr) { 
-			$arr->add($p->getPhysical()); 
+	public function getReferenced(): Collection {
+		$fields  = $this->getFields();
+		$_ret    = new Collection();
+		
+		$fields->each(function(Field$e) use ($_ret) {
+			$_ret->push($e->getReferencedField());
 		});
 		
-		return $arr;
-	}
-
-	public function getName(): string {
-		return $this->logical->getName();
-	}
-
-	public function isPrimary(): bool {
-		return $this->logical->isPrimary();
-	}
-
-	public function isUnique(): bool {
-		return $this->logical->isUnique();
+		return $_ret;
 	}
 	
-	/**
-	 * 
-	 * @return LogicalIndex
-	 */
-	public function getLogical() : LogicalIndex {
-		return $this->logical;
+	public function getName(): string {
+		return 'foreign_' . parent::getName();
 	}
 	
 	public function definition() {
+		$referenced = $this->getReferenced();
+		$table      = $referenced->rewind()->getTable();
+		
 		return sprintf(
-			'%s `%s` (%s)',
-			$this->isPrimary()? 'PRIMARY KEY' : ($this->isUnique()? 'UNIQUE INDEX' : 'INDEX'),
-			$this->getName()? : '',
-			$this->getFields()->each(function ($e) { return sprintf('`%s`', $e->getName()); })->join(', ')
+			'FOREIGN KEY `%s` (%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE',
+			$this->getName(),
+			$this->getFields()->each(function ($e) { return sprintf('`%s`', $e->getName()); })->join(', '),
+			$table->getLayout(),
+			$referenced->each(function ($e) { return sprintf('`%s`', $e->getName()); })->join(', ')
 		);
 	}
 

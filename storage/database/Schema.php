@@ -159,7 +159,7 @@ class Schema
 	 * @return string
 	 */
 	public function getTableName() {
-		return str_replace('\\', '-', $this->getName());
+		return trim(str_replace('\\', '-', $this->getName()), '-_ ');
 	}
 	
 	/**
