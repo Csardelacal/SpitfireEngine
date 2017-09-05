@@ -206,6 +206,27 @@ abstract class DB
 	abstract public function getConnection();
 	
 	/**
+	 * Allows the application to create the database needed to store the tables
+	 * and therefore data for the application. Some DBMS like SQLite won't support
+	 * multiple databases - so this may not do anything.
+	 * 
+	 * @abstract
+	 * @return bool Returns whether the operation could be completed successfully
+	 */
+	abstract public function create();
+	
+	/**
+	 * Destroys the database and all of it's contents. Drivers may not allow 
+	 * this method to be called unless they're being operated in debug mode or 
+	 * a similar mode.
+	 * 
+	 * @abstract
+	 * @throws PrivateException If the driver rejected the operation
+	 * @return bool Whether the operation could be completed
+	 */
+	abstract public function destroy();
+	
+	/**
 	 * In modern spitfire drivers, all the object creation for a database is handled
 	 * by the object factories. This factories allow the system to create any object
 	 * they need: Queries, Tables, Fields...

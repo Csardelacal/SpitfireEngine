@@ -1,6 +1,15 @@
 <?php namespace tests\spitfire\storage\db;
 
+use IntegerField;
 use PHPUnit\Framework\TestCase;
+use spitfire\exceptions\PrivateException;
+use spitfire\model\Field as Field2;
+use spitfire\storage\database\drivers\mysqlPDOField;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\Schema;
+use spitfire\storage\database\Table;
+use StringField;
+use function db;
 
 class TableTest extends TestCase
 {
@@ -10,7 +19,7 @@ class TableTest extends TestCase
 	/**
 	 * The table we're testing.
 	 *
-	 * @var \spitfire\storage\database\Table
+	 * @var Table
 	 */
 	private $table;
 	private $schema;
@@ -21,67 +30,44 @@ class TableTest extends TestCase
 		
 		//TODO: This needs to be replaced with logic that actually is properly testable.
 		//Currently there is no DB mock driver. Not sure if I should create one or just test different drivers
-		$this->db = db();
+		$this->db = db(['schema' => 'test_schema']);
 		
-		$this->schema = new \spitfire\storage\database\Schema('test');
+		$this->schema = new Schema('test');
 		
-		$this->schema->field1 = new \IntegerField(true);
-		$this->schema->field2 = new \StringField(255);
+		$this->schema->field1 = new IntegerField(true);
+		$this->schema->field2 = new StringField(255);
 		
-		$this->table = new \spitfire\storage\database\drivers\MysqlPDOTable($this->db, $this->schema);
+		$this->table = new Table($this->db, $this->schema);
 	}
 	
 	public function testGetField() {
-		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getLayout()->getField('field1'));
-		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getLayout()->getField('field2'));
+		$this->assertInstanceOf(Field::class, $this->table->getLayout()->getField('field1'));
+		$this->assertInstanceOf(Field::class, $this->table->getLayout()->getField('field2'));
 		
 		//This checks that the table identifies and returns when an object is provided
-		$this->assertInstanceOf(\spitfire\storage\database\Field::class, $this->table->getLayout()->getField($this->table->getLayout()->getField('field2')));
+		$this->assertInstanceOf(Field::class, $this->table->getLayout()->getField($this->table->getLayout()->getField('field2')));
 	}
 	
 	/**
-	 * @expectedException \spitfire\exceptions\PrivateException
+	 * @expectedException spitfire\exceptions\PrivateException
 	 */
 	public function tsetGetUnexistingFieldByName() {
 		$this->table->getField('unexistingfield');
 	}
 	
 	/**
-	 * @expectedException \spitfire\exceptions\PrivateException
+	 * @expectedException spitfire\exceptions\PrivateException
 	 */
 	public function testGetUnexistingFieldByObject() {
-		$schema = new \spitfire\storage\database\Schema('test\storage\database\Table\notreal');
+		$schema = new Schema('test\storage\database\Table\notreal');
 		$this->db->table($schema);
-		$schema->field = new \IntegerField();
-		$this->table->getLayout()->getField(new \spitfire\storage\database\drivers\mysqlPDOField($schema->field, 'notexisting'));
-	}
-	
-	public function testCreate() {
-		
-		
-		$schema1 = new \spitfire\storage\database\Schema('test\storage\database\Table\Create1');
-		$schema2 = new \spitfire\storage\database\Schema('test\storage\database\Table\Create2');
-		
-		$schema2->a = new \Reference('test\storage\database\Table\Create1');
-		
-		$table1 = $this->db->table($schema1);
-		$table2 = $this->db->table($schema2);
-		
-		$table2->getLayout()->destroy();
-		$table1->getLayout()->destroy();
-		
-		$table1->getLayout()->create();
-		$table2->getLayout()->create();
-		
-		$this->assertInstanceOf(\spitfire\storage\database\Table::class, $table2);
-		
-		$table2->getLayout()->destroy();
-		$table1->getLayout()->destroy();
+		$schema->field = new IntegerField();
+		$this->table->getLayout()->getField(new mysqlPDOField($schema->field, 'notexisting'));
 	}
 
 
 	public function testFieldTypes() {
-		$this->assertEquals(\spitfire\model\Field::TYPE_STRING, $this->table->getLayout()->getField('field2')->getLogicalField()->getDataType());
+		$this->assertEquals(Field2::TYPE_STRING, $this->table->getLayout()->getField('field2')->getLogicalField()->getDataType());
 	}
 	
 }

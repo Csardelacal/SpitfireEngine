@@ -134,4 +134,27 @@ class Driver extends DB
 		static $factory;
 		return $factory? : $factory = new \spitfire\storage\database\drivers\mysqlpdo\ObjectFactory();
 	}
+
+	/**
+	 * Creates a database on MySQL's side where data can be stored on behalf of
+	 * the application.
+	 * 
+	 * @return bool
+	 */
+	public function create(): bool {
+		$this->execute(sprintf('CREATE SCHEMA `%s`;', $this->quote($this->schema)));
+		$this->execute(sprintf('use `%s`;', $this->quote($this->schema)));
+		return true;
+	}
+	
+	/**
+	 * Destroys the database housing the app's information.
+	 * 
+	 * @return bool
+	 */
+	public function destroy(): bool {
+		$this->execute(sprintf('DROP SCHEMA `%s`;', $this->quote($this->schema)));
+		return true;
+	}
+
 }
