@@ -1,8 +1,7 @@
 language: php
 php:
   - 7.0
-  
-before_script: phpunit -v
+  - 7.1
 
 script: phpunit --configuration=phpunit.xml tests
 
