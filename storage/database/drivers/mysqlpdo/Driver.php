@@ -56,7 +56,7 @@ class Driver extends DB
 				throw new FileNotFoundException('Database does not exist', 1709051253);
 			} 
 			
-			SpitFire::$debug->log($e->getMessage());
+			spitfire()->log($e->getMessage());
 			throw new PrivateException('DB Error. Connection refused by the server');
 		}
 
