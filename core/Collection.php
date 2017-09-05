@@ -220,6 +220,11 @@ class Collection implements ArrayAccess, CollectionInterface
 		return reset($this->arr);
 	}
 	
+	public function last() {
+		if (!isset($this->arr)) { throw new \spitfire\exceptions\PrivateException('Collection error', 1709042046); }
+		return end($this->arr);
+	}
+	
 	public function pluck() {
 		return array_shift($this->arr);
 	}
