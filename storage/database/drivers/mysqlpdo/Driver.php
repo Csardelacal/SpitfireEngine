@@ -1,10 +1,13 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\storage\database\DB;
-use spitfire\SpitFire;
 use PDO;
 use PDOException;
+use PDOStatement;
+use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
+use spitfire\SpitFire;
+use spitfire\storage\database\DB;
+use function spitfire;
 
 /**
  * MySQL driver via PDO. This driver does <b>not</b> make use of prepared 
@@ -47,7 +50,12 @@ class Driver extends DB
 			$this->connection->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_NATURAL);
 			
 			return true;
-		} catch (Exception $e) {
+		} catch (PDOException $e) {
+			
+			if ($e->errorInfo[1] == 1049) {
+				throw new FileNotFoundException('Database does not exist', 1709051253);
+			} 
+			
 			SpitFire::$debug->log($e->getMessage());
 			throw new PrivateException('DB Error. Connection refused by the server');
 		}
@@ -73,7 +81,7 @@ class Driver extends DB
 	 * @param boolean $attemptrepair Defines whether the server should try
 	 *                    to repair any model inconsistencies the server 
 	 *                    encounters.
-	 * @return \PDOStatement
+	 * @return PDOStatement
 	 * @throws PrivateException In case the query fails for another reason
 	 *                     than the ones the system manages to fix.
 	 */
@@ -128,11 +136,11 @@ class Driver extends DB
 	/**
 	 * 
 	 * @staticvar \storage\database\drivers\mysqlpdo\ObjectFactory $factory
-	 * @return  \storage\database\drivers\mysqlpdo\ObjectFactory
+	 * @return  ObjectFactory
 	 */
 	public function getObjectFactory() {
 		static $factory;
-		return $factory? : $factory = new \spitfire\storage\database\drivers\mysqlpdo\ObjectFactory();
+		return $factory? : $factory = new ObjectFactory();
 	}
 
 	/**
@@ -142,9 +150,20 @@ class Driver extends DB
 	 * @return bool
 	 */
 	public function create(): bool {
-		$this->execute(sprintf('CREATE SCHEMA `%s`;', $this->quote($this->schema)));
-		$this->execute(sprintf('use `%s`;', $this->quote($this->schema)));
-		return true;
+		
+		try {
+			$this->execute(sprintf('CREATE SCHEMA `%s`;', $this->quote($this->schema)));
+			$this->execute(sprintf('use `%s`;', $this->quote($this->schema)));
+			return true;
+		} catch (spitfire\exceptions\FileNotFoundException$e) {
+			$db = new Driver(['server' => $this->server, 'user' => $this->user, 'password' => $this->password, 'prefix' => $this->prefix]);
+			$db->connect();
+			$db->schema = $this->schema;
+			$db->create();
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
