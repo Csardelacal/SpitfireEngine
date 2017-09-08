@@ -5,7 +5,6 @@ use PDOException;
 use PDOStatement;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
-use spitfire\SpitFire;
 use spitfire\storage\database\DB;
 use function spitfire;
 
@@ -40,7 +39,7 @@ class Driver extends DB
 	 */
 	protected function connect() {
 		
-		$dsn  = 'mysql:dbname=' . $this->schema . ';host=' . $this->server . ';charset=' . $this->getEncoder()->getInnerEncoding();
+		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $this->schema, 'host' => $this->server, 'charset' => $this->getEncoder()->getInnerEncoding()]), '', ';');
 		$user = $this->user;
 		$pass = $this->password;
 
@@ -52,12 +51,15 @@ class Driver extends DB
 			return true;
 		} catch (PDOException $e) {
 			
-			if ($e->errorInfo[1] == 1049) {
+			var_dump($e->getMessage());
+			var_dump($e->getTraceAsString());
+			
+			if ($e->errorInfo == null) { //Apparently a error in 
 				throw new FileNotFoundException('Database does not exist', 1709051253);
 			} 
 			
 			spitfire()->log($e->getMessage());
-			throw new PrivateException('DB Error. Connection refused by the server');
+			throw new PrivateException('DB Error. Connection refused by the server: ' . $e->getMessage());
 		}
 
 	}
@@ -152,12 +154,12 @@ class Driver extends DB
 	public function create(): bool {
 		
 		try {
-			$this->execute(sprintf('CREATE SCHEMA `%s`;', $this->quote($this->schema)));
-			$this->execute(sprintf('use `%s`;', $this->quote($this->schema)));
+			$this->execute(sprintf('CREATE DATABASE `%s`', $this->schema));
+			$this->execute(sprintf('use `%s`;', $this->schema));
 			return true;
-		} catch (spitfire\exceptions\FileNotFoundException$e) {
-			$db = new Driver(['server' => $this->server, 'user' => $this->user, 'password' => $this->password, 'prefix' => $this->prefix]);
-			$db->connect();
+		} catch (FileNotFoundException$e) {
+			$db = new Driver(['server' => $this->server, 'user' => $this->user, 'password' => $this->password, 'prefix' => $this->prefix, 'schema' => '']);
+			$db->getConnection();
 			$db->schema = $this->schema;
 			$db->create();
 			return true;
@@ -172,7 +174,7 @@ class Driver extends DB
 	 * @return bool
 	 */
 	public function destroy(): bool {
-		$this->execute(sprintf('DROP SCHEMA `%s`;', $this->quote($this->schema)));
+		$this->execute(sprintf('DROP DATABASE `%s`', $this->schema));
 		return true;
 	}
 
