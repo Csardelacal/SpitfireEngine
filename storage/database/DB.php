@@ -102,7 +102,7 @@ abstract class DB
 	public function repair() {
 		$tables = $this->tableCache->getAll();
 		foreach ($tables as $table) {
-			$table->getTable()->repair();
+			$table->getLayout()->repair();
 		}
 	}
 	
@@ -144,6 +144,7 @@ abstract class DB
 		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFSchema($tablename)); }
 		catch (PrivateException$e) { /*Silent failure again*/}
 		
+		foreach($this->tableCache->getAll() as $t) { echo $t->getLayout()->getTableName(); }
 		#If all our ressources have come to an end... Halt it.
 		throw new PrivateException("No table $tablename found");
 		

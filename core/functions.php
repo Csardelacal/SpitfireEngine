@@ -57,7 +57,7 @@ function app($name, $namespace) {
  * to store data. We could consider this a little DB handler factory.
  *
  * @param array $options
- * @return DB|DB
+ * @return DB
  */
 function db($options = null) {
 	static $model = null;

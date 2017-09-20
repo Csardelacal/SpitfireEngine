@@ -51,9 +51,6 @@ class Driver extends DB
 			return true;
 		} catch (PDOException $e) {
 			
-			var_dump($e->getMessage());
-			var_dump($e->getTraceAsString());
-			
 			if ($e->errorInfo == null) { //Apparently a error in 
 				throw new FileNotFoundException('Database does not exist', 1709051253);
 			} 
@@ -157,7 +154,16 @@ class Driver extends DB
 			$this->execute(sprintf('CREATE DATABASE `%s`', $this->schema));
 			$this->execute(sprintf('use `%s`;', $this->schema));
 			return true;
-		} catch (FileNotFoundException$e) {
+		} 
+		/*
+		 * Sometimes the database will issue a FileNotFound exception when attempting
+		 * to connect to a DBMS that fails if the database it expected to connect
+		 * to is not available.
+		 * 
+		 * In this event we create a new connection that ignores the schema setting,
+		 * therefore allowing to connect to the database properly.
+		 */
+		catch (FileNotFoundException$e) {
 			$db = new Driver(['server' => $this->server, 'user' => $this->user, 'password' => $this->password, 'prefix' => $this->prefix, 'schema' => '']);
 			$db->getConnection();
 			$db->schema = $this->schema;

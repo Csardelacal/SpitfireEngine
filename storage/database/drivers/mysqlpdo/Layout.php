@@ -115,7 +115,7 @@ class Layout implements LayoutInterface
 			implode(', ', $clean)
 			);
 		
-		echo $stt;
+		//echo $stt;
 		return $this->table->getDb()->execute($stt);
 	}
 
@@ -192,9 +192,9 @@ class Layout implements LayoutInterface
 		$fields = $table->getFields();
 		//Fetch the DB Fields and create on error.
 		try {
-			$query = $this->getDb()->execute($stt, Array(), false);
+			$query = $this->table->getDb()->execute($stt, Array(), false);
 		}
-		catch(Exception $e) {
+		catch(\Exception $e) {
 			return $this->create();
 		}
 		//Loop through the exiting fields

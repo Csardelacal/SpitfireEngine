@@ -48,8 +48,6 @@ class TableTest extends TestCase
 	
 	
 	public function testCreate() {
-		
-		
 		$schema1 = new Schema('test\storage\database\Table\Create1');
 		$schema2 = new Schema('test\storage\database\Table\Create2');
 		
@@ -62,6 +60,28 @@ class TableTest extends TestCase
 		$table2->getLayout()->create();
 		
 		$this->assertInstanceOf(Table::class, $table2);
+		return $table2;
+	}
+	
+	/**
+	 * 
+	 * @depends tests\spitfire\storage\database\drivers\mysqlpdo\TableTest::testCreate
+	 */
+	public function testStoreReference($o) {
+		
+		$schema1 = new Schema('test\storage\database\Table\Create1');
+		$schema2 = new Schema('test\storage\database\Table\Create2');
+		
+		$schema2->a = new Reference('test\storage\database\Table\Create1');
+		
+		$e1 = $this->db->table($schema1)->newRecord();
+		$e2 = $this->db->table($schema2)->newRecord();
+		
+		$e2->a = $e1;
+		$e2->store();
+		
+		$this->assertNotEmpty($e1->_id);
+		$this->assertNotEmpty($e2->a->_id);
 	}
 	
 }

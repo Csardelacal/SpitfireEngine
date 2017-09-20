@@ -141,7 +141,7 @@ class Table
 	 * Get's the table's primary key. This will always return an array
 	 * containing the fields the Primary Key contains.
 	 * 
-	 * @return Collection <Field>
+	 * @return IndexInterface
 	 */
 	public function getPrimaryKey() {
 		/*
@@ -150,7 +150,7 @@ class Table
 		if ($this->primaryK) { return $this->primaryK; }
 		
 		$indexes = $this->layout->getIndexes();
-		return $this->primaryK = $indexes->filter(function (IndexInterface$i) { return $i->isPrimary(); });
+		return $this->primaryK = $indexes->filter(function (IndexInterface$i) { return $i->isPrimary(); })->rewind();
 	}
 	
 	public function getAutoIncrement() {
