@@ -41,7 +41,7 @@ abstract class DB
 		$this->schema   = (isset($options['schema']))?   $options['schema']   : Environment::get('db_database');
 		$this->prefix   = (isset($options['prefix']))?   $options['prefix']   : Environment::get('db_table_prefix');
 		
-		$this->tableCache = new MemoryCache();
+		$this->tableCache = new TablePool();
 		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), _def($options['encoding'], Environment::get('database_encoding')));
 	}
 	
@@ -122,29 +122,22 @@ abstract class DB
 		
 		#If the parameter is a Model, we get it's name
 		if ($tablename instanceof Schema) {
-			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), new Table($this, $tablename)); } 
-			else                                              { $tablename = $tablename->getName(); }
+			return $this->tableCache->set($tablename->getName(), new Table($this, $tablename));
 		}
 		
 		#We just tested if it's a Schema, let's see if it's a string
-		if (!is_string($tablename)) { throw new BadMethodCallException('DB::table requires Schema or string as argument'); }
-		
-		#If the table has already been imported continue
-		if ($this->tableCache->contains($tablename)) { return $this->tableCache->get($tablename); }
+		if (!is_string($tablename)) { 
+			throw new BadMethodCallException('DB::table requires Schema or string as argument'); 
+		}
 		
 		#Check if the literall table name can be found in the database
-		try { return $this->tableCache->set($tablename, $this->makeTable($tablename)); }
+		try { return $this->tableCache->get($tablename); }
 		catch (PrivateException$e) { /* Silent failure. The table may not exist */}
-		
-		#It's common to refer to the table as a plural (i.e. users), let's check if it's that
-		try { return $this->tableCache->set(Strings::singular($tablename), $this->makeTable(Strings::singular($tablename))); }
-		catch (PrivateException$e) { /*Silently fail. The singular of this table may not exist either*/}
 		
 		#Get the OTF model
 		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFSchema($tablename)); }
 		catch (PrivateException$e) { /*Silent failure again*/}
 		
-		foreach($this->tableCache->getAll() as $t) { echo $t->getLayout()->getTableName(); }
 		#If all our ressources have come to an end... Halt it.
 		throw new PrivateException("No table $tablename found");
 		

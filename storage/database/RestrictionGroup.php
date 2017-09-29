@@ -54,6 +54,24 @@ abstract class RestrictionGroup extends Collection
 		parent::reset();
 		parent::add($restrictions);
 	}
+	
+	/**
+	 * Adds a restriction to the current query. Restraining the data a field
+	 * in it can contain.
+	 *
+	 * @todo This method does not accept logical fields as parameters
+	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
+	 *
+	 * @deprecated since version 0.1-dev 20170923
+	 * @param string $fieldname
+	 * @param mixed  $value
+	 * @param string $operator
+	 * @return RestrictionGroup
+	 * @throws PrivateException
+	 */
+	public function addRestriction($fieldname, $value, $operator = '=') {
+		return $this->where($fieldname, $value, $operator);
+	}
 
 	/**
 	 * Adds a restriction to the current query. Restraining the data a field
@@ -68,7 +86,7 @@ abstract class RestrictionGroup extends Collection
 	 * @return RestrictionGroup
 	 * @throws PrivateException
 	 */
-	public function addRestriction($fieldname, $value, $operator = '=') {
+	public function where($fieldname, $value, $operator = '=') {
 		
 		try {
 			#If the name of the field passed is a physical field we just use it to 

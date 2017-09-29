@@ -2,7 +2,6 @@
 
 use CoffeeBean;
 use Model;
-use spitfire\core\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Schema;
 
