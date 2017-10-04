@@ -41,7 +41,7 @@ abstract class DB
 		$this->schema   = (isset($options['schema']))?   $options['schema']   : Environment::get('db_database');
 		$this->prefix   = (isset($options['prefix']))?   $options['prefix']   : Environment::get('db_table_prefix');
 		
-		$this->tableCache = new TablePool();
+		$this->tableCache = new TablePool($this);
 		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), _def($options['encoding'], Environment::get('database_encoding')));
 	}
 	
@@ -141,28 +141,6 @@ abstract class DB
 		#If all our ressources have come to an end... Halt it.
 		throw new PrivateException("No table $tablename found");
 		
-	}
-	
-	/**
-	 * 
-	 * @todo Extract these methods (makeTable, hasTable, getTableFromCache) to a separate TablePool class
-	 * @param string $tablename
-	 * @return Relation
-	 * @throws PrivateException
-	 */
-	protected function makeTable($tablename) {
-		$className = $tablename . 'Model';
-		
-		if (class_exists($className)) {
-			#Create a schema and a model
-			$schema = new Schema($tablename);
-			$model = new $className();
-			$model->definitions($schema);
-			
-			return new Table($this, $schema);
-		}
-		
-		throw new PrivateException('No table ' . $tablename);
 	}
 	
 	/**
