@@ -41,7 +41,7 @@ abstract class DB
 		$this->schema   = (isset($options['schema']))?   $options['schema']   : Environment::get('db_database');
 		$this->prefix   = (isset($options['prefix']))?   $options['prefix']   : Environment::get('db_table_prefix');
 		
-		$this->tableCache = new TablePool($this);
+		$this->tableCache = new TablePool(new TableLocator($this));
 		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), _def($options['encoding'], Environment::get('database_encoding')));
 	}
 	
@@ -130,13 +130,9 @@ abstract class DB
 			throw new BadMethodCallException('DB::table requires Schema or string as argument'); 
 		}
 		
-		#Check if the literall table name can be found in the database
+		#Check if the table can be found in the table cache
 		try { return $this->tableCache->get($tablename); }
 		catch (PrivateException$e) { /* Silent failure. The table may not exist */}
-		
-		#Get the OTF model
-		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFSchema($tablename)); }
-		catch (PrivateException$e) { /*Silent failure again*/}
 		
 		#If all our ressources have come to an end... Halt it.
 		throw new PrivateException("No table $tablename found");

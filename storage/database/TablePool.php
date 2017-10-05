@@ -36,26 +36,29 @@ use Strings;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class TablePool extends MemoryCache
+class TablePool
 {
 	
 	/**
 	 * The database this contains tables for. This is important since the database
 	 * offloads table "makes" to the pool.
 	 *
-	 * @var DB
+	 * @var TableLocator
 	 */
-	private $db;
+	private $tableLocator;
+	
+	private $cache;
 	
 	/**
 	 * Creates a new Table pool object. This object is designed to cache tables 
 	 * across several queries, allowing for them to refer to the same schemas and
 	 * data-caches that the tables provide.
 	 * 
-	 * @param DB $db
+	 * @param TableLocator $tableLocator
 	 */
-	public function __construct($db) {
-		$this->db = $db;
+	public function __construct(TableLocator$tableLocator) {
+		$this->tableLocator = $tableLocator;
+		$this->cache        = new MemoryCache();
 	}
 	
 	/**
@@ -68,9 +71,9 @@ class TablePool extends MemoryCache
 	 */
 	public function contains($key) {
 		return 
-			parent::contains($key) || 
-			parent::contains(Strings::singular($key)) || 
-			parent::contains(Strings::plural($key));
+			$this->cache->contains($key) || 
+			$this->cache->contains(Strings::singular($key)) || 
+			$this->cache->contains(Strings::plural($key));
 	}
 	
 	/**
@@ -87,7 +90,7 @@ class TablePool extends MemoryCache
 			throw new InvalidArgumentException('Table is required'); 
 		}
 		
-		return parent::set($key, $value);
+		return $this->cache->set($key, $value);
 	}
 	
 	/**
@@ -100,54 +103,43 @@ class TablePool extends MemoryCache
 	 * @throws PrivateException
 	 */
 	public function get($key, $fallback = null) {
+		try {
+			return $this->search([$key]);
+		} catch (Exception $ex) {
+			/* Do nothing. We can explore some options here */
+		}
 		
-		#Check if the table exists as declared
-		try { return parent::get($key)? : parent::set($this->makeTable($key)); } 
-		catch (PrivateException$e) {}
+		try {
+			$table = $this->search([Strings::singular($key), Strings::plural($key)]);
+			
+			trigger_error(
+				sprintf('Table %s was misspelled. Prefer %s instead', $key, reset($keys)), 
+				E_USER_NOTICE);
+			
+		} catch (Exception $ex) {
+			$table = $this->tableLocator->getOTFTable($key);
+		}
 		
-		#Check if the user used a plural to name the table. We do want to return the
-		#table, but also let the user know that the behavior is not ideal.
-		try { 
-			$t = parent::get(Strings::singular($key))? : parent::set($this->makeTable(Strings::singular($key))); 
-			trigger_error(sprintf('Table %s was misspelled. Use %s instead', Strings::singular($key), $key), E_USER_NOTICE);
-			return $t;
-		} 
-		catch (PrivateException$e) {}
-		
-		#Check if the user used a singular to name the table
-		try { 
-			$r = parent::get(Strings::plural($key))? : parent::set($this->makeTable(Strings::plural($key))); 
-			trigger_error(sprintf('Table %s was misspelled. Use %s instead', Strings::plural($key), $key), E_USER_NOTICE);
-			return $r;
-		} 
-		catch (PrivateException$e) {}
+		#Check if the table was found and return it
+		if ($table) { return $table; }
 		
 		#If none of the ways to find a table was satisfactory, we throw an exception
 		throw new PrivateException(sprintf('Table %s was not found', $key));
 	}
 	
-	/**
-	 * Makes a new table that the system did not contain. This is done by retrieving
-	 * the proper model class, instancing it and requesting it to construct a 
-	 * Schema that our database system can work with.
-	 * 
-	 * @param string $tablename
-	 * @return Relation
-	 * @throws PrivateException
-	 */
-	protected function makeTable($tablename) {
-		$className = $tablename . 'Model';
+	public function getAll() {
+		return $this->cache->getAll();
+	}
+	
+	public function search($keys) {
 		
-		if (class_exists($className)) {
-			#Create a schema and a model
-			$schema = new Schema($tablename);
-			$model = new $className();
-			$model->definitions($schema);
-			
-			return new Table($this->db, $schema);
+		foreach ($keys as $key) {
+			#Check if the table could be found
+			$t = $this->cache->get($key, function () { $this->set($this->tableLocator->makeTable($key)); }); 
+
+			#Return the table we found
+			if ($t) { return $t; }
 		}
-		
-		throw new PrivateException('No table ' . $tablename);
 	}
 	
 }
