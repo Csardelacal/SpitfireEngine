@@ -3,6 +3,12 @@
 use InvalidArgumentException;
 use spitfire\cache\MemoryCache;
 use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\tablelocator\CacheLocator;
+use spitfire\storage\database\tablelocator\NameLocator;
+use spitfire\storage\database\tablelocator\OTFTableLocator;
+use spitfire\storage\database\tablelocator\TableLocatorInterface;
+use spitfire\storage\database\tablelocator\TypoCacheLocator;
+use spitfire\storage\database\tablelocator\TypoLocator;
 use Strings;
 
 /* 
@@ -43,9 +49,9 @@ class TablePool
 	 * The database this contains tables for. This is important since the database
 	 * offloads table "makes" to the pool.
 	 *
-	 * @var TableLocator
+	 * @var TableLocatorInterface[]
 	 */
-	private $tableLocator;
+	private $tableLocators;
 	
 	private $cache;
 	
@@ -54,26 +60,20 @@ class TablePool
 	 * across several queries, allowing for them to refer to the same schemas and
 	 * data-caches that the tables provide.
 	 * 
-	 * @param TableLocator $tableLocator
+	 * @param DB $db
 	 */
-	public function __construct(TableLocator$tableLocator) {
-		$this->tableLocator = $tableLocator;
-		$this->cache        = new MemoryCache();
-	}
-	
-	/**
-	 * Checks whether the table is already in the pool. This method will automatically
-	 * check whether the pool contains a singular / plural of the tablename provided
-	 * before returning.
-	 * 
-	 * @param string $key
-	 * @return bool
-	 */
-	public function contains($key) {
-		return 
-			$this->cache->contains($key) || 
-			$this->cache->contains(Strings::singular($key)) || 
-			$this->cache->contains(Strings::plural($key));
+	public function __construct(DB$db) {
+		$this->cache         = new MemoryCache();
+		
+		$this->tableLocators = [
+			 new CacheLocator($this->cache),
+			 new NameLocator($db),
+			 new TypoCacheLocator($this->cache, function ($e) { Strings::singular($e); }),
+			 new TypoCacheLocator($this->cache, function ($e) { Strings::plural($e); }),
+			 new TypoLocator($db, function ($e) { Strings::singular($e); }),
+			 new TypoLocator($db, function ($e) { Strings::plural($e); }),
+			 new OTFTableLocator($db)
+		];
 	}
 	
 	/**
@@ -98,48 +98,27 @@ class TablePool
 	 * automatically check if the table was misspelled.
 	 * 
 	 * @param string $key
-	 * @param callable $fallback
 	 * @return Table
 	 * @throws PrivateException
 	 */
-	public function get($key, $fallback = null) {
-		try {
-			return $this->search([$key]);
-		} catch (Exception $ex) {
-			/* Do nothing. We can explore some options here */
+	public function get($key) {
+		$table = false;
+		$locators = $this->tableLocators;
+		
+		while (!$table && $locators) {
+			$locator = array_shift($locators);
+			$table   = $locator->locate($key);
 		}
 		
-		try {
-			$table = $this->search([Strings::singular($key), Strings::plural($key)]);
-			
-			trigger_error(
-				sprintf('Table %s was misspelled. Prefer %s instead', $key, reset($keys)), 
-				E_USER_NOTICE);
-			
-		} catch (Exception $ex) {
-			$table = $this->tableLocator->getOTFTable($key);
+		if ($table) {
+			return $this->set($table);
 		}
 		
-		#Check if the table was found and return it
-		if ($table) { return $table; }
-		
-		#If none of the ways to find a table was satisfactory, we throw an exception
 		throw new PrivateException(sprintf('Table %s was not found', $key));
 	}
 	
-	public function getAll() {
-		return $this->cache->getAll();
-	}
-	
-	public function search($keys) {
-		
-		foreach ($keys as $key) {
-			#Check if the table could be found
-			$t = $this->cache->get($key, function () { $this->set($this->tableLocator->makeTable($key)); }); 
-
-			#Return the table we found
-			if ($t) { return $t; }
-		}
+	public function getCache() {
+		return $this->cache;
 	}
 	
 }

@@ -5,7 +5,7 @@ use spitfire\cache\MemoryCache;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\CharsetEncoder;
-use Strings;
+use function _def;
 
 /**
  * This class creates a "bridge" beetwen the classes that use it and the actual
@@ -100,7 +100,7 @@ abstract class DB
 	 * were imported.
 	 */
 	public function repair() {
-		$tables = $this->tableCache->getAll();
+		$tables = $this->tableCache->getCache()->getAll();
 		foreach ($tables as $table) {
 			$table->getLayout()->repair();
 		}
