@@ -111,7 +111,7 @@ class TablePool
 		}
 		
 		if ($table) {
-			return $this->set($table);
+			return $this->set($key, $table);
 		}
 		
 		throw new PrivateException(sprintf('Table %s was not found', $key));
