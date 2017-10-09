@@ -24,6 +24,11 @@
  * THE SOFTWARE.
  */
 
+/**
+ * The OTF Table locator allows the system to create models on the fly when the
+ * programmer tries to access a table that exists on the DBMS but is not defined
+ * within the application's models.
+ */
 class OTFTableLocator implements TableLocatorInterface
 {
 	

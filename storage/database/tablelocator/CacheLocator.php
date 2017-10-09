@@ -1,5 +1,8 @@
 <?php namespace spitfire\storage\database\tablelocator;
 
+use spitfire\cache\MemoryCache;
+use spitfire\storage\database\Table;
+
 /* 
  * The MIT License
  *
@@ -24,16 +27,43 @@
  * THE SOFTWARE.
  */
 
+/**
+ * Locates a table inside a memory cache.
+ */
 class CacheLocator implements TableLocatorInterface
 {
 	
+	/**
+	 * The cache to be searched for appropriate tables.
+	 *
+	 * @var MemoryCache
+	 */
 	private $cache;
 	
-	public function __construct(\spitfire\cache\MemoryCache$cache) {
+	/**
+	 * This cache allows the application to search for tables within a Memory cache,
+	 * allowing for a quick retrieval of tables that have already been assembled.
+	 * 
+	 * While Spitfire has a very light modeling system that assembles itself very
+	 * quickly, it will be faster and more consistent to retrieve the data from
+	 * a cache.
+	 * 
+	 * The cache also allows to compare models with the much faster "===" operator
+	 * since it will just check whether the object referenced is the same.
+	 * 
+	 * @param MemoryCache $cache
+	 */
+	public function __construct(MemoryCache$cache) {
 		$this->cache = $cache;
 	}
 
-	
+	/**
+	 * Extracts the table from the cache (in the event of it being available) and 
+	 * returns false in the event of the table not being in the cache.
+	 * 
+	 * @param string $tablename
+	 * @return Table|false
+	 */
 	public function locate(string $tablename) {
 		return $this->cache->get($tablename);
 	}
