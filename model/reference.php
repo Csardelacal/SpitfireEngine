@@ -61,6 +61,11 @@ class Reference extends Field
 	 * @return Schema
 	 */
 	public function getTarget() {
+		#If the target is actually a class name.
+		if (is_string($this->target) && Strings::endsWith('Model', $this->target)) {
+			$this->target = trim(substr($this->target, 0 - strlen($this->target)), '\/');
+		}
+		
 		#Check if the passed argument already is a model
 		if ($this->target instanceof Schema) {
 			return $this->target;
@@ -69,7 +74,7 @@ class Reference extends Field
 			return $this->target = $this->getModel();
 		}
 		else {
-			return $this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getSchema();
+			return $this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getModel();
 		}
 	}
 	

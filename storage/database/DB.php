@@ -131,7 +131,7 @@ abstract class DB
 		}
 		
 		#Check if the table can be found in the table cache
-		try { return $this->tableCache->get($tablename); }
+		try { return $this->tableCache->get(strtolower($tablename)); }
 		catch (PrivateException$e) { /* Silent failure. The table may not exist */}
 		
 		#If all our ressources have come to an end... Halt it.
