@@ -44,7 +44,7 @@ abstract class Field
 	 * @var Schema
 	 * @todo Rename to schema
 	 */
-	private $model;
+	private $schema;
 	
 	/**
 	 * Contains the name of the field inside of the model. This name should 
@@ -201,7 +201,7 @@ abstract class Field
 	
 	
 	public function getSchema() {
-		return $this->model;
+		return $this->schema;
 	}
 
 	
@@ -213,7 +213,7 @@ abstract class Field
 	 * @return Schema
 	 */
 	public function getModel() {
-		return $this->model;
+		return $this->schema;
 	}
 	
 	/**
@@ -221,10 +221,23 @@ abstract class Field
 	 * redundant but quickens development and makes it more efficient to
 	 * find the model for the field.
 	 * 
+	 * @deprecated since version 0.1-dev 201710131759
 	 * @param Schema $model
 	 */
 	public function setModel($model) {
-		$this->model = $model;
+		trigger_error('Field::setModel has been deprecated', E_USER_DEPRECATED);
+		return $this->setSchema($model);
+	}
+	
+	/**
+	 * Defines which model this field belongs to. This data basically is 
+	 * redundant but quickens development and makes it more efficient to
+	 * find the model for the field.
+	 * 
+	 * @param Schema $schema
+	 */
+	public function setSchema(Schema$schema) {
+		$this->schema = $schema;
 	}
 	
 	/**
@@ -234,7 +247,7 @@ abstract class Field
 	 * @return Table
 	 */
 	public function getTable() {
-		return $this->model->getTable();
+		return $this->schema->getTable();
 	}
 	
 	/**
