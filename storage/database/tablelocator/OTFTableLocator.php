@@ -1,5 +1,8 @@
 <?php namespace spitfire\storage\database\tablelocator;
 
+use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\DB;
+
 /* 
  * The MIT License
  *
@@ -32,12 +35,31 @@
 class OTFTableLocator implements TableLocatorInterface
 {
 	
+	
+	/**
+	 * The database context for this locator to work.
+	 *
+	 * @var DB
+	 */
 	private $db;
 	
+	/**
+	 * Creates a new on the fly locator. This locator will be required to retrieve
+	 * a dynamically generated Schema from the database and inject it into a Table.
+	 * 
+	 * @param DB $db
+	 */
 	public function __construct($db) {
 		$this->db = $db;
 	}
 	
+	/**
+	 * Retrieves a table from the DBMS on the fly. Please note that this locator
+	 * is very inefficient and should only be used in development and legacy apps.
+	 * 
+	 * @param string $tablename
+	 * @return boolean
+	 */
 	public function locate(string $tablename) {
 		
 		#Get the OTF model

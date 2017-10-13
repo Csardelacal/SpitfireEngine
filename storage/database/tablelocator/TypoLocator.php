@@ -24,19 +24,54 @@
  * THE SOFTWARE.
  */
 
+/**
+ * This class searches for models that contain a typo.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class TypoLocator extends NameLocator
 {
 	
+	/**
+	 * The function used to correct the misspelled table name.
+	 *
+	 * @var \Closure
+	 */
 	private $fn;
 	
-	public function __construct($db, $fn) {
+	/**
+	 * {@inheritdoc}
+	 * 
+	 * This locator will try to find a table by applying a callback, which potentially
+	 * corrects the name of the table.
+	 * 
+	 * @param \spitfire\storage\database\DB $db
+	 * @param \Closure $fn
+	 */
+	public function __construct(\spitfire\storage\database\DB$db, $fn) {
 		$this->fn = $fn;
 		parent::__construct($db);
 	}
 	
+	/**
+	 * Applies the provided function to the name of the table before checking if
+	 * a model with the provided name exists.
+	 * 
+	 * @param string $tablename
+	 * @return \spitfire\storage\database\Table
+	 */
 	public function locate(string $tablename) {
 		$located = parent::locate($this->fn($tablename));
 		
+		/*
+		 * Typo locators do have an educational purpose. While the system should 
+		 * not unnecessarily peeve the user with "user" vs "users" naming issues,
+		 * it should - if the user is debugging the application - point out that
+		 * the naming is incorrect.
+		 * 
+		 * I'm not entirely happy wit the fact that the system will error inside
+		 * spitfire instead of telling the user what file cause the issue.
+		 */
 		if ($located) {
 			trigger_error(
 				sprintf('Table %s was misspelled. Prefer %s instead', $tablename, $this->fn($tablename)), 

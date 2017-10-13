@@ -62,7 +62,6 @@ AutoLoad::registerClass('spitfire\storage\database\drivers\MysqlPDORestriction',
 AutoLoad::registerClass('spitfire\storage\database\drivers\MysqlPDOCompositeRestriction',SPITFIRE_BASEDIR.'/db/drivers/mysqlPDORestrictionComposite.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\MysqlPDORestrictionGroup',SPITFIRE_BASEDIR.'/db/drivers/mysqlPDORestrictionGroup.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\mysqlPDOResultSet',  SPITFIRE_BASEDIR.'/db/drivers/mysqlPDORes.php');
-AutoLoad::registerClass('spitfire\storage\database\drivers\mysqlPDOSelectStringifier',  SPITFIRE_BASEDIR.'/db/drivers/mysqlPDOSelectStringifier.php');
 
 AutoLoad::registerClass('spitfire\InputSanitizer',                              SPITFIRE_BASEDIR.'/security_io_sanitization.php');
 AutoLoad::registerClass('CoffeeBean',                                           SPITFIRE_BASEDIR.'/io/beans/coffeebean.php');

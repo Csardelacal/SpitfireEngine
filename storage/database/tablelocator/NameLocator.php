@@ -1,5 +1,13 @@
 <?php namespace spitfire\storage\database\tablelocator;
 
+use ReflectionClass;
+use ReflectionException;
+use spitfire\exceptions\PrivateException;
+use spitfire\Model;
+use spitfire\storage\database\DB;
+use spitfire\storage\database\Schema;
+use spitfire\storage\database\Table;
+
 /* 
  * The MIT License
  *
@@ -26,29 +34,59 @@
 
 /**
  * Finds a table by the exact name provided.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class NameLocator implements TableLocatorInterface
 {
 	
+	/**
+	 * The database context for this locator to work.
+	 *
+	 * @var DB
+	 */
 	private $db;
 	
-	public function __construct($db) {
+	/**
+	 * This locator will look for a model that matches the provided table names.
+	 * 
+	 * @param DB $db
+	 */
+	public function __construct(DB$db) {
 		$this->db = $db;
 	}
 	
+	/**
+	 * {@inheritdoc}
+	 * 
+	 * This method will look for a model that matches the provided name. If the 
+	 * model exists and can be instanced it will be and returned.
+	 * 
+	 * @param string $tablename
+	 * @return Table
+	 * @throws PrivateException
+	 */
 	public function locate(string $tablename) {
-		$className = $tablename . 'Model';
+		try {
+			#Create a reflection of the Model
+			$className = $tablename . 'Model';
+			$reflection = new ReflectionClass($className);
+			
+			#Run some basic checks
+			if ($reflection->isAbstract()) { throw new PrivateException('Model is abstract', 1710122036); }
+			if (!$reflection->isSubclassOf(Model::class)) { throw new PrivateException('Model is not subclass of Model', 1710122037); }
 		
-		if (class_exists($className)) {
 			#Create a schema and a model
 			$schema = new Schema($tablename);
-			$model = new $className();
+			$model = $reflection->newInstance();
 			$model->definitions($schema);
 			
+			#Return the newly created table
 			return new Table($this->db, $schema);
+		} 
+		catch (ReflectionException$ex) {
+			throw new PrivateException('No table ' . $tablename);
 		}
-		
-		throw new PrivateException('No table ' . $tablename);
 	}
 
 }
