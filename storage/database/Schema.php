@@ -251,7 +251,7 @@ class Schema
 		
 		if ($value instanceof Field) {
 			$value->setName($name);
-			$value->setModel($this);
+			$value->setSchema($this);
 			$this->fields[$name] = $value;
 		}
 		
