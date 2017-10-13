@@ -76,7 +76,7 @@ class Schema
 	public final function __construct($name, Table$table = null) {
 		#Define the Model's table as the one just received
 		$this->table   = $table;
-		$this->name    = $name;
+		$this->name    = strtolower($name);
 		
 		#Create a field called ID that automatically identifies records 
 		$this->_id = new IntegerField(true);
