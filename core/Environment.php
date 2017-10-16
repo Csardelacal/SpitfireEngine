@@ -22,12 +22,7 @@ class Environment
 		'debug_mode'           => true, //TODO: Change for stable
 		
 		#Database settings
-		'db_driver'                => 'mysqlPDO',
-		'db_server'                => 'localhost',
-		'db_user'                  => 'root',
-		'db_pass'                  => '',
-		'db_database'              => 'database',
-		'db_table_prefix'          => '',
+		'db'                       => 'mysqlpdo://root:@localhost:3306/database',
 	
 		#Character encoding settings
 		'system_encoding'          => 'utf-8',

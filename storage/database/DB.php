@@ -18,11 +18,7 @@ abstract class DB
 	
 	const MYSQL_PDO_DRIVER = 'mysqlPDO';
 	
-	protected $server;
-	protected $user;
-	protected $password;
-	protected $schema;
-	protected $prefix;
+	private $settings;
 	
 	private $tableCache;
 	private $encoder;
@@ -31,18 +27,14 @@ abstract class DB
 	 * Creates an instance of DBInterface. If options are set it will import
 	 * them. Otherwise it will try to read them from the current environment.
 	 * 
-	 * @param String $options Name of the database driver to be used. You can
+	 * @param Settings $settings Name of the database driver to be used. You can
 	 *                       choose one of the DBInterface::DRIVER_? consts.
 	 */
-	public function __construct($options = null) {
-		$this->server   = (isset($options['server']))?   $options['server']   : Environment::get('db_server');
-		$this->user     = (isset($options['user']))?     $options['user']     : Environment::get('db_user');
-		$this->password = (isset($options['password']))? $options['password'] : Environment::get('db_pass');
-		$this->schema   = (isset($options['schema']))?   $options['schema']   : Environment::get('db_database');
-		$this->prefix   = (isset($options['prefix']))?   $options['prefix']   : Environment::get('db_table_prefix');
+	public function __construct(Settings$settings) {
+		$this->settings   = $settings;
 		
 		$this->tableCache = new TablePool($this);
-		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), _def($options['encoding'], Environment::get('database_encoding')));
+		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), $settings->getEncoding());
 	}
 	
 	/**
@@ -56,30 +48,12 @@ abstract class DB
 	}
 	
 	/**
-	 * Converts data from the encoding the database has TO the encoding the
-	 * system uses.
+	 * Gets the connection settings for this connection.
 	 * 
-	 * @deprecated since version 0.1-dev 20160514
-	 * @param String $str The string encoded with the database's encoding
-	 * @return String The string encoded with Spitfire's encoding
+	 * @return Settings
 	 */
-	public function convertIn($str) {
-		trigger_error('Using deprecated function DB::convertIn()', E_USER_DEPRECATED);
-		return $this->encoder->encode($str);
-	}
-	
-	
-	/**
-	 * Converts data from the encoding the system has TO the encoding the
-	 * database uses.
-	 * 
-	 * @deprecated since version 0.1-dev 20160514
-	 * @param String $str The string encoded with Spitfire's encoding
-	 * @return String The string encoded with the database's encoding
-	 */
-	public function convertOut($str) {
-		trigger_error('Using deprecated function DB::convertOut()', E_USER_DEPRECATED);
-		return $this->encoder->decode($str);
+	public function getSettings() {
+		return $this->settings;
 	}
 	
 	/**

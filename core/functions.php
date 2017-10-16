@@ -56,25 +56,24 @@ function app($name, $namespace) {
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *
- * @param array $options
+ * @param \spitfire\storage\database\Settings $options
  * @return DB
  */
-function db($options = null) {
-	static $model = null;
+function db(\spitfire\storage\database\Settings$options = null) {
+	static $db = null;
 	
 	#If we're requesting the standard driver and have it cached, we use this
-	if ($options === null && $model !== null) { return $model; }
+	if ($options === null && $db !== null) { return $db; }
 	
-	#If the driver is not selected we get the one we want from env.
-	if (!isset($options['db_driver'])) { $driver = Environment::get('db_driver'); }
-	else                               { $driver = $options['db_driver']; }
+	#If no options were passed, we try to fetch them from the environment
+	$settings = \spitfire\storage\database\Settings::fromURL($options? : Environment::get('db'));
 	
 	#Instantiate the driver
-	$driver = 'spitfire\storage\database\drivers\\' . $driver . 'Driver';
-	$driver = new $driver($options);
+	$driver = 'spitfire\storage\database\drivers\\' . $settings->getDriver() . '\Driver';
+	$driver = new $driver($settings);
 	
 	#If no options were provided we will assume that this is the standard DB handler
-	if ($options === null) { $model = $driver; }
+	if ($options === null) { $db = $driver; }
 	
 	#Return the driver
 	return $driver;

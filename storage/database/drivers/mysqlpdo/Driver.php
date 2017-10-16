@@ -38,10 +38,11 @@ class Driver extends DB
 	 *                          connection because the Server rejected the connection.
 	 */
 	protected function connect() {
+		$settings = $this->getSettings();
 		
-		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $this->schema, 'host' => $this->server, 'charset' => $this->getEncoder()->getInnerEncoding()]), '', ';');
-		$user = $this->user;
-		$pass = $this->password;
+		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $settings->getSchema(), 'host' => $settings->getServer(), 'charset' => $this->getEncoder()->getInnerEncoding()]), '', ';');
+		$user = $settings->getUser();
+		$pass = $settings->getPassword();
 
 		try {
 			$this->connection = new PDO($dsn, $user, $pass);
