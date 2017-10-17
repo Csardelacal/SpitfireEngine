@@ -152,8 +152,8 @@ class Driver extends DB
 	public function create(): bool {
 		
 		try {
-			$this->execute(sprintf('CREATE DATABASE `%s`', $this->schema));
-			$this->execute(sprintf('use `%s`;', $this->schema));
+			$this->execute(sprintf('CREATE DATABASE `%s`', $this->getSettings()->getSchema()));
+			$this->execute(sprintf('use `%s`;', $this->getSettings()->getSchema()));
 			return true;
 		} 
 		/*
