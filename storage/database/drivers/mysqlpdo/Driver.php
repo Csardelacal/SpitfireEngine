@@ -165,9 +165,16 @@ class Driver extends DB
 		 * therefore allowing to connect to the database properly.
 		 */
 		catch (FileNotFoundException$e) {
-			$db = new Driver(['server' => $this->server, 'user' => $this->user, 'password' => $this->password, 'prefix' => $this->prefix, 'schema' => '']);
+			#Modify the connection settings, removing the schema.
+			$settings = clone $this->getSettings();
+			$settings->setSchema('');
+			
+			#Establish the new connection
+			$db = new Driver($settings);
 			$db->getConnection();
-			$db->schema = $this->schema;
+			
+			#Set the schema and run a retry
+			$settings->setSchema($this->getSettings()->getSchema());
 			$db->create();
 			return true;
 		}
@@ -181,7 +188,7 @@ class Driver extends DB
 	 * @return bool
 	 */
 	public function destroy(): bool {
-		$this->execute(sprintf('DROP DATABASE `%s`', $this->schema));
+		$this->execute(sprintf('DROP DATABASE `%s`', $this->getSettings()->getSchema()));
 		return true;
 	}
 

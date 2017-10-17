@@ -95,7 +95,47 @@ class Settings
 	public function getPort() {
 		return $this->port;
 	}
-		
+	
+	public function setDriver($driver) {
+		$this->driver = $driver;
+		return $this;
+	}
+	
+	public function setServer($server) {
+		$this->server = $server;
+		return $this;
+	}
+	
+	public function setPort($port) {
+		$this->port = $port;
+		return $this;
+	}
+	
+	public function setUser($user) {
+		$this->user = $user;
+		return $this;
+	}
+	
+	public function setPassword($password) {
+		$this->password = $password;
+		return $this;
+	}
+	
+	public function setSchema($schema) {
+		$this->schema = $schema;
+		return $this;
+	}
+	
+	public function setPrefix($prefix) {
+		$this->prefix = $prefix;
+		return $this;
+	}
+	
+	public function setEncoding($encoding) {
+		$this->encoding = $encoding;
+		return $this;
+	}
+	
 	/**
 	 * Reads the settings from a URL. Since October 2017 we're focusing on providing
 	 * URLs to store database credentials, which allow in turn to store the DB
