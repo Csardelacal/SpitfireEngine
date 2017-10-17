@@ -30,7 +30,7 @@ class TableTest extends TestCase
 		
 		//TODO: This needs to be replaced with logic that actually is properly testable.
 		//Currently there is no DB mock driver. Not sure if I should create one or just test different drivers
-		$this->db = db(['schema' => 'test_schema']);
+		$this->db = db(\spitfire\storage\database\Settings::fromArray(['schema' => 'test_schema']));
 		
 		$this->schema = new Schema('test');
 		

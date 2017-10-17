@@ -35,15 +35,28 @@ class Settings
 	
 	private $driver;
 	private $server;
+	private $port;
 	private $user;
 	private $password;
 	private $schema;
 	private $prefix;
 	private $encoding;
 	
-	public function __construct($driver, $server, $user, $password, $schema, $prefix, $encoding) {
+	private static $defaults = [
+		'driver'   => 'mysqlpdo',
+		'server'   => 'localhost',
+		'port'     => null,
+		'user'     => 'root',
+		'password' => '',
+		'schema'   => 'database',
+		'prefix'   => '',
+		'encoding' => 'utf8'
+	];
+	
+	public function __construct($driver, $server, $port, $user, $password, $schema, $prefix, $encoding) {
 		$this->driver = $driver;
 		$this->server = $server;
+		$this->port   = $port;
 		$this->user = $user;
 		$this->password = $password;
 		$this->schema = $schema;
@@ -78,34 +91,63 @@ class Settings
 	public function getEncoding() {
 		return $this->encoding;
 	}
+	
+	public function getPort() {
+		return $this->port;
+	}
 		
 	/**
-	 * Reads the settings from a URL.
+	 * Reads the settings from a URL. Since October 2017 we're focusing on providing
+	 * URLs to store database credentials, which allow in turn to store the DB
+	 * settings outside of the application and on the server itself.
 	 * 
+	 * @todo Move to external URL parser
 	 * @param Settings|string $url
 	 * @return Settings
 	 */
 	public static function fromURL($url) {
-		if ($url instanceof Settings) {
-			return $url;
-		}
+		
+		/*
+		 * If the parameter provided is already a settings object, it will be 
+		 * returned as is.
+		 */
+		if ($url instanceof Settings) { return $url; }
+		
+		/*
+		 * Extract the basic data
+		 */
+		$driver   = parse_url($url, PHP_URL_SCHEME)?: self::$defaults['driver'];
+		$server   = parse_url($url, PHP_URL_HOST)  ?: self::$defaults['server'];
+		$port     = parse_url($url, PHP_URL_PORT)  ?: self::$defaults['port']; 
+		$user     = parse_url($url, PHP_URL_USER)  ?: self::$defaults['user'];
+		$password = parse_url($url, PHP_URL_PASS)  ?: self::$defaults['password'];
+		$schema   = parse_url($url, PHP_URL_PATH)  ?: self::$defaults['port'];
 		
 		/**
 		 * Extract the data that was provided by the URL. Then we should be able 
 		 * to easily retrieve the data it provides.
 		 */
-		$data   = parse_url($url);
-		parse_str($data['query']?? '', $query);
+		parse_str(parse_url($url, PHP_URL_QUERY), $query);
 		
-		$driver   = $data['scheme']?? 'mysqlpdo';
-		$server   = $data['host']?? 'localhost';
-		$user     = $data['user']?? 'root';
-		$password = $data['password']?? '';
-		$schema   = trim($data['path'], '\/')?? 'database';
-		$prefix   = $query['prefix']  ?? null;
-		$encoding = $query['encoding']?? 'utf8';
+		$prefix   = $query['prefix']  ?? self::$defaults['prefix'];
+		$encoding = $query['encoding']?? self::$defaults['encoding'];
 		
-		return new Settings($driver, $server, $user, $password, $schema, $prefix, $encoding);
+		return new Settings($driver, $server, $port, $user, $password, substr($schema, 1), $prefix, $encoding);
+	}
+	
+	public static function fromArray($arr) {
+		$ops = $arr + self::$defaults;
+		
+		return new Settings(
+			$ops['driver'], 
+			$ops['server'], 
+			$ops['port'], 
+			$ops['user'], 
+			$ops['password'], 
+			$ops['schema'], 
+			$ops['prefix'],
+			$ops['encoding']
+		);
 	}
 	
 }

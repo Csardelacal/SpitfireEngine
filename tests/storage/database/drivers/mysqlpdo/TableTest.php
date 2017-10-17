@@ -6,6 +6,7 @@ use Reference;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
 use spitfire\storage\database\Schema;
+use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 use StringField;
 
@@ -27,7 +28,7 @@ class TableTest extends TestCase
 		parent::setUp();
 		
 		try {
-			$this->db = new Driver();
+			$this->db = new Driver(Settings::fromArray([]));
 			$this->db->create();
 
 			$this->schema = new Schema('test');
