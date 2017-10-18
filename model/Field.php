@@ -94,6 +94,15 @@ abstract class Field
 	private $auto_increment = false;
 	
 	/**
+	 * Contains the default value for this field. In the event of this field 
+	 * being null but the field not-nullable, the driver should define a proper
+	 * "empty" value for it's data type.
+	 *
+	 * @var mixed
+	 */
+	private $default;
+	
+	/**
 	 * Contains the physical (DB) fields that are used to store the data 
 	 * this Field generates. For most data types Spitfire will just generate
 	 * one physical field for each logical one.
@@ -199,6 +208,14 @@ abstract class Field
 		return $this->nullable;
 	}
 	
+	public function getDefault() {
+		return $this->default;
+	}
+	
+	public function setDefault($default) {
+		$this->default = $default;
+		return $this;
+	}
 	
 	public function getSchema() {
 		return $this->schema;
@@ -334,6 +351,13 @@ abstract class Field
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @todo Validation should be either attributed to the model or the beans
+	 * @deprecated since version 0.1-dev 20171016
+	 * @param type $value
+	 * @return boolean|ValidationError
+	 */
 	public function validate($value) {
 		if (!$this->nullable && !$value) return new ValidationError(_t('err_field_null'));
 		return false;

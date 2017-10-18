@@ -30,7 +30,7 @@ interface ForeignKeyInterface extends IndexInterface
 {
 	
 	/**
-	 * Retruns a collection of fields that the index is referencing. This allows
+	 * Returns a collection of fields that the index is referencing. This allows
 	 * the application to properly define indexes that do only exist for the 
 	 * purpose of linking two tables.
 	 * 

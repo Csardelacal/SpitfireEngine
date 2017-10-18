@@ -248,12 +248,26 @@ class Schema
 	 * @param Field  $value
 	 */
 	public function __set($name, $value) {
-		
-		if ($value instanceof Field) {
-			$value->setName($name);
-			$value->setSchema($this);
-			$this->fields[$name] = $value;
+		/*
+		 * First we need to check if the field already exists. In the event of us
+		 * overwriting the field we need to remove it from the already existing 
+		 * indexes
+		 */
+		if (isset($this->fields[$name])) {
+			unset($this->$name);
 		}
+		
+		/*
+		 * Check if the schema received a field. Because if that's not the case we
+		 * can't deal with it properly.
+		 */
+		if (!$value instanceof Field) {
+			throw new PrivateException('Schema received something else than a field', 1710181717);
+		}
+		
+		$value->setName($name);
+		$value->setSchema($this);
+		$this->fields[$name] = $value;
 		
 	}
 	
@@ -282,16 +296,19 @@ class Schema
 	 * @throws PrivateException
 	 */
 	public function __unset($name) {
-		if (isset($this->fields[$name])) { 
-			$f = $this->fields[$name];
-			unset($this->fields[$name]);
-			
-			#Find an index that may contain the field and remove it too
-			$this->indexes = $this->indexes->filter(function ($e) use ($f) {
-				return $e->contains($f);
-			});
+		#Check if the field actually exists.
+		if (!isset($this->fields[$name])) {
+			throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found');
 		}
-		else { throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found'); }
+		
+		#Get the field
+		$f = $this->fields[$name];
+		unset($this->fields[$name]);
+
+		#Find an index that may contain the field and remove it too
+		$this->indexes = $this->indexes->filter(function ($e) use ($f) {
+			return $e->contains($f);
+		});
 	}
 	
 }
