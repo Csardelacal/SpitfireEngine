@@ -70,7 +70,7 @@ abstract class RestrictionGroup extends Collection
 	 * @throws PrivateException
 	 */
 	public function addRestriction($fieldname, $value, $operator = '=') {
-		return $this->where($fieldname, $value, $operator);
+		return $this->where($fieldname, $operator, $value);
 	}
 
 	/**
@@ -82,11 +82,13 @@ abstract class RestrictionGroup extends Collection
 	 *
 	 * @param string $fieldname
 	 * @param mixed  $value
-	 * @param string $operator
+	 * @param string $_
 	 * @return RestrictionGroup
 	 * @throws PrivateException
 	 */
-	public function where($fieldname, $value, $operator = '=') {
+	public function where($fieldname, $value, $_ = null) {
+		if ($_) { list($operator, $value) = [$value, $_]; }
+		else    { $operator = '='; }
 		
 		try {
 			#If the name of the field passed is a physical field we just use it to 

@@ -1,6 +1,4 @@
-<?php
-
-namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers;
 
 use \spitfire\storage\database\CompositeRestriction;
 
@@ -14,7 +12,8 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 		
 		if ($field === null || $value === null) {
 			return implode(' AND ', $this->getSimpleRestrictions());
-		} else {
+		} 
+		else {
 			$fields = $this->getValue()->getQueryTable()->getTable()->getPrimaryKey();
 			$_ret   = Array();
 			
@@ -24,7 +23,21 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 				$_ret[] = "{$f} {$o} NULL";
 			}
 			
-			return implode(' AND ', $_ret);
+			/**
+			 * 
+			 * @var MysqlPDOQuery The query
+			 */
+			$value = $this->getValue();
+			/**
+			 * 
+			 * @todo The object factory doesn't provide this method
+			 */
+			$group = $this->getQuery()->getTable()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this->getQuery());
+			foreach ($value as $r) {
+				$_ret[] = $r;
+			}
+			
+			return sprintf('(%s)', implode(' AND ', $_ret));
 		}
 	}
 	

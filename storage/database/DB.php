@@ -5,7 +5,6 @@ use spitfire\cache\MemoryCache;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\CharsetEncoder;
-use function _def;
 
 /**
  * This class creates a "bridge" beetwen the classes that use it and the actual
@@ -128,7 +127,7 @@ abstract class DB
 	 * Allows short-hand access to tables by using: $db->tablename
 	 * 
 	 * @param string $table Name of the table
-	 * @return Relation
+	 * @return Table
 	 */
 	public function __get($table) {
 		#Otherwise we try to get the table with this name

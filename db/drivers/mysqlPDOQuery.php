@@ -1,6 +1,4 @@
-<?php
-
-namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers;
 
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
@@ -25,7 +23,7 @@ class MysqlPDOQuery extends Query
 		$tablename    = $this->getTable()->getLayout();
 		$wherestt     = 'WHERE';
 		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
-		$restrictions = array_filter($this->getRestrictions(), Array('spitfire\storage\database\Query', 'restrictionFilter'));
+		$restrictions = $this->getRestrictions();
 		$orderstt     = 'ORDER BY';
 		$order        = $this->getOrder();
 		$groupbystt   = 'GROUP BY';
