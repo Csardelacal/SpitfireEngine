@@ -113,6 +113,16 @@ interface ObjectFactoryInterface
 	 * @todo Rename to makeRestriction
 	 */
 	function restrictionInstance($query, Field$field, $value, $operator = null);
+	
+	/**
+	 * Creates a restriction group. This allows to associate several restrictions
+	 * with each other to create more complicated queries when writing.
+	 * 
+	 * @param RestrictionGroup $parent
+	 * @param int $type
+	 * @return RestrictionGroup A restriction group
+	 */
+	function restrictionGroupInstance(RestrictionGroup$parent = null, $type = RestrictionGroup::TYPE_OR);
 
 	/**
 	 * Creates a new query. A query is created with a table to provide information

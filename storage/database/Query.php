@@ -337,7 +337,17 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	public abstract function execute($fields = null);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 2017102609
+	 */
 	public abstract function restrictionInstance(QueryField$field, $value, $operator);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 2017102609
+	 */
 	public abstract function compositeRestrictionInstance(LogicalField$field = null, $value, $operator);
 	
 	/**

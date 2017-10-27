@@ -28,13 +28,24 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 			 * @var MysqlPDOQuery The query
 			 */
 			$value = $this->getValue();
-			/**
-			 * 
-			 * @todo The object factory doesn't provide this method
-			 */
 			$group = $this->getQuery()->getTable()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this->getQuery());
+			
+			/**
+			 * The system needs to create a copy of the subordinated restrictions 
+			 * (without the simple ones) to be able to syntax a proper SQL query.
+			 * 
+			 * @todo Refactor this to look proper
+			 */
 			foreach ($value as $r) {
-				$_ret[] = $r;
+				if ($r instanceof \spitfire\storage\database\Restriction) { continue; }
+				if ($r instanceof CompositeRestriction) { $c = $r; }
+				if ($r instanceof \spitfire\storage\database\RestrictionGroup) { 
+					$c = clone $r; 
+					$w = $c->filter(function ($e) { return !$e instanceof \spitfire\storage\database\Restriction; }); 
+					$c->reset()->add($w->toArray());
+				}
+				
+				$group->push($c);
 			}
 			
 			return sprintf('(%s)', implode(' AND ', $_ret));

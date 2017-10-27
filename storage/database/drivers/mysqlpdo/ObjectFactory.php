@@ -11,9 +11,11 @@ use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
+use spitfire\storage\database\RestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
+use function db;
 
 /*
  * The MIT License
@@ -140,6 +142,12 @@ class ObjectFactory implements ObjectFactoryInterface
 
 	public function makeLayout(Table $table): LayoutInterface {
 		return new Layout($table);
+	}
+
+	public function restrictionGroupInstance(RestrictionGroup $parent = null, $type = RestrictionGroup::TYPE_OR): RestrictionGroup {
+		$g = new \spitfire\storage\database\drivers\MysqlPDORestrictionGroup($parent);
+		$g->setType($type);
+		return $g;
 	}
 
 }
