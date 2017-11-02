@@ -220,7 +220,7 @@ abstract class Query extends RestrictionGroup
 		if (!$this->groupby) {
 			//This is a temporary fix that will only count distinct values in complex
 			//queries.
-			$query = $this->query(Array('COUNT(DISTINCT ' . implode(', ', $this->table->getTable()->getPrimaryKey() ) . ')'), true)->fetchArray();
+			$query = $this->query(Array('COUNT(DISTINCT ' . $this->table->getTable()->getPrimaryKey()->getFields()->join(', ') . ')'), true)->fetchArray();
 			$count = reset($query);
 			return $this->count = (int)$count;
 		}
@@ -264,16 +264,6 @@ abstract class Query extends RestrictionGroup
 		$_ret = $this->getPhysicalSubqueries();
 		array_push($_ret, $this);
 		return $_ret;
-	}
-	
-	public function importRestrictions(Query$query) {
-		$restrictions = $query->getRestrictions();
-		
-		foreach($restrictions as $r) {
-			$copy = clone $r;
-			$copy->setQuery($this);
-			$this->putRestriction($copy);
-		}
 	}
 	
 	public function getOrder() {

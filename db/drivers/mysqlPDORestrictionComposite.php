@@ -14,12 +14,12 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 			return implode(' AND ', $this->getSimpleRestrictions());
 		} 
 		else {
-			$fields = $this->getValue()->getQueryTable()->getTable()->getPrimaryKey();
+			$fields = $this->getValue()->getQueryTable()->getTable()->getPrimaryKey()->getFields();
 			$_ret   = Array();
 			
 			foreach($fields as $field) {
 				$f = $this->getValue()->queryFieldInstance($field);
-				$o = $this->getOperator() === '='? 'IS NOT' : 'IS';
+				$o = 'IS NOT';
 				$_ret[] = "{$f} {$o} NULL";
 			}
 			
@@ -28,7 +28,7 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 			 * @var MysqlPDOQuery The query
 			 */
 			$value = $this->getValue();
-			$group = $this->getQuery()->getTable()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this->getQuery());
+			$group = $this->getQuery()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this->getQuery());
 			
 			/**
 			 * The system needs to create a copy of the subordinated restrictions 
@@ -37,18 +37,28 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 			 * @todo Refactor this to look proper
 			 */
 			foreach ($value as $r) {
-				if ($r instanceof \spitfire\storage\database\Restriction) { continue; }
+				if ($r instanceof \spitfire\storage\database\Restriction) { $c = $r; }
 				if ($r instanceof CompositeRestriction) { $c = $r; }
 				if ($r instanceof \spitfire\storage\database\RestrictionGroup) { 
 					$c = clone $r; 
-					$w = $c->filter(function ($e) { return !$e instanceof \spitfire\storage\database\Restriction; }); 
-					$c->reset()->add($w->toArray());
+					$c->filterEmptyGroups();
 				}
 				
-				$group->push($c);
+				if (!$c instanceof \spitfire\storage\database\RestrictionGroup || !$c->isEmpty()) {
+					$group->push($c);
+				}
 			}
 			
-			return sprintf('(%s)', implode(' AND ', $_ret));
+			if (!$group->isEmpty()) {
+				$_ret[] = $group;
+			}
+			
+			if ($this->getOperator() === '=') {
+				return sprintf('(%s)', implode(' AND ', array_filter($_ret)));
+			}
+			else {
+				return sprintf('NOT(%s)', implode(' AND ', array_filter($_ret)));
+			}
 		}
 	}
 	

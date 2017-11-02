@@ -87,8 +87,10 @@ abstract class RestrictionGroup extends Collection
 	 * @throws PrivateException
 	 */
 	public function where($fieldname, $value, $_ = null) {
-		if ($_) { list($operator, $value) = [$value, $_]; }
-		else    { $operator = '='; }
+		$params = func_num_args();
+		
+		if ($params === 3) { list($operator, $value) = [$value, $_]; }
+		else               { $operator = '='; }
 		
 		try {
 			#If the name of the field passed is a physical field we just use it to 
@@ -120,6 +122,16 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function getRestrictions() {
 		return parent::toArray();
+	}
+	
+	public function importRestrictions(RestrictionGroup$query) {
+		$restrictions = $query->getRestrictions();
+		
+		foreach($restrictions as $r) {
+			$copy = clone $r;
+			$copy->setParent($this);
+			$this->putRestriction($copy);
+		}
 	}
 	
 	/**
@@ -154,6 +166,24 @@ abstract class RestrictionGroup extends Collection
 		}
 	}
 	
+	public function filterSimpleRestrictions() {
+		$restrictions = $this->toArray();
+		
+		foreach ($restrictions as $r) {
+			if ($r instanceof Restriction)      { $this->removeRestriction($r); }
+			if ($r instanceof RestrictionGroup) { $r->filterSimpleRestrictions(); }
+		}
+	}
+	
+	public function filterEmptyGroups() {
+		$restrictions = $this->toArray();
+		
+		foreach ($restrictions as $r) {
+			if ($r instanceof RestrictionGroup) { $r->filterSimpleRestrictions(); }
+			if ($r instanceof RestrictionGroup && $r->isEmpty()) { $this->remove($r); }
+		}
+	}
+	
 	/**
 	 * @param string $type
 	 * @return RestrictionGroup
@@ -175,6 +205,12 @@ abstract class RestrictionGroup extends Collection
 		$this->parent = $query;
 		
 		foreach ($this->restrictions as $restriction) { $restriction->setQuery($query);}
+	}
+	
+	public function setParent(RestrictionGroup$query) {
+		$this->parent = $query;
+		
+		foreach ($this->restrictions as $restriction) { $restriction->setParent($query);}
 	}
 	
 	public function getParent() {
@@ -223,6 +259,7 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function getPhysicalSubqueries() {
 		$_ret = Array();
+		
 		foreach ($this->getRestrictions() as $r) {
 			$_ret = array_merge($_ret, $r->getPhysicalSubqueries());
 		}
