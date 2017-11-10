@@ -97,12 +97,12 @@ abstract class RestrictionGroup extends Collection
 			#get a queryField
 			$field = $fieldname instanceof QueryField? $fieldname : $this->getQuery()->getTable()->getField($fieldname);
 			$restriction = $this->getQuery()->restrictionInstance($this->getQuery()->queryFieldInstance($field), $value, $operator);
-			
-		} catch (Exception $e) {
+		} 
+		catch (Exception $e) {
 			#Otherwise we create a complex restriction for a logical field.
-			$field = $this->getQuery()->getTable()->getModel()->getField($fieldname);
+			$field = $this->getQuery()->getTable()->getSchema()->getField($fieldname);
 			
-			if ($fieldname instanceof Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getModel())
+			if ($fieldname instanceof Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getSchema())
 			{ $field = $fieldname; }
 			
 			#If the fieldname was not null, but the field is null - it means that the system could not find the field and is kicking back
@@ -157,6 +157,10 @@ abstract class RestrictionGroup extends Collection
 		return $_ret;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public function filterCompositeRestrictions() {
 		$restrictions = $this->toArray();
 		
@@ -166,6 +170,10 @@ abstract class RestrictionGroup extends Collection
 		}
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public function filterSimpleRestrictions() {
 		$restrictions = $this->toArray();
 		
@@ -175,11 +183,15 @@ abstract class RestrictionGroup extends Collection
 		}
 	}
 	
+	/**
+	 * Removes empty groups from the group. This is important since otherwise a
+	 * query generator will most likely generate malformed SQL for this query.
+	 */
 	public function filterEmptyGroups() {
 		$restrictions = $this->toArray();
 		
 		foreach ($restrictions as $r) {
-			if ($r instanceof RestrictionGroup) { $r->filterSimpleRestrictions(); }
+			if ($r instanceof RestrictionGroup) { $r->filterEmptyGroups(); }
 			if ($r instanceof RestrictionGroup && $r->isEmpty()) { $this->remove($r); }
 		}
 	}
