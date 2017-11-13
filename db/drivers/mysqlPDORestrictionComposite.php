@@ -28,7 +28,7 @@ class MysqlPDOCompositeRestriction extends CompositeRestriction
 			 * @var MysqlPDOQuery The query
 			 */
 			$value = $this->getValue();
-			$group = $this->getQuery()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this->getQuery());
+			$group = $this->getQuery()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this->getQuery(), \spitfire\storage\database\RestrictionGroup::TYPE_AND);
 			
 			/**
 			 * The system needs to create a copy of the subordinated restrictions 
