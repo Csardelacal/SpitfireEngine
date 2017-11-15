@@ -194,7 +194,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function add($elements) {
-		$this->items+= $elements;
+		$this->items = array_merge($this->items, $elements);
 		return $this;
 	}
 	

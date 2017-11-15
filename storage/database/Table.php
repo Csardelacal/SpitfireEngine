@@ -36,7 +36,7 @@ class Table
 	 * 
 	 * @var LayoutInterface
 	 */
-	private $layout;
+	private $layout = false;
 	
 	/**
 	 * Provides access to the table's record operations. Basically, a relational
