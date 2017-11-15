@@ -190,6 +190,12 @@ class Layout implements LayoutInterface
 		$table = $this;
 		$stt = "DESCRIBE $table";
 		$fields = $table->getFields();
+		
+		foreach ($this->table->getSchema()->getFields() as $f) {
+			if ($f instanceof Reference && $f->getTarget() !== $this->table->getSchema()) {
+				$f->getTarget()->getTable()->getLayout()->repair();
+			}
+		}
 		//Fetch the DB Fields and create on error.
 		try {
 			$query = $this->table->getDb()->execute($stt, Array(), false);
