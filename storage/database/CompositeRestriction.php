@@ -87,9 +87,13 @@ class CompositeRestriction
 	 * deprecated since 11/2014
 	 * 
 	 * 
+	 * @deprecated since version 0.1-dev 20171115
 	 * @return type
 	 */
 	public function getSimpleRestrictions() {
+		
+		trigger_error('CompositeRestriction::getSimpleRestrictions() is deprecated', E_USER_DEPRECATED);
+		
 		if ($this->field === null) {
 			$table = $this->getQuery()->getTable();
 			$fields = $table->getFields();
