@@ -347,9 +347,20 @@ abstract class Query extends RestrictionGroup
 	 * the query) and when "ending the group" which basically returns the call flow
 	 * over to the query.
 	 * 
+	 * @deprecated since version 0.1-dev 20171110
 	 * @return \spitfire\storage\database\RestrictionGroup
 	 */
 	public abstract function restrictionGroupInstance($parent);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public abstract function queryFieldInstance($field);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public abstract function queryTableInstance($table);
 }
