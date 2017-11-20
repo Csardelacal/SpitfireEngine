@@ -57,7 +57,7 @@ function app($name, $namespace) {
  * to store data. We could consider this a little DB handler factory.
  *
  * @param \spitfire\storage\database\Settings $options
- * @return DB
+ * @return spitfire\storage\database\DB
  */
 function db(\spitfire\storage\database\Settings$options = null) {
 	static $db = null;
