@@ -15,6 +15,7 @@ use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
+use spitfire\storage\database\Query;
 use spitfire\storage\database\QueryField;
 use spitfire\storage\database\QueryTable;
 use spitfire\storage\database\RestrictionGroup;
@@ -122,10 +123,6 @@ class ObjectFactory implements ObjectFactoryInterface
 	public function restrictionInstance($query, Field$field, $value, $operator = null) {
 		return new MysqlPDORestriction($query,	$field, $value, $operator);
 	}
-	
-	public function restrictionCompositeInstance(Query$query, LogicalField$field, $value, $operator = null) {
-		return new MysqlPDOCompositeRestriction($query,	$field, $value, $operator);
-	}
 
 	/**
 	 * Makes a new query on a certain table.
@@ -175,6 +172,10 @@ class ObjectFactory implements ObjectFactoryInterface
 		if (!$table instanceof Table) { throw new PrivateException('Did not receive a table as parameter'); }
 		
 		return new MysqlPDOQueryTable($query, $table);
+	}
+
+	public function restrictionCompositeInstance(Query $query, LogicalField$field = null, $value, $operator) {	
+		return new MysqlPDOCompositeRestriction($query,	$field, $value, $operator);
 	}
 
 }
