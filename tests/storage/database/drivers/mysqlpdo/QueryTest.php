@@ -36,6 +36,7 @@ class QueryTest extends TestCase
 			$this->schema->field2 = new StringField(255);
 
 			$this->table = new Table($this->db, $this->schema);
+			$this->table->getLayout()->create();
 		}
 		catch (PrivateException$e) {
 			$this->markTestSkipped('MySQL PDO driver is not available.');
@@ -47,6 +48,11 @@ class QueryTest extends TestCase
 	}
 	
 	public function testQuery() {
+		$record = $this->table->newRecord();
+		$record->field1 = 1;
+		$record->field2 = 'Test';
+		$record->store();
+		
 		$result = $this->table->get('field1', 1)->fetch();
 		$this->assertNotEquals(null, $result);
 	}

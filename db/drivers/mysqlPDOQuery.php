@@ -41,7 +41,7 @@ class MysqlPDOQuery extends Query
 		}
 		
 		if ($fields === null) {
-			$fields = $this->table->getTable()->getFields();
+			$fields = $this->table->getTable()->getLayout()->getFields();
 			
 			/*
 			 * If there is subqueries we default to grouping data in a way that will

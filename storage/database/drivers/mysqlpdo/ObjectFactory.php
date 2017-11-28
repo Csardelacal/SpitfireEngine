@@ -120,7 +120,7 @@ class ObjectFactory implements ObjectFactoryInterface
 		return new mysqlPDOField($field, $name, $references);
 	}
 
-	public function restrictionInstance($query, Field$field, $value, $operator = null) {
+	public function restrictionInstance($query, QueryField$field, $value, $operator = null) {
 		return new MysqlPDORestriction($query,	$field, $value, $operator);
 	}
 
@@ -160,7 +160,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	
 	public function queryFieldInstance($query, $field) {
 		if ($field instanceof QueryField) {return $field; }
-		return new MysqlPDOQueryField($this, $field);
+		return new MysqlPDOQueryField($query, $field);
 	}
 	
 	
