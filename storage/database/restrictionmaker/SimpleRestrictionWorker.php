@@ -55,7 +55,7 @@ class SimpleRestrictionWorker implements WorkerInterface
 		 * get a queryField.
 		 */
 		try {
-			$field = $fieldname instanceof QueryField? $fieldname : $parent->getQuery()->getTable()->getField($fieldname);
+			$field = $fieldname instanceof QueryField? $fieldname : $parent->getQuery()->getTable()->getLayout()->getField($fieldname);
 			return $of->restrictionInstance($parent, $of->queryFieldInstance($parent->getQuery(), $field), $value, $operator);	
 		} 
 		

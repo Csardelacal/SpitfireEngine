@@ -112,6 +112,12 @@ class Table
 		return $this->layout->getFields();
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171128
+	 * @param type $name
+	 * @return type
+	 */
 	public function getField($name) {
 		trigger_error('Deprecated function Table::getField() called', E_USER_DEPRECATED);
 		return $this->layout->getField($name);
