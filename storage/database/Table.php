@@ -188,12 +188,13 @@ class Table
 		
 		#Create a query
 		$table   = $this;
-		$primary = $table->getPrimaryKey();
+		$primary = $table->getPrimaryKey()->getFields();
 		$query   = $table->getDb()->getObjectFactory()->queryInstance($this);
 		
 		#Add the restrictions
-		while(count($primary))
-			{ $query->addRestriction (array_shift($primary), array_shift($id)); }
+		while(!$primary->isEmpty()) { 
+			$query->where($primary->shift(), array_shift($id));
+		}
 		
 		#Return the result
 		$_return = $query->fetch();

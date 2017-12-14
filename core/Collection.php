@@ -244,7 +244,7 @@ class Collection implements ArrayAccess, CollectionInterface
 		return reset($this->items);
 	}
 	
-	public function pluck() {
+	public function shift() {
 		return array_shift($this->items);
 	}
 	

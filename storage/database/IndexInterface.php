@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\database;
 
+use spitfire\core\Collection;
+
 /* 
  * The MIT License
  *
