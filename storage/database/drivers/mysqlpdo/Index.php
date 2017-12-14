@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\storage\database\Field;
+use spitfire\model\Index as LogicalIndex;
 use spitfire\storage\database\IndexInterface;
 
 /* 
@@ -27,27 +27,63 @@ use spitfire\storage\database\IndexInterface;
  * THE SOFTWARE.
  */
 
+/**
+ * The MySQLPDO friendly implementation of indexes.
+ * 
+ */
 class Index implements IndexInterface
 {
 	
-	public function __construct($fields) {
-		;
+	private $logical;
+	
+	public function __construct(LogicalIndex$index) {
+		$this->logical = $index;
 	}
 	
-	public function getFields(): Field {
+	public function getFields() {
+		/*
+		 * Prepare an array for the fields.
+		 */
+		$arr = new \spitfire\core\Collection();
+
+		/**
+		 * Each field has one / many physical fields that need to be brought into
+		 * the physical index to be generated.
+		 */
+		$this->logical->getFields()->each(function ($p) use ($arr) { 
+			$arr->add($p->getPhysical()); 
+		});
 		
+		return $arr;
 	}
 
 	public function getName(): string {
-		
+		return $this->logical->getName();
 	}
 
 	public function isPrimary(): bool {
-		
+		return $this->logical->isPrimary();
 	}
 
 	public function isUnique(): bool {
-		
+		return $this->logical->isUnique();
+	}
+	
+	/**
+	 * 
+	 * @return LogicalIndex
+	 */
+	public function getLogical() : LogicalIndex {
+		return $this->logical;
+	}
+	
+	public function definition() {
+		return sprintf(
+			'%s `%s` (%s)',
+			$this->isPrimary()? 'PRIMARY KEY' : ($this->isUnique()? 'UNIQUE INDEX' : 'INDEX'),
+			$this->getName()? : '',
+			$this->getFields()->each(function ($e) { return sprintf('`%s`', $e->getName()); })->join(', ')
+		);
 	}
 
 }

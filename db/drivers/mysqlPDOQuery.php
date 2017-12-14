@@ -1,6 +1,4 @@
-<?php
-
-namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers;
 
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
@@ -25,7 +23,7 @@ class MysqlPDOQuery extends Query
 		$tablename    = $this->getTable()->getLayout();
 		$wherestt     = 'WHERE';
 		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
-		$restrictions = array_filter($this->getRestrictions(), Array('spitfire\storage\database\Query', 'restrictionFilter'));
+		$restrictions = $this->getRestrictions();
 		$orderstt     = 'ORDER BY';
 		$order        = $this->getOrder();
 		$groupbystt   = 'GROUP BY';
@@ -99,20 +97,47 @@ class MysqlPDOQuery extends Query
 		return new mysqlPDOResultSet($this->getTable(), $this->getTable()->getDb()->execute(implode(' ', $stt)));
 		
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 * @param type $parent
+	 * @return \spitfire\storage\database\drivers\MysqlPDORestrictionGroup
+	 */
 	public function restrictionGroupInstance($parent = null) {
 		return new MysqlPDORestrictionGroup($parent? : $this);
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 * @param QueryField $field
+	 * @param type $value
+	 * @param type $operator
+	 * @return \spitfire\storage\database\drivers\MysqlPDORestriction
+	 */
 	public function restrictionInstance(QueryField$field, $value, $operator) {
 		return new MysqlPDORestriction($this, $field, $value, $operator);
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 * @param QueryField $field
+	 * @return \spitfire\storage\database\drivers\MysqlPDOQueryField|QueryField
+	 */
 	public function queryFieldInstance($field) {
 		if ($field instanceof QueryField) {return $field; }
 		return new MysqlPDOQueryField($this, $field);
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 * @param type $table
+	 * @return \spitfire\storage\database\drivers\MysqlPDOQueryTable
+	 * @throws PrivateException
+	 */
 	public function queryTableInstance($table) {
 		if ($table instanceof Relation) { $table = $table->getTable(); }
 		if ($table instanceof QueryTable) { $table = $table->getTable(); }
@@ -122,7 +147,11 @@ class MysqlPDOQuery extends Query
 		
 		return new MysqlPDOQueryTable($this, $table);
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public function compositeRestrictionInstance(Field $field = null, $value, $operator) {
 		return new MysqlPDOCompositeRestriction($this, $field, $value, $operator);
 	}

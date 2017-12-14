@@ -1,6 +1,7 @@
-<?php namespace spitfire\storage\database;
+<?php namespace spitfire\storage\database\tablelocator;
 
-use spitfire\core\Collection;
+use spitfire\cache\MemoryCache;
+use spitfire\storage\database\Table;
 
 /* 
  * The MIT License
@@ -27,51 +28,44 @@ use spitfire\core\Collection;
  */
 
 /**
- * The layout is basically a list of columns + indexes that makes up the schema
- * of a relation in a relational database.
- * 
- * A driver can implement this interface to provide common operations on it's 
- * tables for spitfire to run.
+ * Locates a table inside a memory cache.
  */
-interface LayoutInterface
+class CacheLocator implements TableLocatorInterface
 {
 	
 	/**
-	 * Returns the name the DBMS should use to name this table. The implementing
-	 * class should respect user configuration including db_table_prefix
-	 * 
-	 * @return string
+	 * The cache to be searched for appropriate tables.
+	 *
+	 * @var MemoryCache
 	 */
-	function getTableName() : string;
+	private $cache;
 	
 	/**
+	 * This cache allows the application to search for tables within a Memory cache,
+	 * allowing for a quick retrieval of tables that have already been assembled.
 	 * 
-	 * @param string $name
-	 * @return Field
-	 */
-	function getField($name) : Field;
-	
-	/**
+	 * While Spitfire has a very light modeling system that assembles itself very
+	 * quickly, it will be faster and more consistent to retrieve the data from
+	 * a cache.
 	 * 
-	 * @return Field[] The columns in this database table
-	 */
-	function getFields();
-	
-	/**
-	 * This method needs to get the lost of indexes from the logical Schema and 
-	 * convert them to physical indexes for the DBMS to manage.
+	 * The cache also allows to compare models with the much faster "===" operator
+	 * since it will just check whether the object referenced is the same.
 	 * 
-	 * @return Collection (IndexInterface) The indexes in this layout
+	 * @param MemoryCache $cache
 	 */
-	function getIndexes();
-	
-	
+	public function __construct(MemoryCache$cache) {
+		$this->cache = $cache;
+	}
+
 	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
+	 * Extracts the table from the cache (in the event of it being available) and 
+	 * returns false in the event of the table not being in the cache.
+	 * 
+	 * @param string $tablename
+	 * @return Table|false
 	 */
-	function create();
-	function repair();
-	function destroy();
+	public function locate(string $tablename) {
+		return $this->cache->get($tablename);
+	}
+
 }

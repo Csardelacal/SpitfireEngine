@@ -5,7 +5,6 @@ use spitfire\cache\MemoryCache;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\CharsetEncoder;
-use Strings;
 
 /**
  * This class creates a "bridge" beetwen the classes that use it and the actual
@@ -18,11 +17,7 @@ abstract class DB
 	
 	const MYSQL_PDO_DRIVER = 'mysqlPDO';
 	
-	protected $server;
-	protected $user;
-	protected $password;
-	protected $schema;
-	protected $prefix;
+	private $settings;
 	
 	private $tableCache;
 	private $encoder;
@@ -31,18 +26,14 @@ abstract class DB
 	 * Creates an instance of DBInterface. If options are set it will import
 	 * them. Otherwise it will try to read them from the current environment.
 	 * 
-	 * @param String $options Name of the database driver to be used. You can
+	 * @param Settings $settings Name of the database driver to be used. You can
 	 *                       choose one of the DBInterface::DRIVER_? consts.
 	 */
-	public function __construct($options = null) {
-		$this->server   = (isset($options['server']))?   $options['server']   : Environment::get('db_server');
-		$this->user     = (isset($options['user']))?     $options['user']     : Environment::get('db_user');
-		$this->password = (isset($options['password']))? $options['password'] : Environment::get('db_pass');
-		$this->schema   = (isset($options['schema']))?   $options['schema']   : Environment::get('db_database');
-		$this->prefix   = (isset($options['prefix']))?   $options['prefix']   : Environment::get('db_table_prefix');
+	public function __construct(Settings$settings) {
+		$this->settings   = $settings;
 		
-		$this->tableCache = new MemoryCache();
-		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), _def($options['encoding'], Environment::get('database_encoding')));
+		$this->tableCache = new TablePool($this);
+		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), $settings->getEncoding());
 	}
 	
 	/**
@@ -56,30 +47,12 @@ abstract class DB
 	}
 	
 	/**
-	 * Converts data from the encoding the database has TO the encoding the
-	 * system uses.
+	 * Gets the connection settings for this connection.
 	 * 
-	 * @deprecated since version 0.1-dev 20160514
-	 * @param String $str The string encoded with the database's encoding
-	 * @return String The string encoded with Spitfire's encoding
+	 * @return Settings
 	 */
-	public function convertIn($str) {
-		trigger_error('Using deprecated function DB::convertIn()', E_USER_DEPRECATED);
-		return $this->encoder->encode($str);
-	}
-	
-	
-	/**
-	 * Converts data from the encoding the system has TO the encoding the
-	 * database uses.
-	 * 
-	 * @deprecated since version 0.1-dev 20160514
-	 * @param String $str The string encoded with Spitfire's encoding
-	 * @return String The string encoded with the database's encoding
-	 */
-	public function convertOut($str) {
-		trigger_error('Using deprecated function DB::convertOut()', E_USER_DEPRECATED);
-		return $this->encoder->decode($str);
+	public function getSettings() {
+		return $this->settings;
 	}
 	
 	/**
@@ -100,7 +73,7 @@ abstract class DB
 	 * were imported.
 	 */
 	public function repair() {
-		$tables = $this->tableCache->getAll();
+		$tables = $this->tableCache->getCache()->getAll();
 		foreach ($tables as $table) {
 			$table->getLayout()->repair();
 		}
@@ -116,59 +89,22 @@ abstract class DB
 	 *                                 table.
 	 * 
 	 * @throws PrivateException If the table could not be found
-	 * @return Relation The database table adapter
+	 * @return Table The database table adapter
 	 */
 	public function table($tablename) {
 		
 		#If the parameter is a Model, we get it's name
 		if ($tablename instanceof Schema) {
-			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), new Table($this, $tablename)); } 
-			else                                              { $tablename = $tablename->getName(); }
+			return $this->tableCache->set($tablename->getName(), new Table($this, $tablename));
 		}
 		
 		#We just tested if it's a Schema, let's see if it's a string
-		if (!is_string($tablename)) { throw new BadMethodCallException('DB::table requires Schema or string as argument'); }
-		
-		#If the table has already been imported continue
-		if ($this->tableCache->contains($tablename)) { return $this->tableCache->get($tablename); }
-		
-		#Check if the literall table name can be found in the database
-		try { return $this->tableCache->set($tablename, $this->makeTable($tablename)); }
-		catch (PrivateException$e) { /* Silent failure. The table may not exist */}
-		
-		#It's common to refer to the table as a plural (i.e. users), let's check if it's that
-		try { return $this->tableCache->set(Strings::singular($tablename), $this->makeTable(Strings::singular($tablename))); }
-		catch (PrivateException$e) { /*Silently fail. The singular of this table may not exist either*/}
-		
-		#Get the OTF model
-		try {	return $this->tableCache->set($tablename, $this->getObjectFactory()->getOTFSchema($tablename)); }
-		catch (PrivateException$e) { /*Silent failure again*/}
-		
-		#If all our ressources have come to an end... Halt it.
-		throw new PrivateException("No table $tablename found");
-		
-	}
-	
-	/**
-	 * 
-	 * @todo Extract these methods (makeTable, hasTable, getTableFromCache) to a separate TablePool class
-	 * @param string $tablename
-	 * @return Relation
-	 * @throws PrivateException
-	 */
-	protected function makeTable($tablename) {
-		$className = $tablename . 'Model';
-		
-		if (class_exists($className)) {
-			#Create a schema and a model
-			$schema = new Schema($tablename);
-			$model = new $className();
-			$model->definitions($schema);
-			
-			return new Table($this, $schema);
+		if (!is_string($tablename)) { 
+			throw new BadMethodCallException('DB::table requires Schema or string as argument'); 
 		}
 		
-		throw new PrivateException('No table ' . $tablename);
+		#Check if the table can be found in the table cache
+		return $this->tableCache->get(strtolower($tablename));
 	}
 	
 	/**
@@ -186,7 +122,7 @@ abstract class DB
 	 * Allows short-hand access to tables by using: $db->tablename
 	 * 
 	 * @param string $table Name of the table
-	 * @return Relation
+	 * @return Table
 	 */
 	public function __get($table) {
 		#Otherwise we try to get the table with this name
@@ -204,6 +140,27 @@ abstract class DB
 	 * the driver used by the system.
 	 */
 	abstract public function getConnection();
+	
+	/**
+	 * Allows the application to create the database needed to store the tables
+	 * and therefore data for the application. Some DBMS like SQLite won't support
+	 * multiple databases - so this may not do anything.
+	 * 
+	 * @abstract
+	 * @return bool Returns whether the operation could be completed successfully
+	 */
+	abstract public function create();
+	
+	/**
+	 * Destroys the database and all of it's contents. Drivers may not allow 
+	 * this method to be called unless they're being operated in debug mode or 
+	 * a similar mode.
+	 * 
+	 * @abstract
+	 * @throws PrivateException If the driver rejected the operation
+	 * @return bool Whether the operation could be completed
+	 */
+	abstract public function destroy();
 	
 	/**
 	 * In modern spitfire drivers, all the object creation for a database is handled

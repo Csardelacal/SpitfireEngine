@@ -1,6 +1,7 @@
-<?php namespace spitfire\storage\database;
+<?php namespace spitfire\storage\database\tablelocator;
 
-use spitfire\core\Collection;
+use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\DB;
 
 /* 
  * The MIT License
@@ -27,51 +28,43 @@ use spitfire\core\Collection;
  */
 
 /**
- * The layout is basically a list of columns + indexes that makes up the schema
- * of a relation in a relational database.
- * 
- * A driver can implement this interface to provide common operations on it's 
- * tables for spitfire to run.
+ * The OTF Table locator allows the system to create models on the fly when the
+ * programmer tries to access a table that exists on the DBMS but is not defined
+ * within the application's models.
  */
-interface LayoutInterface
+class OTFTableLocator implements TableLocatorInterface
 {
 	
+	
 	/**
-	 * Returns the name the DBMS should use to name this table. The implementing
-	 * class should respect user configuration including db_table_prefix
+	 * The database context for this locator to work.
+	 *
+	 * @var DB
+	 */
+	private $db;
+	
+	/**
+	 * Creates a new on the fly locator. This locator will be required to retrieve
+	 * a dynamically generated Schema from the database and inject it into a Table.
 	 * 
-	 * @return string
+	 * @param DB $db
 	 */
-	function getTableName() : string;
+	public function __construct($db) {
+		$this->db = $db;
+	}
 	
 	/**
+	 * Retrieves a table from the DBMS on the fly. Please note that this locator
+	 * is very inefficient and should only be used in development and legacy apps.
 	 * 
-	 * @param string $name
-	 * @return Field
+	 * @param string $tablename
+	 * @return boolean
 	 */
-	function getField($name) : Field;
-	
-	/**
-	 * 
-	 * @return Field[] The columns in this database table
-	 */
-	function getFields();
-	
-	/**
-	 * This method needs to get the lost of indexes from the logical Schema and 
-	 * convert them to physical indexes for the DBMS to manage.
-	 * 
-	 * @return Collection (IndexInterface) The indexes in this layout
-	 */
-	function getIndexes();
-	
-	
-	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
-	 */
-	function create();
-	function repair();
-	function destroy();
+	public function locate(string $tablename) {
+		
+		#Get the OTF model
+		try {	return $this->db->getObjectFactory()->getOTFSchema($tablename); }
+		catch (PrivateException$e) { return false; }
+	}
+
 }

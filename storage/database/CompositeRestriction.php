@@ -5,23 +5,17 @@ use spitfire\Model;
 
 class CompositeRestriction
 {
-	/**
-	 * The parent query for this restriction. This provides information about
-	 * how it's table is currently aliased and what fields this table can provide.
-	 *
-	 * @var \spitfire\storage\database\Query
-	 */
-	private $query;
+	private $parent;
 	private $field;
 	private $value;
 	private $operator;
 	
-	public function __construct(Query$query, Field$field = null, $value = null, $operator = Restriction::EQUAL_OPERATOR) {
+	public function __construct(RestrictionGroup$parent, Field$field = null, $value = null, $operator = Restriction::EQUAL_OPERATOR) {
 		
 		if ($value instanceof Model) { $value = $value->getQuery(); }
 		if ($value instanceof Query) { $value->setAliased(true); }
 		
-		$this->query = $query;
+		$this->parent = $parent;
 		$this->field = $field;
 		$this->value = $value;
 		$this->operator = $operator;
@@ -32,11 +26,23 @@ class CompositeRestriction
 	 * @return Query
 	 */
 	public function getQuery() {
-		return $this->query;
+		return $this->parent? $this->parent->getQuery() : null;
+	}
+	
+	/**
+	 * 
+	 * @return RestrictionGroup
+	 */
+	public function getParent() {
+		return $this->parent;
 	}
 
 	public function setQuery(Query$query) {
-		$this->query = $query;
+		$this->parent = $query;
+	}
+
+	public function setParent(RestrictionGroup$query) {
+		$this->parent = $query;
 	}
 
 	public function getField() {
@@ -81,13 +87,17 @@ class CompositeRestriction
 	 * deprecated since 11/2014
 	 * 
 	 * 
+	 * @deprecated since version 0.1-dev 20171115
 	 * @return type
 	 */
 	public function getSimpleRestrictions() {
+		
+		trigger_error('CompositeRestriction::getSimpleRestrictions() is deprecated', E_USER_DEPRECATED);
+		
 		if ($this->field === null) {
 			$table = $this->getQuery()->getTable();
 			$fields = $table->getFields();
-			$restrictions = $this->query->restrictionGroupInstance();
+			$restrictions = $this->getQuery()->restrictionGroupInstance();
 			
 			foreach ($fields as $field) {
 				if (!$field->getLogicalField() instanceof \Reference) {
@@ -118,7 +128,6 @@ class CompositeRestriction
 		$last      = end($connector);
 		
 		$last->setId($this->getValue()->getId());
-		$last->importRestrictions($this->getValue());
 		
 		/*
 		 * Since layered composite restrictions cannot be handled in the same way
@@ -133,29 +142,9 @@ class CompositeRestriction
 		 * harm the operation as it is.
 		 * 
 		 */
-		$subqueries = $last->getPhysicalSubqueries();
-		$last->filterCompositeRestrictions();
+		$subqueries = $this->getValue()->getPhysicalSubqueries();
 		
-		#Query optimizer - this will swap restrictions from one query to another to 
-		#make it easier for the database to read and process. It also accounts for 
-		#a shortcoming in SQL saving us some INNER joins
-		$first      = end($subqueries);
-
-		//If there is nothing to descent into we stop here
-		if (!$first) { return array_merge($subqueries, $connector); }
-
-		foreach ($first->getRestrictions() as $r) { 
-			if (!$r->getField() instanceof QueryField) { continue; }
-			$v  = $r->getField(); 
-			$q1 = $v->getQuery();
-			$q2 = $last;
-			if ($v instanceof QueryField && $q1 === $q2) {
-				$last->addRestriction($r->getField(), $r->getValue());
-				$first->removeRestriction($r);
-			}
-		}
-		
-		return array_merge($subqueries, $connector); 
+		return array_merge($connector, $subqueries); 
 	}
 	
 }

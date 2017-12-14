@@ -80,14 +80,34 @@ class Index
 		$this->fields = new Collection($fields);
 	}
 	
+	/**
+	 * Return the field collection
+	 * 
+	 * @return Collection containing the <code>Field</code>s in this index
+	 */
 	public function getFields() {
 		return $this->fields;
 	}
 	
+	/**
+	 * Indicates whether a field is contained in this index. This allows an app
+	 * to check whether it needs to remove an index when a field is removed.
+	 * 
+	 * @param \spitfire\model\Field $f
+	 * @return bool
+	 */
 	public function contains(Field$f) {
 		return $this->fields->contains($f);
 	}
 	
+	/**
+	 * Returns the name of the index (if given) and generates a standard name for
+	 * the index when there is none. The format for these is
+	 * 
+	 * idx_tablename_field1_field2
+	 * 
+	 * @return string
+	 */
 	public function getName() {
 		/*
 		 * If the index already has a name we roll with that.
@@ -98,7 +118,7 @@ class Index
 		 * Get the table name, this way we can generate a meaningful index name
 		 * when it's written to the database.
 		 */
-		$tablename  = $this->fields->rewind()->getSchema()->getName();
+		$tablename  = $this->fields->rewind()->getSchema()->getTableName();
 		
 		/*
 		 * Implode the names of the fields being passed to the index. This way the 
@@ -114,7 +134,7 @@ class Index
 		 * - Then comes the table name
 		 * - Lastly we add the fields composing the index
 		 */
-		$this->name = 'idx_' . $tablename . '_' . $imploded;
+		return $this->name = 'idx_' . $tablename . '_' . $imploded;
 	}
 	
 	public function isUnique() {
@@ -139,7 +159,7 @@ class Index
 		return $this;
 	}
 	
-	public function setUnique($unique) {
+	public function unique($unique = true) {
 		$this->unique = $unique;
 		return $this;
 	}

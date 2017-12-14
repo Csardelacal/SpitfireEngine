@@ -36,7 +36,7 @@ class Table
 	 * 
 	 * @var LayoutInterface
 	 */
-	private $layout;
+	private $layout = false;
 	
 	/**
 	 * Provides access to the table's record operations. Basically, a relational
@@ -130,7 +130,7 @@ class Table
 	
 	/**
 	 * Returns the database the table belongs to.
-	 * @return DB|DB
+	 * @return DB
 	 */
 	public function getDb() {
 		return $this->db;
@@ -140,21 +140,16 @@ class Table
 	 * Get's the table's primary key. This will always return an array
 	 * containing the fields the Primary Key contains.
 	 * 
-	 * @return Field[] Array containing the primary keys in [ 'name' => {DBField object} ] form
+	 * @return IndexInterface
 	 */
 	public function getPrimaryKey() {
-		//Check if we already did this
-		if ($this->primaryK !== null) { return $this->primaryK; }
+		/*
+		 * If the primary was already determined, we use the cached version.
+		 */
+		if ($this->primaryK) { return $this->primaryK; }
 		
-		//Implicit else
-		$fields  = $this->layout->getFields();
-		$pk      = Array();
-		
-		foreach($fields as $name => $field) {
-			if ($field->getLogicalField()->isPrimary()) { $pk[$name] = $field; }
-		}
-		
-		return $this->primaryK = (array) $pk;
+		$indexes = $this->layout->getIndexes();
+		return $this->primaryK = $indexes->filter(function (IndexInterface$i) { return $i->isPrimary(); })->rewind();
 	}
 	
 	public function getAutoIncrement() {
@@ -193,12 +188,13 @@ class Table
 		
 		#Create a query
 		$table   = $this;
-		$primary = $table->getPrimaryKey();
+		$primary = $table->getPrimaryKey()->getFields();
 		$query   = $table->getDb()->getObjectFactory()->queryInstance($this);
 		
 		#Add the restrictions
-		while(count($primary))
-			{ $query->addRestriction (array_shift($primary), array_shift($id)); }
+		while(!$primary->isEmpty()) { 
+			$query->where($primary->shift(), array_shift($id));
+		}
 		
 		#Return the result
 		$_return = $query->fetch();

@@ -44,7 +44,7 @@ abstract class Field
 	 * @var Schema
 	 * @todo Rename to schema
 	 */
-	private $model;
+	private $schema;
 	
 	/**
 	 * Contains the name of the field inside of the model. This name should 
@@ -92,6 +92,15 @@ abstract class Field
 	 * @var boolean 
 	 */
 	private $auto_increment = false;
+	
+	/**
+	 * Contains the default value for this field. In the event of this field 
+	 * being null but the field not-nullable, the driver should define a proper
+	 * "empty" value for it's data type.
+	 *
+	 * @var mixed
+	 */
+	private $default;
 	
 	/**
 	 * Contains the physical (DB) fields that are used to store the data 
@@ -199,9 +208,17 @@ abstract class Field
 		return $this->nullable;
 	}
 	
+	public function getDefault() {
+		return $this->default;
+	}
+	
+	public function setDefault($default) {
+		$this->default = $default;
+		return $this;
+	}
 	
 	public function getSchema() {
-		return $this->model;
+		return $this->schema;
 	}
 
 	
@@ -213,7 +230,7 @@ abstract class Field
 	 * @return Schema
 	 */
 	public function getModel() {
-		return $this->model;
+		return $this->schema;
 	}
 	
 	/**
@@ -221,10 +238,23 @@ abstract class Field
 	 * redundant but quickens development and makes it more efficient to
 	 * find the model for the field.
 	 * 
+	 * @deprecated since version 0.1-dev 201710131759
 	 * @param Schema $model
 	 */
 	public function setModel($model) {
-		$this->model = $model;
+		trigger_error('Field::setModel has been deprecated', E_USER_DEPRECATED);
+		return $this->setSchema($model);
+	}
+	
+	/**
+	 * Defines which model this field belongs to. This data basically is 
+	 * redundant but quickens development and makes it more efficient to
+	 * find the model for the field.
+	 * 
+	 * @param Schema $schema
+	 */
+	public function setSchema(Schema$schema) {
+		$this->schema = $schema;
 	}
 	
 	/**
@@ -234,7 +264,7 @@ abstract class Field
 	 * @return Table
 	 */
 	public function getTable() {
-		return $this->model->getTable();
+		return $this->schema->getTable();
 	}
 	
 	/**
@@ -321,6 +351,13 @@ abstract class Field
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @todo Validation should be either attributed to the model or the beans
+	 * @deprecated since version 0.1-dev 20171016
+	 * @param type $value
+	 * @return boolean|ValidationError
+	 */
 	public function validate($value) {
 		if (!$this->nullable && !$value) return new ValidationError(_t('err_field_null'));
 		return false;

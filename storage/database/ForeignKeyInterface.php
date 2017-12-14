@@ -26,52 +26,15 @@ use spitfire\core\Collection;
  * THE SOFTWARE.
  */
 
-/**
- * The layout is basically a list of columns + indexes that makes up the schema
- * of a relation in a relational database.
- * 
- * A driver can implement this interface to provide common operations on it's 
- * tables for spitfire to run.
- */
-interface LayoutInterface
+interface ForeignKeyInterface extends IndexInterface
 {
 	
 	/**
-	 * Returns the name the DBMS should use to name this table. The implementing
-	 * class should respect user configuration including db_table_prefix
+	 * Returns a collection of fields that the index is referencing. This allows
+	 * the application to properly define indexes that do only exist for the 
+	 * purpose of linking two tables.
 	 * 
-	 * @return string
+	 * @return Collection of FieldInterface
 	 */
-	function getTableName() : string;
-	
-	/**
-	 * 
-	 * @param string $name
-	 * @return Field
-	 */
-	function getField($name) : Field;
-	
-	/**
-	 * 
-	 * @return Field[] The columns in this database table
-	 */
-	function getFields();
-	
-	/**
-	 * This method needs to get the lost of indexes from the logical Schema and 
-	 * convert them to physical indexes for the DBMS to manage.
-	 * 
-	 * @return Collection (IndexInterface) The indexes in this layout
-	 */
-	function getIndexes();
-	
-	
-	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
-	 */
-	function create();
-	function repair();
-	function destroy();
+	function getReferenced() : Collection;
 }

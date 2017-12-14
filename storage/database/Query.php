@@ -220,7 +220,7 @@ abstract class Query extends RestrictionGroup
 		if (!$this->groupby) {
 			//This is a temporary fix that will only count distinct values in complex
 			//queries.
-			$query = $this->query(Array('COUNT(DISTINCT ' . implode(', ', $this->table->getTable()->getPrimaryKey() ) . ')'), true)->fetchArray();
+			$query = $this->query(Array('COUNT(DISTINCT ' . $this->table->getTable()->getPrimaryKey()->getFields()->join(', ') . ')'), true)->fetchArray();
 			$count = reset($query);
 			return $this->count = (int)$count;
 		}
@@ -264,16 +264,6 @@ abstract class Query extends RestrictionGroup
 		$_ret = $this->getPhysicalSubqueries();
 		array_push($_ret, $this);
 		return $_ret;
-	}
-	
-	public function importRestrictions(Query$query) {
-		$restrictions = $query->getRestrictions();
-		
-		foreach($restrictions as $r) {
-			$copy = clone $r;
-			$copy->setQuery($this);
-			$this->putRestriction($copy);
-		}
 	}
 	
 	public function getOrder() {
@@ -337,7 +327,17 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	public abstract function execute($fields = null);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 2017102609
+	 */
 	public abstract function restrictionInstance(QueryField$field, $value, $operator);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 2017102609
+	 */
 	public abstract function compositeRestrictionInstance(LogicalField$field = null, $value, $operator);
 	
 	/**
@@ -347,9 +347,20 @@ abstract class Query extends RestrictionGroup
 	 * the query) and when "ending the group" which basically returns the call flow
 	 * over to the query.
 	 * 
+	 * @deprecated since version 0.1-dev 20171110
 	 * @return \spitfire\storage\database\RestrictionGroup
 	 */
 	public abstract function restrictionGroupInstance($parent);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public abstract function queryFieldInstance($field);
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public abstract function queryTableInstance($table);
 }

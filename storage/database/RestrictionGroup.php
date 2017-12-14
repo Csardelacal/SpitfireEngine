@@ -54,6 +54,24 @@ abstract class RestrictionGroup extends Collection
 		parent::reset();
 		parent::add($restrictions);
 	}
+	
+	/**
+	 * Adds a restriction to the current query. Restraining the data a field
+	 * in it can contain.
+	 *
+	 * @todo This method does not accept logical fields as parameters
+	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
+	 *
+	 * @deprecated since version 0.1-dev 20170923
+	 * @param string $fieldname
+	 * @param mixed  $value
+	 * @param string $operator
+	 * @return RestrictionGroup
+	 * @throws PrivateException
+	 */
+	public function addRestriction($fieldname, $value, $operator = '=') {
+		return $this->where($fieldname, $operator, $value);
+	}
 
 	/**
 	 * Adds a restriction to the current query. Restraining the data a field
@@ -64,23 +82,27 @@ abstract class RestrictionGroup extends Collection
 	 *
 	 * @param string $fieldname
 	 * @param mixed  $value
-	 * @param string $operator
+	 * @param string $_
 	 * @return RestrictionGroup
 	 * @throws PrivateException
 	 */
-	public function addRestriction($fieldname, $value, $operator = '=') {
+	public function where($fieldname, $value, $_ = null) {
+		$params = func_num_args();
+		
+		if ($params === 3) { list($operator, $value) = [$value, $_]; }
+		else               { $operator = '='; }
 		
 		try {
 			#If the name of the field passed is a physical field we just use it to 
 			#get a queryField
 			$field = $fieldname instanceof QueryField? $fieldname : $this->getQuery()->getTable()->getField($fieldname);
 			$restriction = $this->getQuery()->restrictionInstance($this->getQuery()->queryFieldInstance($field), $value, $operator);
-			
-		} catch (Exception $e) {
+		} 
+		catch (Exception $e) {
 			#Otherwise we create a complex restriction for a logical field.
-			$field = $this->getQuery()->getTable()->getModel()->getField($fieldname);
+			$field = $this->getQuery()->getTable()->getSchema()->getField($fieldname);
 			
-			if ($fieldname instanceof Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getModel())
+			if ($fieldname instanceof Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getSchema())
 			{ $field = $fieldname; }
 			
 			#If the fieldname was not null, but the field is null - it means that the system could not find the field and is kicking back
@@ -100,6 +122,16 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function getRestrictions() {
 		return parent::toArray();
+	}
+	
+	public function importRestrictions(RestrictionGroup$query) {
+		$restrictions = $query->getRestrictions();
+		
+		foreach($restrictions as $r) {
+			$copy = clone $r;
+			$copy->setParent($this);
+			$this->putRestriction($copy);
+		}
 	}
 	
 	/**
@@ -125,12 +157,42 @@ abstract class RestrictionGroup extends Collection
 		return $_ret;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
 	public function filterCompositeRestrictions() {
 		$restrictions = $this->toArray();
 		
 		foreach ($restrictions as $r) {
 			if ($r instanceof CompositeRestriction) {	$this->removeRestriction($r); }
 			if ($r instanceof RestrictionGroup)     { $r->filterCompositeRestrictions(); }
+		}
+	}
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171110
+	 */
+	public function filterSimpleRestrictions() {
+		$restrictions = $this->toArray();
+		
+		foreach ($restrictions as $r) {
+			if ($r instanceof Restriction)      { $this->removeRestriction($r); }
+			if ($r instanceof RestrictionGroup) { $r->filterSimpleRestrictions(); }
+		}
+	}
+	
+	/**
+	 * Removes empty groups from the group. This is important since otherwise a
+	 * query generator will most likely generate malformed SQL for this query.
+	 */
+	public function filterEmptyGroups() {
+		$restrictions = $this->toArray();
+		
+		foreach ($restrictions as $r) {
+			if ($r instanceof RestrictionGroup) { $r->filterEmptyGroups(); }
+			if ($r instanceof RestrictionGroup && $r->isEmpty()) { $this->remove($r); }
 		}
 	}
 	
@@ -155,6 +217,12 @@ abstract class RestrictionGroup extends Collection
 		$this->parent = $query;
 		
 		foreach ($this->restrictions as $restriction) { $restriction->setQuery($query);}
+	}
+	
+	public function setParent(RestrictionGroup$query) {
+		$this->parent = $query;
+		
+		foreach ($this->restrictions as $restriction) { $restriction->setParent($query);}
 	}
 	
 	public function getParent() {
@@ -203,6 +271,7 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function getPhysicalSubqueries() {
 		$_ret = Array();
+		
 		foreach ($this->getRestrictions() as $r) {
 			$_ret = array_merge($_ret, $r->getPhysicalSubqueries());
 		}

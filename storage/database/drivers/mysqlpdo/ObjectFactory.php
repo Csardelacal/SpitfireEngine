@@ -4,16 +4,25 @@ use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
+use spitfire\storage\database\drivers\MysqlPDOCompositeRestriction;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
+use spitfire\storage\database\drivers\MysqlPDOQueryField;
+use spitfire\storage\database\drivers\MysqlPDOQueryTable;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
+use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
+use spitfire\storage\database\Query;
+use spitfire\storage\database\QueryField;
+use spitfire\storage\database\QueryTable;
+use spitfire\storage\database\RestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
+use function db;
 
 /*
  * The MIT License
@@ -140,6 +149,33 @@ class ObjectFactory implements ObjectFactoryInterface
 
 	public function makeLayout(Table $table): LayoutInterface {
 		return new Layout($table);
+	}
+
+	public function restrictionGroupInstance(RestrictionGroup $parent = null, $type = RestrictionGroup::TYPE_OR): RestrictionGroup {
+		$g = new MysqlPDORestrictionGroup($parent);
+		$g->setType($type);
+		return $g;
+	}
+	
+	
+	public function queryFieldInstance($query, $field) {
+		if ($field instanceof QueryField) {return $field; }
+		return new MysqlPDOQueryField($this, $field);
+	}
+	
+	
+	public function queryTableInstance($query, $table) {
+		if ($table instanceof Relation) { $table = $table->getTable(); }
+		if ($table instanceof QueryTable) { $table = $table->getTable(); }
+		
+		
+		if (!$table instanceof Table) { throw new PrivateException('Did not receive a table as parameter'); }
+		
+		return new MysqlPDOQueryTable($query, $table);
+	}
+
+	public function restrictionCompositeInstance(Query $query, LogicalField$field = null, $value, $operator) {	
+		return new MysqlPDOCompositeRestriction($query,	$field, $value, $operator);
 	}
 
 }

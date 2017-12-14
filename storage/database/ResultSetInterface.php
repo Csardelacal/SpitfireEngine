@@ -60,10 +60,7 @@ interface ResultSetInterface
 	 * allows your application to loop over the records instead of while-ing over
 	 * them.
 	 * 
-	 * @todo Maybe introduce a RecordCollection that also provides a set of functions 
-	 *       on the records instead of a ol' and boring array.
-	 * 
-	 * @return Model[] All the models the driver read from the database.
+	 * @return \spitfire\core\Collection All the models the driver read from the database.
 	 */
 	public function fetchAll();
 }
