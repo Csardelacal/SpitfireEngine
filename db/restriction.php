@@ -2,13 +2,13 @@
 
 use spitfire\Model;
 use spitfire\exceptions\PrivateException;
-use spitfire\model\Field;
+use spitfire\model\Field as Logical;
 
 abstract class Restriction
 {
 	/** @var Query */
 	private $query;
-	/** @var Field */
+	/** @var Logical */
 	private $field;
 	private $value;
 	private $operator;
