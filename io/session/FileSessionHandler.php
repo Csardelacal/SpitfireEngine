@@ -11,7 +11,7 @@ class FileSessionHandler extends SessionHandler
 	
 	private $handle;
 	
-	private $locked = false;
+	private $data = false;
 
 	public function __construct($directory, $timeout = null) {
 		$this->directory = $directory;
@@ -56,7 +56,7 @@ class FileSessionHandler extends SessionHandler
 		$id   = Session::sessionId(false);
 		$file = sprintf('%s/sess_%s', $this->directory, $id);
 		
-		$this->handle = fopen($file, 'r+');
+		$this->handle = fopen($file, file_exists($file)? 'r+' : 'w+');
 		flock($this->handle, LOCK_EX);
 
 		return true;
@@ -65,7 +65,8 @@ class FileSessionHandler extends SessionHandler
 	public function read($__garbage) {
 		//The system can only read the first 8MB of the session.
 		//We do hardcode to improve the performance since PHP will stop at EOF
-		return (string) fread($this->handle, 8 * 1024 * 1024); 
+		fseek($this->handle, 0);
+		return $this->data = (string) fread($this->handle, 8 * 1024 * 1024); 
 	}
 
 	public function write($__garbage, $data) {
@@ -74,6 +75,13 @@ class FileSessionHandler extends SessionHandler
 		if (isset($data[8*1024*1024])) { 
 			throw new PrivateException('Session length overflow', 171228); 
 		}
+		
+		if ($data === $this->data) {
+			return true;
+		}
+		
+		ftruncate($this->handle, 0);
+		fseek($this->handle, 0);
 		
 		return fwrite($this->handle, $data);
 	}
