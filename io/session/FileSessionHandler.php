@@ -19,8 +19,8 @@ class FileSessionHandler extends SessionHandler
 	}
 
 	public function close() {
-		flock($this->handle, LOCK_UN);
-		fclose($this->handle);
+		flock($this->getHandle(), LOCK_UN);
+		fclose($this->getHandle());
 		return true;
 	}
 
@@ -42,6 +42,21 @@ class FileSessionHandler extends SessionHandler
 
 		return true;
 	}
+	
+	public function getHandle() {
+		if ($this->handle)         { return $this->handle; }
+		if (!Session::sessionId()) { return false; }
+		
+		
+		#Initialize the session itself
+		$id   = Session::sessionId(false);
+		$file = sprintf('%s/sess_%s', $this->directory, $id);
+		
+		$this->handle = fopen($file, file_exists($file)? 'r+' : 'w+');
+		flock($this->handle, LOCK_EX);
+		
+		return $this->handle;
+	}
 
 	public function open($savePath, $sessionName) {
 		if (empty($this->directory)) { 
@@ -52,21 +67,14 @@ class FileSessionHandler extends SessionHandler
 			throw new FileNotFoundException($this->directory . 'does not exist and could not be created');
 		}
 		
-		#Initialize the session itself
-		$id   = Session::sessionId(false);
-		$file = sprintf('%s/sess_%s', $this->directory, $id);
-		
-		$this->handle = fopen($file, file_exists($file)? 'r+' : 'w+');
-		flock($this->handle, LOCK_EX);
-
 		return true;
 	}
 
 	public function read($__garbage) {
 		//The system can only read the first 8MB of the session.
 		//We do hardcode to improve the performance since PHP will stop at EOF
-		fseek($this->handle, 0);
-		return $this->data = (string) fread($this->handle, 8 * 1024 * 1024); 
+		fseek($this->getHandle(), 0);
+		return $this->data = (string) fread($this->getHandle(), 8 * 1024 * 1024); 
 	}
 
 	public function write($__garbage, $data) {
@@ -80,10 +88,10 @@ class FileSessionHandler extends SessionHandler
 			return true;
 		}
 		
-		ftruncate($this->handle, 0);
-		fseek($this->handle, 0);
+		ftruncate($this->getHandle(), 0);
+		fseek($this->getHandle(), 0);
 		
-		return fwrite($this->handle, $data);
+		fwrite($this->getHandle(), $data);
 	}
 
 }
