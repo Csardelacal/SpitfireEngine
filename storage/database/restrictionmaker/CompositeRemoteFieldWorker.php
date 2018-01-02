@@ -36,7 +36,7 @@ use spitfire\storage\database\RestrictionGroup;
  * This is the exact same as querying by a child field, only that, in this case,
  * the child was never defined on the host table.
  */
-class CompositeRemoteWorker implements WorkerInterface
+class CompositeRemoteFieldWorker implements WorkerInterface
 {
 	
 	/**

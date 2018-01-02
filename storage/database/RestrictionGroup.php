@@ -88,30 +88,16 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function where($fieldname, $value, $_ = null) {
 		$params = func_num_args();
+		$rm     = $this->getQuery()->getTable()->getDb()->getRestrictionMaker();
 		
+		/*
+		 * Depending on how the parameters are provided, where will appropriately
+		 * shuffle them to make them look correctly.
+		 */
 		if ($params === 3) { list($operator, $value) = [$value, $_]; }
 		else               { $operator = '='; }
 		
-		try {
-			#If the name of the field passed is a physical field we just use it to 
-			#get a queryField
-			$field = $fieldname instanceof QueryField? $fieldname : $this->getQuery()->getTable()->getField($fieldname);
-			$restriction = $this->getQuery()->restrictionInstance($this->getQuery()->queryFieldInstance($field), $value, $operator);
-		} 
-		catch (Exception $e) {
-			#Otherwise we create a complex restriction for a logical field.
-			$field = $this->getQuery()->getTable()->getSchema()->getField($fieldname);
-			
-			if ($fieldname instanceof Reference && $fieldname->getTarget() === $this->getQuery()->getTable()->getSchema())
-			{ $field = $fieldname; }
-			
-			#If the fieldname was not null, but the field is null - it means that the system could not find the field and is kicking back
-			if ($field === null && $fieldname!== null) { throw new PrivateException('No field ' . is_object($fieldname)? get_class($fieldname) : $fieldname, 1602231949); }
-			
-			$restriction = $this->getQuery()->compositeRestrictionInstance($field, $value, $operator);
-		}
-		
-		parent::push($restriction);
+		parent::push($rm->make($this, $fieldname, $operator, $value));
 		return $this;
 	}
 	

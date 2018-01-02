@@ -59,6 +59,12 @@ abstract class App
 		return $this->URISpace;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171129
+	 * @param type $contenttype
+	 * @return type
+	 */
 	public function getDirectory($contenttype) {
 		switch($contenttype) {
 			case ClassInfo::TYPE_CONTROLLER:

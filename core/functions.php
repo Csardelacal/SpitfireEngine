@@ -152,7 +152,7 @@ function current_context(Context$set = null) {
 }
 
 function validate($target = null) {
-	$targets  = array_filter(func_get_args());
+	$targets  = array_filter(is_array($target)? $target : func_get_args());
 	
 	if (!empty($targets) && reset($targets) instanceof ValidatorInterface) {
 		$messages = Array();
@@ -163,6 +163,8 @@ function validate($target = null) {
 		}
 		
 		if (!empty($messages)) { throw new ValidationException('Validation failed', 1604200115, $messages); }
+		
+		return $targets;
 		
 	} else {
 		$validator = new Validator();

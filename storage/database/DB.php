@@ -5,6 +5,7 @@ use spitfire\cache\MemoryCache;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\CharsetEncoder;
+use spitfire\storage\database\restrictionmaker\RestrictionMaker;
 
 /**
  * This class creates a "bridge" beetwen the classes that use it and the actual
@@ -21,6 +22,7 @@ abstract class DB
 	
 	private $tableCache;
 	private $encoder;
+	private $restrictionMaker;
 	
 	/**
 	 * Creates an instance of DBInterface. If options are set it will import
@@ -34,6 +36,7 @@ abstract class DB
 		
 		$this->tableCache = new TablePool($this);
 		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), $settings->getEncoding());
+		$this->restrictionMaker = new RestrictionMaker();
 	}
 	
 	/**
@@ -116,6 +119,14 @@ abstract class DB
 	 */
 	public function getTableCache() {
 		return $this->tableCache;
+	}
+	
+	/**
+	 * 
+	 * @return RestrictionMaker
+	 */
+	public function getRestrictionMaker() {
+		return $this->restrictionMaker;
 	}
 
 	/**

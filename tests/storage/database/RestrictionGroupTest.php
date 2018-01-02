@@ -7,8 +7,9 @@ use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDOQueryField;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
-use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\Schema;
+use spitfire\storage\database\Table;
+use function db;
 
 class RestrictionGroupTest extends TestCase
 {
@@ -18,7 +19,7 @@ class RestrictionGroupTest extends TestCase
 	 */
 	public function testClone() {
 		
-		$table = new MysqlPDOTable(db(), new Schema('test'));
+		$table = new Table(db(), new Schema('test'));
 		$query = new MysqlPDOQuery($table);
 		$field = new mysqlPDOField(new IntegerField(), 'test');
 		$queryfield = new MysqlPDOQueryField($query, $field);

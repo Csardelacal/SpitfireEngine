@@ -52,7 +52,7 @@ class CompositeWorker implements WorkerInterface
 			return false; 
 		}
 
-		return $parent->getQuery()->compositeRestrictionInstance($field, $value, $operator);
+		return $parent->getQuery()->compositeRestrictionInstance($logical, $value, $operator);
 	}
 
 }

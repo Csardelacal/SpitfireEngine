@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\model\Field;
+use spitfire\model\Field as Logical;
 use spitfire\Model;
 
 class CompositeRestriction
@@ -10,7 +10,7 @@ class CompositeRestriction
 	private $value;
 	private $operator;
 	
-	public function __construct(RestrictionGroup$parent, Field$field = null, $value = null, $operator = Restriction::EQUAL_OPERATOR) {
+	public function __construct(RestrictionGroup$parent, Logical$field = null, $value = null, $operator = Restriction::EQUAL_OPERATOR) {
 		
 		if ($value instanceof Model) { $value = $value->getQuery(); }
 		if ($value instanceof Query) { $value->setAliased(true); }
@@ -49,7 +49,7 @@ class CompositeRestriction
 		return $this->field;
 	}
 
-	public function setField(Field$field) {
+	public function setField(Logical$field) {
 		$this->field = $field;
 	}
 

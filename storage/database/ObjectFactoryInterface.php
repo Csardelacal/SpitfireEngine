@@ -105,14 +105,14 @@ interface ObjectFactoryInterface
 	 * retrieve data.
 	 * 
 	 * @param string      $query
-	 * @param Field     $field
+	 * @param QueryField  $field
 	 * @param mixed       $value
 	 * @param string|null $operator
 	 * 
 	 * @return Restriction|CompositeRestriction
 	 * @todo Rename to makeRestriction
 	 */
-	function restrictionInstance($query, Field$field, $value, $operator = null);
+	function restrictionInstance($query, QueryField$field, $value, $operator = null);
 	
 	/**
 	 * 

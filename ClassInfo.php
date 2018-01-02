@@ -29,6 +29,7 @@ class ClassInfo
 	 * This allows applications to either handle errors with includes without issue
 	 * or to ignore the potential error situation that could arise.
 	 * 
+	 * @todo Refactor into a new location
 	 * @param string $file
 	 * @return boolean|mixed
 	 */
