@@ -112,7 +112,7 @@ class Layout implements LayoutInterface
 		$clean = array_filter($definitions);
 		
 		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
-			$table->getLayout(),
+			$table,
 			implode(', ', $clean)
 			);
 		
