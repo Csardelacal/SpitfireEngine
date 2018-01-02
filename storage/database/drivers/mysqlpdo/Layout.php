@@ -2,7 +2,7 @@
 
 use Reference;
 use spitfire\cache\MemoryCache;
-use spitfire\core\Environment;
+use spitfire\core\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Index as LogicalIndex;
 use spitfire\storage\database\Field;
@@ -83,7 +83,7 @@ class Layout implements LayoutInterface
 		$this->table = $table;
 		
 		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
-		$this->tablename = Environment::get('db_table_prefix') . $table->getSchema()->getTableName();
+		$this->tablename = $this->table->getDb()->getSettings()->getPrefix() . $table->getSchema()->getTableName();
 		
 		#Create the physical fields
 		$fields  = $this->table->getSchema()->getFields();
