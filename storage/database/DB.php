@@ -16,11 +16,9 @@ use spitfire\storage\database\restrictionmaker\RestrictionMaker;
 abstract class DB 
 {
 	
-	const MYSQL_PDO_DRIVER = 'mysqlPDO';
-	
 	private $settings;
 	
-	private $tableCache;
+	private $tables;
 	private $encoder;
 	private $restrictionMaker;
 	
@@ -28,14 +26,12 @@ abstract class DB
 	 * Creates an instance of DBInterface. If options are set it will import
 	 * them. Otherwise it will try to read them from the current environment.
 	 * 
-	 * @param Settings $settings Name of the database driver to be used. You can
-	 *                       choose one of the DBInterface::DRIVER_? consts.
+	 * @param Settings $settings Parameters passed to the database
 	 */
 	public function __construct(Settings$settings) {
-		$this->settings   = $settings;
-		
-		$this->tableCache = new TablePool($this);
-		$this->encoder    = new CharsetEncoder(Environment::get('system_encoding'), $settings->getEncoding());
+		$this->settings = $settings;
+		$this->tables   = new TablePool($this);
+		$this->encoder  = new CharsetEncoder(Environment::get('system_encoding'), $settings->getEncoding());
 		$this->restrictionMaker = new RestrictionMaker();
 	}
 	
@@ -76,7 +72,7 @@ abstract class DB
 	 * were imported.
 	 */
 	public function repair() {
-		$tables = $this->tableCache->getCache()->getAll();
+		$tables = $this->tables->getCache()->getAll();
 		foreach ($tables as $table) {
 			$table->getLayout()->repair();
 		}
@@ -98,7 +94,7 @@ abstract class DB
 		
 		#If the parameter is a Model, we get it's name
 		if ($tablename instanceof Schema) {
-			return $this->tableCache->set($tablename->getName(), new Table($this, $tablename));
+			return $this->tables->set($tablename->getName(), new Table($this, $tablename));
 		}
 		
 		#We just tested if it's a Schema, let's see if it's a string
@@ -107,7 +103,7 @@ abstract class DB
 		}
 		
 		#Check if the table can be found in the table cache
-		return $this->tableCache->get(strtolower($tablename));
+		return $this->tables->get(strtolower($tablename));
 	}
 	
 	/**
@@ -115,10 +111,10 @@ abstract class DB
 	 * it's own core) to check whether a table is already cached or inject it's 
 	 * own tables.
 	 * 
-	 * @return MemoryCache
+	 * @return TablePool
 	 */
 	public function getTableCache() {
-		return $this->tableCache;
+		return $this->tables;
 	}
 	
 	/**
