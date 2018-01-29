@@ -155,7 +155,7 @@ class MysqlPDOQuery extends Query
 	 * @deprecated since version 0.1-dev 20171110
 	 */
 	public function compositeRestrictionInstance(Field $field = null, $value, $operator) {
-		return new MysqlPDOCompositeRestriction($this, $field, $value, $operator);
+		return new mysqlpdo\CompositeRestriction($this, $field, $value, $operator);
 	}
 
 	public function delete() {

@@ -1,11 +1,11 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use spitfire\exceptions\PrivateException;
-use spitfire\storage\database\CompositeRestriction;
+use spitfire\storage\database\CompositeRestriction as ParentClass;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\RestrictionGroup;
 
-class CompositeRestriction extends CompositeRestriction
+class CompositeRestriction extends ParentClass
 {
 	
 	public function __toString() {

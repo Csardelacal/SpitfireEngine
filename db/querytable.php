@@ -73,6 +73,11 @@ abstract class QueryTable
 				$this->table->getTablename();
 	}
 	
+	public function getField($name) {
+		$of = $this->table->getDb()->getObjectFactory();
+		return $of->queryFieldInstance($this->query, $this->table->getField($name));
+	}
+	
 	/**
 	 * 
 	 * @return \spitfire\storage\database\Table
