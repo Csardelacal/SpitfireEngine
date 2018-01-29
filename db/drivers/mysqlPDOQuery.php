@@ -127,6 +127,8 @@ class MysqlPDOQuery extends Query
 	 * @return \spitfire\storage\database\drivers\MysqlPDOQueryField|QueryField
 	 */
 	public function queryFieldInstance($field) {
+		trigger_error('Deprecated: mysqlPDOQuery::queryFieldInstance is deprecated', E_USER_DEPRECATED);
+		
 		if ($field instanceof QueryField) {return $field; }
 		return new MysqlPDOQueryField($this, $field);
 	}

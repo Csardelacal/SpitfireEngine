@@ -125,11 +125,12 @@ class Reference extends Field
 	}
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTarget()->getTable());
+		$of    = $this->getTable()->getDb()->getObjectFactory();
+		$query = $of->queryInstance($this->getTarget()->getTable());
 		$query->setAliased(true);
 		
 		foreach ($this->getPhysical() as $field) {
-			$query->addRestriction($parent->queryFieldInstance($field), $query->queryFieldInstance($field->getReferencedField()));
+			$query->addRestriction($of->queryFieldInstance($parent, $field), $of->queryFieldInstance($query, $field->getReferencedField()));
 		}
 		
 		return Array($query);

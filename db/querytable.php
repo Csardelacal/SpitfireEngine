@@ -69,7 +69,7 @@ abstract class QueryTable
 	
 	public function getAlias() {
 		return $this->aliased? 
-				sprintf('%s_%s', $this->table->getTablename(), $this->id) : 
+				sprintf('%s_%s', $this->table->getLayout()->getTablename(), $this->id) : 
 				$this->table->getTablename();
 	}
 	
