@@ -124,17 +124,6 @@ class Table
 	}
 	
 	/**
-	 * Returns the name of the table that is being used. The table name
-	 * includes the database's prefix.
-	 *
-	 * @return string 
-	 */
-	public function getTablename() {
-		trigger_error('Deprecated function Table::getTablename() called', E_USER_DEPRECATED);
-		return $this->layout->getTableName();
-	}
-	
-	/**
 	 * Returns the database the table belongs to.
 	 * @return DB
 	 */

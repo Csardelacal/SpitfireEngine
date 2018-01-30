@@ -68,9 +68,13 @@ abstract class QueryTable
 	}
 	
 	public function getAlias() {
-		return $this->aliased? 
-				sprintf('%s_%s', $this->table->getLayout()->getTablename(), $this->id) : 
-				$this->table->getTablename();
+		/*
+		 * Get the name for the table. We use it to provide a consistent naming
+		 * system that makes it easier for debugging.
+		 */
+		$name = $this->table->getLayout()->getTablename();
+		
+		return $this->aliased? sprintf('%s_%s', $name, $this->id) : $name;
 	}
 	
 	public function getField($name) {
