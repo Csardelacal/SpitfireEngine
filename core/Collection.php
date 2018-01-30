@@ -11,12 +11,6 @@ use spitfire\exceptions\OutOfRangeException;
  */
 class Collection implements ArrayAccess, CollectionInterface
 {
-	
-	/**
-	 * The elements that this collection maintains.
-	 * 
-	 * @var mixed
-	 */
 	private $items;
 	
 	/**
@@ -27,7 +21,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	 */
 	public function __construct($e = null) {
 		if ($e === null)                  {	$this->items = []; }
-		elseif ($e instanceof Relation)   { $this->items = $e->toArray(); }
+		elseif ($e instanceof Collection) { $this->items = $e->toArray(); }
 		elseif (is_array($e))             { $this->items = $e; }
 		else                              { $this->items = [$e]; }
 	}
@@ -65,14 +59,6 @@ class Collection implements ArrayAccess, CollectionInterface
 		return array_reduce($this->items, $callback, $initial);
 	}
 	
-	public function has($idx) {
-		return isset($this->items[$idx]);
-	}
-	
-	public function contains($e) {
-		return array_search($e, $this->items);
-	}
-	
 	/**
 	 * This function checks whether a collection contains only elements with a 
 	 * given type. This function also accepts base types.
@@ -108,6 +94,14 @@ class Collection implements ArrayAccess, CollectionInterface
 		return empty($this->items);
 	}
 	
+	public function has($idx) {
+		return isset($this->items[$idx]);
+	}
+	
+	public function contains($e) {
+		return array_search($e, $this->items);
+	}
+	
 	/**
 	 * Filters the collection using a callback. This allows a collection to shed
 	 * values that are not useful to the programmer.
@@ -136,16 +130,6 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	/**
-	 * Combines the elements in the collection to a string separated by the glue
-	 * parameter.
-	 * 
-	 * @param string $glue
-	 */
-	public function join($glue = '') {
-		return implode($glue, $this->items);
-	}
-	
-	/**
 	 * Adds up the elements in the collection. Please note that this method will
 	 * double check to see if all the provided elements are actually numeric and
 	 * can be added together.
@@ -168,6 +152,10 @@ class Collection implements ArrayAccess, CollectionInterface
 	 */
 	public function avg() {
 		return $this->sum() / $this->count();
+	}
+	
+	public function join($glue) {
+		return implode($glue, $this->items);
 	}
 	
 	/**
@@ -194,7 +182,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function add($elements) {
-		$this->items = array_merge($this->items, $elements);
+		$this->items+= $elements;
 		return $this;
 	}
 	
@@ -242,6 +230,11 @@ class Collection implements ArrayAccess, CollectionInterface
 	
 	public function rewind() {
 		return reset($this->items);
+	}
+	
+	public function last() {
+		if (!isset($this->items)) { throw new \spitfire\exceptions\PrivateException('Collection error', 1709042046); }
+		return end($this->items);
 	}
 	
 	public function pluck() {
