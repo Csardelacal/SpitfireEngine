@@ -74,56 +74,6 @@ class CompositeRestriction
 		$this->operator = $operator;
 	}
 	
-	/**
-	 * This method handles NULL scenarios.
-	 * 
-	 * This method simplifies complex restrictions when null values are involved.
-	 * Usually, when querying you will define an equivalence between two values and
-	 * launch the query. This method is called when that involves null.
-	 * 
-	 * You can either have a null value, which will force the database to check that
-	 * the physical fields composing your logical field are null.
-	 * 
-	 * Or you can have a null field. Which will force the database to check that 
-	 * one of the fields that this table has equals to the value you specified.
-	 * 
-	 * Please note that the usage of this function for other scenarios has been
-	 * deprecated since 11/2014
-	 * 
-	 * 
-	 * @deprecated since version 0.1-dev 20171115
-	 * @return type
-	 */
-	public function getSimpleRestrictions() {
-		
-		trigger_error('CompositeRestriction::getSimpleRestrictions() is deprecated', E_USER_DEPRECATED);
-		
-		if ($this->field === null) {
-			$table = $this->getQuery()->getTable();
-			$fields = $table->getFields();
-			$restrictions = $this->getQuery()->restrictionGroupInstance();
-			
-			foreach ($fields as $field) {
-				if (!$field->getLogicalField() instanceof \Reference) {
-					$restrictions->addRestriction($field, $this->getValue(), $this->operator);
-				}
-			}
-			return Array($restrictions);
-		}
-		
-		if ($this->value === null) {
-			$restrictions = Array();
-			foreach ($fields = $this->getField()->getPhysical() as $field) {
-				$f = $this->getQuery()->queryFieldInstance($field);
-				$v = null;
-				$r = $this->getQuery()->restrictionInstance($f, $v, $this->operator);
-				$restrictions[] = $r;
-			}
-			return $restrictions;
-		}
-	}
-	
-	
 	public function getPhysicalSubqueries() {
 		if ($this->field === null || $this->value === null) { return Array(); }
 		
