@@ -1,4 +1,8 @@
-<?php namespace spitfire\validation;
+<?php namespace spitfire\validation\rules;
+
+use spitfire\validation\ValidationError;
+use spitfire\validation\ValidationRule;
+use spitfire\validation\ValidatorInterface;
 
 /**
  * Validation groups allow an application to use several different criteria to 
@@ -10,7 +14,7 @@
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class ValidationGroupRule implements ValidationRule
+class ValidationRuleGroup implements ValidationRule
 {
 	/**
 	 * The AND type implies that one failed validation will cause the entire group's
@@ -66,7 +70,7 @@ class ValidationGroupRule implements ValidationRule
 	 * nesting groups is heavily discouraged.
 	 * 
 	 * @param ValidationRule $rule
-	 * @return ValidationGroupRule
+	 * @return ValidationRuleGroup
 	 */
 	public function addRule(ValidationRule $rule) {
 		$this->rules[] = $rule;
@@ -78,7 +82,7 @@ class ValidationGroupRule implements ValidationRule
 	 * you wish to achieve in the validation rule.
 	 * 
 	 * @param string $type
-	 * @return ValidationGroupRule
+	 * @return ValidationRuleGroup
 	 */
 	public function setType($type) {
 		$this->type = $type;
