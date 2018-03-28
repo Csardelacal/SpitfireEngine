@@ -11,18 +11,17 @@ use spitfire\storage\database\drivers\MysqlPDOQueryField;
 use spitfire\storage\database\drivers\MysqlPDOQueryTable;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
-use spitfire\storage\database\drivers\MysqlPDOTable;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\QueryField;
 use spitfire\storage\database\QueryTable;
+use spitfire\storage\database\Relation as RelationAbstract;
 use spitfire\storage\database\RestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
-use function db;
 
 /*
  * The MIT License
@@ -74,33 +73,20 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @param string $modelname
 	 * @return Table
 	 */
-	public function getOTFSchema($modelname) {
+	public function getOTFSchema(DB$db, $modelname) {
 		#Create a Schema we can feed the data into.
 		$schema  = new Schema($modelname);
 		
 		#Make the SQL required to read in the data
 		$sql    = sprintf('DESCRIBE `%s%s`', $schema->getTableName(), $modelname);
 		/** @var $fields Query */
-		$fields = db()->execute($sql, false);
+		$fields = $db->execute($sql, false);
 		
 		while ($row = $fields->fetch()) { 
 			$schema->{$row['Field']} = new TextField(); 
 		}
 		
-		return $schema->getTable();
-	}
-	
-	/**
-	 * Creates a new driver specific table. The table is in charge of providing 
-	 * the necessary tools for records to be updated, inserted, deleted, etc.
-	 * 
-	 * @param DB $db
-	 * @param string $tablename
-	 * @deprecated since version 0.1-dev 20170807
-	 * @return MysqlPDOTable
-	 */
-	public function getTableInstance(DB $db, $tablename) {
-		return new MysqlPDOTable($db, $tablename);
+		return new Table($db, $schema);
 	}
 	
 	/**
@@ -133,7 +119,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @throws PrivateException
 	 */
 	public function queryInstance($table) {
-		if ($table instanceof Relation){ $table = $table->getTable(); }
+		if ($table instanceof RelationAbstract){ $table = $table->getTable(); }
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
 		return new MysqlPDOQuery($table);

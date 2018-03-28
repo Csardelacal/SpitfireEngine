@@ -68,10 +68,10 @@ class TablePool
 		$this->tableLocators = [
 			 new CacheLocator($this->cache),
 			 new NameLocator($db),
-			 new TypoCacheLocator($this->cache, function ($e) { Strings::singular($e); }),
-			 new TypoCacheLocator($this->cache, function ($e) { Strings::plural($e); }),
-			 new TypoLocator($db, function ($e) { Strings::singular($e); }),
-			 new TypoLocator($db, function ($e) { Strings::plural($e); }),
+			 new TypoCacheLocator($this->cache, function ($e) { return Strings::singular($e); }),
+			 new TypoCacheLocator($this->cache, function ($e) { return Strings::plural($e); }),
+			 new TypoLocator($db, function ($e) { return Strings::singular($e); }),
+			 new TypoLocator($db, function ($e) { return Strings::plural($e); }),
 			 new OTFTableLocator($db)
 		];
 	}

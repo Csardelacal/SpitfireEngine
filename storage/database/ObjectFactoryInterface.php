@@ -41,19 +41,6 @@ interface ObjectFactoryInterface
 {
 	
 	/**
-	 * Returns an instance of the class the child tables of this class have
-	 * this is used to create them when requested by the table() method.
-	 * 
-	 * @deprecated since version 0.1-dev 20170801
-	 *
-	 * @param DB     $db
-	 * @param string $tablename
-	 * 
-	 * @return Table Instance of the table class the driver wants the system to use
-	 */
-	function getTableInstance(DB$db, $tablename);
-	
-	/**
 	 * Creates a relation. These wrap the typical record operations on a table 
 	 * into a separate layer.
 	 * 
@@ -83,7 +70,7 @@ interface ObjectFactoryInterface
 	 * @return Table Instance of the table class the driver wants the system to use
 	 * @todo Rename to generateSchema
 	 */
-	function getOTFSchema($modelname);
+	function getOTFSchema(DB$db, $modelname);
 	
 	/**
 	 * Creates an instance of the Database field compatible with the current
