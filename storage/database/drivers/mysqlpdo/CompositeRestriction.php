@@ -32,7 +32,7 @@ class CompositeRestriction extends ParentClass
 		 * before being returned.
 		 */
 		foreach($fields as $field) {
-			$_ret[] = sprintf('%s IS NOT NULL', $of->queryFieldInstance($this->getValue(), $field));
+			$_ret[] = sprintf('%s IS NOT NULL', $of->queryFieldInstance($this->getValue()->getQueryTable(), $field));
 		}
 
 		/**

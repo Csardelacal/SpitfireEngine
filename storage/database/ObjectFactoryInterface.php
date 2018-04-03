@@ -138,20 +138,19 @@ interface ObjectFactoryInterface
 	 * These objects connect a field with a query, providing an aliased name for 
 	 * the field when necessary.
 	 * 
-	 * @param Query      $query
-	 * @param QueryField $field
+	 * @param QueryTable $queryTable
+	 * @param Field      $field
 	 * @return QueryField
 	 */
-	function queryFieldInstance($query, $field);
+	function queryFieldInstance(QueryTable$queryTable, $field);
 	
 	
 	/**
 	 * These objects connect a field with a query, providing an aliased name for 
 	 * the field when necessary.
 	 * 
-	 * @param Query            $query
 	 * @param QueryTable|Table $table
 	 * @return QueryTable
 	 */
-	function queryTableInstance($query, $table);
+	function queryTableInstance($table);
 }

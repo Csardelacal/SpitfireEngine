@@ -130,7 +130,7 @@ class Reference extends Field
 		$query->setAliased(true);
 		
 		foreach ($this->getPhysical() as $field) {
-			$query->addRestriction($of->queryFieldInstance($parent, $field), $of->queryFieldInstance($query, $field->getReferencedField()));
+			$query->addRestriction($of->queryFieldInstance($parent->getQueryTable(), $field), $of->queryFieldInstance($query->getQueryTable(), $field->getReferencedField()));
 		}
 		
 		return Array($query);

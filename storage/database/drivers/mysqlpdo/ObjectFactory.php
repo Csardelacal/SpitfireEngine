@@ -7,16 +7,14 @@ use spitfire\storage\database\DB;
 use spitfire\storage\database\drivers\MysqlPDOCompositeRestriction;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
-use spitfire\storage\database\drivers\MysqlPDOQueryField;
-use spitfire\storage\database\drivers\MysqlPDOQueryTable;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
 use spitfire\storage\database\Query;
-use spitfire\storage\database\QueryField;
-use spitfire\storage\database\QueryTable;
+use spitfire\storage\database\QueryField as AbstractQueryField;
+use spitfire\storage\database\QueryTable as AbstractQueryTable;
 use spitfire\storage\database\Relation as RelationAbstract;
 use spitfire\storage\database\RestrictionGroup;
 use spitfire\storage\database\Schema;
@@ -106,7 +104,7 @@ class ObjectFactory implements ObjectFactoryInterface
 		return new mysqlPDOField($field, $name, $references);
 	}
 
-	public function restrictionInstance($query, QueryField$field, $value, $operator = null) {
+	public function restrictionInstance($query, AbstractQueryField$field, $value, $operator = null) {
 		return new MysqlPDORestriction($query,	$field, $value, $operator);
 	}
 
@@ -144,20 +142,20 @@ class ObjectFactory implements ObjectFactoryInterface
 	}
 	
 	
-	public function queryFieldInstance($query, $field) {
-		if ($field instanceof QueryField) {return $field; }
-		return new MysqlPDOQueryField($query, $field);
+	public function queryFieldInstance(AbstractQueryTable$queryTable, $field) {
+		if ($field instanceof AbstractQueryField) {return $field; }
+		return new QueryField($queryTable, $field);
 	}
 	
 	
-	public function queryTableInstance($query, $table) {
+	public function queryTableInstance($table) {
 		if ($table instanceof Relation) { $table = $table->getTable(); }
-		if ($table instanceof QueryTable) { $table = $table->getTable(); }
+		if ($table instanceof AbstractQueryTable) { $table = $table->getTable(); }
 		
 		
 		if (!$table instanceof Table) { throw new PrivateException('Did not receive a table as parameter'); }
 		
-		return new MysqlPDOQueryTable($query, $table);
+		return new QueryTable($table);
 	}
 
 	public function restrictionCompositeInstance(Query $query, LogicalField$field = null, $value, $operator) {	

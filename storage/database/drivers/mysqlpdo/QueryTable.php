@@ -1,8 +1,8 @@
-<?php namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\storage\database\QueryTable;
+use spitfire\storage\database\QueryTable as ParentClass;
 
-class MysqlPDOQueryTable extends QueryTable
+class QueryTable extends ParentClass
 {
 	/**
 	 * 

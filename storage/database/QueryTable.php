@@ -31,24 +31,11 @@ abstract class QueryTable
 	private $id;
 	private $aliased = false;
 	
-	public function __construct(Query$query, Table$table) {
+	public function __construct(Table$table) {
 		#In case this table is aliased, the unique alias will be generated using this.
 		$this->id = self::$counter++;
 		
-		$this->query = $query;
 		$this->table = $table;
-	}
-	
-	/**
-	 * 
-	 * @return \spitfire\storage\database\Query
-	 */
-	public function getQuery() {
-		return $this->query;
-	}
-	
-	public function setQuery($query) {
-		$this->query = $query;
 	}
 	
 	public function getId() {
@@ -79,7 +66,7 @@ abstract class QueryTable
 	
 	public function getField($name) {
 		$of = $this->table->getDb()->getObjectFactory();
-		return $of->queryFieldInstance($this->query, $this->table->getField($name));
+		return $of->queryFieldInstance($this, $this->table->getField($name));
 	}
 	
 	/**

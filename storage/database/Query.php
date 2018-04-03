@@ -45,7 +45,7 @@ abstract class Query extends RestrictionGroup
 
 	/** @param Table $table */
 	public function __construct($table) {
-		$this->table = $this->queryTableInstance($table);
+		$this->table = $table->getDb()->getObjectFactory()->queryTableInstance($table);
 		
 		#Initialize the parent
 		parent::__construct(null, Array());
