@@ -44,21 +44,25 @@ abstract class QueryField
 	public function getField() {
 		return $this->field;
 	}
-
-	/**
-	 * @return bool
-	 */
-	public function isLogical() {
-		return $this->field instanceof Logical;
-	}
 	
 	public function getPhysical() {
-		if ($this->isLogical()) {
+		/*
+		 * Get the object factory for the current DB connection. It is then used 
+		 * to create physical copies of logical fields.
+		 */
+		$of = $this->table->getTable()->getDb()->getObjectFactory();
+		
+		if ($this->field instanceof Logical) {
 			$fields = $this->field->getPhysical();
-			foreach ($fields as &$field) $field = $this->query->queryFieldInstance($field);
-			unset($field);
+			
+			foreach ($fields as &$field) {
+				$field = $of->queryFieldInstance($this->table, $field);
+			}
+			
 			return $fields;
 		}
+		
+		return [$of->queryFieldInstance($this->table, $this->field)];
 	}
 	
 	abstract public function __toString();

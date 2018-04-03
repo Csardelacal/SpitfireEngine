@@ -90,7 +90,7 @@ class Reference extends Field
 	 * @return Field[]
 	 */
 	public function makePhysical() {
-		$fields   = $this->getTarget()->getPrimary();
+		$fields   = $this->getTarget()->getPrimary()->getFields()->toArray();
 		$physical = Array();
 		$_return  = Array();
 		
