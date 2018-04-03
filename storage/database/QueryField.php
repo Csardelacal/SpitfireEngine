@@ -29,36 +29,9 @@ abstract class QueryField
 	 */
 	private $table;
 	
-	/** 
-	 * To be replaced with the QueryTable object that can be considered "parent"
-	 * and provides proper aliasing for this object, therefore removing the need
-	 * to maintain a connection with the query.
-	 * 
-	 * @deprecated since version 0.1-dev 20180403
-	 * @var Query 
-	 */
-	private $query;
-	
 	public function __construct(QueryTable$table, $field) {
 		$this->table = $table;
 		$this->field = $field;
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20180403
-	 * @param type $query
-	 */
-	public function setQuery($query) {
-		$this->query = $query;
-	}
-
-	/**
-	 * @deprecated since version 0.1-dev 20180403
-	 * @return Query
-	 */
-	public function getQuery() {
-		return $this->query;
 	}
 	
 	public function getQueryTable() {

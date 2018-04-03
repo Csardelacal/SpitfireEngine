@@ -51,7 +51,7 @@ class MysqlPDORestriction extends Restriction
 					return "{$this->getField()} {$this->getOperator()} ({$quoted})";
 				}
 				
-				elseif ($value instanceof MysqlPDOQueryField) {
+				elseif ($value instanceof mysqlpdo\QueryField) {
 					return "{$this->getField()} {$this->getOperator()} {$this->getValue()}";
 				}
 

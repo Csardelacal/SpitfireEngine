@@ -64,7 +64,7 @@ class ValueNulledWorker implements WorkerInterface
 		 * Create the appropriate restrictions for this.
 		 */
 		foreach ($physical as $f) {
-			$restr->add([$of->restrictionInstance($restr, $of->queryFieldInstance($parent->getQuery(), $f), $value, $operator)]);
+			$restr->add([$of->restrictionInstance($restr, $of->queryFieldInstance($parent->getQuery()->getQueryTable(), $f), $value, $operator)]);
 		}
 		
 		return $restr;
