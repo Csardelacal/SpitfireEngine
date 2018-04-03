@@ -138,6 +138,8 @@ interface ObjectFactoryInterface
 	 * These objects connect a field with a query, providing an aliased name for 
 	 * the field when necessary.
 	 * 
+	 * @todo The second parameter should only accept physical and not logical fields
+	 * 
 	 * @param QueryTable       $queryTable
 	 * @param Field|QueryField $field
 	 * @return QueryField

@@ -34,25 +34,48 @@ abstract class QueryField
 		$this->field = $field;
 	}
 	
-	public function getQueryTable() {
+	/**
+	 * Returns the parent Table for this field. 
+	 * 
+	 * @return QueryTable
+	 */
+	public function getQueryTable() : QueryTable {
 		return $this->table;
 	}
 
 	/**
-	 * @return Logical
+	 * Returns the source field for this object.
+	 * 
+	 * @return Logical|Field
 	 */
 	public function getField() {
 		return $this->field;
 	}
 	
-	public function getPhysical() {
+	/**
+	 * 
+	 * 
+	 * @return bool
+	 */
+	public function isLogical() : bool {
+		return $this->field instanceof Logical;
+	}
+	
+	/**
+	 * Returns an array of fields that compose the physical components of the 
+	 * field. This method automatically converts the fields to QueryField so they
+	 * can be used again.
+	 * 
+	 * @return Field[]
+	 */
+	public function getPhysical() : array {
 		/*
 		 * Get the object factory for the current DB connection. It is then used 
 		 * to create physical copies of logical fields.
 		 */
 		$of = $this->table->getTable()->getDb()->getObjectFactory();
 		
-		if ($this->field instanceof Logical) {
+		if ($this->isLogical()) {
 			$fields = $this->field->getPhysical();
 			
 			foreach ($fields as &$field) {
@@ -65,5 +88,17 @@ abstract class QueryField
 		return [$of->queryFieldInstance($this->table, $this->field)];
 	}
 	
+	/**
+	 * Many drivers use this objects to generate "object identifiers", strings that
+	 * indicate what field in which table is being adressed. So we're forcing driver
+	 * vendors to implement the __toString method to achieve the most consistent
+	 * result possible.
+	 * 
+	 * This may not be the case for your driver. In this event, just return a string
+	 * that may be used for debugging and create an additional method for your
+	 * driver.
+	 * 
+	 * @return string
+	 */
 	abstract public function __toString();
 }
