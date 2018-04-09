@@ -75,13 +75,53 @@ class CompositeRestriction
 	}
 	
 	public function getPhysicalSubqueries() {
-		if ($this->field === null || $this->value === null) { return Array(); }
-		
 		$field     = $this->getField();
+		$value     = $this->getValue();
+		$of        = $this->getQuery()->getTable()->getDb()->getObjectFactory();
 		$connector = $field->getConnectorQueries($this->getQuery());
-		$last      = end($connector);
 		
+		if ($field === null || $value === null) {
+			throw new PrivateException('Deprecated: Composite restrictions do not receive null parameters', 2801191504);
+		} 
+
+		/**
+		 * 
+		 * @var MysqlPDOQuery The query
+		 */
+		$group = $of->restrictionGroupInstance($this->getQuery(), RestrictionGroup::TYPE_AND);
+
+		/**
+		 * The system needs to create a copy of the subordinated restrictions 
+		 * to be able to syntax a proper SQL query.
+		 * 
+		 * @todo Refactor this to look proper
+		 */
+		foreach ($value as $r) {
+			if ($r instanceof RestrictionGroup) { 
+				$c = clone $r; 
+				$c->filterCompositeRestrictions();
+				$c->filterEmptyGroups();
+				
+				$c->isEmpty() || $group->push($c);
+			}
+			elseif ($r instanceof CompositeRestriction) {
+				//Do nothign
+			}
+			else {
+				$group->push($r);
+			}
+		}
+		
+		$last      = end($connector);
 		$last->setId($this->getValue()->getId());
+		
+		/*
+		 * Once we looped over the sub restrictions, we can determine whether the
+		 * additional group is actually necessary. If it is, we add it to the output
+		 */
+		if (!$group->isEmpty()) {
+			$last->push($group);
+		}
 		
 		/*
 		 * Since layered composite restrictions cannot be handled in the same way

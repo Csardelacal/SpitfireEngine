@@ -50,9 +50,13 @@ class CompositeRestriction extends ParentClass
 		foreach ($value as $r) {
 			if ($r instanceof RestrictionGroup) { 
 				$c = clone $r; 
+				$c->filterSimpleRestrictions();
 				$c->filterEmptyGroups();
 				
 				$c->isEmpty() || $group->push($c);
+			}
+			elseif (!$r instanceof CompositeRestriction) {
+				//Do nothing, ignore the restriction
 			}
 			else {
 				$group->push($r);

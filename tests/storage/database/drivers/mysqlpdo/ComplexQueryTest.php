@@ -80,6 +80,7 @@ class ComplexQueryTest extends TestCase
 	
 	public function tearDown() {
 		$this->db->destroy();
+		var_dump(spitfire()->getMessages());
 	}
 	
 	public function testQuery() {
