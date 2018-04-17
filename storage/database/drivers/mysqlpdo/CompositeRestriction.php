@@ -32,7 +32,7 @@ class CompositeRestriction extends ParentClass
 		 * before being returned.
 		 */
 		foreach($fields as $field) {
-			$_ret[] = sprintf('%s IS NOT NULL', $of->queryFieldInstance($this->getValue()->getQueryTable(), $field));
+			$_ret[] = sprintf($this->getOperator() === '='? '%s IS NOT NULL' : '%s IS NULL', $of->queryFieldInstance($this->getValue()->getQueryTable(), $field));
 		}
 
 		/**
@@ -59,7 +59,8 @@ class CompositeRestriction extends ParentClass
 				//Do nothing, ignore the restriction
 			}
 			else {
-				$group->push($r);
+				$r = clone $r;
+				$group->push($r->setParent($group));
 			}
 		}
 		
@@ -75,7 +76,7 @@ class CompositeRestriction extends ParentClass
 		 * Check the operator and return the appropriate SQL for the driver to run
 		 * the query.
 		 */
-		return sprintf($this->getOperator() === '='? '(%s)' : 'NOT(%s)', implode(' AND ', $_ret));
+		return sprintf('(%s)', implode(' AND ', $_ret));
 	}
 	
 }

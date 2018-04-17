@@ -14,6 +14,11 @@ class QueryTable extends ParentClass
 	}
 
 	public function definition() {
-		return "{$this->getTable()->getLayout()} AS `{$this->getAlias()}`";
+		if ($this->isAliased()) {
+			return "{$this->getTable()->getLayout()} AS `{$this->getAlias()}`";
+		}
+		else {
+			return "{$this->getTable()->getLayout()}";
+		}
 	}
 }

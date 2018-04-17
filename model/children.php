@@ -133,10 +133,11 @@ class ChildrenField extends Field
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
 		$query = $this->getTarget()->getTable()->getCollection()->getAll();
+		$of    = $this->getTarget()->getTable()->getDb()->getObjectFactory();
 		$query->setAliased(true);
 		
 		foreach ($this->getReferencedField()->getPhysical() as $p) {
-			$query->addRestriction($parent->queryFieldInstance($p->getReferencedField()), $query->queryFieldInstance($p));
+			$query->addRestriction($of->queryFieldInstance($parent->getQueryTable(), $p->getReferencedField()), $of->queryFieldInstance($query->getQueryTable(), $p));
 		}
 		
 		return Array($query);

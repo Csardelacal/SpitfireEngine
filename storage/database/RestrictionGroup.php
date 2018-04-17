@@ -1,8 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-use Exception;
 use InvalidArgumentException;
-use Reference;
 use spitfire\core\Collection;
 use spitfire\exceptions\PrivateException;
 
@@ -21,6 +19,7 @@ abstract class RestrictionGroup extends Collection
 	
 	private $parent;
 	private $type = self::TYPE_OR;
+	private $negated = false;
 	
 	public function __construct(RestrictionGroup$parent = null, $restrictions = Array() ) {
 		$this->parent = $parent;
@@ -116,7 +115,7 @@ abstract class RestrictionGroup extends Collection
 		foreach($restrictions as $r) {
 			$copy = clone $r;
 			$copy->setParent($this);
-			$this->putRestriction($copy);
+			$this->push($copy);
 		}
 	}
 	
@@ -201,14 +200,13 @@ abstract class RestrictionGroup extends Collection
 	
 	public function setQuery(Query$query) {
 		$this->parent = $query;
-		
-		foreach ($this->restrictions as $restriction) { $restriction->setQuery($query);}
+		return $this;
 	}
 	
 	public function setParent(RestrictionGroup$query) {
 		$this->parent = $query;
 		
-		foreach ($this->restrictions as $restriction) { $restriction->setParent($query);}
+		return $this;
 	}
 	
 	public function getParent() {
@@ -242,27 +240,48 @@ abstract class RestrictionGroup extends Collection
 		return $this->type;
 	}
 	
-	/**
-	 * This is the equivalent of makeExecutionPlan on the root query for any subquery.
-	 * Since subqueries are logical root queries and can be executed just like
-	 * normal ones they require an equivalent method that is named differently.
-	 * 
-	 * It retrieves all the subqueries that are needed to be executed on a relational
-	 * DB before the main query.
-	 * 
-	 * We could have used a single method with a flag, but this way seems cleaner
-	 * and more hassle free than otherwise.
-	 * 
-	 * @return Query[]
-	 */
-	public function getPhysicalSubqueries() {
+	public function getSubqueries() {
+		
+		/*
+		 * First, we extract the physical queries from the underlying queries.
+		 * These queries should be executed first, to make it easy for the system
+		 * to retrieve the data the query depends on.
+		 */
 		$_ret = Array();
 		
 		foreach ($this->getRestrictions() as $r) {
-			$_ret = array_merge($_ret, $r->getPhysicalSubqueries());
+			$_ret = array_merge($_ret, $r->getSubqueries());
 		}
 		
 		return $_ret;
+	}
+	
+	public function negate() {
+		$this->negated = !$this->negated;
+		return $this;
+	}
+	
+	public function normalize() {
+		if (!$this->negated) {
+			$this->type = $this->type === self::TYPE_AND? self::TYPE_OR : self::TYPE_AND;
+			
+			foreach ($this as $restriction) {
+				if ($restriction instanceof Restriction) { $restriction->negate(); }
+				if ($restriction instanceof CompositeRestriction) { $restriction->negate(); }
+				if ($restriction instanceof RestrictionGroup) { $restriction->negate()->normalize(); }
+			}
+		}
+		
+		foreach ($this as $restriction) {
+			if ($restriction instanceof RestrictionGroup) { 
+				$restriction->normalize(); 
+				
+				if ($restriction->getType() === $this->getType()) {
+					$this->add($restriction->each(function ($e) { $e->setParent($this); })->toArray());
+					$this->remove($restriction);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -273,7 +292,7 @@ abstract class RestrictionGroup extends Collection
 	 * walk method that would allow to modify the elements from within.
 	 */
 	public function __clone() {
-		$restrictions = $this->getRestrictions();
+		$restrictions = $this->toArray();
 		
 		foreach ($restrictions as &$r) { 
 			$r = clone $r; 

@@ -43,6 +43,7 @@ class CompositeWorker implements WorkerInterface
 		 * this returns an empty value, then this maker can't assemble a restriction
 		 */
 		$logical = $parent->getQuery()->getTable()->getSchema()->getField($field);
+		$of      = $parent->getQuery()->getTable()->getDb()->getObjectFactory();
 
 		/*
 		 * If the field is null or the value is null, then this maker is not a match
@@ -52,7 +53,7 @@ class CompositeWorker implements WorkerInterface
 			return false; 
 		}
 
-		return $parent->getQuery()->compositeRestrictionInstance($logical, $value, $operator);
+		return $of->restrictionCompositeInstance($parent, $logical, $value, $operator);
 	}
 
 }

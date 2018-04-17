@@ -14,13 +14,24 @@ class MysqlPDOQuery extends Query
 		
 		$this->setAliased(false);
 		
+		
+		#Import tables for restrictions from remote queries
+		$subqueries = $this->getPhysicalSubqueries();
+		$first      = array_shift($subqueries);
+		$last       = end($subqueries);
+		$joins      = Array();
+		
+		foreach ($subqueries as $q) {
+			$joins[] = sprintf('LEFT JOIN %s ON (%s)', $q->getQueryTable()->definition(), implode(' AND ', $q->getRestrictions()));
+		}
+		
 		#Declare vars
 		$rpp          = $this->getResultsPerPage();
 		$offset       = ($this->getPage() - 1) * $rpp;
 		
 		$selectstt    = 'SELECT';
 		$fromstt      = 'FROM';
-		$tablename    = $this->getTable()->getLayout();
+		$tablename    = $first->getQueryTable()->definition();
 		$wherestt     = 'WHERE';
 		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
 		$restrictions = $this->getRestrictions();
@@ -31,17 +42,8 @@ class MysqlPDOQuery extends Query
 		$limitstt     = 'LIMIT';
 		$limit        = $offset . ', ' . $rpp;
 		
-		
-		#Import tables for restrictions from remote queries
-		$subqueries = $this->getPhysicalSubqueries();
-		$joins      = Array();
-		
-		foreach ($subqueries as $q) {
-			$joins[] = sprintf('LEFT JOIN %s ON (%s)', $q->getQueryTable()->definition(), implode(' AND ', $q->getRestrictions()));
-		}
-		
 		if ($fields === null) {
-			$fields = $this->table->getTable()->getLayout()->getFields();
+			$fields = $last->getQueryTable()->getFields();
 			
 			/*
 			 * If there is subqueries we default to grouping data in a way that will

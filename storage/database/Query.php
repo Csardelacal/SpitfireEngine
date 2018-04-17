@@ -170,6 +170,38 @@ abstract class Query extends RestrictionGroup
 		return $this;
 	}
 	
+	public function getPhysicalSubqueries() {
+		$_return   = [];
+		$queries   = $this->getSubqueries();
+		
+		/*
+		 * Inject the current query into the array. The data for this query needs
+		 * to be retrieved last.
+		 */
+		$queries[] = $this;
+		
+		foreach ($queries as $query) {
+			$clone     = clone $query;
+			$_return   = array_merge($_return, $clone->physicalize());
+			$_return[] = $clone;
+		}
+		
+		return $_return;
+	}
+	
+	public function toGroup() {
+		$of    = $this->getTable()->getDb()->getObjectFactory();
+		$group = $of->restrictionGroupInstance(null, $this->getType());
+		
+		foreach ($this as $restriction) {
+			$c = clone $restriction;
+			$c->setParent($group);
+			$group->push($c);
+		}
+		
+		return $group;
+	}
+	
 	/**
 	 * Returns a record from a database that matches the query we sent.
 	 * 

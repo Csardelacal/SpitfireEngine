@@ -104,12 +104,12 @@ interface ObjectFactoryInterface
 	/**
 	 * 
 	 * @todo This is supposed to take a RestrictionGroup
-	 * @param Query        $query
+	 * @param RestrictionGroup        $parent
 	 * @param LogicalField $field
 	 * @param mixed $value
 	 * @param string $operator
 	 */
-	function restrictionCompositeInstance(Query$query, LogicalField$field = null, $value, $operator);
+	function restrictionCompositeInstance(RestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null);
 	
 	/**
 	 * Creates a restriction group. This allows to associate several restrictions

@@ -88,6 +88,11 @@ abstract class Restriction
 		return Array();
 	}
 	
+	
+	public function getSubqueries() {
+		return Array();
+	}
+	
 	public function getConnectingRestrictions() {
 		return Array();
 	}

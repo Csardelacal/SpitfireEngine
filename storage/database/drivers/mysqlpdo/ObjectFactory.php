@@ -4,7 +4,6 @@ use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\drivers\MysqlPDOCompositeRestriction;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
@@ -158,8 +157,8 @@ class ObjectFactory implements ObjectFactoryInterface
 		return new QueryTable($table);
 	}
 
-	public function restrictionCompositeInstance(Query $query, LogicalField$field = null, $value, $operator) {	
-		return new MysqlPDOCompositeRestriction($query,	$field, $value, $operator);
+	public function restrictionCompositeInstance(RestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null) {
+		return new CompositeRestriction($parent, $field, $value, $operator);
 	}
 
 }

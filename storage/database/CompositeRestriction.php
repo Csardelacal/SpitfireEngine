@@ -43,6 +43,7 @@ class CompositeRestriction
 
 	public function setParent(RestrictionGroup$query) {
 		$this->parent = $query;
+		return $this;
 	}
 
 	public function getField() {
@@ -74,11 +75,37 @@ class CompositeRestriction
 		$this->operator = $operator;
 	}
 	
-	public function getPhysicalSubqueries() {
+	public function getSubqueries() {
+		$r = array_merge($this->getValue()->getSubqueries(), [$this->getValue()]);
+		return $r;
+	}
+	
+	public function physicalize() {
+		$field     = $this->getField();
+		$value     = $this->getValue();
+		$parent    = $this->getParent();
+		$connector = $field->getConnectorQueries($this->getQuery());
+		
+		$last      = array_pop($connector);
+		$last->setId($this->getValue()->getId());
+		
+		if ($field === null || $value === null) {
+			throw new PrivateException('Deprecated: Composite restrictions do not receive null parameters', 2801191504);
+		}
+		
+		$parent->replace($this, $last->toGroup()->setParent($this->getParent()));
+		
+		return $connector;
+	}
+	
+	public function makeConnector() {
 		$field     = $this->getField();
 		$value     = $this->getValue();
 		$of        = $this->getQuery()->getTable()->getDb()->getObjectFactory();
 		$connector = $field->getConnectorQueries($this->getQuery());
+		
+		$last      = array_pop($connector);
+		$last->setId($this->getValue()->getId());
 		
 		if ($field === null || $value === null) {
 			throw new PrivateException('Deprecated: Composite restrictions do not receive null parameters', 2801191504);
@@ -93,27 +120,8 @@ class CompositeRestriction
 		/**
 		 * The system needs to create a copy of the subordinated restrictions 
 		 * to be able to syntax a proper SQL query.
-		 * 
-		 * @todo Refactor this to look proper
 		 */
-		foreach ($value as $r) {
-			if ($r instanceof RestrictionGroup) { 
-				$c = clone $r; 
-				$c->filterCompositeRestrictions();
-				$c->filterEmptyGroups();
-				
-				$c->isEmpty() || $group->push($c);
-			}
-			elseif ($r instanceof CompositeRestriction) {
-				//Do nothign
-			}
-			else {
-				$group->push($r);
-			}
-		}
-		
-		$last      = end($connector);
-		$last->setId($this->getValue()->getId());
+		$group->add($last->toArray());
 		
 		/*
 		 * Once we looped over the sub restrictions, we can determine whether the
@@ -123,22 +131,11 @@ class CompositeRestriction
 			$last->push($group);
 		}
 		
-		/*
-		 * Since layered composite restrictions cannot be handled in the same way
-		 * as their "higher" counterparts we need to reorganize the restrictions
-		 * for subsqueries of subqueries.
-		 * 
-		 * Basically, in higher levels we indicate that the top query should either
-		 * include or not the lower levels. This is not supported on tables that 
-		 * get joined.
-		 * 
-		 * This currently causes a redundant restrictions to appear, but these shouldn't
-		 * harm the operation as it is.
-		 * 
-		 */
-		$subqueries = $this->getValue()->getPhysicalSubqueries();
-		
-		return array_merge($connector, $subqueries); 
+		return $connector; 
+	}
+	
+	public function __clone() {
+		$this->value = clone $this->value;
 	}
 	
 }
