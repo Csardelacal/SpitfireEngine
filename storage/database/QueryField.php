@@ -42,7 +42,12 @@ abstract class QueryField
 	public function getQueryTable() : QueryTable {
 		return $this->table;
 	}
-
+	
+	public function setQueryTable(QueryTable $table) {
+		$this->table = $table;
+		return $this;
+	}
+	
 	/**
 	 * Returns the source field for this object.
 	 * 

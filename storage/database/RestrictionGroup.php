@@ -157,6 +157,22 @@ abstract class RestrictionGroup extends Collection
 	
 	/**
 	 * 
+	 */
+	public function getCompositeRestrictions() {
+		
+		return $this->each(function ($r) {
+			if ($r instanceof CompositeRestriction) {	return $r; }
+			if ($r instanceof RestrictionGroup)     { return $r->getCompositeRestrictions(); }
+			return null;
+		})
+		->flatten()
+		->filter(function ($e) {
+			return $e !== null && ($e instanceof CompositeRestriction || !$e->isEmpty());
+		});
+	}
+	
+	/**
+	 * 
 	 * @deprecated since version 0.1-dev 20171110
 	 */
 	public function filterSimpleRestrictions() {
@@ -256,13 +272,21 @@ abstract class RestrictionGroup extends Collection
 		return $_ret;
 	}
 	
+	public function replaceQueryTable($old, $new) {
+		
+		
+		foreach ($this->getRestrictions() as $r) {
+			$r->replaceQueryTable($old, $new);
+		}
+	}
+	
 	public function negate() {
 		$this->negated = !$this->negated;
 		return $this;
 	}
 	
 	public function normalize() {
-		if (!$this->negated) {
+		if ($this->negated) {
 			$this->type = $this->type === self::TYPE_AND? self::TYPE_OR : self::TYPE_AND;
 			
 			foreach ($this as $restriction) {
@@ -282,6 +306,20 @@ abstract class RestrictionGroup extends Collection
 				}
 			}
 		}
+		
+		return $this;
+	}
+	
+	public function isMixed() {
+		$found = false;
+		
+		foreach ($this as $r) {
+			if ($r instanceof RestrictionGroup && ($r->getType() !== $this->getType() || $r->isMixed())) {
+				$found = true;
+			}
+		}
+		
+		return $found;
 	}
 	
 	/**

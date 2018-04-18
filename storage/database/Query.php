@@ -306,6 +306,16 @@ abstract class Query extends RestrictionGroup
 		return $this->table;
 	}
 	
+	public function cloneQueryTable() {
+		$table = clone $this->table;
+		$table->newId();
+		
+		$this->replaceQueryTable($this->table, $table);
+		
+		$this->table = $table;
+		return $this->table;
+	}
+	
 	/**
 	 * Returns the current 'query table'. This is an object that allows the query
 	 * to alias it's table if needed.

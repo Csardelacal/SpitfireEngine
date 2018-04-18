@@ -98,6 +98,13 @@ class CompositeRestriction
 		return $connector;
 	}
 	
+	public function replaceQueryTable($old, $new) {
+		
+		//TODO: The fact that the composite restriction is not using query tables is off-putting
+		return true; 
+		
+	}
+	
 	public function makeConnector() {
 		$field     = $this->getField();
 		$value     = $this->getValue();
@@ -128,10 +135,18 @@ class CompositeRestriction
 		 * additional group is actually necessary. If it is, we add it to the output
 		 */
 		if (!$group->isEmpty()) {
-			$last->push($group);
+			$this->getValue()->push($group);
 		}
 		
 		return $connector; 
+	}
+	
+	public function negate() {
+		switch ($this->operator) {
+			case '='  : return $this->operator = '<>';
+			case '<>' : return $this->operator = '=';
+			case '!=' : return $this->operator = '=';
+		}
 	}
 	
 	public function __clone() {

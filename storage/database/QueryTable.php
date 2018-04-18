@@ -37,6 +37,10 @@ abstract class QueryTable
 		$this->id = $id;
 	}
 	
+	public function newId() {
+		$this->id = self::$counter++;
+	}
+	
 	public function setAliased($aliased) {
 		$this->aliased = $aliased;
 	}

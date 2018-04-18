@@ -97,5 +97,27 @@ abstract class Restriction
 		return Array();
 	}
 	
+	public function replaceQueryTable($old, $new) {
+		
+		if ($this->field->getQueryTable() === $old) {
+			$this->field->setQueryTable($new);
+		}
+		
+		if ($this->value instanceof QueryField && $this->value->getQueryTable() === $old) {
+			$this->value->setQueryTable($new);
+		}
+	}
+	
+	public function negate() {
+		switch ($this->operator) {
+			case '='  : return $this->operator = '<>';
+			case '<>' : return $this->operator = '=';
+			case '>'  : return $this->operator = '<';
+			case '<'  : return $this->operator = '>';
+			case 'LIKE'      : return $this->operator = 'NOT LIKE';
+			case 'NOT LIKE'  : return $this->operator = 'LIKE';
+		}
+	}
+	
 	abstract public function __toString();
 }

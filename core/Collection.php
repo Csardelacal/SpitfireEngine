@@ -59,6 +59,19 @@ class Collection implements ArrayAccess, CollectionInterface
 		return array_reduce($this->items, $callback, $initial);
 	}
 	
+	public function flatten() {
+		$items = $this->items;
+		$_ret  = new self();
+		
+		foreach ($this->items as $item) {
+			if ($item instanceof Collection) { $_ret->add($item->flatten()); }
+			elseif (is_array($item))         { $c = new self($item); $_ret->add($item->flatten()); }
+			else { $_ret->push($item); }
+		}
+		
+		return $_ret;
+	}
+	
 	/**
 	 * This function checks whether a collection contains only elements with a 
 	 * given type. This function also accepts base types.
@@ -182,7 +195,9 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function add($elements) {
-		$this->items+= $elements;
+		if ($elements instanceof Collection) { $elements = $elements->toArray(); }
+		
+		$this->items = array_merge($this->items, $elements);
 		return $this;
 	}
 	

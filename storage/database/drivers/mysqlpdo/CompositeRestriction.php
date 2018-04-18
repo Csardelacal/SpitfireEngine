@@ -32,45 +32,11 @@ class CompositeRestriction extends ParentClass
 		 * before being returned.
 		 */
 		foreach($fields as $field) {
-			$_ret[] = sprintf($this->getOperator() === '='? '%s IS NOT NULL' : '%s IS NULL', $of->queryFieldInstance($this->getValue()->getQueryTable(), $field));
-		}
-
-		/**
-		 * 
-		 * @var MysqlPDOQuery The query
-		 */
-		$group = $of->restrictionGroupInstance($this->getQuery(), RestrictionGroup::TYPE_AND);
-
-		/**
-		 * The system needs to create a copy of the subordinated restrictions 
-		 * to be able to syntax a proper SQL query.
-		 * 
-		 * @todo Refactor this to look proper
-		 */
-		foreach ($value as $r) {
-			if ($r instanceof RestrictionGroup) { 
-				$c = clone $r; 
-				$c->filterSimpleRestrictions();
-				$c->filterEmptyGroups();
-				
-				$c->isEmpty() || $group->push($c);
-			}
-			elseif (!$r instanceof CompositeRestriction) {
-				//Do nothing, ignore the restriction
-			}
-			else {
-				$r = clone $r;
-				$group->push($r->setParent($group));
-			}
+			$qt = $this->getValue()->getRedirection()? $this->getValue()->getRedirection()->getQueryTable() : $this->getValue()->getQueryTable();
+			$_ret[] = sprintf($this->getOperator() === '='? '%s IS NOT NULL' : '%s IS NULL', $of->queryFieldInstance($qt, $field));
 		}
 		
-		/*
-		 * Once we looped over the sub restrictions, we can determine whether the
-		 * additional group is actually necessary. If it is, we add it to the output
-		 */
-		if (!$group->isEmpty()) {
-			$_ret[] = $group;
-		}
+		$_ret = array_merge($_ret, $this->getValue()->getCompositeRestrictions()->toArray());
 		
 		/**
 		 * Check the operator and return the appropriate SQL for the driver to run

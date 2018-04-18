@@ -1,10 +1,13 @@
 <?php namespace spitfire\storage\database\drivers\sql;
 
+use spitfire\storage\database\CompositeRestriction;
 use spitfire\storage\database\Query;
+use spitfire\storage\database\RestrictionGroup;
 
 abstract class SQLQuery extends Query
 {
 	
+	private $redirection = null;
 	
 	/**
 	 * It retrieves all the subqueries that are needed to be executed on a relational
@@ -16,22 +19,87 @@ abstract class SQLQuery extends Query
 	 * @return Query[]
 	 */
 	public function makeExecutionPlan() {
-		$copy      = clone $this;
-		$_return   = [];
-		$queries   = $copy->getSubqueries();
 		
 		/*
 		 * Inject the current query into the array. The data for this query needs
 		 * to be retrieved last.
 		 */
-		$queries[] = $this;
+		$copy = clone $this;
+		$_ret = $copy->physicalize(true);
 		
-		foreach ($queries as $query) {
-			$_return   = array_merge($_return, $query->normalize()->physicalize());
-			$_return[] = $query;
+		foreach ($_ret as $q) {
+			if ($q === $copy) { continue; }
+			$copy->add($q->denormalize());
 		}
 		
-		return array_reverse($_return);
+		return $_ret;
+	}
+	
+	public function physicalize($top = false) {
+		
+		$copy = $this;
+		$_ret = [$this];
+		
+		$composite = $copy->getCompositeRestrictions();
+		
+		foreach ($composite as $r) {
+			
+			$q = $r->getValue();
+			$p = $q->physicalize();
+			$c = $r->makeConnector();
+			$_ret = array_merge($_ret, $c, $p);
+		}
+		
+		if (!$top && $copy->isMixed() && !$composite->isEmpty()) {
+			
+			$clone = clone $copy;
+			$of    = $copy->getTable()->getDb()->getObjectFactory();
+			
+			$clone->cloneQueryTable();
+			$group = $of->restrictionGroupInstance($clone);
+			
+			foreach ($copy->getTable()->getPrimaryKey()->getFields() as $field) {
+				$group->where(
+					$of->queryFieldInstance($copy->getQueryTable(), $field),
+					$of->queryFieldInstance($clone->getQueryTable(), $field)
+				);
+			}
+			
+			$copy->reset();
+			$copy->setRedirection($clone);
+			$clone->push($group);
+			$_ret[] = $clone;
+		}
+		
+		return $_ret;
+	}
+	
+	public function denormalize() {
+		
+		$composite = $this->getCompositeRestrictions();
+		
+		if ($this->isMixed() || $composite->isEmpty()) {
+			return [];
+		}
+		
+		$_ret = [];
+		
+		foreach ($composite as $r) {
+			$_ret = array_merge($_ret, [$r]);
+		}
+		
+		$this->filterCompositeRestrictions();
+		
+		return $_ret;
+	}
+	
+	public function getRedirection() {
+		return $this->redirection;
+	}
+	
+	public function setRedirection($redirection) {
+		$this->redirection = $redirection;
+		return $this;
 	}
 	
 }

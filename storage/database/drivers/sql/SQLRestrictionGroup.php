@@ -4,7 +4,7 @@ use spitfire\storage\database\CompositeRestriction;
 use spitfire\storage\database\RestrictionGroup;
 
 
-class SQLRestrictionGroup
+abstract class SQLRestrictionGroup extends RestrictionGroup
 {
 	
 	
@@ -22,15 +22,5 @@ class SQLRestrictionGroup
 		}
 		
 		return $_ret;
-	}
-	
-	public function isMixed() {
-		$found = false;
-		
-		foreach ($this as $r) {
-			if ($r instanceof RestrictionGroup && ($r->getType() !== $this->getType() || $r->isMixed())) {
-				$found = true;
-			}
-		}
 	}
 }

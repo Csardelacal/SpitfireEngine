@@ -2,13 +2,14 @@
 
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
-use spitfire\storage\database\Relation;
-use spitfire\storage\database\Table;
-use spitfire\storage\database\Query;
+use spitfire\storage\database\drivers\mysqlpdo\CompositeRestriction;
+use spitfire\storage\database\drivers\sql\SQLQuery;
 use spitfire\storage\database\QueryField;
 use spitfire\storage\database\QueryTable;
+use spitfire\storage\database\Relation;
+use spitfire\storage\database\Table;
 
-class MysqlPDOQuery extends Query
+class MysqlPDOQuery extends SQLQuery
 {
 	public function execute($fields = null) {
 		
@@ -16,12 +17,11 @@ class MysqlPDOQuery extends Query
 		
 		
 		#Import tables for restrictions from remote queries
-		$subqueries = $this->getPhysicalSubqueries();
-		$first      = array_shift($subqueries);
-		$last       = end($subqueries);
+		$plan       = $this->makeExecutionPlan();
+		$last       = array_shift($plan);
 		$joins      = Array();
 		
-		foreach ($subqueries as $q) {
+		foreach ($plan as $q) {
 			$joins[] = sprintf('LEFT JOIN %s ON (%s)', $q->getQueryTable()->definition(), implode(' AND ', $q->getRestrictions()));
 		}
 		
@@ -31,10 +31,10 @@ class MysqlPDOQuery extends Query
 		
 		$selectstt    = 'SELECT';
 		$fromstt      = 'FROM';
-		$tablename    = $first->getQueryTable()->definition();
+		$tablename    = $last->getQueryTable()->definition();
 		$wherestt     = 'WHERE';
 		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
-		$restrictions = $this->getRestrictions();
+		$restrictions = $last->getRestrictions();
 		$orderstt     = 'ORDER BY';
 		$order        = $this->getOrder();
 		$groupbystt   = 'GROUP BY';
@@ -104,7 +104,7 @@ class MysqlPDOQuery extends Query
 	 * 
 	 * @deprecated since version 0.1-dev 20171110
 	 * @param type $parent
-	 * @return \spitfire\storage\database\drivers\MysqlPDORestrictionGroup
+	 * @return MysqlPDORestrictionGroup
 	 */
 	public function restrictionGroupInstance($parent = null) {
 		return new MysqlPDORestrictionGroup($parent? : $this);
@@ -116,7 +116,7 @@ class MysqlPDOQuery extends Query
 	 * @param QueryField $field
 	 * @param type $value
 	 * @param type $operator
-	 * @return \spitfire\storage\database\drivers\MysqlPDORestriction
+	 * @return MysqlPDORestriction
 	 */
 	public function restrictionInstance(QueryField$field, $value, $operator) {
 		return new MysqlPDORestriction($this, $field, $value, $operator);
@@ -157,7 +157,7 @@ class MysqlPDOQuery extends Query
 	 * @deprecated since version 0.1-dev 20171110
 	 */
 	public function compositeRestrictionInstance(Field $field = null, $value, $operator) {
-		return new mysqlpdo\CompositeRestriction($this, $field, $value, $operator);
+		return new CompositeRestriction($this, $field, $value, $operator);
 	}
 
 	public function delete() {
