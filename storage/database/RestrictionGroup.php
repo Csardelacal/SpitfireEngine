@@ -29,29 +29,10 @@ abstract class RestrictionGroup extends Collection
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20170720
-	 * @param type $r
-	 */
-	public function removeRestriction($r) {
-		parent::remove($r);
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20170720
 	 * @param type $restriction
 	 */
 	public function putRestriction($restriction) {
 		parent::push($restriction);
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20170720
-	 * @param type $restrictions
-	 */
-	public function setRestrictions($restrictions) {
-		parent::reset();
-		parent::add($restrictions);
 	}
 	
 	/**
@@ -151,6 +132,12 @@ abstract class RestrictionGroup extends Collection
 		return $this->parent;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20180420
+	 * @param \spitfire\storage\database\Query $query
+	 * @return $this
+	 */
 	public function setQuery(Query$query) {
 		$this->parent = $query;
 		return $this;

@@ -330,44 +330,6 @@ abstract class Query extends RestrictionGroup
 		return $this->getTable() . implode(',', $this->getRestrictions());
 	}
 	
-	/**
-	 * This method is used to clean empty restriction groups and restrictions from
-	 * a query. This allows to 'optimize' the speed of SQL due to removing potentially
-	 * unnecessary joins and subqueries.
-	 * 
-	 * @todo This function needs to go.
-	 * @deprecated since version 0.1-dev 201704142031
-	 * @param Restriction|CompositeRestriction|RestrictionGroup $restriction
-	 * @return boolean
-	 */
-	public static function restrictionFilter($restriction) {
-		#In case the data contained is a restriction we consider it valid.
-		#Restrictions can by default not be empty (they always have a field attached)
-		if ($restriction instanceof Restriction) {
-			return true;
-		}
-		
-		#Composite restrictions are the most common source of possible empty elements
-		#If they contain a query and it is empty it will not add any value to the query
-		if ($restriction instanceof CompositeRestriction) {
-			return true;
-		}
-		
-		#Restriction groups that are empty will not do anything useful and maybe 
-		#even generate invalid SQL like '() AND' so we clean them beforehand.
-		if ($restriction instanceof RestrictionGroup) {
-			$restrictions = array_filter($restriction->getRestrictions(), Array(get_class(), __METHOD__));
-			
-			if (empty($restrictions)) {
-				return false;
-			}
-			else {
-				$restriction->setRestrictions($restrictions);
-				return true;
-			}
-		}
-	}
-	
 	public abstract function execute($fields = null);
 	
 	/**
