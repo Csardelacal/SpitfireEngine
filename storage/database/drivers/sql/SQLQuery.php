@@ -1,12 +1,29 @@
 <?php namespace spitfire\storage\database\drivers\sql;
 
-use spitfire\storage\database\CompositeRestriction;
 use spitfire\storage\database\Query;
-use spitfire\storage\database\RestrictionGroup;
 
 abstract class SQLQuery extends Query
 {
 	
+	/**
+	 * The redirection object is required only when assembling queries. Sometimes,
+	 * a query has unmet dependencies that it cannot satisfy. In this case, it's 
+	 * gonna copy itself and move all of it's restrictions to the new query.
+	 * 
+	 * This means that when serializing the query, the composite restriction should
+	 * not print <code>old.primary IS NOT NULL</code> but <code>new.primary IS NOT NULL</code>.
+	 * 
+	 * But! When the parent injects the restrictions to connect the queries with 
+	 * the parent, the old query must answer the call and assimilate them.
+	 * 
+	 * To achieve this behavior, I found it reasonable that the query introduces 
+	 * a redirection property. When a composite restriction finds this, it will
+	 * automatically use the target of the redirection.
+	 * 
+	 * NOTE: Composite queries do not follow multiple redirections.
+	 *
+	 * @var SQLQuery|null
+	 */
 	private $redirection = null;
 	
 	/**
@@ -84,11 +101,10 @@ abstract class SQLQuery extends Query
 		
 		$_ret = [];
 		
-		foreach ($composite as $r) {
+		foreach ($composite as /*@var $r CompositeRestriction*/$r) {
+			$r->getParent()->remove($r);
 			$_ret = array_merge($_ret, [$r]);
 		}
-		
-		$this->filterCompositeRestrictions();
 		
 		return $_ret;
 	}

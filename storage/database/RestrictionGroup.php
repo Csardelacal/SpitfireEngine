@@ -109,16 +109,6 @@ abstract class RestrictionGroup extends Collection
 		return parent::toArray();
 	}
 	
-	public function importRestrictions(RestrictionGroup$query) {
-		$restrictions = $query->getRestrictions();
-		
-		foreach($restrictions as $r) {
-			$copy = clone $r;
-			$copy->setParent($this);
-			$this->push($copy);
-		}
-	}
-	
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20170720
@@ -126,33 +116,6 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function getRestriction($index) {
 		return parent::offsetGet($index);
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20170720
-	 * @return type
-	 */
-	public function getConnectingRestrictions() {
-		trigger_error('Method RestrictionGroup::getConnectingRestrictions() is deprecated', E_USER_DEPRECATED);
-		$_ret = Array();
-		
-		foreach ($this->toArray() as $r) { $_ret = array_merge($_ret, $r->getConnectingRestrictions());}
-		
-		return $_ret;
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 */
-	public function filterCompositeRestrictions() {
-		$restrictions = $this->toArray();
-		
-		foreach ($restrictions as $r) {
-			if ($r instanceof CompositeRestriction) {	$this->removeRestriction($r); }
-			if ($r instanceof RestrictionGroup)     { $r->filterCompositeRestrictions(); }
-		}
 	}
 	
 	/**
@@ -169,32 +132,6 @@ abstract class RestrictionGroup extends Collection
 		->filter(function ($e) {
 			return $e !== null && ($e instanceof CompositeRestriction || !$e->isEmpty());
 		});
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 */
-	public function filterSimpleRestrictions() {
-		$restrictions = $this->toArray();
-		
-		foreach ($restrictions as $r) {
-			if ($r instanceof Restriction)      { $this->removeRestriction($r); }
-			if ($r instanceof RestrictionGroup) { $r->filterSimpleRestrictions(); }
-		}
-	}
-	
-	/**
-	 * Removes empty groups from the group. This is important since otherwise a
-	 * query generator will most likely generate malformed SQL for this query.
-	 */
-	public function filterEmptyGroups() {
-		$restrictions = $this->toArray();
-		
-		foreach ($restrictions as $r) {
-			if ($r instanceof RestrictionGroup) { $r->filterEmptyGroups(); }
-			if ($r instanceof RestrictionGroup && $r->isEmpty()) { $this->remove($r); }
-		}
 	}
 	
 	/**
@@ -287,24 +224,49 @@ abstract class RestrictionGroup extends Collection
 	
 	public function normalize() {
 		if ($this->negated) {
-			$this->type = $this->type === self::TYPE_AND? self::TYPE_OR : self::TYPE_AND;
-			
-			foreach ($this as $restriction) {
-				if ($restriction instanceof Restriction) { $restriction->negate(); }
-				if ($restriction instanceof CompositeRestriction) { $restriction->negate(); }
-				if ($restriction instanceof RestrictionGroup) { $restriction->negate()->normalize(); }
-			}
+			$this->flip();
 		}
 		
+		$this
+			/*
+			 * We normalize the children first. This ensures that the normalization
+			 * the parent performs is still correct.
+			 */
+			->filter(function ($e) { return $e instanceof RestrictionGroup; })
+			->each(function (RestrictionGroup$e) { $e->normalize(); })
+			
+			/*
+			 * We remove the groups that satisfy any of the following:
+			 * * They're empty
+			 * * They only contain one restriction
+			 * * They have the same type as the current one. Based on (A AND B) AND C == A AND B AND C
+			 */
+			->filter(function (RestrictionGroup$e) { return $e->getType() === $this->getType() || $e->count() < 2; })
+			->each(function ($e) {
+				$this->add($e->each(function ($e) { $e->setParent($this); })->toArray());
+				$this->remove($e);
+			});
+		
+		return $this;
+	}
+	
+	/**
+	 * When a restriction group is flipped, the system will change the type from
+	 * AND to OR and viceversa. When doing so, all the restrictions are negated.
+	 * 
+	 * This means that <code>$a == !$a->flip()</code> even though they have inverted
+	 * types. This is specially interesting for query optimization and negation.
+	 * 
+	 * @return RestrictionGroup
+	 */
+	public function flip() {
+		$this->negated = !$this->negated;
+		$this->type = $this->type === self::TYPE_AND? self::TYPE_OR : self::TYPE_AND;
+
 		foreach ($this as $restriction) {
-			if ($restriction instanceof RestrictionGroup) { 
-				$restriction->normalize(); 
-				
-				if ($restriction->getType() === $this->getType()) {
-					$this->add($restriction->each(function ($e) { $e->setParent($this); })->toArray());
-					$this->remove($restriction);
-				}
-			}
+			if ($restriction instanceof Restriction ||
+			    $restriction instanceof CompositeRestriction ||
+			    $restriction instanceof RestrictionGroup) { $restriction->negate(); }
 		}
 		
 		return $this;
