@@ -80,24 +80,6 @@ class CompositeRestriction
 		return $r;
 	}
 	
-	public function physicalize() {
-		$field     = $this->getField();
-		$value     = $this->getValue();
-		$parent    = $this->getParent();
-		$connector = $field->getConnectorQueries($this->getQuery());
-		
-		$last      = array_pop($connector);
-		$last->setId($this->getValue()->getId());
-		
-		if ($field === null || $value === null) {
-			throw new PrivateException('Deprecated: Composite restrictions do not receive null parameters', 2801191504);
-		}
-		
-		$parent->replace($this, $last->toGroup()->setParent($this->getParent()));
-		
-		return $connector;
-	}
-	
 	public function replaceQueryTable($old, $new) {
 		
 		//TODO: The fact that the composite restriction is not using query tables is off-putting
@@ -143,9 +125,12 @@ class CompositeRestriction
 	
 	public function negate() {
 		switch ($this->operator) {
-			case '='  : return $this->operator = '<>';
-			case '<>' : return $this->operator = '=';
-			case '!=' : return $this->operator = '=';
+			case '=': 
+				return $this->operator = '<>';
+			case '<>': 
+				return $this->operator = '=';
+			case '!=': 
+				return $this->operator = '=';
 		}
 	}
 	

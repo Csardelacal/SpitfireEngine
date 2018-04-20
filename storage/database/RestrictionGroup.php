@@ -202,7 +202,7 @@ abstract class RestrictionGroup extends Collection
 		 */
 		$_ret = Array();
 		
-		foreach ($this->getRestrictions() as $r) {
+		foreach ($this as $r) {
 			$_ret = array_merge($_ret, $r->getSubqueries());
 		}
 		
@@ -254,7 +254,7 @@ abstract class RestrictionGroup extends Collection
 	 * When a restriction group is flipped, the system will change the type from
 	 * AND to OR and viceversa. When doing so, all the restrictions are negated.
 	 * 
-	 * This means that <code>$a == !$a->flip()</code> even though they have inverted
+	 * This means that <code>$a == $a->flip()</code> even though they have inverted
 	 * types. This is specially interesting for query optimization and negation.
 	 * 
 	 * @return RestrictionGroup

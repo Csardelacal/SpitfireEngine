@@ -12,7 +12,7 @@ abstract class SQLRestrictionGroup extends RestrictionGroup
 		$_ret = [];
 		
 		foreach ($this as $restriction) {
-			if ($restriction instanceof RestrictionGroup) { 
+			if ($restriction instanceof SQLRestrictionGroup) { 
 				$_ret = array_merge($_ret, $restriction->physicalize()); 
 			}
 			

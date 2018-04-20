@@ -60,12 +60,11 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function flatten() {
-		$items = $this->items;
 		$_ret  = new self();
 		
 		foreach ($this->items as $item) {
 			if ($item instanceof Collection) { $_ret->add($item->flatten()); }
-			elseif (is_array($item))         { $c = new self($item); $_ret->add($item->flatten()); }
+			elseif (is_array($item))         { $c = new self($item); $_ret->add($c->flatten()); }
 			else { $_ret->push($item); }
 		}
 		

@@ -56,7 +56,7 @@ class MysqlPDOQuery extends SQLQuery
 			 * is included twice, by adding the grouping mechanism we're excluding
 			 * that behavior.
 			 */
-			if (!empty($subqueries)) { 
+			if (!empty($plan)) { 
 				$groupby  = $fields; 
 				$fields[] = 'COUNT(*) AS __META__count';
 			}
@@ -98,16 +98,6 @@ class MysqlPDOQuery extends SQLQuery
 		
 		return new mysqlPDOResultSet($this->getTable(), $this->getTable()->getDb()->execute(implode(' ', $stt)));
 		
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 * @param type $parent
-	 * @return MysqlPDORestrictionGroup
-	 */
-	public function restrictionGroupInstance($parent = null) {
-		return new MysqlPDORestrictionGroup($parent? : $this);
 	}
 	
 	/**

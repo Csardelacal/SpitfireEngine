@@ -109,11 +109,22 @@ abstract class SQLQuery extends Query
 		return $_ret;
 	}
 	
+	/**
+	 * 
+	 * @return SQLQuery|null
+	 */
 	public function getRedirection() {
 		return $this->redirection;
 	}
 	
-	public function setRedirection($redirection) {
+	/**
+	 * This is a driver specific method. If you're not exactly sure what a query
+	 * redirection is, please avoid using this method.
+	 * 
+	 * @param SQLQuery|null $redirection
+	 * @return $this
+	 */
+	public function setRedirection($redirection = null) {
 		$this->redirection = $redirection;
 		return $this;
 	}

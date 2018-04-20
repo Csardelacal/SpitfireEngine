@@ -383,18 +383,6 @@ abstract class Query extends RestrictionGroup
 	public abstract function compositeRestrictionInstance(LogicalField$field = null, $value, $operator);
 	
 	/**
-	 * Creates a new instance of a restriction group for this query. The instance
-	 * is already created with a reference to this element. This is just used in 
-	 * a set of cases, when creating a restriction (so it keeps the reference to
-	 * the query) and when "ending the group" which basically returns the call flow
-	 * over to the query.
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 * @return \spitfire\storage\database\RestrictionGroup
-	 */
-	public abstract function restrictionGroupInstance($parent);
-	
-	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20171110
 	 */

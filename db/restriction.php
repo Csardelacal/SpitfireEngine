@@ -2,13 +2,16 @@
 
 use spitfire\Model;
 use spitfire\exceptions\PrivateException;
-use spitfire\model\Field as Logical;
 
 abstract class Restriction
 {
 	/** @var Query */
 	private $query;
-	/** @var Logical */
+	
+	/**
+	 *
+	 * @var QueryField
+	 */
 	private $field;
 	private $value;
 	private $operator;
@@ -110,14 +113,26 @@ abstract class Restriction
 	
 	public function negate() {
 		switch ($this->operator) {
-			case '='  : return $this->operator = '<>';
-			case '<>' : return $this->operator = '=';
-			case '>'  : return $this->operator = '<';
-			case '<'  : return $this->operator = '>';
-			case 'LIKE'      : return $this->operator = 'NOT LIKE';
-			case 'NOT LIKE'  : return $this->operator = 'LIKE';
+			case '=': 
+				return $this->operator = '<>';
+			case '<>': 
+				return $this->operator = '=';
+			case '>': 
+				return $this->operator = '<';
+			case '<': 
+				return $this->operator = '>';
+			case 'LIKE': 
+				return $this->operator = 'NOT LIKE';
+			case 'NOT LIKE': 
+				return $this->operator = 'LIKE';
 		}
 	}
 	
+	/**
+	 * Restrictions must be able to be casted to string. This is not only often
+	 * necessary for many drivers to generate queries but also for debugging.
+	 * 
+	 * @return string
+	 */
 	abstract public function __toString();
 }
