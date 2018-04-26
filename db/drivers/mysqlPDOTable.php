@@ -7,7 +7,7 @@ use Exception;
  * 
  * @deprecated since version 0.1-dev 20170807
  */
-class MysqlPDOTable extends stdSQLTable
+class MysqlPDOTable extends sql\SQLTable
 {
 	
 	public function repair() {
@@ -37,17 +37,10 @@ class MysqlPDOTable extends stdSQLTable
 		
 		$table = $this;
 		$definitions = $table->columnDefinitions();
-		$foreignkeys = $table->foreignKeyDefinitions();
-		$pk = $table->getPrimaryKey();
-		
-		foreach($pk as &$f) { $f = '`' . $f->getName() .  '`'; }
-		
-		if (!empty($foreignkeys)) $definitions = array_merge ($definitions, $foreignkeys);
-		
-		if (!empty($pk)) $definitions[] = 'PRIMARY KEY(' . implode(', ', $pk) . ')';
+		$indexes     = $table->getLayout()->getIndexes();
 		
 		#Strip empty definitions from the list
-		$clean = array_filter($definitions);
+		$clean = array_filter(array_merge($definitions, $indexes->toArray()));
 		
 		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
 			$table,
