@@ -104,14 +104,16 @@ class Layout implements LayoutInterface
 		$indexes     = $table->getIndexes();
 		
 		#Strip empty definitions from the list
-		$clean = array_filter(array_merge($definitions, $indexes->toArray()));
+		$clean = array_filter(array_merge(
+			$definitions, 
+			$indexes->each(function($e) { return $e->definition(); })->toArray()
+		));
 		
 		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
 			$table,
 			implode(', ', $clean)
 			);
 		
-		//echo $stt;
 		return $this->table->getDb()->execute($stt);
 	}
 
@@ -122,7 +124,7 @@ class Layout implements LayoutInterface
 	/**
 	 * Fetch the fields of the table the database works with. If the programmer
 	 * has defined a custom set of fields to work with, this function will
-	 * return the overriden fields.
+	 * return the overridden fields.
 	 * 
 	 * @return Field[] The fields this table handles.
 	 */
