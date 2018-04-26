@@ -103,12 +103,8 @@ class Layout implements LayoutInterface
 		$definitions = $table->columnDefinitions();
 		$indexes     = $table->getIndexes();
 		
-		$indexes->each(function (Index$index) use (&$definitions) {
-			$definitions[] = $index->definition();
-		});
-		
 		#Strip empty definitions from the list
-		$clean = array_filter($definitions);
+		$clean = array_filter(array_merge($definitions, $indexes->toArray()));
 		
 		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
 			$table,
