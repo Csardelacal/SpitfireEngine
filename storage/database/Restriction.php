@@ -3,10 +3,23 @@
 use spitfire\Model;
 use spitfire\exceptions\PrivateException;
 
+/**
+ * A restriction indicates a condition a record in a database's relation must 
+ * satisfy to be returned by a database query.
+ * 
+ * Restrictions can be either simple (like these) or composite. These simple ones
+ * can only contain basic data-types like integers, floats, strings or enums as
+ * their value.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 abstract class Restriction
 {
-	/** @var Query */
-	private $query;
+	/** 
+	 * 
+	 * @var RestrictionGroup 
+	 */
+	private $parent;
 	
 	/**
 	 *
@@ -20,18 +33,19 @@ abstract class Restriction
 	const EQUAL_OPERATOR = '=';
 	
 	public function __construct($parent, $field, $value, $operator = '=') {
-		if (is_null($operator)) $operator = self::EQUAL_OPERATOR;
+		if (is_null($operator)) { 
+			$operator = self::EQUAL_OPERATOR;
+		}
 		
-		if (!$parent instanceof RestrictionGroup && $parent !== null)
-			{ throw new PrivateException("A restriction's parent can only be a group"); }
+		if (!$parent instanceof RestrictionGroup && $parent !== null) { 
+			throw new PrivateException("A restriction's parent can only be a group", 1804292129); 
+		}
 		
-		if ($value instanceof Model)
-			$value = $value->getQuery();
-		
-		if (!$field instanceof QueryField)
+		if (!$field instanceof QueryField) {
 			throw new PrivateException("Invalid field");
+		}
 		
-		$this->query    = $parent;
+		$this->parent    = $parent;
 		$this->field    = $field;
 		$this->value    = $value;
 		$this->operator = trim($operator);
@@ -56,15 +70,15 @@ abstract class Restriction
 	 * @return \spitfire\storage\database\Query
 	 */
 	public function getQuery() {
-		return $this->query->getQuery();
+		return $this->parent->getQuery();
 	}
 	
 	public function getParent() {
-		return $this->query;
+		return $this->parent;
 	}
 	
 	public function setParent($parent) {
-		$this->query = $parent;
+		$this->parent = $parent;
 	}
 	
 	/**
@@ -73,7 +87,7 @@ abstract class Restriction
 	 * @deprecated since version 0.1-dev 1604162323
 	 */
 	public function setQuery($query) {
-		$this->query = $query;
+		$this->parent = $query;
 		$this->field->setQuery($query);
 	}
 	

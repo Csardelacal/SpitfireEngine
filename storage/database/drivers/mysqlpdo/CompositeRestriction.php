@@ -2,16 +2,22 @@
 
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\CompositeRestriction as ParentClass;
-use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\RestrictionGroup;
 
 class CompositeRestriction extends ParentClass
 {
-	
+
+	/**
+	 * When a query is serialized, the composite restrictions generate a list of
+	 * simple ones that can be passed onto the database for querying.
+	 * 
+	 * In the case of MySQLPDO, the driver assumes that the query has been properly
+	 * denormalized to be serialized.
+	 * 
+	 * @return RestrictionGroup
+	 */
 	public function makeSimpleRestrictions() {
 		
-		$field = $this->getField();
-		$value = $this->getValue();
 		$of    = $this->getQuery()->getTable()->getDb()->getObjectFactory();
 		
 		/*
@@ -39,17 +45,13 @@ class CompositeRestriction extends ParentClass
 	public function __toString() {
 		$field = $this->getField();
 		$value = $this->getValue();
-		$of    = $this->getQuery()->getTable()->getDb()->getObjectFactory();
 		
 		if ($field === null || $value === null) {
 			throw new PrivateException('Deprecated: Composite restrictions do not receive null parameters', 2801191504);
 		} 
 		
-		try {
 		return strval($this->makeSimpleRestrictions());
-		} catch (\Throwable$e) {
-			die($e->getTraceAsString());
-		}
+		
 	}
 	
 }

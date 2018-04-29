@@ -10,7 +10,6 @@ AutoLoad::registerClass('Time',                                                 
 AutoLoad::registerClass('Image',                                                SPITFIRE_BASEDIR.'/image.php');
 
 #Database related imports
-AutoLoad::registerClass('spitfire\storage\database\Restriction',                SPITFIRE_BASEDIR.'/db/restriction.php');
 AutoLoad::registerClass('Pagination',                                           SPITFIRE_BASEDIR.'/db/pagination.php');
 
 AutoLoad::registerClass('Validatable',                                          SPITFIRE_BASEDIR.'/validatable.php');

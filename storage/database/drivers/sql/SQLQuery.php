@@ -1,6 +1,10 @@
 <?php namespace spitfire\storage\database\drivers\sql;
 
+use spitfire\core\Collection;
+use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\drivers\mysqlpdo\CompositeRestriction;
 use spitfire\storage\database\Query;
+use spitfire\storage\database\RestrictionGroup;
 
 abstract class SQLQuery extends Query
 {
@@ -43,24 +47,13 @@ abstract class SQLQuery extends Query
 		 */
 		$copy = clone $this;
 		$_ret = $copy->physicalize(true);
-		$of   = $this->getQuery()->getTable()->getDb()->getObjectFactory();
 		
-		foreach ($copy->getCompositeRestrictions() as $r) {
-			
-			$group = $of->restrictionGroupInstance($this, \spitfire\storage\database\RestrictionGroup::TYPE_AND);
-			$group->push($r->getValue()->denormalize());
-			$group->push($r);
-			
-			if ($r->getOperator() !== '=') {
-				$group->negate();
-			}
-			
-			$r->getParent()->push($group)->remove($r);
-			$r->setParent($group);
-			$copy->push($group);
+		$copy->denormalize(true);
+		
+		foreach ($_ret as $q) {
+		$q->normalize();
 		}
 		
-		$copy->normalize();
 		return $_ret;
 	}
 	
@@ -103,30 +96,63 @@ abstract class SQLQuery extends Query
 		return $_ret;
 	}
 	
-	public function denormalize() {
+	/**
+	 * 
+	 * @todo This method could be much simpler with an import function in rGroups which take all the children
+	 * @param type $root
+	 * @return Collection
+	 * @throws PrivateException
+	 */
+	public function denormalize($root = false) {
+		if (!$root && $this->isMixed()) {
+			throw new PrivateException('Impossible condition satisfied. This is a bug.', 1804292159);
+		}
+		
+		$_ret      = new Collection();
 		
 		$composite = $this->getCompositeRestrictions();
 		$of        = $this->getQuery()->getTable()->getDb()->getObjectFactory();
-		$group     = $of->restrictionGroupInstance($this, \spitfire\storage\database\RestrictionGroup::TYPE_AND);
 		
-		if ($this->isMixed() || $composite->isEmpty()) {
-			return $group;
-		}
-		
+		/*
+		 * Loop over the composite restrictions inside this query. This allows the
+		 * system to extract the conditions that need to assimilated at the end of
+		 * a query.
+		 * 
+		 * Please note that this only can be achieved because the driver has 
+		 * previously physicalized the queries and prepared them in a manner that
+		 * allows for their denormalization (deferred the mixed ones).
+		 */
 		foreach ($composite as /*@var $r CompositeRestriction*/$r) {
-			$sg = $of->restrictionGroupInstance($group, \spitfire\storage\database\RestrictionGroup::TYPE_AND);
-			$sg->push($r->getValue()->denormalize()->setParent($sg));
-			$r->getParent()->remove($r);
+			
+			$sg = $of->restrictionGroupInstance($r->getParent(), RestrictionGroup::TYPE_AND);
+			$d  = $r->getValue()->denormalize();
+			
+			/*
+			 * Once the subquery has been denormalized, we enter to retrieve the 
+			 * previously denormalized blocks. To do so, we loop over the collection
+			 * containing the references, remove the group from their actual location,
+			 * put it in their new home and append that to the $sg variable.
+			 */
+			foreach ($d as $v) {
+				$group = $of->restrictionGroupInstance($this, RestrictionGroup::TYPE_AND);
+				$group->push($v);
+				$v->getParent()->remove($v);
+				$v->setParent($group);
+				$sg->push($group->setParent($sg));
+			}
+			
 			$sg->push($r);
 			
 			if ($r->getOperator() !== '=') {
 				$sg->negate();
 			}
 			
-			$group->push($sg);
+			$r->getParent()->remove($r)->push($sg);
+			$r->setParent($sg);
+			$_ret->push($sg);
 		}
 		
-		return $group;
+		return $_ret;
 	}
 	
 	/**
