@@ -121,6 +121,10 @@ abstract class Restriction
 				return $this->operator = '<';
 			case '<': 
 				return $this->operator = '>';
+			case 'IS': 
+				return $this->operator = 'IS NOT';
+			case 'IS NOT': 
+				return $this->operator = 'IS';
 			case 'LIKE': 
 				return $this->operator = 'NOT LIKE';
 			case 'NOT LIKE': 

@@ -43,12 +43,24 @@ abstract class SQLQuery extends Query
 		 */
 		$copy = clone $this;
 		$_ret = $copy->physicalize(true);
+		$of   = $this->getQuery()->getTable()->getDb()->getObjectFactory();
 		
-		foreach ($_ret as $q) {
-			if ($q === $copy) { continue; }
-			$copy->add($q->denormalize());
+		foreach ($copy->getCompositeRestrictions() as $r) {
+			
+			$group = $of->restrictionGroupInstance($this, \spitfire\storage\database\RestrictionGroup::TYPE_AND);
+			$group->push($r->getValue()->denormalize());
+			$group->push($r);
+			
+			if ($r->getOperator() !== '=') {
+				$group->negate();
+			}
+			
+			$r->getParent()->push($group)->remove($r);
+			$r->setParent($group);
+			$copy->push($group);
 		}
 		
+		$copy->normalize();
 		return $_ret;
 	}
 	
@@ -94,19 +106,27 @@ abstract class SQLQuery extends Query
 	public function denormalize() {
 		
 		$composite = $this->getCompositeRestrictions();
+		$of        = $this->getQuery()->getTable()->getDb()->getObjectFactory();
+		$group     = $of->restrictionGroupInstance($this, \spitfire\storage\database\RestrictionGroup::TYPE_AND);
 		
 		if ($this->isMixed() || $composite->isEmpty()) {
-			return [];
+			return $group;
 		}
-		
-		$_ret = [];
 		
 		foreach ($composite as /*@var $r CompositeRestriction*/$r) {
+			$sg = $of->restrictionGroupInstance($group, \spitfire\storage\database\RestrictionGroup::TYPE_AND);
+			$sg->push($r->getValue()->denormalize()->setParent($sg));
 			$r->getParent()->remove($r);
-			$_ret = array_merge($_ret, [$r]);
+			$sg->push($r);
+			
+			if ($r->getOperator() !== '=') {
+				$sg->negate();
+			}
+			
+			$group->push($sg);
 		}
 		
-		return $_ret;
+		return $group;
 	}
 	
 	/**

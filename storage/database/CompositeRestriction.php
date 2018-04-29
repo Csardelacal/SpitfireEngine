@@ -2,6 +2,7 @@
 
 use spitfire\model\Field as Logical;
 use spitfire\Model;
+use BadMethodCallException;
 
 class CompositeRestriction
 {
@@ -14,6 +15,7 @@ class CompositeRestriction
 		
 		if ($value instanceof Model) { $value = $value->getQuery(); }
 		if ($value instanceof Query) { $value->setAliased(true); }
+		else { throw new BadMethodCallException('Composite restriction requires a query / model as value', 1804201334); }
 		
 		$this->parent = $parent;
 		$this->field = $field;

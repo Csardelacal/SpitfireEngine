@@ -77,7 +77,7 @@ abstract class RestrictionGroup extends Collection
 		if ($params === 3) { list($operator, $value) = [$value, $_]; }
 		else               { $operator = '='; }
 		
-		parent::push($rm->make($this, $fieldname, $operator, $value));
+		$this->push($rm->make($this, $fieldname, $operator, $value));
 		return $this;
 	}
 	
@@ -121,7 +121,7 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function group($type = self::TYPE_OR) {
 		#Create the group and set the type we need
-		$group = $this->getQuery()->restrictionGroupInstance($this);
+		$group = $this->getQuery()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this);
 		$group->setType($type);
 		
 		#Add it to our restriction list
@@ -220,7 +220,7 @@ abstract class RestrictionGroup extends Collection
 			 * the parent performs is still correct.
 			 */
 			->filter(function ($e) { return $e instanceof RestrictionGroup; })
-			->each(function (RestrictionGroup$e) { $e->normalize(); })
+			->each(function (RestrictionGroup$e) { return $e->normalize(); })
 			
 			/*
 			 * We remove the groups that satisfy any of the following:
@@ -230,7 +230,7 @@ abstract class RestrictionGroup extends Collection
 			 */
 			->filter(function (RestrictionGroup$e) { return $e->getType() === $this->getType() || $e->count() < 2; })
 			->each(function ($e) {
-				$this->add($e->each(function ($e) { $e->setParent($this); })->toArray());
+				$this->add($e->each(function ($e) { $e->setParent($this); return $e; })->toArray());
 				$this->remove($e);
 			});
 		
