@@ -31,8 +31,22 @@ abstract class Query extends RestrictionGroup
 	 */
 	protected $table;
 	
+	/**
+	 * Pagination should be handled by the Pagination class. 
+	 * To replace it, there should be a limit / offset combo.
+	 *
+	 * @var type 
+	 * @deprecated since version 0.1-dev 20180506
+	 */
 	protected $page = 1;
 	protected $rpp = -1;
+	
+	/**
+	 *
+	 * @todo We should introduce a class that allows these queries to sort by multiple,
+	 * and even layered (as in, in other queries) columns.
+	 * @var string
+	 */
 	protected $order;
 	protected $groupby = null;
 	

@@ -133,6 +133,15 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	/**
+	 * Removes all duplicates from the collection.
+	 * 
+	 * @return \spitfire\core\Collection
+	 */
+	public function unique() {
+		return new Collection(array_unique($this->items));
+	}
+	
+	/**
 	 * Counts the number of elements inside the collection.
 	 * 
 	 * @return int
@@ -154,6 +163,11 @@ class Collection implements ArrayAccess, CollectionInterface
 		if (!$this->containsOnly('number')) { throw new BadMethodCallException('Collection does contain non-numeric types'); }
 		
 		return array_sum($this->items);
+	}
+	
+	public function sort($callback = null) {
+		if (!$callback) { return new Collection(sort($this->items)); }
+		else            { return new Collection(usort($this->items, $callback)); }
 	}
 	
 	/**
