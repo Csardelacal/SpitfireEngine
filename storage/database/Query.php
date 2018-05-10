@@ -39,6 +39,14 @@ abstract class Query extends RestrictionGroup
 	 * @deprecated since version 0.1-dev 20180506
 	 */
 	protected $page = 1;
+	
+	/**
+	 * Pagination should be handled by the Pagination class. 
+	 * To replace it, there should be a limit / offset combo.
+	 *
+	 * @var type 
+	 * @deprecated since version 0.1-dev 20180506
+	 */
 	protected $rpp = -1;
 	
 	/**
@@ -134,6 +142,7 @@ abstract class Query extends RestrictionGroup
 	/**
 	 * Sets the amount of results returned by the query.
 	 *
+	 * @deprecated since version 0.1-dev 20180509
 	 * @param int $amt
 	 *
 	 * @return self
@@ -144,6 +153,8 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20180509
 	 * @return int The amount of results the query returns when executed.
 	 */
 	public function getResultsPerPage() {
@@ -184,38 +195,6 @@ abstract class Query extends RestrictionGroup
 		return $this;
 	}
 	
-	public function getPhysicalSubqueries() {
-		$_return   = [];
-		$queries   = $this->getSubqueries();
-		
-		/*
-		 * Inject the current query into the array. The data for this query needs
-		 * to be retrieved last.
-		 */
-		$queries[] = $this;
-		
-		foreach ($queries as $query) {
-			$clone     = clone $query;
-			$_return   = array_merge($_return, $clone->physicalize());
-			$_return[] = $clone;
-		}
-		
-		return $_return;
-	}
-	
-	public function toGroup() {
-		$of    = $this->getTable()->getDb()->getObjectFactory();
-		$group = $of->restrictionGroupInstance(null, $this->getType());
-		
-		foreach ($this as $restriction) {
-			$c = clone $restriction;
-			$c->setParent($group);
-			$group->push($c);
-		}
-		
-		return $group;
-	}
-	
 	/**
 	 * Returns a record from a database that matches the query we sent.
 	 * 
@@ -228,18 +207,96 @@ abstract class Query extends RestrictionGroup
 		$data = $this->result->fetch();
 		return $data;
 	}
+	
+	/**
+	 * This method returns a single record from a query, allowing your application
+	 * to quickly query the database for a record it needs.
+	 * 
+	 * The onEmpty parameter allows you to inject a callback in the event the query
+	 * returns no value. You can provide a callable or an Exception (which will 
+	 * be thrown), reducing the amount of if/else in your controllers.
+	 * 
+	 * The code
+	 * <code>
+	 * $user = db()->table('user')->get('_id', $uid)->first();
+	 * if (!$user) { throw new PublicException('No user found', 404); }
+	 * </code>
+	 * 
+	 * Can therefore be condensed into:
+	 * <code> 
+	 * $user = db()->table('user')->get('_id', $uid)->first(new PublicException('No user found', 404));
+	 * </code>
+	 * 
+	 * If you wish to further condense this, you can just provide onEmpty as `true`
+	 * which will then cause the system to raise a `PublicException` with a standard
+	 * 'No %tablename found' and a 404 code. Causing this code to boil down to:
+	 * 
+	 * <code> 
+	 * $user = db()->table('user')->get('_id', $uid)->first(true);
+	 * </code>
+	 * 
+	 * While this seems more unwieldy at first, the code gains a lot of clarity 
+	 * when written like this
+	 * 
+	 * @param callable|\Exception|true|null $onEmpty
+	 * @return Model|null
+	 */
+	public function first($onEmpty = null) {
+		$res = $this->execute(null, 0, 1)->fetch();
+		
+		if (!$res && $onEmpty) {
+			if ($onEmpty instanceof \Exception) { throw $onEmpty;}
+			elseif(is_callable($onEmpty))       { return $onEmpty(); }
+			elseif($onEmpty === true)           { throw new PublicException(sprintf('No %s found', $this->getTable()->getSchema()->getName()), 404); }
+		}
+		
+		return $res;
+	}
+	
+	/**
+	 * This method returns a finite amount of items matching the parameters from 
+	 * the database. This method always returns a collection, even if the result
+	 * is empty (no records matched the query)
+	 * 
+	 * @param int $skip
+	 * @param int $amt
+	 * @return \spitfire\core\Collection
+	 */
+	public function range($skip = 0, $amt = 1) {
+		if ($skip < 0 || $amt < 1) {
+			throw new \InvalidArgumentException('Query received invalid arguments', 1805091416);
+		}
+		
+		return $this->execute(null, $skip, $amt)->fetchAll();
+	}
+	
+	/**
+	 * 
+	 * @return \spitfire\core\Collection
+	 */
+	public function all() {
+		return $this->execute();
+	}
 
 	/**
 	 * Returns all the records that the query matched. This method wraps the records
 	 * inside a collection object to make them easier to access.
-	 *
+	 * 
+	 * @deprecated since version 0.1-dev 20180509
 	 * @return \spitfire\core\Collection[]
 	 */
 	public function fetchAll() {
 		if (!$this->result) { $this->query(); }
 		return new \spitfire\core\Collection($this->result->fetchAll());
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20180509 We do no longer provide the option to not return the result
+	 * @param type $fields
+	 * @param type $returnresult
+	 * @return type
+	 */
 	protected function query($fields = null, $returnresult = false) {
 		$result = $this->execute($fields);
 		
@@ -260,29 +317,24 @@ abstract class Query extends RestrictionGroup
 	 * Counts the number of records a query would return. If there is a grouping
 	 * defined it will count the number of records each group would return.
 	 * 
+	 * @todo This method's behavior is extremely inconsistent
 	 * @return type
 	 */
 	public function count() {
-		if (!$this->groupby) {
-			//This is a temporary fix that will only count distinct values in complex
-			//queries.
-			$query = $this->query(Array('COUNT(DISTINCT ' . $this->table->getTable()->getPrimaryKey()->getFields()->join(', ') . ')'), true)->fetchArray();
-			$count = reset($query);
-			return $this->count = (int)$count;
-		}
-		elseif(count($this->groupby) === 1) {
-			$_ret   = Array();
-			$cursor = $this->query(Array(reset($this->groupby), 'count(*)'), true);
-			
-			while ($row = $cursor->fetchArray()) { $_ret[reset($row)] = end($row); }
-			return $_ret;
-		}
+		//This is a temporary fix that will only count distinct values in complex
+		//queries.
+		$query = $this->query(Array('COUNT(DISTINCT ' . $this->table->getTable()->getPrimaryKey()->getFields()->join(', ') . ')'), true)->fetchArray();
+		$count = reset($query);
+		return $this->count = (int)$count;
 		
 	}
 	
 	/**
 	 * Defines a column or array of columns the system will be using to group 
 	 * data when generating aggregates.
+	 * 
+	 * @todo When adding aggregation, the system should automatically use the aggregation for extraction
+	 * @todo Currently the system only supports grouping and not aggregation, this is a bit of a strange situation that needs resolution
 	 * 
 	 * @param LogicalField|FieLogicalFieldld[]|null $column
 	 * @return Query Description
@@ -316,6 +368,12 @@ abstract class Query extends RestrictionGroup
 		return $this->order;
 	}
 	
+	/**
+	 * Returns the current 'query table'. This is an object that allows the query
+	 * to alias it's table if needed.
+	 * 
+	 * @return QueryTable
+	 */
 	public function getQueryTable() {
 		return $this->table;
 	}
@@ -331,10 +389,9 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	/**
-	 * Returns the current 'query table'. This is an object that allows the query
-	 * to alias it's table if needed.
+	 * Returns the actual table this query is searching on. 
 	 * 
-	 * @return QueryTable
+	 * @return Table
 	 */
 	public function getTable() {
 		return $this->table->getTable();
@@ -344,29 +401,9 @@ abstract class Query extends RestrictionGroup
 		return $this->getTable() . implode(',', $this->getRestrictions());
 	}
 	
-	public abstract function execute($fields = null);
-	
 	/**
 	 * 
-	 * @deprecated since version 0.1-dev 2017102609
+	 * @return ResultSetInterface
 	 */
-	public abstract function restrictionInstance(QueryField$field, $value, $operator);
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 2017102609
-	 */
-	public abstract function compositeRestrictionInstance(LogicalField$field = null, $value, $operator);
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 */
-	public abstract function queryFieldInstance($field);
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 */
-	public abstract function queryTableInstance($table);
+	public abstract function execute($fields = null, $offset = null, $max = null);
 }

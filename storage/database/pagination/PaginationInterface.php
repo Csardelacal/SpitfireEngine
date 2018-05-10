@@ -24,7 +24,38 @@
  * THE SOFTWARE.
  */
 
-interface PaginatorInterface
+/**
+ * This interface allows applications to quickly implement custom user interfaces
+ * while maintaining the behavior of the standard pagination system.
+ * 
+ * @todo Find a better name for this
+ * @todo Document the different methods
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
+interface PaginationInterface
 {
+	/**
+	 * Returns the current page 
+	 * 
+	 * @return int
+	 */
+	public function current();
+	
+	public function emptyResultMessage();
+	
+	public function page($number);
+	
+	public function previous();
+	public function next();
+	
+	public function first();
+	public function last($number);
+	
+	public function before();
+	public function after();
+	
+	public function gap();
+	public function jumpTo($total);
+	public function pageOf($total);
 	
 }

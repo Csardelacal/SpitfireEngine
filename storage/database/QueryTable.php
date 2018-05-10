@@ -66,7 +66,7 @@ abstract class QueryTable
 	
 	public function getFields() {
 		$of = $this->table->getDb()->getObjectFactory();
-		$fields = $this->table->getFields();
+		$fields = $this->table->getLayout()->getFields();
 		
 		foreach ($fields as &$field) {
 			$field = $of->queryFieldInstance($this, $field);

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class SimplePaginatorRenderer implements RendererInterface
+class SimplePaginator implements PaginationInterface
 {
 	
 	/**
@@ -34,7 +34,7 @@ class SimplePaginatorRenderer implements RendererInterface
 	private $url;
 	private $parameter;
 	
-	public function setURL(\spitfire\core\http\URL $url, $parameter) {
+	public function __construct(\spitfire\core\http\URL $url, $parameter) {
 		$this->url = $url;
 		$this->parameter = $parameter;
 	}
@@ -47,8 +47,8 @@ class SimplePaginatorRenderer implements RendererInterface
 		return '<ul class="pagination">';
 	}
 
-	public function current($number) {
-		return sprintf('<li class="disabled unavailable"><a>%d</a></li>', $number);
+	public function current() {
+		return isset($_GET[$this->parameter])? $_GET[$this->parameter] : 1;
 	}
 
 	public function emptyResultMessage() {
@@ -71,9 +71,9 @@ class SimplePaginatorRenderer implements RendererInterface
 		return sprintf('<li><a href="%s">%s</a></li>', $url, $number);
 	}
 
-	public function next($number) {
+	public function next() {
 		$url = clone $this->url;
-		$url->setParam($this->parameter, $number);
+		$url->setParam($this->parameter, $this->current() + 1);
 		
 		return sprintf('<li><a href="%s">&raquo;</a></li>', $url);
 	}
@@ -85,9 +85,9 @@ class SimplePaginatorRenderer implements RendererInterface
 		return sprintf('<li><a href="%s">%s</a></li>', $url, $number);
 	}
 
-	public function previous($number) {
+	public function previous() {
 		$url = clone $this->url;
-		$url->setParam($this->parameter, $number);
+		$url->setParam($this->parameter, $this->current() - 1);
 		
 		return sprintf('<li><a href="%s">&laquo;</a></li>', $url);
 	}
@@ -96,11 +96,11 @@ class SimplePaginatorRenderer implements RendererInterface
 		return sprintf('<li class="disabled unavailable"><a>...</a></li>');
 	}
 
-	public function jumpTo($current, $total) {
+	public function jumpTo($total) {
 		return '';
 	}
 
-	public function pageOf($current, $total) {
+	public function pageOf($total) {
 		return '';
 	}
 

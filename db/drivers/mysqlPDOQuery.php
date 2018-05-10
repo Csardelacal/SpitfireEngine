@@ -11,7 +11,7 @@ use spitfire\storage\database\Table;
 
 class MysqlPDOQuery extends SQLQuery
 {
-	public function execute($fields = null) {
+	public function execute($fields = null, $offset = null, $max = null) {
 		
 		$this->setAliased(false);
 		
@@ -25,10 +25,6 @@ class MysqlPDOQuery extends SQLQuery
 			$joins[] = sprintf('LEFT JOIN %s ON (%s)', $q->getQueryTable()->definition(), implode(' AND ', $q->getRestrictions()));
 		}
 		
-		#Declare vars
-		$rpp          = $this->getResultsPerPage();
-		$offset       = ($this->getPage() - 1) * $rpp;
-		
 		$selectstt    = 'SELECT';
 		$fromstt      = 'FROM';
 		$tablename    = $last->getQueryTable()->definition();
@@ -40,7 +36,7 @@ class MysqlPDOQuery extends SQLQuery
 		$groupbystt   = 'GROUP BY';
 		$groupby      = $this->groupby;
 		$limitstt     = 'LIMIT';
-		$limit        = $offset . ', ' . $rpp;
+		$limit        = $offset . ', ' . $max;
 		
 		if ($fields === null) {
 			$fields = $last->getQueryTable()->getFields();
@@ -72,7 +68,7 @@ class MysqlPDOQuery extends SQLQuery
 			$restrictions = implode(' AND ', $restrictions);
 		}
 		
-		if ($rpp < 0) {
+		if ($max === null) {
 			$limitstt = '';
 			$limit    = '';
 		}
@@ -149,7 +145,11 @@ class MysqlPDOQuery extends SQLQuery
 	public function compositeRestrictionInstance(Field $field = null, $value, $operator) {
 		return new CompositeRestriction($this, $field, $value, $operator);
 	}
-
+	
+	/**
+	 * 
+	 * @fixme
+	 */
 	public function delete() {
 		
 		

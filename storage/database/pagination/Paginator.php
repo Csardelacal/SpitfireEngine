@@ -1,6 +1,9 @@
 <?php namespace spitfire\storage\database\pagination;
 
+use spitfire\core\http\URL;
 use spitfire\storage\database\Query;
+use function collect;
+use function within;
 
 /* 
  * The MIT License
@@ -40,82 +43,68 @@ use spitfire\storage\database\Query;
  * 
  * @todo Somehow this class should cache the counts, so the database doesn't need to read the data every time.
  * @todo This class should help paginating without the use of LIMIT
+ * @todo Update the pertinent documentation on the wiki
  */
 class Paginator
 {
+	/**
+	 * The query to paginate. The offset and limit properties of the query may be
+	 * overwritten by the paginator.
+	 *
+	 * @var Query
+	 */
 	private $query;
 	
 	/**
+	 * This property allows the paginator to communicate with the user to retrieve
+	 * the current page and present a set of options to jump to another page.
 	 *
-	 * @var RendererInterface
+	 * @var PaginationInterface
 	 */
-	private $renderer;
-	private $maxJump = 3;
-
-	/** @var URL */
-	private $url;
-	private $pageCount;
-	private $param     = 'page';
-	
-	public function __construct(Query $query = null, $name = null) {
-		if ($query !== null && $query->getResultsPerPage() < 1) {
-			$query->setResultsPerPage(20);
-		}
-		
-		$this->query = $query;
-		$this->name  = $name;
-		$this->query->setPage((int)$_GET[$this->param][$this->getName()]);
-	}
-	
-	public function getCurrentPage () {
-		return $this->query->getPage();
-	}
-	
-	public function getPageCount() {
-		if ($this->pageCount !== null) return $this->pageCount;
-		
-		$rpp     = $this->query->getResultsPerPage();
-		$this->query->setResultsPerPage(-1);
-		$results = $this->query->count();
-		$this->query->setResultsPerPage($rpp);
-		
-		return $this->pageCount = ceil($results/$rpp);
-	}
+	private $io;
 	
 	/**
-	 * Returns the paginator URL. The URL will be used to replace the value of the
-	 * parameter this class uses to add an entry for this pagination.
+	 * The number of records to be fit in a single page. Once the number of records
+	 * is exceeded, another page is added.
+	 *
+	 * @var int
+	 */
+	private $pageSize;
+	
+	/**
+	 * The distance suggests spitfire the amount of pages a user should be able
+	 * to jump from the current page.
 	 * 
-	 * @return URL
-	 */
-	public function getURL() {
-		if (isset($this->url)) {
-			return $this->url;
-		} else {
-			return $this->url = URL::current();
-		}
-	}
-
-	/**
-	 * @param int $page
+	 * When there's enough pages, the user should be able to jump at least (distance)
+	 * and at most (distance * 2).
 	 *
-	 * @return URL
+	 * @var int 
 	 */
-	public function makeURL($page) {
-		if (!$this->isValidPageNumber($page)) return null;
-		
-		$url   = $this->getURL();
-		$pages = $url->getParameter($this->param);
-		$name  = $this->getName();
-		
-		if (!is_array($pages)) $pages = Array();
-		$pages[$name] = $page;
-		$url->setParam($this->param, $pages);
-		return $url;
+	private $distance = 3;
+	
+	/**
+	 * Paginates a query. Paginating is the process in which a query that delivers
+	 * a resultset too large to be properly transferred over a network or fit into
+	 * a window is broken into individual pages.
+	 * 
+	 * @param Query $query
+	 * @param type $pageSize
+	 */
+	public function __construct(Query$query, PaginationInterface$io = null, $pageSize = 20) {
+		$this->query = $query;
+		$this->io    = $io? : new SimplePaginator(URL::current(), 'page');
+		$this->pageSize = $pageSize;
 	}
 	
-	public function getName() {
-		return ($this->name !== null)? $this->name : '*';
+	/**
+	 * Estimates the number of pages needed to fit all the results for this query.
+	 * 
+	 * @return int
+	 */
+	public function getPageCount() {
+		$results = $this->query->count();
+		
+		return $this->pageCount = ceil($results/$this->pageSize);
 	}
 	
 	/**
@@ -123,7 +112,7 @@ class Paginator
 	 * calculates the ideal amount of pages to be displayed (based on the max you want)
 	 * and generates an array with the numbers for those pages.
 	 * 
-	 * If you use the default maxJump of 3 you will always receive up to 9 pages.
+	 * If you use the default distance of 3 you will always receive up to 9 pages.
 	 * Those include the first, the last, the current and the three higher and lower
 	 * pages. For page 7/20 you will receive (1,4,5,6,7,8,9,10,20).
 	 * 
@@ -131,54 +120,111 @@ class Paginator
 	 * left it will try to extend this with results on the other one. This avoids
 	 * broken looking paginations when reaching the final results of a set.
 	 * 
-	 * @return array
+	 * @return int[]
 	 */
-	public function getPageNumbers() {
+	public function pages() {
+		$count = $this->getPageCount();
+		
+		/*
+		 * Determine the range within the user can jump. The system will try to find
+		 * a value that allows it to render as many pages as possible with the given
+		 * distance.
+		 * 
+		 * Optimizing for drawing the most possible pages provides the user with a
+		 * consistent interface and with the biggest amount of options.
+		 */
+		$start = within(2, $this->io->current() - $this->distance, $count - $this->distance * 2 - 2); 
+		
+		/*
+		 * Generate the page numbers from start to start + 2(distance). This ensures
+		 * that we always receive either all the pages or distance * 2 + 3 pages.
+		 */
 		$pages = collect(range(
-			$this->getCurrentPage() - $this->maxJump, 
-			$this->getCurrentPage() + $this->maxJump
+			$start, 
+			$start + $this->distance * 2 + 1
 		));
 		
+		/*
+		 * We finally add the first and last page to the result set. Please note that
+		 * we do not check if the pages have already been added at this stage since
+		 * we simply remove the duplicates once all of them have been added.
+		 */
 		$pages->push(1);
-		$pages->push($this->getPageCount());
+		$pages->push($count);
 		
-		return $pages->unique()->sort()->filter(function($e) { return $e > 0 && $e < $this->getPageCount(); });
+		return $pages->unique()->sort()->filter(function($e) { return $e > 0 && $e <= $this->getPageCount(); });
 	}
 	
 	/**
-	 * Sets the URL base that is used for pagination URL's. By default no
-	 * URL and page are used for parameters
-	 * @param URL $url
-	 * @param string $param
+	 * Gets the records that populate the current page.
 	 */
-	public function setURL(URL $url, $param) {
-		$this->url   = $url;
-		$this->param = $param;
+	public function records() {
+		return $this->query->range($this->io->current() * $this->pageSize, $this->pageSize);
 	}
-
+	
+	/**
+	 * This method makes it quick and comfortable to present the pagination, just
+	 * by running <code>echo $pagination;</code> wherever your application whishes
+	 * to present the pages.
+	 * 
+	 * Please note, the pagination will also render HTML whenever your query returns
+	 * an empty result. Therefore, you don't need to check whether the result set
+	 * is empty or not.
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
-		$pages      = $this->getPageNumbers();
+		$pages      = $this->pages();
 		$previous   = 0;
-		$current    = $this->getCurrentPage();
 		
 		if (empty($pages)) {
-			return $this->renderer->emptyResultMessage();
+			return $this->io->emptyResultMessage();
 		}
 		
+		/*
+		 * It's common for HTML forms to have some kind of boilerplate to prepare 
+		 * for the output. Since HTML is the most common form of pagination, it's 
+		 * easy to make adjustments to ensure it's easy to generate HTML.
+		 */
+		$_ret = $this->io->before();
 		
-		$_ret = $this->renderer->before();
-		$_ret.= $this->renderer->first();
-		$_ret.= $this->renderer->previous($current - 1);
+		/*
+		 * Render a "Jump to first page button". These are usually the first element
+		 * in a pagination. While it functions exactly like the page 1 link, it allows
+		 * for the application to customize the experience.
+		 */
+		$_ret.= $this->io->first();
 		
+		/*
+		 * Print a "Jump to previous page". Again, these can have special layouts
+		 * or styling. The previous page is always included in the pages.
+		 */
+		$_ret.= $this->io->previous();
+		
+		/*
+		 * Render the pages. All the pages sent to the io component are valid, but
+		 * can be pages the user should be unable to jump to. For example, the 
+		 * current page is renderer, but many developers prefer to have a faux
+		 * link in place, if this is the case, your renderer needs to gray it out.
+		 */
 		foreach ($pages as $page) { 
-			if ($page > $previous + 1) { $_ret.= $this->renderer->gap(); }
-			$_ret.= $this->renderer->page($page); 
+			if ($page > $previous + 1) { $_ret.= $this->io->gap(); }
+			$_ret.= $this->io->page($page); 
+			$previous = $page;
 		}
 		
-		$_ret.= $this->renderer->next($current + 1);
-		$_ret.= $this->renderer->last($this->getPageCount());
+		/*
+		 * Just like the before and first jump buttons, the system terminates by
+		 * adding the next and last pages.
+		 */
+		$_ret.= $this->io->next();
+		$_ret.= $this->io->last($this->getPageCount());
 		
-		$_ret.= $this->renderer->after();
+		/*
+		 * In case the boilerplate requires it, your renderer can use this to present
+		 * any boilerplate it requires to end the pagination.
+		 */
+		$_ret.= $this->io->after();
 		
 		return $_ret;
 	}
