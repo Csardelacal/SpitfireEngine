@@ -4,6 +4,8 @@ use IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
+use spitfire\storage\database\pagination\MockPaginator;
+use spitfire\storage\database\pagination\Paginator;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
@@ -57,7 +59,7 @@ class PaginatorTest extends TestCase
 		}
 		
 		$query = $this->table->getAll();
-		$paginator = new PaginatorTest($query);
+		$paginator = new Paginator($query, new MockPaginator(1));
 		
 		$this->assertEquals(20, $paginator->records()->count());
 	}

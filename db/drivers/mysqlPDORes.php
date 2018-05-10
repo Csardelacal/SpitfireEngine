@@ -46,12 +46,12 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 		$data = $this->result->fetchAll(PDO::FETCH_ASSOC);
 		
 		foreach ($data as &$record) {
-			$record = $this->table->getDb()->table($this->table->getModel()->getName())->newRecord(
+			$record = $this->table->newRecord(
 				array_map( Array($this->table->getDB()->getEncoder(), 'decode'), $record)
 			);
 		}
 		
-		return $data;
+		return new \spitfire\core\Collection($data);
 	}
 	
 	/**
