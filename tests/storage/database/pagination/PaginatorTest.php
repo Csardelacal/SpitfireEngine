@@ -54,8 +54,8 @@ class PaginatorTest extends TestCase
 	 * @todo Make this test MySQL independent. Right now it only tests whether MySQL works fine
 	 * @todo Think of something smarter for the mock element
 	 * 
-	 * @covers Paginator::getPageCount
-	 * @covers Paginator::records
+	 * @covers spitfire\storage\database\pagination\Paginator::getPageCount
+	 * @covers spitfire\storage\database\pagination\Paginator::records
 	 */
 	public function testPagination() {
 		
