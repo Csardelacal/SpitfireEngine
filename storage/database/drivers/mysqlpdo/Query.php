@@ -92,7 +92,7 @@ class Query extends SQLQuery
 		$stt = array_filter(Array( $selectstt, implode(', ', $fields), $fromstt, $tablename, $join, 
 		    $wherestt, $restrictions, $groupbystt, $groupby, $orderstt, $order, $limitstt, $limit));
 		
-		return new \spitfire\storage\database\drivers\mysqlPDOResultSet($this->getTable(), $this->getTable()->getDb()->execute(implode(' ', $stt)));
+		return new ResultSet($this->getTable(), $this->getTable()->getDb()->execute(implode(' ', $stt)));
 		
 	}
 	

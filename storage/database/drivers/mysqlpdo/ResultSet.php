@@ -1,6 +1,10 @@
-<?php namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use PDO;
+use PDOStatement;
+use spitfire\core\Collection;
+use spitfire\storage\database\ResultSetInterface;
+use spitfire\storage\database\Table;
 
 /**
  * This class works as a traditional resultset. It acts as an adapter between the
@@ -8,7 +12,7 @@ use PDO;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
+class ResultSet implements ResultSetInterface
 {
 	/**
 	 * Contains the raw pointer that PDO has created when executing the query.
@@ -23,11 +27,11 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 	 * This is a reference to the table this resultset belongs to. This allows
 	 * Spitfire to retrieve data about the model and the fields the datatype has.
 	 *
-	 * @var \spitfire\storage\database\Table
+	 * @var Table
 	 */
 	private $table;
 	
-	public function __construct(\spitfire\storage\database\Table$table, $stt) {
+	public function __construct(Table$table, $stt) {
 		$this->result = $stt;
 		$this->table = $table;
 	}
@@ -51,7 +55,7 @@ class mysqlPDOResultSet implements \spitfire\storage\database\ResultSetInterface
 			);
 		}
 		
-		return new \spitfire\core\Collection($data);
+		return new Collection($data);
 	}
 	
 	/**
