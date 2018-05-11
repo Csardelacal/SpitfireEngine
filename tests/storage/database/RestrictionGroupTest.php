@@ -4,7 +4,7 @@ use IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\drivers\mysqlpdo\QueryField;
 use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
-use spitfire\storage\database\drivers\mysqlPDOField;
+use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
@@ -22,7 +22,7 @@ class RestrictionGroupTest extends TestCase
 		
 		$table = new Table(db(), new Schema('test'));
 		$query = new MysqlPDOQuery($table);
-		$field = new mysqlPDOField(new IntegerField(), 'test');
+		$field = new MysqlField(new IntegerField(), 'test');
 		$queryfield = new QueryField(new QueryTable($table), $field);
 		
 		$groupa = new MysqlPDORestrictionGroup($query);

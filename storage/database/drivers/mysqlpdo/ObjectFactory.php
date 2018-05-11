@@ -4,14 +4,13 @@ use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\drivers\mysqlPDOField;
+use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
-use spitfire\storage\database\Query;
 use spitfire\storage\database\QueryField as AbstractQueryField;
 use spitfire\storage\database\QueryTable as AbstractQueryTable;
 use spitfire\storage\database\Relation as RelationAbstract;
@@ -97,10 +96,10 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @param Field   $field
 	 * @param string  $name
 	 * @param Field $references
-	 * @return mysqlPDOField
+	 * @return MysqlField
 	 */
 	public function getFieldInstance(LogicalField$field, $name, Field$references = null) {
-		return new mysqlPDOField($field, $name, $references);
+		return new MysqlField($field, $name, $references);
 	}
 
 	public function restrictionInstance($query, AbstractQueryField$field, $value, $operator = null) {

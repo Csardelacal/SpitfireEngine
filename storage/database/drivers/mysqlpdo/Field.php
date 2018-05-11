@@ -1,10 +1,10 @@
-<?php namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use spitfire\model\Field as LogicalField;
-use spitfire\storage\database\Field;
+use spitfire\storage\database\Field as ParentClass;
 use \Reference;
 
-class mysqlPDOField extends Field
+class Field extends ParentClass
 {
 	
 	public function columnType() {
