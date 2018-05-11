@@ -29,6 +29,7 @@ abstract class RestrictionGroup extends Collection
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20170720
+	 * @remove 20180711
 	 * @param type $restriction
 	 */
 	public function putRestriction($restriction) {
@@ -43,6 +44,7 @@ abstract class RestrictionGroup extends Collection
 	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 *
 	 * @deprecated since version 0.1-dev 20170923
+	 * @remove 20180711
 	 * @param string $fieldname
 	 * @param mixed  $value
 	 * @param string $operator

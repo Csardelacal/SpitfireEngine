@@ -33,24 +33,6 @@ abstract class Query extends RestrictionGroup
 	protected $table;
 	
 	/**
-	 * Pagination should be handled by the Pagination class. 
-	 * To replace it, there should be a limit / offset combo.
-	 *
-	 * @var int 
-	 * @deprecated since version 0.1-dev 20180506
-	 */
-	protected $page = 1;
-	
-	/**
-	 * Pagination should be handled by the Pagination class. 
-	 * To replace it, there should be a limit / offset combo.
-	 *
-	 * @var int 
-	 * @deprecated since version 0.1-dev 20180506
-	 */
-	protected $rpp = -1;
-	
-	/**
 	 *
 	 * @todo We should introduce a class that allows these queries to sort by multiple,
 	 * and even layered (as in, in other queries) columns.
@@ -58,13 +40,6 @@ abstract class Query extends RestrictionGroup
 	 */
 	protected $order;
 	protected $groupby = null;
-	
-	/**
-	 *
-	 * @deprecated since version 0.1-dev 20160406
-	 * @var int|null
-	 */
-	private $count = null;
 
 	/** @param Table $table */
 	public function __construct($table) {
@@ -91,6 +66,7 @@ abstract class Query extends RestrictionGroup
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20160406
+	 * @remove 20180711
 	 * @param boolean $aliased
 	 */
 	public function setAliased($aliased) {
@@ -100,6 +76,7 @@ abstract class Query extends RestrictionGroup
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20160406
+	 * @remove 20180711
 	 * @return boolean
 	 */
 	public function getAliased() {
@@ -109,6 +86,7 @@ abstract class Query extends RestrictionGroup
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20160406
+	 * @remove 20180711
 	 * @return int
 	 */
 	public function getId() {
@@ -119,6 +97,7 @@ abstract class Query extends RestrictionGroup
 	 * 
 	 * @param int $id
 	 * @deprecated since version 0.1-dev 20160406
+	 * @remove 20180711
 	 * @return \spitfire\storage\database\Query
 	 */
 	public function setId($id) {
@@ -144,43 +123,46 @@ abstract class Query extends RestrictionGroup
 	 * Sets the amount of results returned by the query.
 	 *
 	 * @deprecated since version 0.1-dev 20180509
+	 * @remove 20180911
 	 * @param int $amt
 	 *
 	 * @return self
 	 */
 	public function setResultsPerPage($amt) {
-		$this->rpp = $amt;
-		return $this;
+		trigger_error('Deprecated Query::setResultsPerPage() invoked', E_USER_DEPRECATED);
+		throw new PrivateException('Pagination has been moved. Please refer to the documentation', 1805111238);
 	}
 	
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20180509
+	 * @remove 20180911
 	 * @return int The amount of results the query returns when executed.
 	 */
 	public function getResultsPerPage() {
-		return $this->rpp;
+		return false;
 	}
 	
 	/**
 	 * @deprecated since version 0.1-dev 20170414
 	 * @param int $page The page of results currently displayed.
+	 * @removed 20180511
 	 * @return boolean Returns if the page se is valid.
 	 */
 	public function setPage ($page) {
-		#The page can't be lower than 1
-		if ($page < 1) return false;
-		$this->page = $page;
-		return true;
+		trigger_error('Deprecated Query::setPage() invoked', E_USER_DEPRECATED);
+		throw new PrivateException('Pagination has been moved. Please refer to the documentation', 1805111238);
 	}
 	
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20170414
-	 * @return type
+	 * @remove 20180911
+	 * @return int
 	 */
 	public function getPage() {
-		return $this->page;
+		trigger_error('Deprecated Query::getPage() invoked', E_USER_DEPRECATED);
+		return false;
 	}
 	
 	//@TODO: Add a decent way to sorting fields that doesn't resort to this awful thing.
@@ -319,14 +301,14 @@ abstract class Query extends RestrictionGroup
 	 * defined it will count the number of records each group would return.
 	 * 
 	 * @todo This method's behavior is extremely inconsistent
-	 * @return ResultSetInterface
+	 * @return int
 	 */
 	public function count() {
 		//This is a temporary fix that will only count distinct values in complex
 		//queries.
 		$query = $this->query(Array('COUNT(DISTINCT ' . $this->table->getTable()->getPrimaryKey()->getFields()->join(', ') . ')'), true)->fetchArray();
 		$count = reset($query);
-		return $this->count = (int)$count;
+		return (int)$count;
 		
 	}
 	
@@ -401,7 +383,7 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	public function __toString() {
-		return $this->getTable()->getLayout()->getTableName() . implode(',', $this->getRestrictions());
+		return $this->getTable()->getLayout()->getTableName() . implode(',', $this->toArray());
 	}
 	
 	/**
