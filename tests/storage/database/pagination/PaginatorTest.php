@@ -49,6 +49,14 @@ class PaginatorTest extends TestCase
 		$this->db->destroy();
 	}
 	
+	/**
+	 * 
+	 * @todo Make this test MySQL independent. Right now it only tests whether MySQL works fine
+	 * @todo Think of something smarter for the mock element
+	 * 
+	 * @covers Paginator::getPageCount
+	 * @covers Paginator::records
+	 */
 	public function testPagination() {
 		
 		for ($i = 0; $i < 100; $i++) {
@@ -62,6 +70,7 @@ class PaginatorTest extends TestCase
 		$paginator = new Paginator($query, new MockPaginator(1));
 		
 		$this->assertEquals(20, $paginator->records()->count());
+		$this->assertEquals( 5, $paginator->getPageCount());
 	}
 	
 }

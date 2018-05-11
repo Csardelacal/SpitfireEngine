@@ -88,7 +88,7 @@ class Paginator
 	 * a window is broken into individual pages.
 	 * 
 	 * @param Query $query
-	 * @param type $pageSize
+	 * @param int   $pageSize
 	 */
 	public function __construct(Query$query, PaginationInterface$io = null, $pageSize = 20) {
 		$this->query = $query;
@@ -103,8 +103,7 @@ class Paginator
 	 */
 	public function getPageCount() {
 		$results = $this->query->count();
-		
-		return $this->pageCount = ceil($results/$this->pageSize);
+		return ceil($results/$this->pageSize);
 	}
 	
 	/**
@@ -120,7 +119,7 @@ class Paginator
 	 * left it will try to extend this with results on the other one. This avoids
 	 * broken looking paginations when reaching the final results of a set.
 	 * 
-	 * @return int[]
+	 * @return \spitfire\core\Collection <int>
 	 */
 	public function pages() {
 		$count = $this->getPageCount();

@@ -2,6 +2,7 @@
 
 use Exception;
 use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\PublicException;
 use spitfire\Model;
 use spitfire\model\Field as LogicalField;
 
@@ -35,7 +36,7 @@ abstract class Query extends RestrictionGroup
 	 * Pagination should be handled by the Pagination class. 
 	 * To replace it, there should be a limit / offset combo.
 	 *
-	 * @var type 
+	 * @var int 
 	 * @deprecated since version 0.1-dev 20180506
 	 */
 	protected $page = 1;
@@ -44,7 +45,7 @@ abstract class Query extends RestrictionGroup
 	 * Pagination should be handled by the Pagination class. 
 	 * To replace it, there should be a limit / offset combo.
 	 *
-	 * @var type 
+	 * @var int 
 	 * @deprecated since version 0.1-dev 20180506
 	 */
 	protected $rpp = -1;
@@ -275,7 +276,7 @@ abstract class Query extends RestrictionGroup
 	 * @return \spitfire\core\Collection
 	 */
 	public function all() {
-		return $this->execute();
+		return $this->execute()->fetchAll();
 	}
 
 	/**
@@ -293,8 +294,8 @@ abstract class Query extends RestrictionGroup
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20180509 We do no longer provide the option to not return the result
-	 * @param type $fields
-	 * @param type $returnresult
+	 * @param mixed[] $fields
+	 * @param bool    $returnresult
 	 * @return type
 	 */
 	protected function query($fields = null, $returnresult = false) {
@@ -318,7 +319,7 @@ abstract class Query extends RestrictionGroup
 	 * defined it will count the number of records each group would return.
 	 * 
 	 * @todo This method's behavior is extremely inconsistent
-	 * @return type
+	 * @return ResultSetInterface
 	 */
 	public function count() {
 		//This is a temporary fix that will only count distinct values in complex
@@ -356,6 +357,8 @@ abstract class Query extends RestrictionGroup
 	 * your restrictions in between so the system egenrates logical routes that 
 	 * will be understood by the relational DB.
 	 * 
+	 * @deprecated since version 0.1-dev 20180510
+	 * @todo Move somewhere else. This only pertains to relational DBMS systems
 	 * @return Query[]
 	 */
 	public function makeExecutionPlan() {
@@ -398,7 +401,7 @@ abstract class Query extends RestrictionGroup
 	}
 	
 	public function __toString() {
-		return $this->getTable() . implode(',', $this->getRestrictions());
+		return $this->getTable()->getLayout()->getTableName() . implode(',', $this->getRestrictions());
 	}
 	
 	/**
