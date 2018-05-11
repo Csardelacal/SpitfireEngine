@@ -1,4 +1,4 @@
-<?php namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
@@ -9,7 +9,7 @@ use spitfire\storage\database\QueryTable;
 use spitfire\storage\database\Relation;
 use spitfire\storage\database\Table;
 
-class MysqlPDOQuery extends SQLQuery
+class Query extends SQLQuery
 {
 	public function execute($fields = null, $offset = null, $max = null) {
 		
@@ -92,7 +92,7 @@ class MysqlPDOQuery extends SQLQuery
 		$stt = array_filter(Array( $selectstt, implode(', ', $fields), $fromstt, $tablename, $join, 
 		    $wherestt, $restrictions, $groupbystt, $groupby, $orderstt, $order, $limitstt, $limit));
 		
-		return new mysqlPDOResultSet($this->getTable(), $this->getTable()->getDb()->execute(implode(' ', $stt)));
+		return new \spitfire\storage\database\drivers\mysqlPDOResultSet($this->getTable(), $this->getTable()->getDb()->execute(implode(' ', $stt)));
 		
 	}
 	

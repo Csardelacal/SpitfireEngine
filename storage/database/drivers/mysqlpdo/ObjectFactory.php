@@ -5,7 +5,7 @@ use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
-use spitfire\storage\database\drivers\MysqlPDOQuery;
+use spitfire\storage\database\drivers\mysqlpdo\Query;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\Field;
@@ -111,14 +111,14 @@ class ObjectFactory implements ObjectFactoryInterface
 	 *
 	 * @param Table $table
 	 *
-	 * @return MysqlPDOQuery
+	 * @return Query
 	 * @throws PrivateException
 	 */
 	public function queryInstance($table) {
 		if ($table instanceof RelationAbstract){ $table = $table->getTable(); }
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
-		return new MysqlPDOQuery($table);
+		return new Query($table);
 	}
 
 	public function makeRelation(Table $table) {
