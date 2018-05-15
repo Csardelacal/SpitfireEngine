@@ -36,6 +36,12 @@ class ChildrenField extends Field
 	 * @return Schema
 	 */
 	public function getTarget() {
+		
+		#If the target is actually a class name.
+		if (is_string($this->target) && Strings::endsWith($this->target, 'Model')) {
+			$this->target = trim(substr($this->target, 0, 0 - strlen('Model')), '\/');
+		}
+		
 		#Check if the passed argument already is a model
 		if ($this->target instanceof Schema) {
 			return $this->target;
@@ -127,10 +133,11 @@ class ChildrenField extends Field
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
 		$query = $this->getTarget()->getTable()->getCollection()->getAll();
+		$of    = $this->getTarget()->getTable()->getDb()->getObjectFactory();
 		$query->setAliased(true);
 		
 		foreach ($this->getReferencedField()->getPhysical() as $p) {
-			$query->addRestriction($parent->queryFieldInstance($p->getReferencedField()), $query->queryFieldInstance($p));
+			$query->addRestriction($of->queryFieldInstance($parent->getQueryTable(), $p->getReferencedField()), $of->queryFieldInstance($query->getQueryTable(), $p));
 		}
 		
 		return Array($query);

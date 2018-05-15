@@ -1,8 +1,12 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\core\Environment;
+use Reference;
+use spitfire\cache\MemoryCache;
+use spitfire\core\Collection;
 use spitfire\exceptions\PrivateException;
+use spitfire\model\Index as LogicalIndex;
 use spitfire\storage\database\Field;
+use spitfire\storage\database\IndexInterface;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Table;
 
@@ -67,7 +71,7 @@ class Layout implements LayoutInterface
 	 * An array of indexes that this table defines to manage it's queries and 
 	 * data.
 	 *
-	 * @var \spitfire\storage\database\IndexInterface[]
+	 * @var MemoryCache
 	 */
 	private $indexes;
 	
@@ -80,7 +84,7 @@ class Layout implements LayoutInterface
 		$this->table = $table;
 		
 		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
-		$this->tablename = Environment::get('db_table_prefix') . $table->getSchema()->getTableName();
+		$this->tablename = $this->table->getDb()->getSettings()->getPrefix() . $table->getSchema()->getTableName();
 		
 		#Create the physical fields
 		$fields  = $this->table->getSchema()->getFields();
@@ -91,40 +95,37 @@ class Layout implements LayoutInterface
 			while ($phys = array_shift($physical)) { $columns[$phys->getName()] = $phys; }
 		}
 		
-		$this->fields = $columns;
+		$this->fields  = $columns;
+		$this->indexes = new MemoryCache();
 	}
 	
 	public function create() {
 		$table = $this;
 		$definitions = $table->columnDefinitions();
-		$foreignkeys = $table->foreignKeyDefinitions();
-		$pk = $table->getPrimaryKey();
-		
-		foreach($pk as &$f) { $f = '`' . $f->getName() .  '`'; }
-		
-		if (!empty($foreignkeys)) $definitions = array_merge ($definitions, $foreignkeys);
-		
-		if (!empty($pk)) $definitions[] = 'PRIMARY KEY(' . implode(', ', $pk) . ')';
+		$indexes     = $table->getIndexes();
 		
 		#Strip empty definitions from the list
-		$clean = array_filter($definitions);
+		$clean = array_filter(array_merge(
+			$definitions, 
+			$indexes->each(function($e) { return $e->definition(); })->toArray()
+		));
 		
 		$stt = sprintf('CREATE TABLE %s (%s) ENGINE=InnoDB CHARACTER SET=utf8',
 			$table,
 			implode(', ', $clean)
 			);
 		
-		return $table->getDb()->execute($stt);
+		return $this->table->getDb()->execute($stt);
 	}
 
 	public function destroy() {
-		$this->getDb()->execute('DROP TABLE ' . $this->tablename);
+		$this->table->getDb()->execute('DROP TABLE ' . $this);
 	}
 	
 	/**
 	 * Fetch the fields of the table the database works with. If the programmer
 	 * has defined a custom set of fields to work with, this function will
-	 * return the overriden fields.
+	 * return the overridden fields.
 	 * 
 	 * @return Field[] The fields this table handles.
 	 */
@@ -150,8 +151,34 @@ class Layout implements LayoutInterface
 		throw new PrivateException('Field ' . $name . ' does not exist in ' . $this);
 	}
 	
+	/**
+	 * 
+	 * @return Collection <Index>
+	 */
 	public function getIndexes() {
-		//TODO Implement
+		
+		return $this->indexes->get('indexes', function() {
+			
+			/*
+			 * First we get the defined indexes.
+			 */
+			$logical = $this->table->getSchema()->getIndexes();
+			$indexes = $logical->each(function (LogicalIndex$e) {
+				return new Index($e);
+			});
+			
+			/*
+			 * Then we get those implicitly defined by reference fields. These are 
+			 * defined by the driver, sicne they're required for it to work.
+			 */
+			$fields = array_filter($this->table->getSchema()->getFields(), function($e) { return $e instanceof Reference;});
+			
+			foreach ($fields as $field) {
+				$indexes->push(new ForeignKey(new LogicalIndex([$field])));
+			}
+			
+			return $indexes;
+		});
 	}
 
 	public function getTableName() : string {
@@ -159,14 +186,20 @@ class Layout implements LayoutInterface
 	}
 
 	public function repair() {
-		$table = $this;
-		$stt = "DESCRIBE $table";
+		$table = $this->table;
+		$stt = "DESCRIBE {$this}";
 		$fields = $table->getFields();
+		
+		foreach ($this->table->getSchema()->getFields() as $f) {
+			if ($f instanceof Reference && $f->getTarget() !== $this->table->getSchema()) {
+				$f->getTarget()->getTable()->getLayout()->repair();
+			}
+		}
 		//Fetch the DB Fields and create on error.
 		try {
-			$query = $this->getDb()->execute($stt, Array(), false);
+			$query = $this->table->getDb()->execute($stt, Array(), false);
 		}
-		catch(Exception $e) {
+		catch(\Exception $e) {
 			return $this->create();
 		}
 		//Loop through the exiting fields
@@ -192,52 +225,6 @@ class Layout implements LayoutInterface
 			$fields[$name] = '`'. $name . '` ' . $f->columnDefinition();
 		}
 		return $fields;
-	}
-	
-	/**
-	 * Creates a list of definitions for CONSTRAINTS defined by the references
-	 * this table's model makes to other models.
-	 * 
-	 * @return array
-	 */
-	protected function foreignKeyDefinitions() {
-		
-		$ret = Array();
-		$refs = $this->schema->getFields();
-		
-		foreach ($refs as $name => $ref) {
-			if (!$ref instanceof Reference) unset($refs[$name]);
-		}
-		
-		if (empty($refs)) return Array();
-		
-		foreach ($refs as $ref) {
-			//Check the integrity of the remote table
-			if ($ref->getTarget() !== $this->schema) {
-				$this->getDb()->table($ref->getTarget())->getTable()->repair();
-			}
-			
-			#Get the fields the model references from $ref
-			$fields = $ref->getPhysical();
-			foreach ($fields as &$field) $field = $field->getName();
-			unset($field);
-			#Get the table that represents $ref
-			$referencedtable = $ref->getTarget()->getTable();
-			$primary = $referencedtable->getPrimaryKey();
-			foreach ($primary as &$field) $field = $field->getName();
-			unset($field);
-			//Prepare the statement
-			$refstt = sprintf('FOREIGN KEY %s (%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE',
-				'fk_' . rand(), #Constraint name. Temporary fix, constraints should have proper names
-				implode(', ', $fields),
-				$referencedtable,
-				implode(', ', $primary) 
-				);
-			
-			$ret[] = $refstt;
-		}
-		
-		return $ret;
 	}
 	
 	/**

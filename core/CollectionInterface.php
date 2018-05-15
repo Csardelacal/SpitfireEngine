@@ -60,7 +60,7 @@ interface CollectionInterface extends Iterator
 	 * 
 	 * @return mixed
 	 */
-	function pluck();
+	function shift();
 	
 	/**
 	 * Uses a callback function to filter the elements of the array. The function

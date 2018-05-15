@@ -41,19 +41,6 @@ interface ObjectFactoryInterface
 {
 	
 	/**
-	 * Returns an instance of the class the child tables of this class have
-	 * this is used to create them when requested by the table() method.
-	 * 
-	 * @deprecated since version 0.1-dev 20170801
-	 *
-	 * @param DB     $db
-	 * @param string $tablename
-	 * 
-	 * @return Table Instance of the table class the driver wants the system to use
-	 */
-	function getTableInstance(DB$db, $tablename);
-	
-	/**
 	 * Creates a relation. These wrap the typical record operations on a table 
 	 * into a separate layer.
 	 * 
@@ -83,7 +70,7 @@ interface ObjectFactoryInterface
 	 * @return Table Instance of the table class the driver wants the system to use
 	 * @todo Rename to generateSchema
 	 */
-	function getOTFSchema($modelname);
+	function getOTFSchema(DB$db, $modelname);
 	
 	/**
 	 * Creates an instance of the Database field compatible with the current
@@ -105,14 +92,34 @@ interface ObjectFactoryInterface
 	 * retrieve data.
 	 * 
 	 * @param string      $query
-	 * @param Field     $field
+	 * @param QueryField  $field
 	 * @param mixed       $value
 	 * @param string|null $operator
 	 * 
 	 * @return Restriction|CompositeRestriction
 	 * @todo Rename to makeRestriction
 	 */
-	function restrictionInstance($query, Field$field, $value, $operator = null);
+	function restrictionInstance($query, QueryField$field, $value, $operator = null);
+	
+	/**
+	 * 
+	 * @todo This is supposed to take a RestrictionGroup
+	 * @param RestrictionGroup        $parent
+	 * @param LogicalField $field
+	 * @param mixed $value
+	 * @param string $operator
+	 */
+	function restrictionCompositeInstance(RestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null);
+	
+	/**
+	 * Creates a restriction group. This allows to associate several restrictions
+	 * with each other to create more complicated queries when writing.
+	 * 
+	 * @param RestrictionGroup $parent
+	 * @param int $type
+	 * @return RestrictionGroup A restriction group
+	 */
+	function restrictionGroupInstance(RestrictionGroup$parent = null, $type = RestrictionGroup::TYPE_OR);
 
 	/**
 	 * Creates a new query. A query is created with a table to provide information
@@ -125,4 +132,27 @@ interface ObjectFactoryInterface
 	 * @todo Rename to makeQuery
 	 */
 	function queryInstance($table);
+	
+	
+	/**
+	 * These objects connect a field with a query, providing an aliased name for 
+	 * the field when necessary.
+	 * 
+	 * @todo The second parameter should only accept physical and not logical fields
+	 * 
+	 * @param QueryTable       $queryTable
+	 * @param Field|QueryField $field
+	 * @return QueryField
+	 */
+	function queryFieldInstance(QueryTable$queryTable, $field);
+	
+	
+	/**
+	 * These objects connect a field with a query, providing an aliased name for 
+	 * the field when necessary.
+	 * 
+	 * @param QueryTable|Table $table
+	 * @return QueryTable
+	 */
+	function queryTableInstance($table);
 }

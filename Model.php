@@ -107,7 +107,7 @@ abstract class Model implements Serializable
 	/**
 	 * Returns the fields that compound the primary key of this record.
 	 * 
-	 * @return Field[]
+	 * @return storage\database\IndexInterface
 	 */
 	public function getUniqueFields() {
 		return $this->table->getPrimaryKey();
@@ -121,7 +121,7 @@ abstract class Model implements Serializable
 	 * @return array
 	 */
 	public function getPrimaryData() {
-		$primaryFields = $this->getUniqueFields();
+		$primaryFields = $this->getUniqueFields()->getFields();
 		$ret = Array();
 	    
 		foreach ($primaryFields as $field) {

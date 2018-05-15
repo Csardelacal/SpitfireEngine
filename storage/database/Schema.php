@@ -38,6 +38,11 @@ class Schema
 	 */
 	private $fields;
 	
+	/**
+	 * The indexes the table can use to optimize the search performance.
+	 *
+	 * @var Collection <Index>
+	 */
 	private $indexes;
 	
 	/**
@@ -71,7 +76,7 @@ class Schema
 	public final function __construct($name, Table$table = null) {
 		#Define the Model's table as the one just received
 		$this->table   = $table;
-		$this->name    = $name;
+		$this->name    = strtolower($name);
 		
 		#Create a field called ID that automatically identifies records 
 		$this->_id = new IntegerField(true);
@@ -154,7 +159,7 @@ class Schema
 	 * @return string
 	 */
 	public function getTableName() {
-		return str_replace('\\', '-', $this->getName());
+		return trim(str_replace('\\', '-', $this->getName()), '-_ ');
 	}
 	
 	/**
@@ -197,21 +202,40 @@ class Schema
 		//Do nothing, this is meant for overriding
 	}
 	
+	public function index() {
+		$fields = func_get_args();
+		$index = new Index($fields);
+		
+		$this->indexes->push($index);
+		return $index;
+	}
+	
+	/**
+	 * Returns the collection of indexes that are contained in this model.
+	 * 
+	 * @return Collection <Index>
+	 */
+	public function getIndexes() {
+		return $this->indexes;
+	}
+	
 	/**
 	 * Returns a list of fields which compound the primary key of this model.
 	 * The primary key is a set of records that identify a unique record.
 	 * 
-	 * @return Field[]
+	 * @return Index
 	 */
 	public function getPrimary() {
 		#Fetch the field list
-		$fields = $this->getFields();
-		#Drop the fields which aren't primary
-		foreach ($fields as $name => $field) {
-			if (!$field->isPrimary()) { unset($fields[$name]); }
+		$indexes = $this->indexes;
+		
+		#Loop over the indexes and get the primary one
+		foreach ($indexes as $index) {
+			if ($index->isPrimary()) { return $index; }
 		}
-		#Return the cleared array
-		return $fields;
+		
+		#If there was no index, then return a null value
+		return null;
 	}
 	
 	/**
@@ -225,12 +249,26 @@ class Schema
 	 * @param Field  $value
 	 */
 	public function __set($name, $value) {
-		
-		if ($value instanceof Field) {
-			$value->setName($name);
-			$value->setModel($this);
-			$this->fields[$name] = $value;
+		/*
+		 * First we need to check if the field already exists. In the event of us
+		 * overwriting the field we need to remove it from the already existing 
+		 * indexes
+		 */
+		if (isset($this->fields[$name])) {
+			unset($this->$name);
 		}
+		
+		/*
+		 * Check if the schema received a field. Because if that's not the case we
+		 * can't deal with it properly.
+		 */
+		if (!$value instanceof Field) {
+			throw new PrivateException('Schema received something else than a field', 1710181717);
+		}
+		
+		$value->setName($name);
+		$value->setSchema($this);
+		$this->fields[$name] = $value;
 		
 	}
 	
@@ -259,16 +297,19 @@ class Schema
 	 * @throws PrivateException
 	 */
 	public function __unset($name) {
-		if (isset($this->fields[$name])) { 
-			$f = $this->fields[$name];
-			unset($this->fields[$name]);
-			
-			#Find an index that may contain the field and remove it too
-			$this->indexes = $this->indexes->filter(function ($e) use ($f) {
-				return $e->contains($f);
-			});
+		#Check if the field actually exists.
+		if (!isset($this->fields[$name])) {
+			throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found');
 		}
-		else { throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found'); }
+		
+		#Get the field
+		$f = $this->fields[$name];
+		unset($this->fields[$name]);
+
+		#Find an index that may contain the field and remove it too
+		$this->indexes = $this->indexes->filter(function ($e) use ($f) {
+			return $e->contains($f);
+		});
 	}
 	
 }

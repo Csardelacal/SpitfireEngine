@@ -1,5 +1,7 @@
 <?php namespace spitfire\io\session;
 
+use spitfire\exceptions\FileNotFoundException;
+use spitfire\exceptions\PrivateException;
 use spitfire\io\session\Session;
 
 class FileSessionHandler extends SessionHandler
@@ -8,6 +10,8 @@ class FileSessionHandler extends SessionHandler
 	private $directory;
 	
 	private $handle;
+	
+	private $data = false;
 
 	public function __construct($directory, $timeout = null) {
 		$this->directory = $directory;
@@ -15,12 +19,14 @@ class FileSessionHandler extends SessionHandler
 	}
 
 	public function close() {
-		flock($this->handle, LOCK_UN);
+		flock($this->getHandle(), LOCK_UN);
+		fclose($this->getHandle());
 		return true;
 	}
 
 	public function destroy($id) {
 		$file = sprintf('%s/sess_%s', $this->directory, $id);
+		$this->handle = null;
 		file_exists($file) && unlink($file);
 
 		return true;
@@ -37,6 +43,21 @@ class FileSessionHandler extends SessionHandler
 
 		return true;
 	}
+	
+	public function getHandle() {
+		if ($this->handle)         { return $this->handle; }
+		if (!Session::sessionId()) { return false; }
+		
+		
+		#Initialize the session itself
+		$id   = Session::sessionId(false);
+		$file = sprintf('%s/sess_%s', $this->directory, $id);
+		
+		$this->handle = fopen($file, file_exists($file)? 'r+' : 'w+');
+		flock($this->handle, LOCK_EX);
+		
+		return $this->handle;
+	}
 
 	public function open($savePath, $sessionName) {
 		if (empty($this->directory)) { 
@@ -44,27 +65,34 @@ class FileSessionHandler extends SessionHandler
 		}
 
 		if (!is_dir($this->directory) && !mkdir($this->directory, 0777, true)) {
-			throw new \spitfire\exceptions\FileNotFoundException($this->directory . 'does not exist and could not be created');
+			throw new FileNotFoundException($this->directory . 'does not exist and could not be created');
 		}
-
+		
 		return true;
 	}
 
 	public function read($__garbage) {
-		$id = Session::sessionId(false);
-		$file = sprintf('%s/sess_%s', $this->directory, $id);
-
-		if (!file_exists($file)) { return ''; }
-		
-		$this->handle = fopen($file, 'r');
-		flock($this->handle, LOCK_EX);
-		
-		return (string)file_get_contents($file);
+		//The system can only read the first 8MB of the session.
+		//We do hardcode to improve the performance since PHP will stop at EOF
+		fseek($this->getHandle(), 0);
+		return $this->data = (string) fread($this->getHandle(), 8 * 1024 * 1024); 
 	}
 
 	public function write($__garbage, $data) {
-		$id = Session::sessionId(false);
-		return file_put_contents(sprintf('%s/sess_%s', rtrim($this->directory, '\/'), $id), $data) !== false;
+		//If your session contains more than 8MB of data you're probably doing
+		//something wrong.
+		if (isset($data[8*1024*1024])) { 
+			throw new PrivateException('Session length overflow', 171228); 
+		}
+		
+		if ($data === $this->data) {
+			return true;
+		}
+		
+		ftruncate($this->getHandle(), 0);
+		fseek($this->getHandle(), 0);
+		
+		fwrite($this->getHandle(), $data);
 	}
 
 }

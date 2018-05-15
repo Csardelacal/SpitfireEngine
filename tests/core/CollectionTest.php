@@ -98,7 +98,7 @@ class CollectionTest extends TestCase
 		
 		$this->assertInstanceOf(Collection::class, $collection->filter());
 		$this->assertEquals(3, $collection->filter()->count());
-		$this->assertEquals(1, $collection->filter(function ($e) { return $e === 1; })->pluck());
+		$this->assertEquals(1, $collection->filter(function ($e) { return $e === 1; })->shift());
 	}
 	
 	public function testIsset() {

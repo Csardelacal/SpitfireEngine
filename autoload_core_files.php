@@ -5,29 +5,15 @@ use spitfire\autoload\AutoLoad;
 
 #Define default classes and their locations
 AutoLoad::registerClass('Controller',                                           SPITFIRE_BASEDIR.'/mvc/controller.php');
-AutoLoad::registerClass('_SF_ViewElement',                                      SPITFIRE_BASEDIR.'/mvc/view_element.php');
 
 AutoLoad::registerClass('Time',                                                 SPITFIRE_BASEDIR.'/time.php');
 AutoLoad::registerClass('Image',                                                SPITFIRE_BASEDIR.'/image.php');
 
 #Database related imports
-AutoLoad::registerClass('spitfire\storage\database\QueryTable',                 SPITFIRE_BASEDIR.'/db/querytable.php');
-AutoLoad::registerClass('spitfire\storage\database\QueryField',                 SPITFIRE_BASEDIR.'/db/queryfield.php');
-AutoLoad::registerClass('spitfire\storage\database\Restriction',                SPITFIRE_BASEDIR.'/db/restriction.php');
-AutoLoad::registerClass('spitfire\storage\database\CompositeRestriction',       SPITFIRE_BASEDIR.'/db/restrictionComposite.php');
-AutoLoad::registerClass('spitfire\storage\database\drivers\Driver',             SPITFIRE_BASEDIR.'/db/driver.php');
-AutoLoad::registerClass('spitfire\storage\database\Uplink',                     SPITFIRE_BASEDIR.'/db/uplink.php');
-AutoLoad::registerClass('spitfire\storage\database\Downlink',                   SPITFIRE_BASEDIR.'/db/downlink.php');
-AutoLoad::registerClass('spitfire\storage\database\Ancestor',                   SPITFIRE_BASEDIR.'/db/ancestor.php');
-AutoLoad::registerClass('spitfire\storage\database\QueryJoin',                  SPITFIRE_BASEDIR.'/db/join.php');
 AutoLoad::registerClass('Pagination',                                           SPITFIRE_BASEDIR.'/db/pagination.php');
 
-AutoLoad::registerClass('Model',                                                SPITFIRE_BASEDIR.'/db/databaseRecord.php');
-
 AutoLoad::registerClass('Validatable',                                          SPITFIRE_BASEDIR.'/validatable.php');
-AutoLoad::registerClass('ValidationException',                                  SPITFIRE_BASEDIR.'/validation/ValidationException.php');
 AutoLoad::registerClass('Schema',                                               SPITFIRE_BASEDIR.'/model/model.php');
-AutoLoad::registerClass('OTFModel',                                             SPITFIRE_BASEDIR.'/model/onthefly.php');
 AutoLoad::registerClass('spitfire\model\Field',                                 SPITFIRE_BASEDIR.'/model/field.php');
 AutoLoad::registerClass('IntegerField',                                         SPITFIRE_BASEDIR.'/model/fields/integer.php');
 AutoLoad::registerClass('FloatField',                                           SPITFIRE_BASEDIR.'/model/fields/float.php');
@@ -45,9 +31,6 @@ AutoLoad::registerClass('spitfire\model\adapters\ManyToManyAdapter',            
 AutoLoad::registerClass('spitfire\model\adapters\BridgeAdapter',                SPITFIRE_BASEDIR.'/model/adapters/bridgeadapter.php');
 AutoLoad::registerClass('spitfire\model\adapters\ChildrenAdapter',              SPITFIRE_BASEDIR.'/model/adapters/childrenadapter.php');
 
-AutoLoad::registerClass('spitfire\model\defaults\userModel',                    SPITFIRE_BASEDIR.'/model/defaults/usermodel_default.php');
-
-
 AutoLoad::registerClass('spitfire\storage\database\drivers\stdSQLDriver',       SPITFIRE_BASEDIR.'/db/drivers/stdSQL.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\stdSQLTable',        SPITFIRE_BASEDIR.'/db/drivers/stdSQLTable.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\mysqlPDODriver',     SPITFIRE_BASEDIR.'/db/drivers/mysqlPDO.php');
@@ -62,7 +45,6 @@ AutoLoad::registerClass('spitfire\storage\database\drivers\MysqlPDORestriction',
 AutoLoad::registerClass('spitfire\storage\database\drivers\MysqlPDOCompositeRestriction',SPITFIRE_BASEDIR.'/db/drivers/mysqlPDORestrictionComposite.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\MysqlPDORestrictionGroup',SPITFIRE_BASEDIR.'/db/drivers/mysqlPDORestrictionGroup.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\mysqlPDOResultSet',  SPITFIRE_BASEDIR.'/db/drivers/mysqlPDORes.php');
-AutoLoad::registerClass('spitfire\storage\database\drivers\mysqlPDOSelectStringifier',  SPITFIRE_BASEDIR.'/db/drivers/mysqlPDOSelectStringifier.php');
 
 AutoLoad::registerClass('spitfire\InputSanitizer',                              SPITFIRE_BASEDIR.'/security_io_sanitization.php');
 AutoLoad::registerClass('CoffeeBean',                                           SPITFIRE_BASEDIR.'/io/beans/coffeebean.php');

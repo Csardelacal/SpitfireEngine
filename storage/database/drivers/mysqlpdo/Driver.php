@@ -1,10 +1,12 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\storage\database\DB;
-use spitfire\SpitFire;
 use PDO;
 use PDOException;
+use PDOStatement;
+use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\DB;
+use function spitfire;
 
 /**
  * MySQL driver via PDO. This driver does <b>not</b> make use of prepared 
@@ -36,10 +38,11 @@ class Driver extends DB
 	 *                          connection because the Server rejected the connection.
 	 */
 	protected function connect() {
+		$settings = $this->getSettings();
 		
-		$dsn  = 'mysql:dbname=' . $this->schema . ';host=' . $this->server . ';charset=' . $this->getEncoder()->getInnerEncoding();
-		$user = $this->user;
-		$pass = $this->password;
+		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $settings->getSchema(), 'host' => $settings->getServer(), 'charset' => $this->getEncoder()->getInnerEncoding()]), '', ';');
+		$user = $settings->getUser();
+		$pass = $settings->getPassword();
 
 		try {
 			$this->connection = new PDO($dsn, $user, $pass);
@@ -47,9 +50,14 @@ class Driver extends DB
 			$this->connection->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_NATURAL);
 			
 			return true;
-		} catch (Exception $e) {
-			SpitFire::$debug->log($e->getMessage());
-			throw new PrivateException('DB Error. Connection refused by the server');
+		} catch (PDOException $e) {
+			
+			if ($e->errorInfo == null) { //Apparently a error in 
+				throw new FileNotFoundException('Database does not exist', 1709051253);
+			} 
+			
+			spitfire()->log($e->getMessage());
+			throw new PrivateException('DB Error. Connection refused by the server: ' . $e->getMessage());
 		}
 
 	}
@@ -73,7 +81,7 @@ class Driver extends DB
 	 * @param boolean $attemptrepair Defines whether the server should try
 	 *                    to repair any model inconsistencies the server 
 	 *                    encounters.
-	 * @return \PDOStatement
+	 * @return PDOStatement
 	 * @throws PrivateException In case the query fails for another reason
 	 *                     than the ones the system manages to fix.
 	 */
@@ -128,10 +136,60 @@ class Driver extends DB
 	/**
 	 * 
 	 * @staticvar \storage\database\drivers\mysqlpdo\ObjectFactory $factory
-	 * @return  \storage\database\drivers\mysqlpdo\ObjectFactory
+	 * @return  ObjectFactory
 	 */
 	public function getObjectFactory() {
 		static $factory;
-		return $factory? : $factory = new \spitfire\storage\database\drivers\mysqlpdo\ObjectFactory();
+		return $factory? : $factory = new ObjectFactory();
 	}
+
+	/**
+	 * Creates a database on MySQL's side where data can be stored on behalf of
+	 * the application.
+	 * 
+	 * @return bool
+	 */
+	public function create(): bool {
+		
+		try {
+			$this->execute(sprintf('CREATE DATABASE `%s`', $this->getSettings()->getSchema()));
+			$this->execute(sprintf('use `%s`;', $this->getSettings()->getSchema()));
+			return true;
+		} 
+		/*
+		 * Sometimes the database will issue a FileNotFound exception when attempting
+		 * to connect to a DBMS that fails if the database it expected to connect
+		 * to is not available.
+		 * 
+		 * In this event we create a new connection that ignores the schema setting,
+		 * therefore allowing to connect to the database properly.
+		 */
+		catch (FileNotFoundException$e) {
+			#Modify the connection settings, removing the schema.
+			$settings = clone $this->getSettings();
+			$settings->setSchema('');
+			
+			#Establish the new connection
+			$db = new Driver($settings);
+			$db->getConnection();
+			
+			#Set the schema and run a retry
+			$settings->setSchema($this->getSettings()->getSchema());
+			$db->create();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Destroys the database housing the app's information.
+	 * 
+	 * @return bool
+	 */
+	public function destroy(): bool {
+		$this->execute(sprintf('DROP DATABASE `%s`', $this->getSettings()->getSchema()));
+		return true;
+	}
+
 }

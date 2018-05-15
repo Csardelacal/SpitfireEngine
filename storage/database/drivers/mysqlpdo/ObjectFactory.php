@@ -4,13 +4,17 @@ use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\drivers\mysqlPDOField;
-use spitfire\storage\database\drivers\MysqlPDOQuery;
-use spitfire\storage\database\drivers\MysqlPDORestriction;
-use spitfire\storage\database\drivers\MysqlPDOTable;
+use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
+use spitfire\storage\database\drivers\mysqlpdo\Query;
+use spitfire\storage\database\drivers\mysqlpdo\Restriction;
+use spitfire\storage\database\drivers\mysqlpdo\RestrictionGroup;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
+use spitfire\storage\database\QueryField as AbstractQueryField;
+use spitfire\storage\database\QueryTable as AbstractQueryTable;
+use spitfire\storage\database\Relation as RelationAbstract;
+use spitfire\storage\database\RestrictionGroup as AbstractRestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
@@ -65,33 +69,20 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @param string $modelname
 	 * @return Table
 	 */
-	public function getOTFSchema($modelname) {
+	public function getOTFSchema(DB$db, $modelname) {
 		#Create a Schema we can feed the data into.
 		$schema  = new Schema($modelname);
 		
 		#Make the SQL required to read in the data
 		$sql    = sprintf('DESCRIBE `%s%s`', $schema->getTableName(), $modelname);
 		/** @var $fields Query */
-		$fields = db()->execute($sql, false);
+		$fields = $db->execute($sql, false);
 		
 		while ($row = $fields->fetch()) { 
 			$schema->{$row['Field']} = new TextField(); 
 		}
 		
-		return $schema->getTable();
-	}
-	
-	/**
-	 * Creates a new driver specific table. The table is in charge of providing 
-	 * the necessary tools for records to be updated, inserted, deleted, etc.
-	 * 
-	 * @param DB $db
-	 * @param string $tablename
-	 * @deprecated since version 0.1-dev 20170807
-	 * @return MysqlPDOTable
-	 */
-	public function getTableInstance(DB $db, $tablename) {
-		return new MysqlPDOTable($db, $tablename);
+		return new Table($db, $schema);
 	}
 	
 	/**
@@ -105,14 +96,14 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @param Field   $field
 	 * @param string  $name
 	 * @param Field $references
-	 * @return mysqlPDOField
+	 * @return MysqlField
 	 */
 	public function getFieldInstance(LogicalField$field, $name, Field$references = null) {
-		return new mysqlPDOField($field, $name, $references);
+		return new MysqlField($field, $name, $references);
 	}
 
-	public function restrictionInstance($query, Field$field, $value, $operator = null) {
-		return new MysqlPDORestriction($query,	$field, $value, $operator);
+	public function restrictionInstance($query, AbstractQueryField$field, $value, $operator = null) {
+		return new Restriction($query,	$field, $value, $operator);
 	}
 
 	/**
@@ -120,14 +111,14 @@ class ObjectFactory implements ObjectFactoryInterface
 	 *
 	 * @param Table $table
 	 *
-	 * @return MysqlPDOQuery
+	 * @return Query
 	 * @throws PrivateException
 	 */
 	public function queryInstance($table) {
-		if ($table instanceof Relation){ $table = $table->getTable(); }
+		if ($table instanceof RelationAbstract){ $table = $table->getTable(); }
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
-		return new MysqlPDOQuery($table);
+		return new Query($table);
 	}
 
 	public function makeRelation(Table $table) {
@@ -140,6 +131,33 @@ class ObjectFactory implements ObjectFactoryInterface
 
 	public function makeLayout(Table $table): LayoutInterface {
 		return new Layout($table);
+	}
+
+	public function restrictionGroupInstance(AbstractRestrictionGroup$parent = null, $type = AbstractRestrictionGroup::TYPE_OR): AbstractRestrictionGroup {
+		$g = new RestrictionGroup($parent);
+		$g->setType($type);
+		return $g;
+	}
+	
+	
+	public function queryFieldInstance(AbstractQueryTable$queryTable, $field) {
+		if ($field instanceof AbstractQueryField) {return $field; }
+		return new QueryField($queryTable, $field);
+	}
+	
+	
+	public function queryTableInstance($table) {
+		if ($table instanceof Relation) { $table = $table->getTable(); }
+		if ($table instanceof AbstractQueryTable) { $table = $table->getTable(); }
+		
+		
+		if (!$table instanceof Table) { throw new PrivateException('Did not receive a table as parameter'); }
+		
+		return new QueryTable($table);
+	}
+
+	public function restrictionCompositeInstance(AbstractRestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null) {
+		return new CompositeRestriction($parent, $field, $value, $operator);
 	}
 
 }

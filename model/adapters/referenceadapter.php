@@ -111,6 +111,16 @@ class ReferenceAdapter extends BaseAdapter
 	 * committing, rolling back will return the current value.
 	 */
 	public function commit() {
+		/**
+		 * If the "parent" was also edited or newly created, we should enforce 
+		 * that it is stored.
+		 */
+		if ($this->query instanceof Model) { 
+			$this->query->store(); 
+		}
+		
+		#Now we can safely say that the data stored on the remote and local sets 
+		#is equal. Therefore we can replace the old remote value.
 		$this->remote = $this->query;
 	}
 	

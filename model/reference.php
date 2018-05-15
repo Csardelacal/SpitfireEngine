@@ -61,11 +61,16 @@ class Reference extends Field
 	 * @return Schema
 	 */
 	public function getTarget() {
+		#If the target is actually a class name.
+		if (is_string($this->target) && Strings::endsWith($this->target, 'Model')) {
+			$this->target = trim(substr($this->target, 0,  0 - strlen('Model')), '\/');
+		}
+		
 		#Check if the passed argument already is a model
 		if ($this->target instanceof Schema) {
 			return $this->target;
 		} 
-		elseif ($this->target === $this->getModel()->getName()) {
+		elseif (strtolower($this->target) === strtolower($this->getModel()->getName())) {
 			return $this->target = $this->getModel();
 		}
 		else {
@@ -85,7 +90,7 @@ class Reference extends Field
 	 * @return Field[]
 	 */
 	public function makePhysical() {
-		$fields   = $this->getTarget()->getPrimary();
+		$fields   = $this->getTarget()->getPrimary()->getFields()->toArray();
 		$physical = Array();
 		$_return  = Array();
 		
@@ -120,11 +125,30 @@ class Reference extends Field
 	}
 
 	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTarget()->getTable());
+		$of    = $this->getTable()->getDb()->getObjectFactory();
+		$query = $of->queryInstance($this->getTarget()->getTable());
 		$query->setAliased(true);
 		
 		foreach ($this->getPhysical() as $field) {
-			$query->addRestriction($parent->queryFieldInstance($field), $query->queryFieldInstance($field->getReferencedField()));
+			/*
+			 * Get the field being referenced. Check if it is a valid reference value,
+			 * if the field is null something went terribly wrong during assembly
+			 */
+			$referenced = $field->getReferencedField();
+			
+			if ($referenced === null) { 
+				throw new PrivateException('Unexpected value. Refernced field is null', 1804031133); 
+			}
+			
+			/*
+			 * Generate a query field for the local and remote queries. The order
+			 * of the queries is actually not relevant.
+			 */
+			$local  = $of->queryFieldInstance($parent->getQueryTable(), $field);
+			$remote = $of->queryFieldInstance($query->getQueryTable(), $referenced);
+			
+			
+			$query->where($local, $remote);
 		}
 		
 		return Array($query);

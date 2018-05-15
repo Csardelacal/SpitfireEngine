@@ -5,7 +5,7 @@ use spitfire\exceptions\PrivateException;
 /**
  * A validator is a tool that can be used in order to verify that data is correct.
  * This data can basically be everything, although validation is usually aimed at
- * strings, which are the most common daatype when interacting with a user.
+ * strings, which are the most common datatype when interacting with a user.
  * 
  * It uses a set of rules, that can return either a validationError or a boolean 
  * false if no errors where encountered. 
@@ -14,6 +14,9 @@ use spitfire\exceptions\PrivateException;
  */
 class Validator implements ValidatorInterface
 {
+	
+	use rules\AcceptsRules;
+	
 	/**
 	 * The set of rules used to validate data that is tested with these.
 	 * @var ValidationRule[]
@@ -105,74 +108,6 @@ class Validator implements ValidatorInterface
 		if (!empty($this->messages)) {
 			throw self::makeException($this->messages);
 		}
-	}
-	
-	/**
-	 * Adds minimum length validation to this object. It will cause an error if
-	 * the data tested is not long enough, this is meant for strings, and will 
-	 * probably cause faulty behavior when testing agains other stuff.
-	 * 
-	 * @param int $length
-	 * @param string $msg
-	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
-	 */
-	public function minLength($length, $msg, $longmsg = '') {
-		$this->addRule(new MinLengthValidationRule($length, $msg, $longmsg));
-		return $this;
-	}
-	
-	
-	/**
-	 * Adds maximum length validation to this object. It will cause an error if
-	 * the data tested is longer than expected, this is meant for strings, and will 
-	 * probably cause faulty behavior when testing agains other stuff.
-	 * 
-	 * @param int $length
-	 * @param string $msg
-	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
-	 */
-	public function maxLength($length, $msg, $longmsg = '') {
-		$this->addRule(new MaxLengthValidationRule($length, $msg, $longmsg));
-		return $this;
-	}
-	
-	/**
-	 * Validates a content as email. This evaluates the string value of what it 
-	 * receives and may cause unexpected behavior.
-	 * 
-	 * @param string $msg
-	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
-	 */
-	public function asEmail($msg, $longmsg = '') {
-		$this->addRule(new FilterValidationRule(FILTER_VALIDATE_EMAIL, $msg, $longmsg));
-		return $this;
-	}
-	
-	/**
-	 * Validates a content as a URL. This evaluates the string value of what it 
-	 * receives and may cause unexpected behavior.
-	 * 
-	 * @param string $msg
-	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
-	 */
-	public function asURL($msg, $longmsg = '') {
-		$this->addRule(new FilterValidationRule(FILTER_VALIDATE_URL, $msg, $longmsg));
-		return $this;
-	}
-	
-	/**
-	 * Creates a validation group. This allows to create more complicated rules
-	 * that merge the results of several smaller rules.
-	 * 
-	 * @return \spitfire\validation\ValidationGroupRule
-	 */
-	public function group() {
-		$this->addRule($v = new ValidationGroupRule($this));
-		return $v;
 	}
 
 	/**

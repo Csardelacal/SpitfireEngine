@@ -1,15 +1,17 @@
 <?php namespace spitfire;
 
 use Controller;
-use spitfire\exceptions\PublicException;
 use ReflectionClass;
 use spitfire\ClassInfo;
 use spitfire\core\Context;
+use spitfire\core\Environment;
 use spitfire\core\Path;
 use spitfire\core\router\Parameters;
+use spitfire\core\router\reverser\ClosureReverser;
 use spitfire\core\router\Router;
 use spitfire\exceptions\PrivateException;
-use URL;
+use spitfire\exceptions\PublicException;
+use spitfire\mvc\View;
 
 /**
  * Spitfire Application Class. This class is the base of every other 'app', an 
@@ -49,27 +51,6 @@ abstract class App
 		$this->URISpace = $URISpace;
 	}
 	
-	/**
-	 * Generates a URL. This method will generate a string / URL depending on the 
-	 * string being inputted.
-	 * 
-	 * @param string $url Generates a URL for the current app
-	 * @return URL|string
-	 */
-	public function url($url) {
-		
-		if (0 === strpos($url, 'http://'))  { return $url; }
-		if (0 === strpos($url, 'https://')) { return $url; }
-		if (0 === strpos($url, 'www.'))     { return 'http://' . $url; }
-		
-		$arguments = func_get_args();
-		array_unshift($arguments, $this);
-		
-		//Once PHP7 is stable we can use the splat (...) operator to do this
-		$reflection = new ReflectionClass('\URL');
-		return $reflection->newInstanceArgs($arguments);
-	}
-	
 	public function getBaseDir() {
 		return $this->basedir;
 	}
@@ -78,6 +59,12 @@ abstract class App
 		return $this->URISpace;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20171129
+	 * @param type $contenttype
+	 * @return type
+	 */
 	public function getDirectory($contenttype) {
 		switch($contenttype) {
 			case ClassInfo::TYPE_CONTROLLER:
@@ -151,7 +138,7 @@ abstract class App
 		$name = implode('\\', $this->getControllerURI($controller));
 		
 		$c = $this->getNameSpace() . $name . 'View';
-		if (!class_exists($c)) { $c = \spitfire\mvc\View::class; }
+		if (!class_exists($c)) { $c = View::class; }
 		
 		return new $c($controller->context);
 	}
@@ -179,14 +166,14 @@ abstract class App
 		
 		#The reverser for the default route is rather simple again. 
 		#It will concatenate app, controller and action
-		$default->setReverser(new core\router\reverser\ClosureReverser(function (Path$path, $explicit = false) {
+		$default->setReverser(new ClosureReverser(function (Path$path, $explicit = false) {
 			$app        = $path->getApp();
 			$controller = $path->getController();
 			$action     = $path->getAction();
 			$object     = $path->getObject();
 			
-			if ($controller === (array)core\Environment::get('default_controller') && empty($object) && !$explicit) { $controller = Array(); }
-			if ($action     ===        core\Environment::get('default_action')     && empty($object) && !$explicit) { $action     = ''; }
+			if ($controller === (array)Environment::get('default_controller') && empty($object) && !$explicit) { $controller = Array(); }
+			if ($action     ===        Environment::get('default_action')     && empty($object) && !$explicit) { $action     = ''; }
 			
 			return '/' . trim(implode('/', array_filter(array_merge([$app], (array)$controller, [$action], $object))), '/');
 		}));

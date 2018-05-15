@@ -15,7 +15,7 @@ class MemoryCache implements CacheInterface
 	 *
 	 * @var mixed 
 	 */
-	private $data;
+	private $data = [];
 	
 	/**
 	 * 
@@ -23,7 +23,7 @@ class MemoryCache implements CacheInterface
 	 * @return boolean
 	 */
 	public function contains($key) {
-		return isset($this->data[$key]);
+		return array_key_exists($key, $this->data);
 	}
 	
 	/**

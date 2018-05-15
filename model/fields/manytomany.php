@@ -47,11 +47,11 @@ class ManyToManyField extends ChildrenField
 			#Register the table
 			$this->getModel()->getTable()->getDb()->table($model);
 		} else {
-			$this->meta = $this->getTable()->getDb()->table("{$first}_{$second}")->getTable()->getSchema();
+			$this->meta = $this->getTable()->getDb()->table("{$first}_{$second}")->getSchema();
 		}
 		
 		#Return the remote model
-		$this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getSchema();
+		$this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getSchema();
 		return $this->target;
 	}
 

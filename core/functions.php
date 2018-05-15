@@ -56,25 +56,24 @@ function app($name, $namespace) {
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *
- * @param array $options
- * @return DB|DB
+ * @param \spitfire\storage\database\Settings $options
+ * @return spitfire\storage\database\DB
  */
-function db($options = null) {
-	static $model = null;
+function db(\spitfire\storage\database\Settings$options = null) {
+	static $db = null;
 	
 	#If we're requesting the standard driver and have it cached, we use this
-	if ($options === null && $model !== null) { return $model; }
+	if ($options === null && $db !== null) { return $db; }
 	
-	#If the driver is not selected we get the one we want from env.
-	if (!isset($options['db_driver'])) { $driver = Environment::get('db_driver'); }
-	else                               { $driver = $options['db_driver']; }
+	#If no options were passed, we try to fetch them from the environment
+	$settings = \spitfire\storage\database\Settings::fromURL($options? : Environment::get('db'));
 	
 	#Instantiate the driver
-	$driver = 'spitfire\storage\database\drivers\\' . $driver . 'Driver';
-	$driver = new $driver($options);
+	$driver = 'spitfire\storage\database\drivers\\' . $settings->getDriver() . '\Driver';
+	$driver = new $driver($settings);
 	
 	#If no options were provided we will assume that this is the standard DB handler
-	if ($options === null) { $model = $driver; }
+	if ($options === null) { $db = $driver; }
 	
 	#Return the driver
 	return $driver;
@@ -153,7 +152,7 @@ function current_context(Context$set = null) {
 }
 
 function validate($target = null) {
-	$targets  = array_filter(func_get_args());
+	$targets  = array_filter(is_array($target)? $target : func_get_args());
 	
 	if (!empty($targets) && reset($targets) instanceof ValidatorInterface) {
 		$messages = Array();
@@ -164,6 +163,8 @@ function validate($target = null) {
 		}
 		
 		if (!empty($messages)) { throw new ValidationException('Validation failed', 1604200115, $messages); }
+		
+		return $targets;
 		
 	} else {
 		$validator = new Validator();
@@ -254,4 +255,25 @@ function url() {
 	$environment  = array_shift($params);
 	
 	return new URL($app, $controller, $action, $object, 'php', $get, $environment);
+}
+
+/**
+ * The within function is a math function that allows to determine whether a 
+ * value is within a range and returns either the value, or the closest range
+ * delimiter.
+ * 
+ * The first and the last parameter delimit the range. The second parameter is 
+ * the one being tested.
+ * 
+ * <code>within(1,  50, 100); //Outputs:  50</code>
+ * <code>within(1, 500, 100); //Outputs: 100</code>
+ * <code>within(1, -50, 100); //Outputs:   1</code>
+ * 
+ * @param number $min
+ * @param number $val
+ * @param number $max
+ * @return number
+ */
+function within($min, $val, $max) {
+	return min(max($min, $val), $max);
 }
