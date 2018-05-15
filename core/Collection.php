@@ -267,8 +267,8 @@ class Collection implements ArrayAccess, CollectionInterface
 		if (!isset($this->items)) { throw new \spitfire\exceptions\PrivateException('Collection error', 1709042046); }
 		return end($this->items);
 	}
-	
-	public function pluck() {
+
+	public function shift() {
 		return array_shift($this->items);
 	}
 	

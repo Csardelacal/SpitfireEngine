@@ -26,6 +26,7 @@ class FileSessionHandler extends SessionHandler
 
 	public function destroy($id) {
 		$file = sprintf('%s/sess_%s', $this->directory, $id);
+		$this->handle = null;
 		file_exists($file) && unlink($file);
 
 		return true;
