@@ -2,12 +2,12 @@
 
 use IntegerField;
 use PHPUnit\Framework\TestCase;
-use spitfire\storage\database\drivers\mysqlpdo\QueryField;
-use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;
+use spitfire\storage\database\drivers\mysqlpdo\QueryField;
+use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
 use spitfire\storage\database\drivers\mysqlpdo\Restriction;
-use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
+use spitfire\storage\database\drivers\mysqlpdo\RestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use function db;
@@ -25,7 +25,7 @@ class RestrictionGroupTest extends TestCase
 		$field = new MysqlField(new IntegerField(), 'test');
 		$queryfield = new QueryField(new QueryTable($table), $field);
 		
-		$groupa = new MysqlPDORestrictionGroup($query);
+		$groupa = new RestrictionGroup($query);
 		$groupa->putRestriction(new Restriction($groupa, $queryfield, 'A'));
 		
 		$groupb = clone $groupa;

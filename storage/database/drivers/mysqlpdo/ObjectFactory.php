@@ -7,14 +7,14 @@ use spitfire\storage\database\DB;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;
 use spitfire\storage\database\drivers\mysqlpdo\Restriction;
-use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
+use spitfire\storage\database\drivers\mysqlpdo\RestrictionGroup;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
 use spitfire\storage\database\QueryField as AbstractQueryField;
 use spitfire\storage\database\QueryTable as AbstractQueryTable;
 use spitfire\storage\database\Relation as RelationAbstract;
-use spitfire\storage\database\RestrictionGroup;
+use spitfire\storage\database\RestrictionGroup as AbstractRestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
@@ -133,8 +133,8 @@ class ObjectFactory implements ObjectFactoryInterface
 		return new Layout($table);
 	}
 
-	public function restrictionGroupInstance(RestrictionGroup $parent = null, $type = RestrictionGroup::TYPE_OR): RestrictionGroup {
-		$g = new MysqlPDORestrictionGroup($parent);
+	public function restrictionGroupInstance(AbstractRestrictionGroup$parent = null, $type = AbstractRestrictionGroup::TYPE_OR): AbstractRestrictionGroup {
+		$g = new RestrictionGroup($parent);
 		$g->setType($type);
 		return $g;
 	}
@@ -156,7 +156,7 @@ class ObjectFactory implements ObjectFactoryInterface
 		return new QueryTable($table);
 	}
 
-	public function restrictionCompositeInstance(RestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null) {
+	public function restrictionCompositeInstance(AbstractRestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null) {
 		return new CompositeRestriction($parent, $field, $value, $operator);
 	}
 
