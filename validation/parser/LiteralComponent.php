@@ -38,6 +38,9 @@ class LiteralComponent extends Component
 		return $this->content;
 	}
 	
+	public function make() {
+		return $this->content;
+	}
 	
 	public function __toString() {
 		return sprintf('Literal<%s>', $this->content);

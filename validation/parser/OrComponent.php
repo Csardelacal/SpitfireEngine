@@ -27,6 +27,14 @@
 class OrComponent extends GroupComponent
 {
 	
+
+	public function make() {
+		$items = $this->getItems();
+		
+		foreach ($items as &$item) { $item = $item->make(); }
+		
+		return new postprocessor\OrPostProcessor($items);
+	}
 	
 	public function __toString() {
 		return sprintf('or(%s)', implode(',', $this->getItems()));

@@ -32,27 +32,25 @@ class ParserTest extends TestCase
 	
 	public function testParseLiteral() {
 		
-		$end    = time() + 3;
-		$count  = 0;
+		$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required)';
+
+		$pp = new \spitfire\validation\parser\preprocessor\Preprocessor();
+		$result = $pp->prepare($string);
+		$result->tokenize();
+
+		$or = new \spitfire\validation\parser\logicparser\OrProcessor();
+		$or->run($result);
+
+		echo '---', PHP_EOL;
+		$and = new \spitfire\validation\parser\logicparser\AndProcessor();
+		$and->run($result);
+
+		if (count($result->getItems()) > 1) { $root = $result; }
+		else { $root = $result->getItems()[0]; }
+
+		$made = $root->make();
+		$this->assertEquals(true, $made->test(['GET' => ['input' => 'test'], 'POST' => ['other' => 34, 'something' => '123']]));
+			
 		
-		do {
-			$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required)';
-
-			$pp = new \spitfire\validation\parser\preprocessor\Preprocessor();
-			$result = $pp->prepare($string);
-			$result->tokenize();
-
-			$or = new \spitfire\validation\parser\logicparser\OrProcessor();
-			$or->run($result);
-
-			$and = new \spitfire\validation\parser\logicparser\AndProcessor();
-			$and->run($result);
-			$count++;
-		}
-		while (time() < $end);
-		
-		echo $result, PHP_EOL;
-		echo $count, PHP_EOL;
-		die();
 	}
 }

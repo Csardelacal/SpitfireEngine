@@ -66,7 +66,12 @@ class Preprocessor
 					$result->append($current);
 					$current = '';
 					$result  = new Result($module, $result);
-					continue;
+					/*
+					 * I hate this structure, and I hope I don't have to use it ever 
+					 * again. But here it just makes so much more sense than introducing
+					 * an extra variable that it pains me.
+					 */
+					continue 2;
 				}
 				
 			}

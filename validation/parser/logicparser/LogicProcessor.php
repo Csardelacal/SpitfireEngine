@@ -41,7 +41,14 @@ abstract class LogicProcessor
 	}
 	
 	public function run(GroupComponent$component) {
-		if (!$this->exists($component)) { return; }
+		if (!$this->exists($component)) { 
+			foreach ($component->getItems() as $item) { 
+				if ($item instanceof GroupComponent) { 
+					$this->run($item); 
+				}
+			}
+			return;
+		}
 		
 		$items = $component->getItems();
 		$copy  = $this->make();
@@ -50,7 +57,9 @@ abstract class LogicProcessor
 		
 		
 		foreach ($items as $item) {
+			echo 'Testing ', $item, PHP_EOL;
 			if ($item instanceof Token && $item->getContent() == $this->token()) {
+				echo 'Entering...', PHP_EOL;
 				$child = new GroupComponent([]);
 				$copy->push($child);
 			}

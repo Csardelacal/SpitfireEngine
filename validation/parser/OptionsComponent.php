@@ -33,6 +33,17 @@ class OptionsComponent extends Component
 		$this->items = array_filter($items);
 	}
 	
+	public function make() {
+		
+		$items = array_values($this->items);
+		
+		foreach ($items as &$item) {
+			$item = $item->make();
+		}
+		
+		return $items;
+	}
+	
 	public function __toString() {
 		return sprintf('options(%s)', implode(',', $this->items));
 	}

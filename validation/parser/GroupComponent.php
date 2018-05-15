@@ -1,5 +1,9 @@
 <?php namespace spitfire\validation\parser;
 
+use spitfire\validation\rules\EmptyValidationRule;
+use spitfire\validation\rules\FilterValidationRule;
+use spitfire\validation\rules\PositiveNumberValidationRule;
+
 /* 
  * The MIT License
  *
@@ -56,6 +60,51 @@ class GroupComponent extends Component
 	
 	public function push($item) {
 		$this->items[] = $item;
+	}
+	
+	public function make() {
+		$items = array_values($this->items);
+		$_ret  = [];
+		
+		if (count($items) === 1) {
+			return $items[0]->make();
+		}
+		elseif (count($items) === 2 && $items[0] instanceof Token && $items[1] instanceof GroupComponent) {
+			$options = $items[1]->make();
+			if (!is_array($options)) { $options = [$this->findRule($options, [])]; }
+			return new postprocessor\FunctionPostProcessor($items[0]->make(), $options);
+		}
+		else {
+			//The group represents parameters
+			for($i = 0; $i < count($items); $i++) {
+				
+				$rule = $items[$i];
+				
+				if ($items[$i+1] instanceof OptionsComponent) {
+					$options = $items[$i+1];
+					$i++;
+				}
+				else {
+					$options = [];
+				}
+				
+				$_ret[] = $this->findRule($rule, $options);
+			}
+
+			return array_filter($_ret);
+		}
+	}
+	
+	public function findRule($name, $options) {
+		
+		switch($name) {
+			case 'email'   : return new FilterValidationRule(FILTER_VALIDATE_EMAIL, 'Invalid email provided');
+			case 'url'     : return new FilterValidationRule(FILTER_VALIDATE_URL, 'Invalid URL provided');
+			case 'required': return new EmptyValidationRule('Field may not be empty');
+			case 'positive': return new PositiveNumberValidationRule('Positive number required');
+		}
+		
+		return null;
 	}
 		
 	public function __toString() {

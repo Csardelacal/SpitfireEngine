@@ -1,6 +1,4 @@
-<?php namespace spitfire\validation\parser;
-
-use spitfire\exceptions\PrivateException;
+<?php namespace spitfire\validation\parser\postprocessor;
 
 /* 
  * The MIT License
@@ -26,24 +24,21 @@ use spitfire\exceptions\PrivateException;
  * THE SOFTWARE.
  */
 
-abstract class Parser
+class OrPostProcessor
 {
+	private $items;
 	
-	public function parse(Component$component, GroupComponent$parent) {
-		$current = $parent;
-		
-		if ($component instanceof GroupComponent) { 
-			$current = $current->append(new GroupComponent($current));
-			$component->each(function($e) use (&$current) { $current = $this->parse($e, $current); }); 
-			$current = $current->end();
-		}
-		if ($component instanceof LiteralComponent)  { $current->append($component); }
-		if ($component instanceof UnparsedComponent) { $current = $this->extract($current, $component); }
-		
-		//if ($return !== $current) { throw new PrivateException('Parse error', 1805062126); }
-		
-		return $current;
+	public function __construct($items) {
+		$this->items = $items;
 	}
 	
-	abstract public function extract(GroupComponent$parent, UnparsedComponent$str);
+	public function test($data) {
+		$_ret = false;
+		
+		foreach ($this->items as $item) {
+			$_ret = $_ret || $item->test($data);
+		}
+		
+		return $_ret;
+	}
 }

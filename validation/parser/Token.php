@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class Token
+class Token extends Component
 {
 	
 	private $content;
@@ -34,6 +34,10 @@ class Token
 	}
 	
 	public function getContent() {
+		return $this->content;
+	}
+	
+	public function make() {
 		return $this->content;
 	}
 	

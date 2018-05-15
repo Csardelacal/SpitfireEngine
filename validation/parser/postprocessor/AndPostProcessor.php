@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation\parser;
+<?php namespace spitfire\validation\parser\postprocessor;
 
 /* 
  * The MIT License
@@ -24,12 +24,21 @@
  * THE SOFTWARE.
  */
 
-abstract class Component
+class AndPostProcessor
 {
+	private $items;
 	
-	/**
-	 * Make a tester for this unit.
-	 */
-	abstract public function make();
+	public function __construct($items) {
+		$this->items = $items;
+	}
 	
+	public function test($data) {
+		$_ret = true;
+		
+		foreach ($this->items as $item) {
+			$_ret = $_ret && $item->test($data);
+		}
+		
+		return $_ret;
+	}
 }

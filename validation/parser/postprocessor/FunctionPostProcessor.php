@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation\parser;
+<?php namespace spitfire\validation\parser\postprocessor;
 
 /* 
  * The MIT License
@@ -24,25 +24,31 @@
  * THE SOFTWARE.
  */
 
-class UnparsedComponent extends Component
+class FunctionPostProcessor
 {
+	private $src = '_GET';
 	
-	private $content;
+	private $parameter;
 	
-	public function __construct($content) {
-		$this->content = $content;
+	private $options;
+	
+	public function __construct($parameter, $options) {
+		$p = explode('#', $parameter);
+		
+		if (isset($p[1])) { list($this->src, $this->parameter) = $p; }
+		else              { $this->parameter = $p[0]; }
+		
+		$this->options = $options;
 	}
 	
-	public function getContent() {
-		return $this->content;
+	public function test($data) {
+		$raw = $data[$this->src][$this->parameter];
+		$ok  = true;
+		
+		foreach ($this->options as $option) {
+			$ok = $ok && $option->test($raw);
+		}
+		
+		return $ok;
 	}
-	
-	public function append($str) {
-		$this->content.= $str;
-	}
-	
-	public function __toString() {
-		return sprintf('Unparsed<%s>', $this->content);
-	}
-
 }
