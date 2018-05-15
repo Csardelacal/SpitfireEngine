@@ -202,6 +202,7 @@ class URL
 		$t->setExtension($this->getExtension());
 		$t->setParams($this->params);
 		$t->setPath($this->path);
+		$t->setProtocol(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? AbsoluteURL::PROTO_HTTPS : AbsoluteURL::PROTO_HTTP);
 		
 		return $t->setDomain($domain);
 	}

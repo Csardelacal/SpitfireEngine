@@ -1,8 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-use Exception;
 use InvalidArgumentException;
-use Reference;
 use spitfire\core\Collection;
 use spitfire\exceptions\PrivateException;
 
@@ -21,6 +19,7 @@ abstract class RestrictionGroup extends Collection
 	
 	private $parent;
 	private $type = self::TYPE_OR;
+	private $negated = false;
 	
 	public function __construct(RestrictionGroup$parent = null, $restrictions = Array() ) {
 		$this->parent = $parent;
@@ -30,29 +29,11 @@ abstract class RestrictionGroup extends Collection
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20170720
-	 * @param type $r
-	 */
-	public function removeRestriction($r) {
-		parent::remove($r);
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20170720
+	 * @remove 20180711
 	 * @param type $restriction
 	 */
 	public function putRestriction($restriction) {
 		parent::push($restriction);
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20170720
-	 * @param type $restrictions
-	 */
-	public function setRestrictions($restrictions) {
-		parent::reset();
-		parent::add($restrictions);
 	}
 	
 	/**
@@ -63,6 +44,7 @@ abstract class RestrictionGroup extends Collection
 	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 *
 	 * @deprecated since version 0.1-dev 20170923
+	 * @remove 20180711
 	 * @param string $fieldname
 	 * @param mixed  $value
 	 * @param string $operator
@@ -97,7 +79,7 @@ abstract class RestrictionGroup extends Collection
 		if ($params === 3) { list($operator, $value) = [$value, $_]; }
 		else               { $operator = '='; }
 		
-		parent::push($rm->make($this, $fieldname, $operator, $value));
+		$this->push($rm->make($this, $fieldname, $operator, $value));
 		return $this;
 	}
 	
@@ -108,16 +90,6 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function getRestrictions() {
 		return parent::toArray();
-	}
-	
-	public function importRestrictions(RestrictionGroup$query) {
-		$restrictions = $query->getRestrictions();
-		
-		foreach($restrictions as $r) {
-			$copy = clone $r;
-			$copy->setParent($this);
-			$this->putRestriction($copy);
-		}
 	}
 	
 	/**
@@ -131,55 +103,18 @@ abstract class RestrictionGroup extends Collection
 	
 	/**
 	 * 
-	 * @deprecated since version 0.1-dev 20170720
-	 * @return type
 	 */
-	public function getConnectingRestrictions() {
-		trigger_error('Method RestrictionGroup::getConnectingRestrictions() is deprecated', E_USER_DEPRECATED);
-		$_ret = Array();
+	public function getCompositeRestrictions() {
 		
-		foreach ($this->toArray() as $r) { $_ret = array_merge($_ret, $r->getConnectingRestrictions());}
-		
-		return $_ret;
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 */
-	public function filterCompositeRestrictions() {
-		$restrictions = $this->toArray();
-		
-		foreach ($restrictions as $r) {
-			if ($r instanceof CompositeRestriction) {	$this->removeRestriction($r); }
-			if ($r instanceof RestrictionGroup)     { $r->filterCompositeRestrictions(); }
-		}
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171110
-	 */
-	public function filterSimpleRestrictions() {
-		$restrictions = $this->toArray();
-		
-		foreach ($restrictions as $r) {
-			if ($r instanceof Restriction)      { $this->removeRestriction($r); }
-			if ($r instanceof RestrictionGroup) { $r->filterSimpleRestrictions(); }
-		}
-	}
-	
-	/**
-	 * Removes empty groups from the group. This is important since otherwise a
-	 * query generator will most likely generate malformed SQL for this query.
-	 */
-	public function filterEmptyGroups() {
-		$restrictions = $this->toArray();
-		
-		foreach ($restrictions as $r) {
-			if ($r instanceof RestrictionGroup) { $r->filterEmptyGroups(); }
-			if ($r instanceof RestrictionGroup && $r->isEmpty()) { $this->remove($r); }
-		}
+		return $this->each(function ($r) {
+			if ($r instanceof CompositeRestriction) {	return $r; }
+			if ($r instanceof RestrictionGroup)     { return $r->getCompositeRestrictions(); }
+			return null;
+		})
+		->flatten()
+		->filter(function ($e) {
+			return $e !== null && ($e instanceof CompositeRestriction || !$e->isEmpty());
+		});
 	}
 	
 	/**
@@ -188,7 +123,7 @@ abstract class RestrictionGroup extends Collection
 	 */
 	public function group($type = self::TYPE_OR) {
 		#Create the group and set the type we need
-		$group = $this->getQuery()->restrictionGroupInstance($this);
+		$group = $this->getQuery()->getTable()->getDb()->getObjectFactory()->restrictionGroupInstance($this);
 		$group->setType($type);
 		
 		#Add it to our restriction list
@@ -199,16 +134,21 @@ abstract class RestrictionGroup extends Collection
 		return $this->parent;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20180420
+	 * @param \spitfire\storage\database\Query $query
+	 * @return $this
+	 */
 	public function setQuery(Query$query) {
 		$this->parent = $query;
-		
-		foreach ($this->restrictions as $restriction) { $restriction->setQuery($query);}
+		return $this;
 	}
 	
 	public function setParent(RestrictionGroup$query) {
 		$this->parent = $query;
 		
-		foreach ($this->restrictions as $restriction) { $restriction->setParent($query);}
+		return $this;
 	}
 	
 	public function getParent() {
@@ -242,27 +182,95 @@ abstract class RestrictionGroup extends Collection
 		return $this->type;
 	}
 	
-	/**
-	 * This is the equivalent of makeExecutionPlan on the root query for any subquery.
-	 * Since subqueries are logical root queries and can be executed just like
-	 * normal ones they require an equivalent method that is named differently.
-	 * 
-	 * It retrieves all the subqueries that are needed to be executed on a relational
-	 * DB before the main query.
-	 * 
-	 * We could have used a single method with a flag, but this way seems cleaner
-	 * and more hassle free than otherwise.
-	 * 
-	 * @return Query[]
-	 */
-	public function getPhysicalSubqueries() {
+	public function getSubqueries() {
+		
+		/*
+		 * First, we extract the physical queries from the underlying queries.
+		 * These queries should be executed first, to make it easy for the system
+		 * to retrieve the data the query depends on.
+		 */
 		$_ret = Array();
 		
-		foreach ($this->getRestrictions() as $r) {
-			$_ret = array_merge($_ret, $r->getPhysicalSubqueries());
+		foreach ($this as $r) {
+			$_ret = array_merge($_ret, $r->getSubqueries());
 		}
 		
 		return $_ret;
+	}
+	
+	public function replaceQueryTable($old, $new) {
+		
+		
+		foreach ($this->getRestrictions() as $r) {
+			$r->replaceQueryTable($old, $new);
+		}
+	}
+	
+	public function negate() {
+		$this->negated = !$this->negated;
+		return $this;
+	}
+	
+	public function normalize() {
+		if ($this->negated) {
+			$this->flip();
+		}
+		
+		$this
+			/*
+			 * We normalize the children first. This ensures that the normalization
+			 * the parent performs is still correct.
+			 */
+			->filter(function ($e) { return $e instanceof RestrictionGroup; })
+			->each(function (RestrictionGroup$e) { return $e->normalize(); })
+			
+			/*
+			 * We remove the groups that satisfy any of the following:
+			 * * They're empty
+			 * * They only contain one restriction
+			 * * They have the same type as the current one. Based on (A AND B) AND C == A AND B AND C
+			 */
+			->filter(function (RestrictionGroup$e) { return $e->getType() === $this->getType() || $e->count() < 2; })
+			->each(function ($e) {
+				$this->add($e->each(function ($e) { $e->setParent($this); return $e; })->toArray());
+				$this->remove($e);
+			});
+		
+		return $this;
+	}
+	
+	/**
+	 * When a restriction group is flipped, the system will change the type from
+	 * AND to OR and viceversa. When doing so, all the restrictions are negated.
+	 * 
+	 * This means that <code>$a == $a->flip()</code> even though they have inverted
+	 * types. This is specially interesting for query optimization and negation.
+	 * 
+	 * @return RestrictionGroup
+	 */
+	public function flip() {
+		$this->negated = !$this->negated;
+		$this->type = $this->type === self::TYPE_AND? self::TYPE_OR : self::TYPE_AND;
+
+		foreach ($this as $restriction) {
+			if ($restriction instanceof Restriction ||
+			    $restriction instanceof CompositeRestriction ||
+			    $restriction instanceof RestrictionGroup) { $restriction->negate(); }
+		}
+		
+		return $this;
+	}
+	
+	public function isMixed() {
+		$found = false;
+		
+		foreach ($this as $r) {
+			if ($r instanceof RestrictionGroup && ($r->getType() !== $this->getType() || $r->isMixed())) {
+				$found = true;
+			}
+		}
+		
+		return $found;
 	}
 	
 	/**
@@ -273,7 +281,7 @@ abstract class RestrictionGroup extends Collection
 	 * walk method that would allow to modify the elements from within.
 	 */
 	public function __clone() {
-		$restrictions = $this->getRestrictions();
+		$restrictions = $this->toArray();
 		
 		foreach ($restrictions as &$r) { 
 			$r = clone $r; 

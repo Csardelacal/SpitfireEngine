@@ -2,11 +2,11 @@
 
 use IntegerField;
 use PHPUnit\Framework\TestCase;
-use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as Field2;
-use spitfire\storage\database\drivers\mysqlPDOField;
+use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\Schema;
+use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 use StringField;
 use function db;
@@ -30,7 +30,7 @@ class TableTest extends TestCase
 		
 		//TODO: This needs to be replaced with logic that actually is properly testable.
 		//Currently there is no DB mock driver. Not sure if I should create one or just test different drivers
-		$this->db = db(\spitfire\storage\database\Settings::fromArray(['schema' => 'test_schema']));
+		$this->db = db(Settings::fromArray(['schema' => 'test_schema']));
 		
 		$this->schema = new Schema('test');
 		
@@ -51,8 +51,8 @@ class TableTest extends TestCase
 	/**
 	 * @expectedException spitfire\exceptions\PrivateException
 	 */
-	public function tsetGetUnexistingFieldByName() {
-		$this->table->getField('unexistingfield');
+	public function testGetUnexistingFieldByName() {
+		$this->table->getLayout()->getField('unexistingfield');
 	}
 	
 	/**
@@ -62,7 +62,7 @@ class TableTest extends TestCase
 		$schema = new Schema('test\storage\database\Table\notreal');
 		$this->db->table($schema);
 		$schema->field = new IntegerField();
-		$this->table->getLayout()->getField(new mysqlPDOField($schema->field, 'notexisting'));
+		$this->table->getLayout()->getField(new MysqlField($schema->field, 'notexisting'));
 	}
 
 

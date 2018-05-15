@@ -2,6 +2,7 @@
 
 use spitfire\model\Field as Logical;
 use spitfire\Model;
+use BadMethodCallException;
 
 class CompositeRestriction
 {
@@ -14,6 +15,7 @@ class CompositeRestriction
 		
 		if ($value instanceof Model) { $value = $value->getQuery(); }
 		if ($value instanceof Query) { $value->setAliased(true); }
+		else { throw new BadMethodCallException('Composite restriction requires a query / model as value', 1804201334); }
 		
 		$this->parent = $parent;
 		$this->field = $field;
@@ -43,6 +45,7 @@ class CompositeRestriction
 
 	public function setParent(RestrictionGroup$query) {
 		$this->parent = $query;
+		return $this;
 	}
 
 	public function getField() {
@@ -52,7 +55,11 @@ class CompositeRestriction
 	public function setField(Logical$field) {
 		$this->field = $field;
 	}
-
+	
+	/**
+	 * 
+	 * @return Query
+	 */
 	public function getValue() {
 		if ($this->value instanceof Model) { $this->value = $this->value->getQuery(); }
 		return $this->value;
@@ -70,81 +77,67 @@ class CompositeRestriction
 		$this->operator = $operator;
 	}
 	
-	/**
-	 * This method handles NULL scenarios.
-	 * 
-	 * This method simplifies complex restrictions when null values are involved.
-	 * Usually, when querying you will define an equivalence between two values and
-	 * launch the query. This method is called when that involves null.
-	 * 
-	 * You can either have a null value, which will force the database to check that
-	 * the physical fields composing your logical field are null.
-	 * 
-	 * Or you can have a null field. Which will force the database to check that 
-	 * one of the fields that this table has equals to the value you specified.
-	 * 
-	 * Please note that the usage of this function for other scenarios has been
-	 * deprecated since 11/2014
-	 * 
-	 * 
-	 * @deprecated since version 0.1-dev 20171115
-	 * @return type
-	 */
-	public function getSimpleRestrictions() {
+	public function getSubqueries() {
+		$r = array_merge($this->getValue()->getSubqueries(), [$this->getValue()]);
+		return $r;
+	}
+	
+	public function replaceQueryTable($old, $new) {
 		
-		trigger_error('CompositeRestriction::getSimpleRestrictions() is deprecated', E_USER_DEPRECATED);
+		//TODO: The fact that the composite restriction is not using query tables is off-putting
+		return true; 
 		
-		if ($this->field === null) {
-			$table = $this->getQuery()->getTable();
-			$fields = $table->getFields();
-			$restrictions = $this->getQuery()->restrictionGroupInstance();
-			
-			foreach ($fields as $field) {
-				if (!$field->getLogicalField() instanceof \Reference) {
-					$restrictions->addRestriction($field, $this->getValue(), $this->operator);
-				}
-			}
-			return Array($restrictions);
+	}
+	
+	public function makeConnector() {
+		$field     = $this->getField();
+		$value     = $this->getValue();
+		$of        = $this->getQuery()->getTable()->getDb()->getObjectFactory();
+		$connector = $field->getConnectorQueries($this->getQuery());
+		
+		$last      = array_pop($connector);
+		$last->setId($this->getValue()->getId());
+		
+		if ($field === null || $value === null) {
+			throw new PrivateException('Deprecated: Composite restrictions do not receive null parameters', 2801191504);
+		} 
+
+		/**
+		 * 
+		 * @var MysqlPDOQuery The query
+		 */
+		$group = $of->restrictionGroupInstance($this->getQuery(), RestrictionGroup::TYPE_AND);
+
+		/**
+		 * The system needs to create a copy of the subordinated restrictions 
+		 * to be able to syntax a proper SQL query.
+		 */
+		$group->add($last->toArray());
+		
+		/*
+		 * Once we looped over the sub restrictions, we can determine whether the
+		 * additional group is actually necessary. If it is, we add it to the output
+		 */
+		if (!$group->isEmpty()) {
+			$this->getValue()->push($group);
 		}
 		
-		if ($this->value === null) {
-			$restrictions = Array();
-			foreach ($fields = $this->getField()->getPhysical() as $field) {
-				$f = $this->getQuery()->queryFieldInstance($field);
-				$v = null;
-				$r = $this->getQuery()->restrictionInstance($f, $v, $this->operator);
-				$restrictions[] = $r;
-			}
-			return $restrictions;
+		return $connector; 
+	}
+	
+	public function negate() {
+		switch ($this->operator) {
+			case '=': 
+				return $this->operator = '<>';
+			case '<>': 
+				return $this->operator = '=';
+			case '!=': 
+				return $this->operator = '=';
 		}
 	}
 	
-	
-	public function getPhysicalSubqueries() {
-		if ($this->field === null || $this->value === null) { return Array(); }
-		
-		$field     = $this->getField();
-		$connector = $field->getConnectorQueries($this->getQuery());
-		$last      = end($connector);
-		
-		$last->setId($this->getValue()->getId());
-		
-		/*
-		 * Since layered composite restrictions cannot be handled in the same way
-		 * as their "higher" counterparts we need to reorganize the restrictions
-		 * for subsqueries of subqueries.
-		 * 
-		 * Basically, in higher levels we indicate that the top query should either
-		 * include or not the lower levels. This is not supported on tables that 
-		 * get joined.
-		 * 
-		 * This currently causes a redundant restrictions to appear, but these shouldn't
-		 * harm the operation as it is.
-		 * 
-		 */
-		$subqueries = $this->getValue()->getPhysicalSubqueries();
-		
-		return array_merge($connector, $subqueries); 
+	public function __clone() {
+		$this->value = clone $this->value;
 	}
 	
 }

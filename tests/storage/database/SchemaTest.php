@@ -32,7 +32,7 @@ class SchemaTest extends TestCase
 	
 	public function testPrimary() {
 		$schema = new \spitfire\storage\database\Schema('test');
-		$this->assertContainsOnlyInstancesOf(\spitfire\model\Field::class, $schema->getPrimary());
+		$this->assertContainsOnlyInstancesOf(\spitfire\model\Field::class, $schema->getPrimary()->getFields()->toArray());
 	}
 	
 	/**

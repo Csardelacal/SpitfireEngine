@@ -256,3 +256,24 @@ function url() {
 	
 	return new URL($app, $controller, $action, $object, 'php', $get, $environment);
 }
+
+/**
+ * The within function is a math function that allows to determine whether a 
+ * value is within a range and returns either the value, or the closest range
+ * delimiter.
+ * 
+ * The first and the last parameter delimit the range. The second parameter is 
+ * the one being tested.
+ * 
+ * <code>within(1,  50, 100); //Outputs:  50</code>
+ * <code>within(1, 500, 100); //Outputs: 100</code>
+ * <code>within(1, -50, 100); //Outputs:   1</code>
+ * 
+ * @param number $min
+ * @param number $val
+ * @param number $max
+ * @return number
+ */
+function within($min, $val, $max) {
+	return min(max($min, $val), $max);
+}

@@ -5,19 +5,12 @@ use spitfire\autoload\AutoLoad;
 
 #Define default classes and their locations
 AutoLoad::registerClass('Controller',                                           SPITFIRE_BASEDIR.'/mvc/controller.php');
-AutoLoad::registerClass('_SF_ViewElement',                                      SPITFIRE_BASEDIR.'/mvc/view_element.php');
 
 AutoLoad::registerClass('Time',                                                 SPITFIRE_BASEDIR.'/time.php');
 AutoLoad::registerClass('Image',                                                SPITFIRE_BASEDIR.'/image.php');
 
 #Database related imports
-AutoLoad::registerClass('spitfire\storage\database\QueryTable',                 SPITFIRE_BASEDIR.'/db/querytable.php');
-AutoLoad::registerClass('spitfire\storage\database\QueryField',                 SPITFIRE_BASEDIR.'/db/queryfield.php');
-AutoLoad::registerClass('spitfire\storage\database\Restriction',                SPITFIRE_BASEDIR.'/db/restriction.php');
-AutoLoad::registerClass('spitfire\storage\database\CompositeRestriction',       SPITFIRE_BASEDIR.'/db/restrictionComposite.php');
 AutoLoad::registerClass('Pagination',                                           SPITFIRE_BASEDIR.'/db/pagination.php');
-
-AutoLoad::registerClass('Model',                                                SPITFIRE_BASEDIR.'/db/databaseRecord.php');
 
 AutoLoad::registerClass('Validatable',                                          SPITFIRE_BASEDIR.'/validatable.php');
 AutoLoad::registerClass('Schema',                                               SPITFIRE_BASEDIR.'/model/model.php');
@@ -37,9 +30,6 @@ AutoLoad::registerClass('ChildrenField',                                        
 AutoLoad::registerClass('spitfire\model\adapters\ManyToManyAdapter',            SPITFIRE_BASEDIR.'/model/adapters/m2madapter.php');
 AutoLoad::registerClass('spitfire\model\adapters\BridgeAdapter',                SPITFIRE_BASEDIR.'/model/adapters/bridgeadapter.php');
 AutoLoad::registerClass('spitfire\model\adapters\ChildrenAdapter',              SPITFIRE_BASEDIR.'/model/adapters/childrenadapter.php');
-
-AutoLoad::registerClass('spitfire\model\defaults\userModel',                    SPITFIRE_BASEDIR.'/model/defaults/usermodel_default.php');
-
 
 AutoLoad::registerClass('spitfire\storage\database\drivers\stdSQLDriver',       SPITFIRE_BASEDIR.'/db/drivers/stdSQL.php');
 AutoLoad::registerClass('spitfire\storage\database\drivers\stdSQLTable',        SPITFIRE_BASEDIR.'/db/drivers/stdSQLTable.php');

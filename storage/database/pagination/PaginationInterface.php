@@ -1,11 +1,9 @@
-<?php namespace spitfire\storage\database\restrictionmaker;
-
-use spitfire\storage\database\RestrictionGroup;
+<?php namespace spitfire\storage\database\pagination;
 
 /* 
  * The MIT License
  *
- * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,34 +24,38 @@ use spitfire\storage\database\RestrictionGroup;
  * THE SOFTWARE.
  */
 
-class CompositeWorker implements WorkerInterface
+/**
+ * This interface allows applications to quickly implement custom user interfaces
+ * while maintaining the behavior of the standard pagination system.
+ * 
+ * @todo Find a better name for this
+ * @todo Document the different methods
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
+interface PaginationInterface
 {
-	
 	/**
+	 * Returns the current page 
 	 * 
-	 * @param RestrictionGroup  $parent
-	 * @param string $field
-	 * @param string $operator
-	 * @param mixed  $value
+	 * @return int
 	 */
-	public function make(RestrictionGroup$parent, $field, $operator, $value) {
-		
-		/*
-		 * Find the appropriate field for the maker to assemble a restriction. If 
-		 * this returns an empty value, then this maker can't assemble a restriction
-		 */
-		$logical = $parent->getQuery()->getTable()->getSchema()->getField($field);
-		$of      = $parent->getQuery()->getTable()->getDb()->getObjectFactory();
-
-		/*
-		 * If the field is null or the value is null, then this maker is not a match
-		 * for the behavior needed.
-		 */
-		if ($logical === null || $value === null) { 
-			return false; 
-		}
-
-		return $of->restrictionCompositeInstance($parent, $logical, $value, $operator);
-	}
-
+	public function current();
+	
+	public function emptyResultMessage();
+	
+	public function page($number);
+	
+	public function previous();
+	public function next();
+	
+	public function first();
+	public function last($number);
+	
+	public function before();
+	public function after();
+	
+	public function gap();
+	public function jumpTo($total);
+	public function pageOf($total);
+	
 }

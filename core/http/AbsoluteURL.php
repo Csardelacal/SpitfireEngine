@@ -49,6 +49,10 @@ class AbsoluteURL extends URL
 		return $this->domain;
 	}
 	
+	public function setProtocol($proto) {
+		$this->proto = $proto;
+	}
+	
 	/**
 	 * 
 	 * @return string

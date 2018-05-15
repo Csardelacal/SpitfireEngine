@@ -2,11 +2,12 @@
 
 use IntegerField;
 use PHPUnit\Framework\TestCase;
-use spitfire\storage\database\drivers\mysqlPDOField;
-use spitfire\storage\database\drivers\MysqlPDOQuery;
-use spitfire\storage\database\drivers\MysqlPDOQueryField;
-use spitfire\storage\database\drivers\MysqlPDORestriction;
-use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
+use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
+use spitfire\storage\database\drivers\mysqlpdo\Query;
+use spitfire\storage\database\drivers\mysqlpdo\QueryField;
+use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
+use spitfire\storage\database\drivers\mysqlpdo\Restriction;
+use spitfire\storage\database\drivers\mysqlpdo\RestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use function db;
@@ -20,12 +21,12 @@ class RestrictionGroupTest extends TestCase
 	public function testClone() {
 		
 		$table = new Table(db(), new Schema('test'));
-		$query = new MysqlPDOQuery($table);
-		$field = new mysqlPDOField(new IntegerField(), 'test');
-		$queryfield = new MysqlPDOQueryField($query, $field);
+		$query = new Query($table);
+		$field = new MysqlField(new IntegerField(), 'test');
+		$queryfield = new QueryField(new QueryTable($table), $field);
 		
-		$groupa = new MysqlPDORestrictionGroup($query);
-		$groupa->putRestriction(new MysqlPDORestriction($groupa, $queryfield, 'A'));
+		$groupa = new RestrictionGroup($query);
+		$groupa->putRestriction(new Restriction($groupa, $queryfield, 'A'));
 		
 		$groupb = clone $groupa;
 		

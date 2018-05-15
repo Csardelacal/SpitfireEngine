@@ -1,8 +1,8 @@
-<?php
+<?php namespace spitfire\mvc;
 
 use spitfire\mvc\MVC;
 
-class _SF_ViewElement extends MVC
+class ViewElement extends MVC
 {
 	private $file;
 	private $data;

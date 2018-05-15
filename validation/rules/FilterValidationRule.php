@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation;
+<?php namespace spitfire\validation\rules;
 
 /**
  * A filter based validation rule allows you to use premade PHP filters to validate
@@ -8,7 +8,7 @@
  * @author César de la Cal <cesar@magic3w.com>
  * @last-revision 2013-11-12
  */
-class FilterValidationRule implements ValidationRule
+class FilterValidationRule implements \spitfire\validation\ValidationRule
 {
 	/**
 	 * The filter being applied. This is one of the <code>FILTER_VALIDATION_*</code> constants

@@ -41,19 +41,6 @@ interface ObjectFactoryInterface
 {
 	
 	/**
-	 * Returns an instance of the class the child tables of this class have
-	 * this is used to create them when requested by the table() method.
-	 * 
-	 * @deprecated since version 0.1-dev 20170801
-	 *
-	 * @param DB     $db
-	 * @param string $tablename
-	 * 
-	 * @return Table Instance of the table class the driver wants the system to use
-	 */
-	function getTableInstance(DB$db, $tablename);
-	
-	/**
 	 * Creates a relation. These wrap the typical record operations on a table 
 	 * into a separate layer.
 	 * 
@@ -83,7 +70,7 @@ interface ObjectFactoryInterface
 	 * @return Table Instance of the table class the driver wants the system to use
 	 * @todo Rename to generateSchema
 	 */
-	function getOTFSchema($modelname);
+	function getOTFSchema(DB$db, $modelname);
 	
 	/**
 	 * Creates an instance of the Database field compatible with the current
@@ -117,12 +104,12 @@ interface ObjectFactoryInterface
 	/**
 	 * 
 	 * @todo This is supposed to take a RestrictionGroup
-	 * @param Query        $query
+	 * @param RestrictionGroup        $parent
 	 * @param LogicalField $field
 	 * @param mixed $value
 	 * @param string $operator
 	 */
-	function restrictionCompositeInstance(Query$query, LogicalField$field = null, $value, $operator);
+	function restrictionCompositeInstance(RestrictionGroup$parent, LogicalField$field = null, $value = null, $operator = null);
 	
 	/**
 	 * Creates a restriction group. This allows to associate several restrictions
@@ -151,20 +138,21 @@ interface ObjectFactoryInterface
 	 * These objects connect a field with a query, providing an aliased name for 
 	 * the field when necessary.
 	 * 
-	 * @param Query      $query
-	 * @param QueryField $field
+	 * @todo The second parameter should only accept physical and not logical fields
+	 * 
+	 * @param QueryTable       $queryTable
+	 * @param Field|QueryField $field
 	 * @return QueryField
 	 */
-	function queryFieldInstance($query, $field);
+	function queryFieldInstance(QueryTable$queryTable, $field);
 	
 	
 	/**
 	 * These objects connect a field with a query, providing an aliased name for 
 	 * the field when necessary.
 	 * 
-	 * @param Query            $query
 	 * @param QueryTable|Table $table
 	 * @return QueryTable
 	 */
-	function queryTableInstance($query, $table);
+	function queryTableInstance($table);
 }

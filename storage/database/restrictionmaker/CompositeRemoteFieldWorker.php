@@ -52,7 +52,11 @@ class CompositeRemoteFieldWorker implements WorkerInterface
 		
 		/*
 		 * There's several very specific requisites for this component to work. 
-		 * First of all, it is required to 
+		 * The field...
+		 * 
+		 * * must be a reference
+		 * * must not belong to the same table as the query
+		 * * must point to the same table as the query
 		 */
 		if (!($field instanceof Reference && $field->getTable() !== $query->getTable() && $field->getTarget() === $query->getTable()->getSchema())) {
 			return false;

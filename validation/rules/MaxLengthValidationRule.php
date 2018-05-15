@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation;
+<?php namespace spitfire\validation\rules;
 
 /**
  * Validates that the length of a content is smaller than the indicated minimum
@@ -7,7 +7,7 @@
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-class MaxLengthValidationRule implements ValidationRule
+class MaxLengthValidationRule implements \spitfire\validation\ValidationRule
 {
 	/**
 	 * The minimum length a string passed to this element must have for the test

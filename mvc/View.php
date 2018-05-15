@@ -1,6 +1,5 @@
 <?php namespace spitfire\mvc;
 
-use _SF_ViewElement;
 use spitfire\core\Context;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
@@ -120,7 +119,7 @@ class View extends MVC
 	public function element($file) {
 		$filename = $this->app->getTemplateDirectory() . 'elements/' . $file . '.php';
 		if (!file_exists($filename)) throw new PrivateException('Element ' . $file . ' missing');
-		return new _SF_ViewElement($filename, $this->data);
+		return new ViewElement($filename, $this->data);
 	}
 	
 	public function setRenderTemplate($set) {

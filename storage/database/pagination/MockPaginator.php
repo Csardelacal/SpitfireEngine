@@ -1,11 +1,9 @@
-<?php namespace spitfire\storage\database\restrictionmaker;
-
-use spitfire\storage\database\RestrictionGroup;
+<?php namespace spitfire\storage\database\pagination;
 
 /* 
  * The MIT License
  *
- * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,34 +24,61 @@ use spitfire\storage\database\RestrictionGroup;
  * THE SOFTWARE.
  */
 
-class CompositeWorker implements WorkerInterface
+class MockPaginator implements PaginationInterface
 {
 	
-	/**
-	 * 
-	 * @param RestrictionGroup  $parent
-	 * @param string $field
-	 * @param string $operator
-	 * @param mixed  $value
-	 */
-	public function make(RestrictionGroup$parent, $field, $operator, $value) {
-		
-		/*
-		 * Find the appropriate field for the maker to assemble a restriction. If 
-		 * this returns an empty value, then this maker can't assemble a restriction
-		 */
-		$logical = $parent->getQuery()->getTable()->getSchema()->getField($field);
-		$of      = $parent->getQuery()->getTable()->getDb()->getObjectFactory();
+	private $current;
+	
+	public function __construct($current = 1) {
+		$this->current = $current;
+	}
 
-		/*
-		 * If the field is null or the value is null, then this maker is not a match
-		 * for the behavior needed.
-		 */
-		if ($logical === null || $value === null) { 
-			return false; 
-		}
+	public function after() {
+		return '::after' . PHP_EOL;
+	}
 
-		return $of->restrictionCompositeInstance($parent, $logical, $value, $operator);
+	public function before() {
+		return '::before' . PHP_EOL;
+	}
+
+	public function current() {
+		return $this->current;
+	}
+
+	public function emptyResultMessage() {
+		return '::empty' . PHP_EOL;
+	}
+
+	public function first() {
+		return '::first' . PHP_EOL;
+	}
+
+	public function last($number) {
+		return '::last' . PHP_EOL;
+	}
+
+	public function next() {
+		return '::next' . PHP_EOL;
+	}
+
+	public function page($number) {
+		return '::page #' . $number . PHP_EOL;
+	}
+
+	public function previous() {
+		return '::previous' . PHP_EOL;
+	}
+
+	public function gap() {
+		return '::gap' . PHP_EOL;
+	}
+
+	public function jumpTo($total) {
+		return '::jumpTo ' . $total . PHP_EOL;
+	}
+
+	public function pageOf($total) {
+		return '::pageOf ' . $total . PHP_EOL;
 	}
 
 }

@@ -63,7 +63,7 @@ class OTFTableLocator implements TableLocatorInterface
 	public function locate(string $tablename) {
 		
 		#Get the OTF model
-		try {	return $this->db->getObjectFactory()->getOTFSchema($tablename); }
+		try {	return $this->db->getObjectFactory()->getOTFSchema($this->db, $tablename); }
 		catch (PrivateException$e) { return false; }
 	}
 

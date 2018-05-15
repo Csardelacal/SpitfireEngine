@@ -223,18 +223,19 @@ class Schema
 	 * Returns a list of fields which compound the primary key of this model.
 	 * The primary key is a set of records that identify a unique record.
 	 * 
-	 * @deprecated since version 0.1-dev 20170824
-	 * @return Field[]
+	 * @return Index
 	 */
 	public function getPrimary() {
 		#Fetch the field list
-		$fields = $this->getFields();
-		#Drop the fields which aren't primary
-		foreach ($fields as $name => $field) {
-			if (!$field->isPrimary()) { unset($fields[$name]); }
+		$indexes = $this->indexes;
+		
+		#Loop over the indexes and get the primary one
+		foreach ($indexes as $index) {
+			if ($index->isPrimary()) { return $index; }
 		}
-		#Return the cleared array
-		return $fields;
+		
+		#If there was no index, then return a null value
+		return null;
 	}
 	
 	/**

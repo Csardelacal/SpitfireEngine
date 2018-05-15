@@ -11,12 +11,6 @@ use spitfire\exceptions\OutOfRangeException;
  */
 class Collection implements ArrayAccess, CollectionInterface
 {
-	
-	/**
-	 * The elements that this collection maintains.
-	 * 
-	 * @var mixed
-	 */
 	private $items;
 	
 	/**
@@ -27,7 +21,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	 */
 	public function __construct($e = null) {
 		if ($e === null)                  {	$this->items = []; }
-		elseif ($e instanceof Relation)   { $this->items = $e->toArray(); }
+		elseif ($e instanceof Collection) { $this->items = $e->toArray(); }
 		elseif (is_array($e))             { $this->items = $e; }
 		else                              { $this->items = [$e]; }
 	}
@@ -65,12 +59,16 @@ class Collection implements ArrayAccess, CollectionInterface
 		return array_reduce($this->items, $callback, $initial);
 	}
 	
-	public function has($idx) {
-		return isset($this->items[$idx]);
-	}
-	
-	public function contains($e) {
-		return array_search($e, $this->items);
+	public function flatten() {
+		$_ret  = new self();
+		
+		foreach ($this->items as $item) {
+			if ($item instanceof Collection) { $_ret->add($item->flatten()); }
+			elseif (is_array($item))         { $c = new self($item); $_ret->add($c->flatten()); }
+			else { $_ret->push($item); }
+		}
+		
+		return $_ret;
 	}
 	
 	/**
@@ -108,6 +106,14 @@ class Collection implements ArrayAccess, CollectionInterface
 		return empty($this->items);
 	}
 	
+	public function has($idx) {
+		return isset($this->items[$idx]);
+	}
+	
+	public function contains($e) {
+		return array_search($e, $this->items);
+	}
+	
 	/**
 	 * Filters the collection using a callback. This allows a collection to shed
 	 * values that are not useful to the programmer.
@@ -127,22 +133,21 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	/**
+	 * Removes all duplicates from the collection.
+	 * 
+	 * @return \spitfire\core\Collection
+	 */
+	public function unique() {
+		return new Collection(array_unique($this->items));
+	}
+	
+	/**
 	 * Counts the number of elements inside the collection.
 	 * 
 	 * @return int
 	 */
 	public function count() {
 		return count($this->items);
-	}
-	
-	/**
-	 * Combines the elements in the collection to a string separated by the glue
-	 * parameter.
-	 * 
-	 * @param string $glue
-	 */
-	public function join($glue = '') {
-		return implode($glue, $this->items);
 	}
 	
 	/**
@@ -160,6 +165,11 @@ class Collection implements ArrayAccess, CollectionInterface
 		return array_sum($this->items);
 	}
 	
+	public function sort($callback = null) {
+		if (!$callback) { return new Collection(sort($this->items)); }
+		else            { return new Collection(usort($this->items, $callback)); }
+	}
+	
 	/**
 	 * Returns the average value of the elements inside the collection.
 	 * 
@@ -168,6 +178,10 @@ class Collection implements ArrayAccess, CollectionInterface
 	 */
 	public function avg() {
 		return $this->sum() / $this->count();
+	}
+	
+	public function join($glue) {
+		return implode($glue, $this->items);
 	}
 	
 	/**
@@ -194,12 +208,17 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function add($elements) {
+		if ($elements instanceof Collection) { $elements = $elements->toArray(); }
+		
 		$this->items = array_merge($this->items, $elements);
 		return $this;
 	}
 	
 	public function remove($element) {
-		unset($this->items[array_search($element, $this->items)]);
+		$i = array_search($element, $this->items);
+		if ($i === false) { throw new OutOfRangeException('Not found', 1804292224); }
+		
+		unset($this->items[$i]);
 		return $this;
 	}
 	
@@ -244,6 +263,11 @@ class Collection implements ArrayAccess, CollectionInterface
 		return reset($this->items);
 	}
 	
+	public function last() {
+		if (!isset($this->items)) { throw new \spitfire\exceptions\PrivateException('Collection error', 1709042046); }
+		return end($this->items);
+	}
+
 	public function shift() {
 		return array_shift($this->items);
 	}

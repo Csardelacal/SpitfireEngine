@@ -1,10 +1,10 @@
-<?php namespace spitfire\storage\database\drivers;
+<?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
 use spitfire\model\Field as LogicalField;
-use spitfire\storage\database\Field;
+use spitfire\storage\database\Field as ParentClass;
 use \Reference;
 
-class mysqlPDOField extends Field
+class Field extends ParentClass
 {
 	
 	public function columnType() {
@@ -47,13 +47,13 @@ class mysqlPDOField extends Field
 	}
 
 	public function add() {
-		$stt = "ALTER TABLE `{$this->getTable()->getTableName()}` 
+		$stt = "ALTER TABLE `{$this->getTable()->getLayout()->getTableName()}` 
 			ADD COLUMN (`{$this->getName()}` {$this->columnDefinition()} )";
 		$this->getTable()->getDb()->execute($stt);
 		
 		if ($this->getLogicalField()->isPrimary()) {
 			$pk = implode(', ', array_keys($this->getTable()->getPrimaryKey()));
-			$stt = "ALTER TABLE {$this->getTable()->getTableName()} 
+			$stt = "ALTER TABLE {$this->getTable()->getLayout()->getTableName()} 
 				DROP PRIMARY KEY, 
 				ADD PRIMARY KEY(" . $pk . ")";
 			$this->getTable()->getDb()->execute($stt);
