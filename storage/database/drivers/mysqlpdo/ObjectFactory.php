@@ -4,11 +4,12 @@ use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\Field;
 use spitfire\storage\database\drivers\mysqlPDOField;
 use spitfire\storage\database\drivers\MysqlPDOQuery;
 use spitfire\storage\database\drivers\MysqlPDORestriction;
 use spitfire\storage\database\drivers\MysqlPDOTable;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\ObjectFactoryInterface;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
@@ -86,6 +87,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * 
 	 * @param DB $db
 	 * @param string $tablename
+	 * @deprecated since version 0.1-dev 20170807
 	 * @return MysqlPDOTable
 	 */
 	public function getTableInstance(DB $db, $tablename) {
@@ -122,17 +124,22 @@ class ObjectFactory implements ObjectFactoryInterface
 	 * @throws PrivateException
 	 */
 	public function queryInstance($table) {
-		if ($table instanceof Collection){ $table = $table->getTable(); }
+		if ($table instanceof Relation){ $table = $table->getTable(); }
 		if (!$table instanceof Table) { throw new PrivateException('Need a table object'); }
 		
 		return new MysqlPDOQuery($table);
 	}
 
-	public function makeCollection(Table $table) {
-		return new Collection($table);
+	public function makeRelation(Table $table) {
+		return new Relation($table);
 	}
 	
 	public function __call($name, $args) {
-		throw new BadMethodCallException();
+		throw new BadMethodCallException("Called ObjectFactory::$name. Method does not exist");
 	}
+
+	public function makeLayout(Table $table): LayoutInterface {
+		return new Layout($table);
+	}
+
 }

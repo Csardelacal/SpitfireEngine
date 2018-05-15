@@ -43,6 +43,8 @@ interface ObjectFactoryInterface
 	/**
 	 * Returns an instance of the class the child tables of this class have
 	 * this is used to create them when requested by the table() method.
+	 * 
+	 * @deprecated since version 0.1-dev 20170801
 	 *
 	 * @param DB     $db
 	 * @param string $tablename
@@ -52,23 +54,34 @@ interface ObjectFactoryInterface
 	function getTableInstance(DB$db, $tablename);
 	
 	/**
-	 * Creates a collection. These wrap the typical record operations on a table 
+	 * Creates a relation. These wrap the typical record operations on a table 
 	 * into a separate layer.
 	 * 
 	 * @param Table $table
 	 *
-	 * @return Collection
+	 * @return Relation
 	 */
-	function makeCollection(Table$table);
+	function makeRelation(Table$table);
 	
 	/**
-	 * Creates a new On The Fly Model. These allow the system to interact with a 
+	 * Creates a table layout to generate an appropriate schema for the DBMS to 
+	 * store the data.
+	 * 
+	 * @param Table $table
+	 * 
+	 * @return LayoutInterface The layout for the table
+	 */
+	function makeLayout(Table$table);
+	
+	/**
+	 * Creates a new On The Fly Schema. These allow the system to interact with a 
 	 * database that was not modeled after Spitfire's models or that was not 
 	 * reverse engineered previously.
 	 *
 	 * @param string $modelname
 	 * 
 	 * @return Table Instance of the table class the driver wants the system to use
+	 * @todo Rename to generateSchema
 	 */
 	function getOTFSchema($modelname);
 	
@@ -82,6 +95,7 @@ interface ObjectFactoryInterface
 	 * @param Field  $references
 	 *
 	 * @return Field Field
+	 * @todo Rename to makeField
 	 */
 	function getFieldInstance(LogicalField$field, $name, Field$references = null);
 	
@@ -94,6 +108,9 @@ interface ObjectFactoryInterface
 	 * @param Field     $field
 	 * @param mixed       $value
 	 * @param string|null $operator
+	 * 
+	 * @return Restriction|CompositeRestriction
+	 * @todo Rename to makeRestriction
 	 */
 	function restrictionInstance($query, Field$field, $value, $operator = null);
 
@@ -102,9 +119,10 @@ interface ObjectFactoryInterface
 	 * where the data should be retrieved some and some information on the fields
 	 * that we want it to provide.
 	 *
-	 * @param Table|Collection $table
+	 * @param Table|Relation $table
 	 *
 	 * @return Query
+	 * @todo Rename to makeQuery
 	 */
 	function queryInstance($table);
 }

@@ -29,15 +29,17 @@ use spitfire\Model;
 /**
  * When we think about a table in a common DBMS we think of the combination of
  * a table schema, which defines the fields and what data they can contain, and
- * a collection of records which can be used to maintain your data.
+ * a relation of records which can be used to maintain your data.
  * 
  * This class represents the collection, it will provide the mechanisms to CRUD 
  * records and also may provide caching for the database.
  * 
- * @todo Collections should also provide a proper caching mechanism
+ * @todo Relations should also provide a proper caching mechanism
+ * @todo Move "below" a table.
+ * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-abstract class Collection
+abstract class Relation
 {
 	
 	/**
@@ -132,7 +134,8 @@ abstract class Collection
 	 */
 	public function get($field, $value, $operator = null) {
 		#Create the query
-		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this);
+		$table = $this->getTable();
+		$query = $table->getDb()->getObjectFactory()->queryInstance($table);
 		$query->addRestriction($field, $value, $operator);
 		#Return it
 		return $query;
@@ -145,7 +148,8 @@ abstract class Collection
 	 * @return Query
 	 */
 	public function getAll() {
-		$query = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this);
+		$table = $this->getTable();
+		$query = $table->getDb()->getObjectFactory()->queryInstance($table);
 		return $query;
 	}
 
@@ -167,7 +171,7 @@ abstract class Collection
 	 */
 	public function __call($name, $arguments) {
 		#Pass on
-		trigger_error('Called Collection::__call. This should not happen. Missing argument: ' . $name, E_USER_DEPRECATED);
+		trigger_error('Called Relation::__call. This should not happen. Missing argument: ' . $name, E_USER_DEPRECATED);
 		return call_user_func_array(Array($this->getDb(), $name), $arguments);
 	}
 }

@@ -69,7 +69,7 @@ class Reference extends Field
 			return $this->target = $this->getModel();
 		}
 		else {
-			return $this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getTable()->getModel();
+			return $this->target = $this->getModel()->getTable()->getDb()->table($this->target)->getSchema();
 		}
 	}
 	

@@ -44,7 +44,7 @@ class ChildrenField extends Field
 			return $this->target = $this->getModel();
 		}
 		else {
-			return $this->target = $this->getModel()->getTable()->getDB()->table($this->target)->getTable()->getModel();
+			return $this->target = $this->getModel()->getTable()->getDB()->table($this->target)->getSchema();
 		}
 	}
 	

@@ -14,9 +14,15 @@ use spitfire\validation\ValidationError;
  */
 abstract class Field
 {
-	/*
+	/**
 	 * This constants represent the list of basic data types that spitfire 
 	 * supports. This should be supported by the DBMS to be used.
+	 * 
+	 * @todo Move or remove. The idea of these constants was to define the field's
+	 * raw data in a way that DBMS's could understand. Since we now do support
+	 * instanceof tests, these are just a superfluous way of restating what the 
+	 * system already knows about the field. And in the event of this data 
+	 * conflicting with the data provided by the class even causing trouble.
 	 */
 	const TYPE_INTEGER   = 'int';
 	const TYPE_LONG      = 'long';
@@ -34,8 +40,9 @@ abstract class Field
 	 * Contains a reference to the parent model. This allows this field to 
 	 * interact with it and to retrieve information about the model, the 
 	 * table it is in and even the DB engine that holds them.
-	 *
-	 * @var Model
+	 * 
+	 * @var Schema
+	 * @todo Rename to schema
 	 */
 	private $model;
 	
@@ -55,6 +62,7 @@ abstract class Field
 	 * does not guarantee that this is respected.
 	 *
 	 * @var boolean 
+	 * @deprecated since version 0.1-dev 20170804
 	 */
 	private $unique = false;
 	
@@ -71,6 +79,7 @@ abstract class Field
 	 * 's primary Key. This key is the one used to identify records uniquely.
 	 *
 	 * @var boolean 
+	 * @deprecated since version 0.1-dev 20170804
 	 */
 	private $primary = false;
 	
@@ -189,7 +198,11 @@ abstract class Field
 	public function getNullable() {
 		return $this->nullable;
 	}
-
+	
+	
+	public function getSchema() {
+		return $this->model;
+	}
 
 	
 	/**
@@ -197,7 +210,7 @@ abstract class Field
 	 * deliver data about which fields it's a sibling to and which fields
 	 * it refers too.
 	 * 
-	 * @return Model
+	 * @return Schema
 	 */
 	public function getModel() {
 		return $this->model;
@@ -208,7 +221,7 @@ abstract class Field
 	 * redundant but quickens development and makes it more efficient to
 	 * find the model for the field.
 	 * 
-	 * @param Model $model
+	 * @param Schema $model
 	 */
 	public function setModel($model) {
 		$this->model = $model;
@@ -228,16 +241,18 @@ abstract class Field
 	 * Returns true if the field belongs to the table's primary key. Keep in
 	 * mind that a primary key can cover several fields.
 	 * 
+	 * @deprecated since version 0.1-dev 20170804
 	 * @return boolean
 	 */
 	public function isPrimary() {
-		return $this->primary;
+		return $this->primary || $this->auto_increment;
 	}
 	
 	/**
 	 * Defines whether this belongs to the primary key or not. This will 
 	 * also automatically set the unique flag to true.
 	 * 
+	 * @deprecated since version 0.1-dev 20170804
 	 * @param boolean $primary
 	 * @return self
 	 */
@@ -253,6 +268,7 @@ abstract class Field
 	 * [NOTICE] If the field is a primary key this will return true. Due to
 	 * the primary having to be unique.
 	 * 
+	 * @deprecated since version 0.1-dev 20170804
 	 * @return boolean
 	 */
 	public function isUnique() {
@@ -266,6 +282,7 @@ abstract class Field
 	 * unique values setting this flag to true will consistently increase
 	 * the speed of database queries.
 	 * 
+	 * @deprecated since version 0.1-dev 20170804
 	 * @param boolean $unique
 	 * @return self
 	 */
@@ -283,6 +300,7 @@ abstract class Field
 	 * function should be overriden by methods for field types that have 
 	 * higher performance with specific values.
 	 * 
+	 * @deprecated since version 0.1-dev 20170804
 	 * @return boolean
 	 */
 	public function isIndexed() {
@@ -325,6 +343,8 @@ abstract class Field
 	 * This method informs the system what primary datatype the overriding 
 	 * Field class uses. You can define custom classes that store data into
 	 * any DBMS by defining which primary data they use.
+	 * 
+	 * @deprecated since version 0.1-dev 20170804
 	 */
 	abstract public function getDataType();
 	

@@ -4,6 +4,8 @@ use Exception;
 
 /**
  * Represents table specific properties and methods for the MySQLPDO Driver.
+ * 
+ * @deprecated since version 0.1-dev 20170807
  */
 class MysqlPDOTable extends stdSQLTable
 {
@@ -66,6 +68,6 @@ class MysqlPDOTable extends stdSQLTable
 	 *                of a query.
 	 */
 	public function __toString() {
-		return "`{$this->tablename}`";
+		return strval($this->getLayout());
 	}
 }

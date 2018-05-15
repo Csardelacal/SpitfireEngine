@@ -116,13 +116,13 @@ abstract class DB
 	 *                                 table.
 	 * 
 	 * @throws PrivateException If the table could not be found
-	 * @return Collection The database table adapter
+	 * @return Relation The database table adapter
 	 */
 	public function table($tablename) {
 		
 		#If the parameter is a Model, we get it's name
 		if ($tablename instanceof Schema) {
-			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), $this->getObjectFactory()->makeCollection($this->getObjectFactory()->getTableInstance($this, $tablename))); } 
+			if (!class_exists($tablename->getName().'Model')) { return $this->tableCache->set($tablename->getName(), new Table($this, $tablename)); } 
 			else                                              { $tablename = $tablename->getName(); }
 		}
 		
@@ -153,12 +153,11 @@ abstract class DB
 	 * 
 	 * @todo Extract these methods (makeTable, hasTable, getTableFromCache) to a separate TablePool class
 	 * @param string $tablename
-	 * @return Collection
+	 * @return Relation
 	 * @throws PrivateException
 	 */
 	protected function makeTable($tablename) {
 		$className = $tablename . 'Model';
-		$factory   = $this->getObjectFactory();
 		
 		if (class_exists($className)) {
 			#Create a schema and a model
@@ -166,8 +165,7 @@ abstract class DB
 			$model = new $className();
 			$model->definitions($schema);
 			
-			$table = $factory->getTableInstance($this, $schema);
-			return $factory->makeCollection($table);
+			return new Table($this, $schema);
 		}
 		
 		throw new PrivateException('No table ' . $tablename);
@@ -188,7 +186,7 @@ abstract class DB
 	 * Allows short-hand access to tables by using: $db->tablename
 	 * 
 	 * @param string $table Name of the table
-	 * @return Collection
+	 * @return Relation
 	 */
 	public function __get($table) {
 		#Otherwise we try to get the table with this name

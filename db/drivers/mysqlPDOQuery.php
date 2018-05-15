@@ -4,7 +4,7 @@ namespace spitfire\storage\database\drivers;
 
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
-use spitfire\storage\database\Collection;
+use spitfire\storage\database\Relation;
 use spitfire\storage\database\Table;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\QueryField;
@@ -22,7 +22,7 @@ class MysqlPDOQuery extends Query
 		
 		$selectstt    = 'SELECT';
 		$fromstt      = 'FROM';
-		$tablename    = $this->getTable();
+		$tablename    = $this->getTable()->getLayout();
 		$wherestt     = 'WHERE';
 		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
 		$restrictions = array_filter($this->getRestrictions(), Array('spitfire\storage\database\Query', 'restrictionFilter'));
@@ -114,7 +114,7 @@ class MysqlPDOQuery extends Query
 	}
 
 	public function queryTableInstance($table) {
-		if ($table instanceof Collection) { $table = $table->getTable(); }
+		if ($table instanceof Relation) { $table = $table->getTable(); }
 		if ($table instanceof QueryTable) { $table = $table->getTable(); }
 		
 		

@@ -43,7 +43,7 @@ class ReferenceAdapter extends BaseAdapter
 		 * TODO: This should stop being an issue once the resultset object has been
 		 * moved out of the query.
 		 */
-		$this->remote = clone $this->query;
+		$this->remote = $this->query === null? null : clone $this->query;
 	}
 	
 	public function dbGetData() {

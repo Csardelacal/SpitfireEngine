@@ -14,6 +14,6 @@ class MysqlPDOQueryTable extends QueryTable
 	}
 
 	public function definition() {
-		return "{$this->getTable()} AS `{$this->getAlias()}`";
+		return "{$this->getTable()->getLayout()} AS `{$this->getAlias()}`";
 	}
 }

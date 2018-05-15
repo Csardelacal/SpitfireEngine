@@ -117,7 +117,6 @@ class View extends MVC
 		else { throw new FileNotFoundException('File ' . $filename . ' not found. View can\'t use it as layout'); }
 	}
 
-
 	public function element($file) {
 		$filename = $this->app->getTemplateDirectory() . 'elements/' . $file . '.php';
 		if (!file_exists($filename)) throw new PrivateException('Element ' . $file . ' missing');
@@ -126,6 +125,10 @@ class View extends MVC
 	
 	public function setRenderTemplate($set) {
 		$this->render_template = $set;
+	}
+	
+	public function setRenderLayout($set) {
+		$this->render_layout = $set;
 	}
 
 	public function render () {

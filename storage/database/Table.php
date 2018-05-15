@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use CoffeeBean;
-use spitfire\core\Environment;
+use Model;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Schema;
 
@@ -11,7 +11,7 @@ use spitfire\storage\database\Schema;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-abstract class Table
+class Table
 {
 
 	/**
@@ -32,21 +32,19 @@ abstract class Table
 	protected $schema;
 	
 	/**
-	 * The prefixed name of the table. The prefix is defined by the environment
-	 * and allows to have several environments on the same database.
-	 *
-	 * @var string
+	 * Provides access to the table's layout (physical schema) 
+	 * 
+	 * @var LayoutInterface
 	 */
-	protected $tablename;
+	private $layout;
 	
 	/**
-	 * List of the physical fields this table handles. This array is just a 
-	 * shortcut to avoid looping through model-fields everytime a query is
-	 * performed.
+	 * Provides access to the table's record operations. Basically, a relational
+	 * table is composed of schema + relation (data).
 	 *
-	 * @var Field[] 
+	 * @var Relation
 	 */
-	protected $fields;
+	private $relation;
 	
 	/**
 	 * Contains the bean this table uses to generate forms for itself. The bean
@@ -61,7 +59,7 @@ abstract class Table
 	 * is empty when the table is constructed and collects the primary key's fields
 	 * once they are requested for the first time.
 	 * 
-	 * @var Field[]|null
+	 * @var \spitfire\storage\database\Index|null
 	 */
 	protected $primaryK;
 	
@@ -85,56 +83,38 @@ abstract class Table
 	 */
 	public function __construct(DB$db, $schema) {
 		$this->db = $db;
+		$factory = $this->db->getObjectFactory();
 		
-		if ($schema instanceof Schema) {
-			$this->schema = $schema;
-			$this->schema->setTable($this);
-		} else {
+		if (!$schema instanceof Schema) {
 			throw new PrivateException('Table requires a Schema to be passed');
 		}
 		
-		#Get the physical table name. This will use the prefix to allow multiple instances of the DB
-		$this->tablename = Environment::get('db_table_prefix') . $this->schema->getTableName();
+		#Attach the schema to this table
+		$this->schema = $schema;
+		$this->schema->setTable($this);
 		
-		$this->makeFields();
-	}
-	
-	public function makeFields() {
+		#Create a database table layout (physical schema)
+		$this->layout = $factory->makeLayout($this);
 		
-		$fields   = $this->schema->getFields();
-		$dbfields = Array();
-		
-		foreach ($fields as $field) {
-			$physical = $field->getPhysical();
-			while ($phys = array_shift($physical)) { $dbfields[$phys->getName()] = $phys; }
-		}
-		
-		$this->fields = $dbfields;
+		#Create the relation
+		$this->relation = $factory->makeRelation($this);
 	}
 	
 	/**
 	 * Fetch the fields of the table the database works with. If the programmer
 	 * has defined a custom set of fields to work with, this function will
-	 * return the overriden fields.
+	 * return the overridden fields.
 	 * 
 	 * @return Field[] The fields this table handles.
 	 */
 	public function getFields() {
-		return $this->fields;
+		trigger_error('Deprecated function Table::getFields() called', E_USER_DEPRECATED);
+		return $this->layout->getFields();
 	}
 	
 	public function getField($name) {
-		#If the data we get is already a DBField check it belongs to this table
-		if ($name instanceof Field) {
-			if ($name->getTable() === $this) { return $name; }
-			else { throw new PrivateException('Field ' . $name . ' does not belong to ' . $this); }
-		}
-		
-		#Otherwise search for it in the fields list
-		if (isset($this->fields[(string)$name])) { return $this->fields[(string)$name]; }
-		
-		#The field could not be found in the Database
-		throw new PrivateException('Field ' . $name . ' does not exist in ' . $this);
+		trigger_error('Deprecated function Table::getField() called', E_USER_DEPRECATED);
+		return $this->layout->getField($name);
 	}
 	
 	/**
@@ -144,7 +124,8 @@ abstract class Table
 	 * @return string 
 	 */
 	public function getTablename() {
-		return $this->tablename;
+		trigger_error('Deprecated function Table::getTablename() called', E_USER_DEPRECATED);
+		return $this->layout->getTableName();
 	}
 	
 	/**
@@ -166,7 +147,7 @@ abstract class Table
 		if ($this->primaryK !== null) { return $this->primaryK; }
 		
 		//Implicit else
-		$fields  = $this->getFields();
+		$fields  = $this->layout->getFields();
 		$pk      = Array();
 		
 		foreach($fields as $name => $field) {
@@ -180,7 +161,7 @@ abstract class Table
 		if ($this->autoIncrement) { return $this->autoIncrement; }
 		
 		//Implicit else
-		$fields  = $this->getFields();
+		$fields  = $this->layout->getFields();
 		
 		foreach($fields as $field) {
 			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->autoIncrement = $field; }
@@ -200,11 +181,11 @@ abstract class Table
 	 * This function is intended to be used to provide controllers with prebuilt
 	 * models so they don't need to fetch it again.
 	 *
-	 * @todo Move to collection
+	 * @todo Move to relation
 	 *
 	 * @param mixed $id
 	 *
-	 * @return \Model
+	 * @return Model
 	 */
 	public function getById($id) {
 		#If the data is a string separate by colons
@@ -234,8 +215,31 @@ abstract class Table
 		return $this->schema;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20170801
+	 * @return Relation
+	 */
 	public function getCollection() {
-		return $this->db->table($this->schema->getName());
+		return $this->relation;
+	}
+	
+	/**
+	 * Gives access to the relation, the table's component that manages the data
+	 * that the table contains.
+	 * 
+	 * @return Relation
+	 */
+	public function getRelation() {
+		return $this->relation;
+	}
+	
+	/**
+	 * 
+	 * @return LayoutInterface
+	 */
+	public function getLayout(): LayoutInterface {
+		return $this->layout;
 	}
 	
 	/**
@@ -263,16 +267,17 @@ abstract class Table
 		return $bean;
 	}
 	
-	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
-	 * 
-	 * @todo Move to Table
-	 */
-	abstract public function create();
-	abstract public function repair();
-	public abstract function destroy();
+	public function get($field, $value, $operator = '=') {
+		return $this->relation->get($field, $value, $operator);
+	}
+	
+	public function getAll() {
+		return $this->relation->getAll();
+	}
+	
+	public function newRecord($data = Array()) {
+		return $this->relation->newRecord($data);
+	}
 
 	/**
 	 * If the table cannot handle the request it will pass it on to the db
@@ -284,6 +289,11 @@ abstract class Table
 	 * @return mixed
 	 */
 	public function __call($name, $arguments) {
+		
+		#We basically reject __call since it is a bad programming habit to rely on 
+		#redirecting every call
+		trigger_error("Called Table::__call() requesting $name()", E_USER_DEPRECATED);
+		
 		#Add the table to the arguments for the db
 		array_unshift($arguments, $this);
 		#Pass on

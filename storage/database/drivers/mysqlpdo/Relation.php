@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class Collection extends \spitfire\storage\database\Collection
+class Relation extends \spitfire\storage\database\Relation
 {
 	
 	
@@ -99,7 +99,7 @@ class Collection extends \spitfire\storage\database\Collection
 		$quoted = array_map(Array($db, 'quote'), $write);
 		
 		$stt = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-			$table,
+			$table->getLayout(),
 			implode(', ', $fields),
 			implode(', ', $quoted)
 			);
@@ -132,7 +132,7 @@ class Collection extends \spitfire\storage\database\Collection
 		foreach ($write as $f => $v) { $quoted[] = "{$table->getField($f)} = {$db->quote($v)}"; }
 		
 		$stt = sprintf('UPDATE %s SET %s WHERE %s',
-			$table, 
+			$table->getLayout(), 
 			implode(', ', $quoted),
 			implode(' AND ', $restrictions)
 		);
