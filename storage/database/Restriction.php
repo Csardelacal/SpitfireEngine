@@ -1,6 +1,5 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\Model;
 use spitfire\exceptions\PrivateException;
 
 /**
@@ -67,7 +66,7 @@ abstract class Restriction
 	 * Returns the query this restriction belongs to. This allows a query to 
 	 * define an alias for the table in order to avoid collissions.
 	 * 
-	 * @return \spitfire\storage\database\Query
+	 * @return Query
 	 */
 	public function getQuery() {
 		return $this->parent->getQuery();

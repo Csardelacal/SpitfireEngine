@@ -6,7 +6,7 @@ use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\DB;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;
-use spitfire\storage\database\drivers\MysqlPDORestriction;
+use spitfire\storage\database\drivers\mysqlpdo\Restriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\LayoutInterface;
@@ -103,7 +103,7 @@ class ObjectFactory implements ObjectFactoryInterface
 	}
 
 	public function restrictionInstance($query, AbstractQueryField$field, $value, $operator = null) {
-		return new MysqlPDORestriction($query,	$field, $value, $operator);
+		return new Restriction($query,	$field, $value, $operator);
 	}
 
 	/**

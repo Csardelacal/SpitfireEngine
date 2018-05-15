@@ -6,7 +6,7 @@ use spitfire\storage\database\drivers\mysqlpdo\QueryField;
 use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;
-use spitfire\storage\database\drivers\MysqlPDORestriction;
+use spitfire\storage\database\drivers\mysqlpdo\Restriction;
 use spitfire\storage\database\drivers\MysqlPDORestrictionGroup;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
@@ -26,7 +26,7 @@ class RestrictionGroupTest extends TestCase
 		$queryfield = new QueryField(new QueryTable($table), $field);
 		
 		$groupa = new MysqlPDORestrictionGroup($query);
-		$groupa->putRestriction(new MysqlPDORestriction($groupa, $queryfield, 'A'));
+		$groupa->putRestriction(new Restriction($groupa, $queryfield, 'A'));
 		
 		$groupb = clone $groupa;
 		
