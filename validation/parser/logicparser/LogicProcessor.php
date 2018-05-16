@@ -27,12 +27,41 @@ use spitfire\validation\parser\Token;
  * THE SOFTWARE.
  */
 
-abstract class LogicProcessor
+/**
+ * Parsing Spitfire's validation language is not a simple feat. While simple, the
+ * language has some caveats that cause it to be rather hard to interpret.
+ * 
+ * At this stage, the statement the user provided has been broken up into several
+ * layers (groups, and options - depending on whether they were delimited by 
+ * parenthesis or brackets) and contain a series of tokens.
+ * 
+ * The logic processor will walk the groups looking for suitable tokens (at this
+ * point it's just AND and OR) and break the group up if it contains a token,
+ * wrapping the pieces up in several sub-groups.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
+class LogicProcessor
 {
 	
+	private $type;
+	
+	public function __construct($type) {
+		$this->type = $type;
+	}
+	
+	/**
+	 * This method checks if the appropriate token exists within the group. While
+	 * this usually amounts to double checking the group in an unnecessary fashion,
+	 * it usually prevents the group from instancing several objects and discarding 
+	 * them if they were unneeded.
+	 * 
+	 * @param GroupComponent $component
+	 * @return boolean
+	 */
 	public function exists(GroupComponent$component) {
 		foreach ($component->getItems() as $item) {
-			if ($item instanceof Token && $item->getContent() == $this->token()) {
+			if ($item instanceof Token && $item->getContent() == $this->type) {
 				return true;
 			}
 		}
@@ -40,6 +69,13 @@ abstract class LogicProcessor
 		return false;
 	}
 	
+	/**
+	 * This is the main method of a logic processor. These components are in 
+	 * charge of replacing logical operator tokens (AND and OR) with components
+	 * that represent them appropriately.
+	 * 
+	 * @param GroupComponent $component
+	 */
 	public function run(GroupComponent$component) {
 		if (!$this->exists($component)) { 
 			foreach ($component->getItems() as $item) { 
@@ -51,15 +87,13 @@ abstract class LogicProcessor
 		}
 		
 		$items = $component->getItems();
-		$copy  = $this->make();
+		$copy  = new GroupComponent([], $this->type);
 		$child = new GroupComponent([]);
 		$copy->push($child);
 		
 		
 		foreach ($items as $item) {
-			echo 'Testing ', $item, PHP_EOL;
-			if ($item instanceof Token && $item->getContent() == $this->token()) {
-				echo 'Entering...', PHP_EOL;
+			if ($item instanceof Token && $item->getContent() == $this->type) {
 				$child = new GroupComponent([]);
 				$copy->push($child);
 			}
@@ -74,8 +108,5 @@ abstract class LogicProcessor
 		
 		$component->setItems([$copy]);
 	}
-	
-	abstract public function token();
-	abstract public function make($items = []);
 
 }

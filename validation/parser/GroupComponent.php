@@ -1,5 +1,8 @@
 <?php namespace spitfire\validation\parser;
 
+use spitfire\validation\parser\postprocessor\AndPostProcessor;
+use spitfire\validation\parser\postprocessor\FunctionPostProcessor;
+use spitfire\validation\parser\postprocessor\OrPostProcessor;
 use spitfire\validation\rules\EmptyValidationRule;
 use spitfire\validation\rules\FilterValidationRule;
 use spitfire\validation\rules\PositiveNumberValidationRule;
@@ -31,10 +34,16 @@ use spitfire\validation\rules\PositiveNumberValidationRule;
 class GroupComponent extends Component
 {
 	
-	private $items = [];
+	const TYPE_AND = 'AND';
+	const TYPE_OR  = 'OR';
 	
-	public function __construct($items) {
+	private $items;
+	
+	private $type;
+	
+	public function __construct($items, $type = null) {
 		$this->items = $items;
+		$this->type  = $type;
 	}
 	
 	public function tokenize() {
@@ -47,6 +56,8 @@ class GroupComponent extends Component
 		}
 		
 		$this->items = $set;
+		
+		return $this;
 	}
 	
 	public function getItems() {
@@ -66,13 +77,19 @@ class GroupComponent extends Component
 		$items = array_values($this->items);
 		$_ret  = [];
 		
+		if ($this->type !== null) {
+			$items = $this->getItems();
+			foreach ($items as &$item) { $item = $item->make(); }
+			return $this->type === self::TYPE_AND? new AndPostProcessor($items) : new OrPostProcessor($items);
+		}
+		
 		if (count($items) === 1) {
 			return $items[0]->make();
 		}
 		elseif (count($items) === 2 && $items[0] instanceof Token && $items[1] instanceof GroupComponent) {
 			$options = $items[1]->make();
 			if (!is_array($options)) { $options = [$this->findRule($options, [])]; }
-			return new postprocessor\FunctionPostProcessor($items[0]->make(), $options);
+			return new FunctionPostProcessor($items[0]->getContent(), $options);
 		}
 		else {
 			//The group represents parameters
@@ -80,7 +97,7 @@ class GroupComponent extends Component
 				
 				$rule = $items[$i];
 				
-				if ($items[$i+1] instanceof OptionsComponent) {
+				if (isset($items[$i + 1]) && $items[$i+1] instanceof Options) {
 					$options = $items[$i+1];
 					$i++;
 				}

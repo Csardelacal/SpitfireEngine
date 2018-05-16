@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation\parser\logicparser;
+<?php namespace spitfire\validation\parser;
 
 /* 
  * The MIT License
@@ -24,15 +24,17 @@
  * THE SOFTWARE.
  */
 
-class AndProcessor extends LogicProcessor
+class Options
 {
 	
-	public function make($items = array()) {
-		return new \spitfire\validation\parser\AndComponent($items);
+	private $items = [];
+	
+	public function __construct($items) {
+		$this->items = array_filter($items);
 	}
-
-	public function token() {
-		return 'AND';
+	
+	public function __toString() {
+		return sprintf('[%s]', implode(',', $this->items));
 	}
 
 }

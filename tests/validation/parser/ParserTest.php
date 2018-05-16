@@ -25,6 +25,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use spitfire\validation\parser\logicparser\LogicProcessor;
+use spitfire\validation\parser\preprocessor\Preprocessor;
 
 class ParserTest extends TestCase
 {
@@ -32,24 +34,19 @@ class ParserTest extends TestCase
 	
 	public function testParseLiteral() {
 		
-		$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required)';
+		$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required email)';
 
-		$pp = new \spitfire\validation\parser\preprocessor\Preprocessor();
-		$result = $pp->prepare($string);
-		$result->tokenize();
+		$pp = new Preprocessor();
+		$result = $pp->prepare($string)->tokenize();
 
-		$or = new \spitfire\validation\parser\logicparser\OrProcessor();
+		$or = new LogicProcessor('OR');
 		$or->run($result);
 
-		echo '---', PHP_EOL;
-		$and = new \spitfire\validation\parser\logicparser\AndProcessor();
+		$and = new LogicProcessor('AND');
 		$and->run($result);
 
-		if (count($result->getItems()) > 1) { $root = $result; }
-		else { $root = $result->getItems()[0]; }
-
-		$made = $root->make();
-		$this->assertEquals(true, $made->test(['GET' => ['input' => 'test'], 'POST' => ['other' => 34, 'something' => '123']]));
+		$made = $result->make();
+		$this->assertEquals(true, $made->test(['GET' => ['inputa' => 'test', 'another' => 'test@test.com'], 'POST' => ['other' => 34, 'something' => '123']]));
 			
 		
 	}

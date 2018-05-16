@@ -43,7 +43,7 @@ class LiteralComponent extends Component
 	}
 	
 	public function __toString() {
-		return sprintf('Literal<%s>', $this->content);
+		return sprintf('<%s>', $this->content);
 	}
 
 }

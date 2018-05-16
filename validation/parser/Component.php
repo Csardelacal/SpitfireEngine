@@ -29,6 +29,8 @@ abstract class Component
 	
 	/**
 	 * Make a tester for this unit.
+	 * 
+	 * @todo Change the return type to a ValidationRule
 	 */
 	abstract public function make();
 	

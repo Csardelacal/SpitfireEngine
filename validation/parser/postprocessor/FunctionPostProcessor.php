@@ -42,11 +42,14 @@ class FunctionPostProcessor
 	}
 	
 	public function test($data) {
+		if (!isset($data[$this->src]) || !isset($data[$this->src][$this->parameter])) { return false; }
+		
 		$raw = $data[$this->src][$this->parameter];
 		$ok  = true;
 		
 		foreach ($this->options as $option) {
-			$ok = $ok && $option->test($raw);
+			//TODO: Rules can return true or null on success
+			$ok = $ok && $option->test($raw) === false;
 		}
 		
 		return $ok;
