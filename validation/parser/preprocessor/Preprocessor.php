@@ -31,7 +31,7 @@ class Preprocessor
 	
 	public function __construct() {
 		$this->modules = [
-			new Module('"', '"', true,  function($e) { return new \spitfire\validation\parser\LiteralComponent($e); }), //Literals
+			new Module('"', '"', true,  function($e) { return new \spitfire\validation\parser\Token($e); }), //Literals
 			new Module('(', ')', false, function($e) { return new \spitfire\validation\parser\GroupComponent($e); }), //Parenthesis
 			new Module('[', ']', false, function($e) { return new \spitfire\validation\parser\Options($e); })  //Brackets
 		];

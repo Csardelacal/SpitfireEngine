@@ -1,5 +1,8 @@
 <?php namespace spitfire\validation\rules;
 
+use spitfire\validation\ValidationError;
+use spitfire\validation\ValidationRule;
+
 /**
  * A filter based validation rule allows you to use premade PHP filters to validate
  * your content. Please note that a filter that sanitizes may cause unwanted
@@ -8,7 +11,7 @@
  * @author César de la Cal <cesar@magic3w.com>
  * @last-revision 2013-11-12
  */
-class FilterValidationRule implements \spitfire\validation\ValidationRule
+class FilterValidationRule implements ValidationRule
 {
 	/**
 	 * The filter being applied. This is one of the <code>FILTER_VALIDATION_*</code> constants
@@ -51,7 +54,7 @@ class FilterValidationRule implements \spitfire\validation\ValidationRule
 	 * this element or boolean false on no errors.
 	 * 
 	 * @param mixed $value The value tested.
-	 * @return \spitfire\validation\ValidationError|boolean A validation error or boolean on success
+	 * @return ValidationError|boolean A validation error or boolean on success
 	 */
 	public function test($value) {
 		if (!filter_var($value, $this->filter)) {

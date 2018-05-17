@@ -1,11 +1,7 @@
 <?php namespace spitfire\validation\parser;
 
-use spitfire\validation\parser\postprocessor\AndPostProcessor;
-use spitfire\validation\parser\postprocessor\FunctionPostProcessor;
-use spitfire\validation\parser\postprocessor\OrPostProcessor;
-use spitfire\validation\rules\EmptyValidationRule;
-use spitfire\validation\rules\FilterValidationRule;
-use spitfire\validation\rules\PositiveNumberValidationRule;
+use spitfire\validation\parser\ExpressionValidator;
+use spitfire\validation\ValidatorGroup;
 
 /* 
  * The MIT License
@@ -31,7 +27,7 @@ use spitfire\validation\rules\PositiveNumberValidationRule;
  * THE SOFTWARE.
  */
 
-class GroupComponent extends Component
+class GroupComponent
 {
 	
 	const TYPE_AND = 'AND';
@@ -75,53 +71,18 @@ class GroupComponent extends Component
 	
 	public function make() {
 		$items = array_values($this->items);
-		$_ret  = [];
 		
-		if ($this->type !== null) {
-			$items = $this->getItems();
-			foreach ($items as &$item) { $item = $item->make(); }
-			return $this->type === self::TYPE_AND? new AndPostProcessor($items) : new OrPostProcessor($items);
-		}
-		
-		if (count($items) === 1) {
-			return $items[0]->make();
-		}
-		elseif (count($items) === 2 && $items[0] instanceof Token && $items[1] instanceof GroupComponent) {
-			$options = $items[1]->make();
-			if (!is_array($options)) { $options = [$this->findRule($options, [])]; }
-			return new FunctionPostProcessor($items[0]->getContent(), $options);
+		if (count($items) === 2 && $items[0] instanceof Token && $items[1] instanceof GroupComponent) {
+			$params = Parameters::_make($items[1]->getItems());
+			$fn = new ExpressionValidator($items[0]->getContent());
+			
+			foreach ($params as $p) { $fn->addRule($p); }
+			return $fn;
 		}
 		else {
-			//The group represents parameters
-			for($i = 0; $i < count($items); $i++) {
-				
-				$rule = $items[$i];
-				
-				if (isset($items[$i + 1]) && $items[$i+1] instanceof Options) {
-					$options = $items[$i+1];
-					$i++;
-				}
-				else {
-					$options = [];
-				}
-				
-				$_ret[] = $this->findRule($rule, $options);
-			}
-
-			return array_filter($_ret);
+			foreach ($items as &$item) { $item = $item->make(); }
+			return new ValidatorGroup($items, $this->type? : self::TYPE_AND);
 		}
-	}
-	
-	public function findRule($name, $options) {
-		
-		switch($name) {
-			case 'email'   : return new FilterValidationRule(FILTER_VALIDATE_EMAIL, 'Invalid email provided');
-			case 'url'     : return new FilterValidationRule(FILTER_VALIDATE_URL, 'Invalid URL provided');
-			case 'required': return new EmptyValidationRule('Field may not be empty');
-			case 'positive': return new PositiveNumberValidationRule('Positive number required');
-		}
-		
-		return null;
 	}
 		
 	public function __toString() {

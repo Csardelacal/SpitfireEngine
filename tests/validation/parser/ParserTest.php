@@ -25,7 +25,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use spitfire\validation\parser\logicparser\LogicProcessor;
+use spitfire\validation\parser\LogicProcessor;
 use spitfire\validation\parser\preprocessor\Preprocessor;
 
 class ParserTest extends TestCase
@@ -46,7 +46,7 @@ class ParserTest extends TestCase
 		$and->run($result);
 
 		$made = $result->make();
-		$this->assertEquals(true, $made->test(['GET' => ['inputa' => 'test', 'another' => 'test@test.com'], 'POST' => ['other' => 34, 'something' => '123']]));
+		$this->assertEquals(true, $made->setValue(['GET' => ['input' => 'test', 'another' => 'test@test.com'], 'POST' => ['other' => 34, 'something' => '123']])->isOk());
 			
 		
 	}

@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation\parser\postprocessor;
+<?php namespace spitfire\validation\parser;
 
 /* 
  * The MIT License
@@ -24,21 +24,29 @@
  * THE SOFTWARE.
  */
 
-class OrPostProcessor
+class ExpressionValidator extends \spitfire\validation\Validator
 {
-	private $items;
+	private $src = 'GET';
 	
-	public function __construct($items) {
-		$this->items = $items;
+	private $parameter;
+	
+	public function __construct($parameter) {
+		$p = explode('#', $parameter);
+		
+		if (isset($p[1])) { list($this->src, $this->parameter) = $p; }
+		else              { $this->parameter = $p[0]; }
+		
 	}
 	
-	public function test($data) {
-		$_ret = false;
-		
-		foreach ($this->items as $item) {
-			$_ret = $_ret || $item->test($data);
+	public function setValue($value) {
+		if (!isset($value[$this->src]) || !isset($value[$this->src][$this->parameter])) { 
+			parent::setValue(null);
+			return false; 
 		}
-		
-		return $_ret;
+		else {
+			parent::setValue($value[$this->src][$this->parameter]);
+			return true;
+		}
 	}
+
 }

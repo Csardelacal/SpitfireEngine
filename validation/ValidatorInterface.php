@@ -26,7 +26,7 @@ interface ValidatorInterface
 	 * received being correct or not. The test should cascade automatically into
 	 * child values.
 	 * 
-	 * @return boolean True if the data is valid
+	 * @return bool True if the data is valid
 	 */
 	function isOk();
 	
@@ -39,12 +39,5 @@ interface ValidatorInterface
 	 * @return ValidationError[] List of errors
 	 */
 	function getMessages();
-	
-	/**
-	 * Allows the application using this to apply additional restrictions to the 
-	 * base ones (optional) to restrict the possibilities of the data being valid
-	 * further.
-	 */
-	function addRule(ValidationRule$rule);
 	
 }

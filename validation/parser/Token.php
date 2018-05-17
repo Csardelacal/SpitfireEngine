@@ -30,19 +30,10 @@ class Token
 	private $content;
 	
 	public function __construct($content) {
-		$this->content = trim($content);
+		$this->content = is_array($content)? reset($content) : trim($content);
 	}
 	
 	public function getContent() {
-		return $this->content;
-	}
-	
-	/**
-	 * 
-	 * @todo Remove
-	 * @return type
-	 */
-	public function make() {
 		return $this->content;
 	}
 	

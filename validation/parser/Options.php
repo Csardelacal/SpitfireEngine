@@ -30,7 +30,14 @@ class Options
 	private $items = [];
 	
 	public function __construct($items) {
-		$this->items = array_filter($items);
+		$this->items = collect($items)
+			->each(function ($e) { return $e instanceof Token? $e->getContent() : preg_split('/\,|\s/', $e); })
+			->flatten()
+			->filter();
+	}
+	
+	public function getItems() {
+		return $this->items->toArray();
 	}
 	
 	public function __toString() {

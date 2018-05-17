@@ -1,4 +1,4 @@
-<?php namespace spitfire\validation\parser\logicparser;
+<?php namespace spitfire\validation\parser;
 
 use spitfire\validation\parser\GroupComponent;
 use spitfire\validation\parser\Token;
