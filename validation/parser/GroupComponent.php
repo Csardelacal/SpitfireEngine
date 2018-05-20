@@ -69,18 +69,18 @@ class GroupComponent
 		$this->items[] = $item;
 	}
 	
-	public function make() {
+	public function make($ctx) {
 		$items = array_values($this->items);
 		
 		if (count($items) === 2 && $items[0] instanceof Token && $items[1] instanceof GroupComponent) {
-			$params = Parameters::_make($items[1]->getItems());
+			$params = $ctx->makeRules($items[1]->getItems());
 			$fn = new ExpressionValidator($items[0]->getContent());
 			
 			foreach ($params as $p) { $fn->addRule($p); }
 			return $fn;
 		}
 		else {
-			foreach ($items as &$item) { $item = $item->make(); }
+			foreach ($items as &$item) { $item = $item->make($ctx); }
 			return new ValidatorGroup($items, $this->type? : self::TYPE_AND);
 		}
 	}

@@ -25,8 +25,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use spitfire\validation\parser\LogicProcessor;
-use spitfire\validation\parser\preprocessor\Preprocessor;
+use spitfire\validation\parser\Parser;
 
 class ParserTest extends TestCase
 {
@@ -35,18 +34,9 @@ class ParserTest extends TestCase
 	public function testParseLiteral() {
 		
 		$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required email)';
-
-		$pp = new Preprocessor();
-		$result = $pp->prepare($string)->tokenize();
-
-		$or = new LogicProcessor('OR');
-		$or->run($result);
-
-		$and = new LogicProcessor('AND');
-		$and->run($result);
-
-		$made = $result->make();
-		$this->assertEquals(true, $made->setValue(['GET' => ['input' => 'test', 'another' => 'test@test.com'], 'POST' => ['other' => 34, 'something' => '123']])->isOk());
+		
+		$p = new Parser();
+		$this->assertEquals(true, $p->parse($string)->setValue(['GET' => ['input' => 'test', 'another' => 'test@test.com'], 'POST' => ['other' => 34, 'something' => '123']])->isOk());
 			
 		
 	}

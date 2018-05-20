@@ -285,6 +285,13 @@ class Collection implements ArrayAccess, CollectionInterface
 		return null !== key($this->items);
 	}
 	
+	/**
+	 * Returns the items contained by this Collection. This method may only work
+	 * if the data the collection is managing is actually a defined set and not a
+	 * pointer or something similar.
+	 * 
+	 * @return mixed[]
+	 */
 	public function toArray() {
 		return $this->items;
 	}

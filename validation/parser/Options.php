@@ -24,10 +24,20 @@
  * THE SOFTWARE.
  */
 
+/**
+ * Within a parser, the options are the parameters provided to a validator's
+ * parameters. Making them, kind of, second level parameters.
+ * 
+ * For example, when a validator is defined as a GET#input(string length[10]),
+ * the options provided are that the string must be, at least, 10 characters
+ * long.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class Options
 {
 	
-	private $items = [];
+	private $items;
 	
 	public function __construct($items) {
 		$this->items = collect($items)
@@ -41,7 +51,7 @@ class Options
 	}
 	
 	public function __toString() {
-		return sprintf('[%s]', implode(',', $this->items));
+		return sprintf('[%s]', $this->items->join(', '));
 	}
 
 }
