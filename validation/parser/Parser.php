@@ -10,8 +10,9 @@ use spitfire\validation\rules\NotValidationRule;
 use spitfire\validation\rules\PositiveNumberValidationRule;
 use spitfire\validation\rules\TypeNumberValidationRule;
 use spitfire\validation\rules\TypeStringValidationRule;
-use spitfire\validation\Validator;
+use spitfire\validation\ValidationRule;
 use spitfire\validation\ValidatorGroup;
+use spitfire\validation\ValidatorInterface;
 
 /* 
  * The MIT License
@@ -100,7 +101,7 @@ class Parser
 	 * data provided by the app's user is correct.
 	 * 
 	 * @param string $string
-	 * @return Validator
+	 * @return ValidatorInterface
 	 */
 	public function parse($string) {
 		$result = $this->preprocessor->prepare($string)->tokenize();
@@ -127,7 +128,7 @@ class Parser
 	 * that the system will assign any options parsed to the previous rule.
 	 * 
 	 * @param Options $from
-	 * @return type
+	 * @return ValidationRule[]
 	 * @throws PrivateException
 	 */
 	public function makeRules($from) {
