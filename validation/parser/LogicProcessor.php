@@ -70,22 +70,25 @@ class LogicProcessor
 	}
 	
 	/**
-	 * This is the main method of a logic processor. These components are in 
-	 * charge of replacing logical operator tokens (AND and OR) with components
-	 * that represent them appropriately.
+	 * This method is one of the most complicated found in the logic parser. 
+	 * Basically, it replaces AND/OR tokens with the appropriate groups by injecting
+	 * the group into the parent. For this, it does the following:
+	 * 
+	 * 1. Retrieve all the items from the component.
+	 * 2. Create a component with the appropriate type (AND / OR)
+	 * 3. Create a group for the children
+	 * 4. Loop over the items
+	 * 4.1. If it's a token and the appropriate group, it inserts another children group
+	 * 4.2. If it's a group, it just descends into the group and appends it to the children group.
+	 * 4.3. All other items are just appended
+	 * 5. It appends the group created in (2) to the group it received as parameter
+	 * 
+	 * Due to how this method works, we consider it destructive. The result overwrites
+	 * the data it received in an irreversible fashion. Usually this is not a concern.
 	 * 
 	 * @param GroupComponent $component
 	 */
-	public function run(GroupComponent$component) {
-		if (!$this->exists($component)) { 
-			foreach ($component->getItems() as $item) { 
-				if ($item instanceof GroupComponent) { 
-					$this->run($item); 
-				}
-			}
-			return;
-		}
-		
+	public function make(GroupComponent$component) {
 		$items = $component->getItems();
 		$copy  = new GroupComponent([], $this->type);
 		$child = new GroupComponent([]);
@@ -107,6 +110,34 @@ class LogicProcessor
 		}
 		
 		$component->setItems([$copy]);
+	}
+	
+	/**
+	 * This is the main method of a logic processor. These components are in 
+	 * charge of replacing logical operator tokens (AND and OR) with components
+	 * that represent them appropriately.
+	 * 
+	 * @param GroupComponent $component
+	 */
+	public function run(GroupComponent$component) {
+		/*
+		 * To prevent the rather memory intensive / boilerplate intensive execution
+		 * of make(), we do test whether the component even exists in the first place.
+		 */
+		if (!$this->exists($component)) { 
+			foreach ($component->getItems() as $item) { 
+				if ($item instanceof GroupComponent) { 
+					$this->run($item); 
+				}
+			}
+			return;
+		}
+		
+		/*
+		 * If the component has the logic operator we're looking for, we can inject
+		 * the appropriate group.
+		 */
+		$this->make($component);
 	}
 
 }

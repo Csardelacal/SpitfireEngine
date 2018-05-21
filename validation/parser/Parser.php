@@ -132,6 +132,8 @@ class Parser
 	 * @throws PrivateException
 	 */
 	public function makeRules($from) {
+		#Never forget to initialize variables! :D
+		$_ret = [];
 		
 		/*
 		 * Loop over the data parsed.
@@ -160,22 +162,27 @@ class Parser
 				$options = null;
 			}
 			
-			/*
-			 * Check if the rule being used does indeed exist. Otherwise the program
-			 * cannot continue.
-			 * 
-			 * While this may be a nuissance, it ensures that the system does not 
-			 * skip any rule the user defined. I'd rather have it fail if the validator
-			 * was not found than skipping the rule and letting data through unvalidated.
-			 */
-			if (!isset($this->rules[$rule])) { throw new PrivateException('Invalid rule: ' . $rule, 1805171527); }
-			
-			/*
-			 * Create the rule and add it to the stack of rules ot be executed.
-			 */
-			$_ret[] = call_user_func_array($this->rules[$rule], $options? $options->getItems() : []);
+			$_ret[] = $this->getRule($rule, $options);
 		}
 
 		return array_filter($_ret);
+	}
+	
+	public function getRule($rule, $options) {
+		
+		/*
+		 * Check if the rule being used does indeed exist. Otherwise the program
+		 * cannot continue.
+		 * 
+		 * While this may be a nuissance, it ensures that the system does not 
+		 * skip any rule the user defined. I'd rather have it fail if the validator
+		 * was not found than skipping the rule and letting data through unvalidated.
+		 */
+		if (!isset($this->rules[$rule])) { throw new PrivateException('Invalid rule: ' . $rule, 1805171527); }
+		
+		/*
+		 * Create the rule and add it to the stack of rules ot be executed.
+		 */
+		return call_user_func_array($this->rules[$rule], $options? $options->getItems() : []);
 	}
 }
