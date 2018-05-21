@@ -40,4 +40,46 @@ class ParserTest extends TestCase
 			
 		
 	}
+	
+	/**
+	 * 
+	 * @expectedException \spitfire\exceptions\PrivateException
+	 */
+	public function testParseInvalidRule() {
+		
+		$string = 'GET#data(notactually[a rule])';
+		
+		$p = new Parser();
+		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
+			
+		
+	}
+	
+	/**
+	 * 
+	 * @covers \spitfire\validation\parser\preprocessor\Preprocessor::prepare
+	 * @expectedException \spitfire\exceptions\PrivateException
+	 */
+	public function testMalformedExpression() {
+		
+		$string = 'GET#data(string';
+		
+		$p = new Parser();
+		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
+			
+	}
+	
+	/**
+	 * 
+	 * @covers \spitfire\validation\parser\GroupComponent::tokenize()
+	 * @expectedException \spitfire\exceptions\PrivateException
+	 */
+	public function testMalformedExpression2() {
+		
+		$string = 'GET#data(string) POST#test(number)';
+		
+		$p = new Parser();
+		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
+		
+	}
 }

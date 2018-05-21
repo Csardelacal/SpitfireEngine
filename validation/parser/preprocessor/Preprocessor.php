@@ -1,5 +1,7 @@
 <?php namespace spitfire\validation\parser\preprocessor;
 
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *
@@ -40,7 +42,7 @@ class Preprocessor
 	public function prepare($str) {
 		
 		$current = '';
-		$result  = new Result(null, null);
+		$result  = $initial = new Result(null, null);
 
 		for($i = 0; $i < strlen($str); $i++) {
 			
@@ -76,6 +78,10 @@ class Preprocessor
 			}
 			
 			$current.= $str[$i];
+		}
+		
+		if ($result !== $initial) {
+			throw new PrivateException('Malformed expression!', 1805211227);
 		}
 		
 		return new \spitfire\validation\parser\GroupComponent($result->getElements());

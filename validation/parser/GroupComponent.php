@@ -2,6 +2,7 @@
 
 use spitfire\validation\parser\ExpressionValidator;
 use spitfire\validation\ValidatorGroup;
+use spitfire\exceptions\PrivateException;
 
 /* 
  * The MIT License
@@ -29,9 +30,6 @@ use spitfire\validation\ValidatorGroup;
 
 class GroupComponent
 {
-	
-	const TYPE_AND = 'AND';
-	const TYPE_OR  = 'OR';
 	
 	private $items;
 	
@@ -80,8 +78,11 @@ class GroupComponent
 			return $fn;
 		}
 		else {
-			foreach ($items as &$item) { $item = $item->make($ctx); }
-			return new ValidatorGroup($items, $this->type? : self::TYPE_AND);
+			foreach ($items as &$item) { 
+				if (!$item instanceof GroupComponent) { throw new PrivateException('Invalid expression!', 1805211230); }
+				$item = $item->make($ctx); 
+			}
+			return new ValidatorGroup($items, $this->type? : ValidatorGroup::TYPE_AND);
 		}
 	}
 		
