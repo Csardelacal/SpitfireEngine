@@ -28,6 +28,25 @@ use spitfire\mvc\middleware\MiddlewareInterface;
  * THE SOFTWARE.
  */
 
+/**
+ * This middleware component does fulfill the rather simple task of handling
+ * Arguments to Controller actions which require passing a Model as argument.
+ * 
+ * This makes it less tedious to write code that allows developers to manipulate
+ * a single record from a database. Your code may look like this:
+ * 
+ * <code>public function detail(Usermodel$user)</code>
+ * 
+ * In this case, if the user does not provide a valid user-id as parameter, the 
+ * application will fail with a server error.
+ * 
+ * If you wish to make the parameter optional, just write your code like this:
+ * 
+ * <code>public function detail(UserModel$user = null)</code>
+ * 
+ * If the user didn't provide the value, it will be null. You then will have to
+ * test the value before using it.
+ */
 class ModelMiddleware implements MiddlewareInterface
 {
 	
@@ -49,10 +68,14 @@ class ModelMiddleware implements MiddlewareInterface
 		$params     = $action->getParameters();
 		
 		for ($i = 0; $i < count($params); $i++) {
-			if ($params[$i]->getClass() !== \spitfire\Model::class) { continue; }
+			/*@var $param \ParameterReflection*/
+			$param = $params[$i];
 			
-			$table = $this->db->table(substr($params[$i]->getClass()->getName(), 0 - strlen('model')));
+			if (!$param->getClass()->isSubclassOf(\spitfire\Model::class)) { continue; }
+			
+			$table = $this->db->table(substr($param->getClass()->getName(), 0, 0 - strlen('model')));
 			$object[$i] = $table->getById($object[$i]);
+			
 		}
 		
 		$context->object = $object;
