@@ -1,5 +1,8 @@
 <?php namespace spitfire\validation\rules;
 
+use spitfire\validation\ValidationRule;
+use spitfire\validation\Validator;
+
 /* 
  * The MIT License
  *
@@ -27,7 +30,13 @@
 trait AcceptsRules 
 {
 	
-	abstract public function addRule(\spitfire\validation\ValidationRule$rule);
+	
+	/**
+	 * Allows the application using this to apply additional restrictions to the 
+	 * base ones (optional) to restrict the possibilities of the data being valid
+	 * further.
+	 */
+	abstract public function addRule(ValidationRule$rule);
 	
 	/**
 	 * Marks this as required, therefore, forcing the content of this validator
@@ -50,7 +59,7 @@ trait AcceptsRules
 	 * @param int $length
 	 * @param string $msg
 	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
+	 * @return Validator
 	 */
 	public function minLength($length, $msg, $longmsg = '') {
 		$this->addRule(new MinLengthValidationRule($length, $msg, $longmsg));
@@ -66,7 +75,7 @@ trait AcceptsRules
 	 * @param int $length
 	 * @param string $msg
 	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
+	 * @return Validator
 	 */
 	public function maxLength($length, $msg, $longmsg = '') {
 		$this->addRule(new MaxLengthValidationRule($length, $msg, $longmsg));
@@ -79,7 +88,7 @@ trait AcceptsRules
 	 * 
 	 * @param string $msg
 	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
+	 * @return Validator
 	 */
 	public function asEmail($msg, $longmsg = '') {
 		$this->addRule(new FilterValidationRule(FILTER_VALIDATE_EMAIL, $msg, $longmsg));
@@ -92,7 +101,7 @@ trait AcceptsRules
 	 * 
 	 * @param string $msg
 	 * @param string $longmsg
-	 * @return \spitfire\validation\Validator
+	 * @return Validator
 	 */
 	public function asURL($msg, $longmsg = '') {
 		$this->addRule(new FilterValidationRule(FILTER_VALIDATE_URL, $msg, $longmsg));
@@ -104,7 +113,7 @@ trait AcceptsRules
 	 * @param int $filter An ID from the FILTER_* constants
 	 * @param string $message
 	 * @param string $extended
-	 * @return \spitfire\validation\Validator
+	 * @return Validator
 	 */
 	public function filter($filter, $message, $extended = '') {
 		$this->addRule(new FilterValidationRule($filter, $message, $extended));
