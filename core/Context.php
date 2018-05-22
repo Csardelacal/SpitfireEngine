@@ -55,6 +55,7 @@ class Context
 	public $action;
 	public $object;
 	public $extension;
+	public $annotations;
 	
 	/**
 	 * Holds the view the app uses to handle the current request. This view is in 
@@ -107,9 +108,12 @@ class Context
 			call_user_func_array(Array($this->controller, '_onload'), Array($this->action));
 		}
 		
-		$this->middleware->before();
-		
 		$reflector = new ActionReflector($this->controller, $this->action);
+		
+		$annotationParser  = new annotations\AnnotationParser();
+		$this->annotations = $annotationParser->parse($reflector->getDocBlock());
+		
+		$this->middleware->before();
 		$reflector->execute();
 		
 		#Check if the controller can handle the request
