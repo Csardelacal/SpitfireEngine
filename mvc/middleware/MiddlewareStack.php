@@ -1,5 +1,7 @@
 <?php namespace spitfire\mvc\middleware;
 
+use spitfire\core\Context;
+
 /* 
  * The MIT License
  *
@@ -29,7 +31,7 @@ class MiddlewareStack
 	
 	/**
 	 *
-	 * @var \spitfire\core\Context
+	 * @var Context
 	 */
 	private $ctx;
 	
