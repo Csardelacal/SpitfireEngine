@@ -35,6 +35,8 @@ class Context
 	 */
 	public $context;
 	
+	public $middleware;
+	
 	/**
 	 * The application running the current context. The app will provide the controller
 	 * to handle the request / context provided.
@@ -88,6 +90,7 @@ class Context
 		$context->request    = Request::get();
 		$context->parameters = new InputSanitizer($context->request->getPath()->getParameters());
 		$context->response   = new Response($context);
+		$context->middleware = new \spitfire\mvc\middleware\MiddlewareStack($this);
 		
 		$context->app        = spitfire()->getApp($context->request->getPath()->getApp());
 		$context->controller = $context->app->getController($context->request->getPath()->getController(), $context);
@@ -104,6 +107,8 @@ class Context
 			call_user_func_array(Array($this->controller, '_onload'), Array($this->action));
 		}
 		
+		$this->middleware->before();
+		
 		$reflector = new ActionReflector($this->controller, $this->action);
 		$reflector->execute();
 		
@@ -111,6 +116,8 @@ class Context
 		$request = Array($this->controller, $this->action);
 		if (is_callable($request)) { $_return = call_user_func_array($request, $this->object); }
 		else { throw new publicException('Page not found', 404, new PrivateException('Action not found', 0)); }
+		
+		$this->middleware->after();
 		
 		if ($_return instanceof Context) { return $_return; }
 		else                             { return $this; }
