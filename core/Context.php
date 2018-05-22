@@ -90,7 +90,7 @@ class Context
 		$context->request    = Request::get();
 		$context->parameters = new InputSanitizer($context->request->getPath()->getParameters());
 		$context->response   = new Response($context);
-		$context->middleware = new \spitfire\mvc\middleware\MiddlewareStack($this);
+		$context->middleware = new \spitfire\mvc\middleware\MiddlewareStack($context);
 		
 		$context->app        = spitfire()->getApp($context->request->getPath()->getApp());
 		$context->controller = $context->app->getController($context->request->getPath()->getController(), $context);
