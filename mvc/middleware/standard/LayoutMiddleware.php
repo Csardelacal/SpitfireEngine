@@ -46,6 +46,10 @@ class LayoutMiddleware implements MiddlewareInterface
 		
 		$file = reset($context->annotations['template']);
 		
+		if (!$file) {
+			return;
+		}
+		
 		if ($context->request->getPath()->getFormat() !== 'php') {
 			return;
 		}
