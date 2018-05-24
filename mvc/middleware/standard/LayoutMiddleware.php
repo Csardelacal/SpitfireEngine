@@ -44,7 +44,7 @@ class LayoutMiddleware implements MiddlewareInterface
 	 */
 	public function before(Context $context) {
 		
-		$file = reset($context->annotations['template']);
+		$file = reset($context->annotations['layout']);
 		
 		if (!$file) {
 			return;
