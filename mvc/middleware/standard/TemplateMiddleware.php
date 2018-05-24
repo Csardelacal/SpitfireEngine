@@ -46,6 +46,10 @@ class TemplateMiddleware implements MiddlewareInterface
 		
 		$file = reset($context->annotations['template']);
 		
+		if (!$file) {
+			return;
+		}
+		
 		if ($file == 'none') {
 			return current_context()->view->setRenderTemplate(false);
 		}
