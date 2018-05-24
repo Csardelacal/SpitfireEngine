@@ -143,6 +143,11 @@ abstract class App
 		return new $c($controller->context);
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20180524
+	 * @return type
+	 */
 	public function getControllerDirectory() {
 		return $this->getBaseDir() . 'controllers/';
 	}

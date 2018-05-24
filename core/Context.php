@@ -1,16 +1,19 @@
 <?php namespace spitfire\core;
 
-use \spitfire\App;
 use Controller;
 use publicException;
+use spitfire\App;
 use spitfire\cache\MemcachedAdapter;
 use spitfire\core\annotations\ActionReflector;
+use spitfire\core\annotations\AnnotationParser;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
 use spitfire\InputSanitizer;
 use spitfire\io\session\Session;
+use spitfire\mvc\middleware\MiddlewareStack;
 use spitfire\mvc\View;
+use function spitfire;
 
 /**
  * The context is a wrapper for an Intent. Basically it describes a full request
@@ -91,7 +94,7 @@ class Context
 		$context->request    = Request::get();
 		$context->parameters = new InputSanitizer($context->request->getPath()->getParameters());
 		$context->response   = new Response($context);
-		$context->middleware = new \spitfire\mvc\middleware\MiddlewareStack($context);
+		$context->middleware = new MiddlewareStack($context);
 		
 		$context->app        = spitfire()->getApp($context->request->getPath()->getApp());
 		$context->controller = $context->app->getController($context->request->getPath()->getController(), $context);
@@ -99,6 +102,11 @@ class Context
 		$context->object     = $context->request->getPath()->getObject();
 		
 		$context->view       = $context->app->getView($context->controller);
+		
+		$reflector            = new \ReflectionMethod($this->controller, $this->action);
+		$annotationParser     = new AnnotationParser();
+		$context->annotations = $annotationParser->parse($reflector->getDocComment());
+		
 		return $context;
 	}
 	
@@ -108,13 +116,7 @@ class Context
 			call_user_func_array(Array($this->controller, '_onload'), Array($this->action));
 		}
 		
-		$reflector = new ActionReflector($this->controller, $this->action);
-		
-		$annotationParser  = new annotations\AnnotationParser();
-		$this->annotations = $annotationParser->parse($reflector->getDocBlock());
-		
 		$this->middleware->before();
-		$reflector->execute();
 		
 		#Check if the controller can handle the request
 		$request = Array($this->controller, $this->action);
