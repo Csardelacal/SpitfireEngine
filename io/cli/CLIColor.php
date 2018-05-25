@@ -1,5 +1,4 @@
-#!/usr/bin/php
-<?php
+<?php namespace spitfire\io\cli;
 
 /* 
  * The MIT License
@@ -24,46 +23,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-$read = [STDIN];
-$write = [];
-$except = [];
 
-if (stream_select($read, $write, $except, 0)) {
-	$stdin = file_get_contents('php://stdin');
+class CLIColor
+{
+	
+	const FG_RED = '0;31';
+	const BG_RED = '41';
+	
+	const FG_GREEN = '0;32';
+	const BG_GREEN = '42';
+	
+	const FG_BLUE = '0;34';
+	const BG_BLUE = '44';
+	
+	const FG_WHITE = '1;37';
+	
+	const RESET = '0';
+	
+	
+	public function color($color) {
+		return "\033[{$color}m";
+	}
 }
-else {
-	$stdin = null;
-}
-
-var_dump($argv);
-var_dump($stdin);
-
-include './bootstrap.php';
-$console = new \spitfire\io\cli\Console();
-
-
-$console->info('Processing...');
-sleep(1);
-$console->rewind()->success("Yeah! We made it")->ln();
-
-
-$console->info('Processing again...');
-sleep(1);
-$console->rewind()->info('Continuing to process this very slow task...');
-sleep(1);
-$console->rewind()->error("Oops! DED!")->ln();
-
-$progress = $console->progress('Downloading...');
-
-for ($i = 0; $i < 10; $i++) {
-	$progress->progress($i/9);
-	sleep(1);
-}
-
-$console->rewind()->success('File downloaded!')->ln();
-
-$console->info('Checking the file\'s checksum...');
-sleep(1);
-$console->rewind()->error('Checksum missmatched!')->ln();
-
-$console->success('Somewhat long success message that may get split by the terminal because it is way too long')->ln();
