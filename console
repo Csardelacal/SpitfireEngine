@@ -24,21 +24,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-$read = [STDIN];
-$write = [];
-$except = [];
-
-if (stream_select($read, $write, $except, 0)) {
-	$stdin = file_get_contents('php://stdin');
-}
-else {
-	$stdin = null;
-}
-
-var_dump($argv);
-var_dump($stdin);
 
 include './bootstrap.php';
+
+
+$in = new \spitfire\io\cli\arguments\Parser($argv, ['d' => 'dump', 'v' => 'verbose']);
+var_dump($in->getScript());
+var_dump($in->getArguments());
+var_dump($in->getParameters());
+
 $console = new \spitfire\io\cli\Console();
 
 
