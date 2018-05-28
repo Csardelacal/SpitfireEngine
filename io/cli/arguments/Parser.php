@@ -1,5 +1,10 @@
 <?php namespace spitfire\io\cli\arguments;
 
+use spitfire\io\cli\arguments\extractor\LongParamExtractor;
+use spitfire\io\cli\arguments\extractor\ShortParamExtractor;
+use spitfire\io\cli\arguments\extractor\STDINExtractor;
+use spitfire\io\cli\arguments\extractor\StopCommandExtractor;
+
 /* 
  * The MIT License
  *
@@ -31,55 +36,44 @@ class Parser
 	private $parameters;
 	private $arguments;
 	
-	private $aliases;
-	
 	public function __construct($argv, $aliases = []) {
 		$script     = array_shift($argv);
 		$parameters = [];
 		$arguments  = [];
-		$stop       = false;
+		
+		$extractors = [
+			new StopCommandExtractor(),
+			new LongParamExtractor(),
+			new STDINExtractor(),
+			new ShortParamExtractor($aliases)
+		];
 		
 		foreach ($argv as $arg) {
-			/**/if ($arg === '--') {
-				$stop = true;
-			}
-			elseif (\Strings::startsWith($arg, '--') && !$stop) { 
-				list($name, $value) = explode('=', $arg, 2);
-				$name  = substr($name, 2);
-				$value = $value? $value : true;
-				$parameters[$name] = $value;
-			}
-			elseif ($arg === '-') {
-				$read = [STDIN];
-				$write = [];
-				$except = [];
-				if (stream_select($read, $write, $except, 0)) {
-					$arguments[] = file_get_contents('php://stdin');
-				}
-				else {
-					$arguments[] = null;
-				}
-			}
-			elseif (\Strings::startsWith($arg, '-' ) && !$stop) {
-				list($name, $value) = explode('=', $arg, 2);
-				$name  = str_split(substr($name, 1), 1);
-				$value = $value? $value : true;
+			foreach ($extractors as $extractor) {
 				
-				$first = array_pop($name);
-				$parameters[isset($aliases[$first])? $aliases[$first] : $first] = $value;
+				$r = $extractor->extract($arg);
 				
-				foreach ($name as $flag) { 
-					$flag = isset($aliases[$flag])? $aliases[$flag] : $flag;
-					$parameters[$flag] = isset($parameters[$flag])? $parameters[$flag] + 1 : 1; 
+				if ($r === false) {
+					//Do nothing, the extractor can't handle this data
 				}
-			}
-			else { 
-				$arguments[] = $arg;
+				
+				elseif (is_array($r)) {
+					$parameters = array_merge($parameters, $r);
+					continue 2;
+				}
+				
+				elseif (is_string($r)) {
+					$arguments[] = $r;
+					continue 2;
+				}
+				
+				else { 
+					$arguments[] = $arg;
+				}
 			}
 			
 		}
 		
-		$this->aliases = $aliases;
 		$this->script = $script;
 		$this->arguments = $arguments;
 		$this->parameters = $parameters;
