@@ -73,11 +73,9 @@ class Parser
 					$arguments[] = $r;
 					continue 2;
 				}
-				
-				else { 
-					$arguments[] = $arg;
-				}
 			}
+				
+			$arguments[] = $arg;
 			
 		}
 		

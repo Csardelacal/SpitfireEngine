@@ -65,7 +65,7 @@ class ContextCLI implements ContextInterface
 			throw new PublicException('Invalid director');
 		}
 		
-		$name     = $director . 'Director';
+		$name     = $director;
 		$instance = new $name($context);
 		
 		$context->app        = spitfire()->findAppForClass($director);

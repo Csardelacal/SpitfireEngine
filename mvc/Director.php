@@ -1,5 +1,6 @@
-<?php
+<?php namespace spitfire\mvc;
 
+use _SF_Invoke;
 use spitfire\core\ContextCLI;
 use spitfire\mvc\MVC;
 
