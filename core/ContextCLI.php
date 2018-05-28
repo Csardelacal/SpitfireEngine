@@ -55,7 +55,7 @@ class ContextCLI implements ContextInterface
 		$this->context = $this;
 	}
 	
-	public static function create($director, $action, spitfire\io\cli\arguments\CLIArguments$args) {
+	public static function create($director, $action, \spitfire\io\cli\arguments\CLIArguments$args) {
 		$context = new ContextCLI;
 		$context->cache      = MemcachedAdapter::getInstance();
 		$context->parameters = null;

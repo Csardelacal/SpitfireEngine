@@ -36,6 +36,7 @@ class CLIArguments
 	private $parameters;
 	
 	public function __construct($script, $arguments, $parameters) {
+		$this->script = $script;
 		$this->arguments = new Collection($arguments);
 		$this->parameters = new CLIParameters($parameters);
 	}
