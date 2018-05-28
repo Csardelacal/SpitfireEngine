@@ -32,9 +32,7 @@ use spitfire\io\cli\arguments\extractor\StopCommandExtractor;
 class Parser
 {
 	
-	private $script;
-	private $parameters;
-	private $arguments;
+	private $extractors;
 	
 	public function __construct() {
 		$this->extractors = [

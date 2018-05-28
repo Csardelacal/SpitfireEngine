@@ -38,7 +38,7 @@ class SpitFireCLI extends SpitFire
 		
 		#Get the parameters from the command line interface
 		$parser = new io\cli\arguments\Parser();
-		$args   = $parser->read($argv);
+		$args   = $parser->read($_SERVER['argv']);
 		
 		#The first two arguments are gonna be the director and action
 		$director = $args->arguments()->shift();
