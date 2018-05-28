@@ -57,7 +57,7 @@ class MiddlewareStack
 	
 	public function after() {
 		foreach ($this->middleware as $middleware) {
-			$middleware->after($this->ctx, $this->ctx->response);
+			$middleware->after($this->ctx, $this->ctx instanceof Context? $this->ctx->response : null);
 		}
 	}
 	

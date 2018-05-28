@@ -42,13 +42,17 @@ class CacheDurationMiddleware implements MiddlewareInterface
 	 * like images.
 	 */
 	public function before(ContextInterface $context) {
-		$duration = reset($context->annotations['cache']);
+		
 		
 		/**
 		 * If duration was not provided, this middleware component does nothing at
 		 * all. Just return.
 		 */
-		if (!$duration) { return; }
+		if (empty($context->annotations['cache'])) {
+			return;
+		}
+		
+		$duration = reset($context->annotations['cache']);
 		
 		$context
 			->response

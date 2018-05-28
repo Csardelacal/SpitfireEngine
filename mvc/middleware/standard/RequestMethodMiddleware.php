@@ -51,13 +51,13 @@ class RequestMethodMiddleware implements MiddlewareInterface
 	 *			that is not accepted.
 	 */
 	public function before(ContextInterface $context) {
-		$annotation = reset($context->annotations['request-method']);
 		
-		if (!$annotation) {
+		if (empty($context->annotations['request-method'])) {
 			return;
 		}
 		
-		$accepted = explode(' ', $annotation);
+		$annotation = reset($context->annotations['request-method']);
+		$accepted   = explode(' ', $annotation);
 		
 		foreach($accepted as $ok) {
 			if (strtolower($ok) === strtolower($_SERVER['REQUEST_METHOD'])) {

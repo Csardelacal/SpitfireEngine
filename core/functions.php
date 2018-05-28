@@ -2,9 +2,10 @@
 
 use spitfire\App;
 use spitfire\core\Collection;
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Environment;
 use spitfire\core\http\URL;
+use spitfire\io\cli\Console;
 use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
@@ -59,7 +60,7 @@ function app($name, $namespace) {
  * to store data. We could consider this a little DB handler factory.
  *
  * @param Settings $options
- * @return DB
+ * @return \spitfire\storage\database\DB
  */
 function db(Settings$options = null) {
 	static $db = null;
@@ -147,10 +148,20 @@ function _t() {
 	return call_user_func_array(Array($domains->getDefault(), 'say'), $args);
 }
 
-function current_context(Context$set = null) {
+function current_context(ContextInterface$set = null) {
 	static $context = null;
 	if ($set!==null) {$context = $set;}
 	return $context;
+}
+
+function console() {
+	static $console = null;
+	
+	if ($console === null) {
+		$console = new Console();
+	}
+	
+	return $console;
 }
 
 function validate($target = null) {

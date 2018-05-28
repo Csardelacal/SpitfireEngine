@@ -38,6 +38,10 @@ class Context implements ContextInterface
 	 */
 	public $context;
 	
+	/**
+	 *
+	 * @var MiddlewareStack
+	 */
 	public $middleware;
 	
 	/**

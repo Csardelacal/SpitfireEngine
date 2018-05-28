@@ -1,5 +1,11 @@
 <?php namespace spitfire;
 
+use spitfire\core\ContextCLI;
+use spitfire\exceptions\PublicException;
+use spitfire\io\cli\arguments\Parser;
+use const CONFIG_DIRECTORY;
+use function current_context;
+
 /* 
  * The MIT License
  *
@@ -34,18 +40,23 @@ class SpitFireCLI extends SpitFire
 		
 		#Import the apps
 		include CONFIG_DIRECTORY . 'apps.php';
-		include CONFIG_DIRECTORY . 'middleware.php';
 		
 		#Get the parameters from the command line interface
-		$parser = new io\cli\arguments\Parser();
+		$parser = new Parser();
 		$args   = $parser->read($_SERVER['argv']);
 		
 		#The first two arguments are gonna be the director and action
 		$director = $args->arguments()->shift();
 		$action   = $args->arguments()->shift();
 		
-		$context  = core\ContextCLI::create(str_replace('.', '\\', $director) . 'Director', $action, $args);
-		$context->run();
+		#Create the appropriate context
+		$context  = ContextCLI::create(str_replace('.', '\\', $director) . 'Director', $action, $args);
+		
+		#Set the context as the current one, and load the user's middleware configuration
+		current_context($context);
+		include CONFIG_DIRECTORY . 'middleware.php';
+		
+		return $context->run();
 		
 	}
 	

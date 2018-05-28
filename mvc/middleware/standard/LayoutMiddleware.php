@@ -44,11 +44,11 @@ class LayoutMiddleware implements MiddlewareInterface
 	 */
 	public function before(ContextInterface $context) {
 		
-		$file = reset($context->annotations['layout']);
-		
-		if (!$file) {
+		if (empty($context->annotations['layout'])) {
 			return;
 		}
+		
+		$file = reset($context->annotations['layout']);
 		
 		if ($context->request->getPath()->getFormat() !== 'php') {
 			return;

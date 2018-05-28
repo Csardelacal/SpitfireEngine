@@ -64,7 +64,7 @@ class ModelMiddleware implements MiddlewareInterface
 	 * @param Context $context
 	 */
 	public function before(ContextInterface $context) {
-		$controller = new ReflectionClass($context->controller);
+		$controller = new ReflectionClass($context instanceof Context? $context->controller : $context->director);
 		$action     = $controller->getMethod($context->action);
 		$object     = $context->object;
 		
@@ -74,6 +74,7 @@ class ModelMiddleware implements MiddlewareInterface
 			/*@var $param \ParameterReflection*/
 			$param = $params[$i];
 			
+			if (!$param->getClass()) { continue; }
 			if (!$param->getClass()->isSubclassOf(Model::class)) { continue; }
 			
 			$table = $this->db->table(substr($param->getClass()->getName(), 0, 0 - strlen('model')));

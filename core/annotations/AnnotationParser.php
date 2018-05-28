@@ -51,12 +51,21 @@ class AnnotationParser
 
 		#Individual lines make it easier to parse the data
 		$pieces   = explode("\n", $raw);
+		$clean    = [];
 		
 		#Remove unrelated data
-		$clean    = array_filter(array_map(function ($e) {
+		array_walk($pieces, function ($e) use (&$clean) {
 			$trimmed = trim($e, "\r\t */");
-			return Strings::startsWith($trimmed, '@')? ltrim($trimmed, '@') : null;
-		}, $pieces));
+			
+			if (Strings::startsWith($trimmed, '@')) {
+				$clean[] = ltrim($trimmed, '@');
+			}
+			elseif (!empty($clean)) {
+				$last = array_pop($clean);
+				$last.= empty($trimmed)? PHP_EOL : $trimmed;
+				array_push($clean, $last);
+			}
+		});
 		
 		return $clean;
 		
@@ -90,14 +99,14 @@ class AnnotationParser
 		
 		#Sort the data
 		foreach ($clean as $line) {
-			$segments = array_filter(explode(' ', $line));
+			$segments = array_filter(explode(' ', $line, 2));
 			$name     = array_shift($segments);
 			
 			#If uninitialized, initialize the array for the docblock
 			if (!isset($annotations[$name])) { $annotations[$name] = Array(); }
 			
 			#Add the value we parsed
-			$annotations[$name][] = implode(' ', $segments);
+			$annotations[$name][] = array_shift($segments);
 		}
 		
 		return $annotations;

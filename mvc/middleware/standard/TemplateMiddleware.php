@@ -45,11 +45,11 @@ class TemplateMiddleware implements MiddlewareInterface
 	 */
 	public function before(ContextInterface $context) {
 		
-		$file = reset($context->annotations['template']);
-		
-		if (!$file) {
+		if (!isset($context->annotations['template'])) {
 			return;
 		}
+		
+		$file = reset($context->annotations['template']);
 		
 		if ($file == 'none') {
 			return $context->view->setRenderTemplate(false);

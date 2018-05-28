@@ -1,11 +1,11 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
+use spitfire\core\Collection;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\exceptions\PublicException;
 use spitfire\mvc\middleware\MiddlewareInterface;
 use spitfire\validation\parser\Parser;
-use function collect;
 
 /* 
  * The MIT License
@@ -35,10 +35,14 @@ class ValidationMiddleware implements MiddlewareInterface
 {
 	
 	public function before(ContextInterface $context) {
-		$expressions = $context->annotations['validate'];
+		$expressions = $context->annotations['validate']?? null;
 		$parser      = new Parser();
 		
-		$context->validation = collect();
+		$context->validation = new Collection();
+		
+		if (!$expressions) {
+			return;
+		}
 		
 		foreach ($expressions as $expression) {
 			$throw = true;
