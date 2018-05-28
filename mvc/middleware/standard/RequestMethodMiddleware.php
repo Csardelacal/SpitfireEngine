@@ -1,6 +1,6 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\exceptions\PublicException;
 use spitfire\mvc\middleware\MiddlewareInterface;
@@ -36,7 +36,7 @@ use spitfire\mvc\middleware\MiddlewareInterface;
 class RequestMethodMiddleware implements MiddlewareInterface
 {
 	
-	public function after(Context $context, Response $response) {
+	public function after(ContextInterface $context, Response $response = null) {
 		
 	}
 	
@@ -50,7 +50,7 @@ class RequestMethodMiddleware implements MiddlewareInterface
 	 * @throws PublicException If the user is throwing a request with one method
 	 *			that is not accepted.
 	 */
-	public function before(Context $context) {
+	public function before(ContextInterface $context) {
 		$annotation = reset($context->annotations['request-method']);
 		
 		if (!$annotation) {

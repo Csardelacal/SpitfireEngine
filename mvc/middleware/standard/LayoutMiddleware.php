@@ -1,6 +1,6 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\mvc\middleware\MiddlewareInterface;
 
@@ -31,7 +31,7 @@ use spitfire\mvc\middleware\MiddlewareInterface;
 class LayoutMiddleware implements MiddlewareInterface
 {
 	
-	public function after(Context $context, Response $response) {
+	public function after(ContextInterface $context, Response $response = null) {
 		
 	}
 	
@@ -42,7 +42,7 @@ class LayoutMiddleware implements MiddlewareInterface
 	 * 
 	 * @return mixed
 	 */
-	public function before(Context $context) {
+	public function before(ContextInterface $context) {
 		
 		$file = reset($context->annotations['layout']);
 		
@@ -55,10 +55,10 @@ class LayoutMiddleware implements MiddlewareInterface
 		}
 		
 		if ($file === 'none') {
-			return current_context()->view->setRenderLayout(false);
+			return $context->view->setRenderLayout(false);
 		}
 		
-		current_context()->view->setLayoutFile($file);
+		$context->view->setLayoutFile($file);
 	}
 
 }

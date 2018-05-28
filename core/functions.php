@@ -9,7 +9,9 @@ use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
 use spitfire\SpitFire;
+use spitfire\SpitFireCLI;
 use spitfire\storage\database\DB;
+use spitfire\storage\database\Settings;
 use spitfire\validation\ValidationException;
 use spitfire\validation\Validator;
 use spitfire\validation\ValidatorInterface;
@@ -28,7 +30,7 @@ function spitfire() {
 	if ($sf !== null) { 
 		return $sf; 
 	} else {
-		$sf = new SpitFire();
+		$sf = php_sapi_name() === 'cli'? new SpitFireCLI() : new SpitFire();
 		$sf->prepare();
 		return $sf;
 	}
@@ -56,17 +58,17 @@ function app($name, $namespace) {
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *
- * @param \spitfire\storage\database\Settings $options
- * @return spitfire\storage\database\DB
+ * @param Settings $options
+ * @return DB
  */
-function db(\spitfire\storage\database\Settings$options = null) {
+function db(Settings$options = null) {
 	static $db = null;
 	
 	#If we're requesting the standard driver and have it cached, we use this
 	if ($options === null && $db !== null) { return $db; }
 	
 	#If no options were passed, we try to fetch them from the environment
-	$settings = \spitfire\storage\database\Settings::fromURL($options? : Environment::get('db'));
+	$settings = Settings::fromURL($options? : Environment::get('db'));
 	
 	#Instantiate the driver
 	$driver = 'spitfire\storage\database\drivers\\' . $settings->getDriver() . '\Driver';

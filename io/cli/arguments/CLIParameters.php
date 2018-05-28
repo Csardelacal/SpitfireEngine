@@ -1,6 +1,4 @@
-<?php namespace spitfire\mvc\middleware;
-
-use spitfire\core\Context;
+<?php namespace spitfire\io\cli\arguments;
 
 /* 
  * The MIT License
@@ -26,39 +24,28 @@ use spitfire\core\Context;
  * THE SOFTWARE.
  */
 
-class MiddlewareStack
+class CLIParameters
 {
 	
-	/**
-	 *
-	 * @var Context
-	 */
-	private $ctx;
+	private $params;
 	
-	/**
-	 *
-	 * @var MiddlewareInterface[]
-	 */
-	private $middleware = [];
-	
-	public function __construct(\spitfire\core\ContextInterface$ctx) {
-		$this->ctx = $ctx;
+	public function __construct($params) {
+		$this->params = $params;
 	}
 	
-	public function register(MiddlewareInterface$mw) {
-		$this->middleware[] = $mw;
-	}
-	
-	public function before() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->before($this->ctx);
+	public function redirect($from, $to) {
+		
+		if (isset($this->params[$from]) && !isset($this->params[$to])) {
+			$this->params[$to] = $this->params[$from];
+			unset($this->params[$from]);
+		}
+		elseif (isset($this->params[$from]) && !isset($this->params[$to])) {
+			throw new PrivateException('Redirection collission', 1805291301);
 		}
 	}
 	
-	public function after() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->after($this->ctx, $this->ctx->response);
-		}
+	public function get($name) {
+		return isset($this->params[$name])? $this->params[$name] : false;
 	}
 	
 }

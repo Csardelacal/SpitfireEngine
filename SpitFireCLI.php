@@ -1,6 +1,4 @@
-<?php namespace spitfire\mvc\middleware;
-
-use spitfire\core\Context;
+<?php namespace spitfire;
 
 /* 
  * The MIT License
@@ -26,39 +24,29 @@ use spitfire\core\Context;
  * THE SOFTWARE.
  */
 
-class MiddlewareStack
+class SpitFireCLI extends SpitFire
 {
 	
-	/**
-	 *
-	 * @var Context
-	 */
-	private $ctx;
-	
-	/**
-	 *
-	 * @var MiddlewareInterface[]
-	 */
-	private $middleware = [];
-	
-	public function __construct(\spitfire\core\ContextInterface$ctx) {
-		$this->ctx = $ctx;
-	}
-	
-	public function register(MiddlewareInterface$mw) {
-		$this->middleware[] = $mw;
-	}
-	
-	public function before() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->before($this->ctx);
+	public function fire() {
+		if (php_sapi_name() !== 'cli') {
+			throw new PublicException('Invalid request', 400);
 		}
-	}
-	
-	public function after() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->after($this->ctx, $this->ctx->response);
-		}
+		
+		#Import the apps
+		include CONFIG_DIRECTORY . 'apps.php';
+		include CONFIG_DIRECTORY . 'middleware.php';
+		
+		#Get the parameters from the command line interface
+		$parser = new io\cli\arguments\Parser();
+		$args   = $parser->read($argv);
+		
+		#The first two arguments are gonna be the director and action
+		$director = $args->arguments()->shift();
+		$action   = $args->arguments()->shift();
+		
+		$context  = core\ContextCLI::create(str_replace('.', '\\', $director) . 'Director', $action, $args);
+		$context->run();
+		
 	}
 	
 }

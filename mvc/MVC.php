@@ -1,7 +1,12 @@
 <?php namespace spitfire\mvc;
 
+use Controller;
 use Pluggable;
+use spitfire\App;
 use spitfire\core\Context;
+use spitfire\core\ContextInterface;
+use spitfire\core\Request;
+use spitfire\core\Response;
 
 /**
  * This class handles components common to Views, Controllers and model. Functions
@@ -11,12 +16,12 @@ use spitfire\core\Context;
  * via the "public" interface of the controller, models and view. Everything within
  * the context is made available to inheriting classes.
  * 
- * @property-read \spitfire\mvc\View $view The current view
- * @property-read \spitfire\App $app The context within this is located
+ * @property-read View $view The current view
+ * @property-read App $app The context within this is located
  * @property-read Context $context The context within this is located
- * @property-read \spitfire\core\Request $request The request the context is answering to
- * @property-read \spitfire\core\Response $response Contains the response body and headers
- * @property-read \Controller $controller The controller used ot handle this context
+ * @property-read Request $request The request the context is answering to
+ * @property-read Response $response Contains the response body and headers
+ * @property-read Controller $controller The controller used ot handle this context
  * 
  * @author César de la Cal <cesar@magic3w.com>
  * 
@@ -37,7 +42,7 @@ class MVC extends Pluggable
 	 * 
 	 * @param Context $context
 	 */
-	public function __construct(Context$context) {
+	public function __construct(ContextInterface$context) {
 		$this->ctx = $context;
 	}
 	
@@ -69,15 +74,7 @@ class MVC extends Pluggable
 	 * @return boolean
 	 */
 	public function __isset($name) {
-		switch ($name) {
-			case 'controller':
-			case 'view':
-			case 'app':
-			case 'model':
-			case 'current_url':
-				return true;
-		}
-		return false;
+		return isset($this->ctx->{$name});
 	}
 	
 }

@@ -1,6 +1,6 @@
 <?php namespace spitfire\mvc\middleware;
 
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 
 /* 
@@ -30,8 +30,8 @@ use spitfire\core\Response;
 interface MiddlewareInterface
 {
 	
-	public function before(Context$context);
+	public function before(ContextInterface$context);
 	
-	public function after(Context$context, Response$response);
+	public function after(ContextInterface$context, Response$response = null);
 	
 }

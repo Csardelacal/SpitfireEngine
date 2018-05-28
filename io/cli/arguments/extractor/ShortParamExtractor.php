@@ -26,12 +26,6 @@
 
 class ShortParamExtractor implements ExtractorInterface
 {
-
-	private $aliases;
-	
-	public function __construct($aliases = []) {
-		$this->aliases = $aliases;
-	}
 	
 	public function extract($argument) {
 		if (\Strings::startsWith($argument, '-' )) {
@@ -41,11 +35,10 @@ class ShortParamExtractor implements ExtractorInterface
 			
 			if ($value) {
 				$first = array_pop($name);
-				$parameters[isset($this->aliases[$first])? $this->aliases[$first] : $first] = $value;
+				$parameters[$first] = $value;
 			}
 
 			foreach ($name as $flag) { 
-				$flag = isset($this->aliases[$flag])? $this->aliases[$flag] : $flag;
 				$parameters[$flag] = isset($parameters[$flag])? $parameters[$flag] + 1 : 1; 
 			}
 			

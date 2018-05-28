@@ -1,6 +1,6 @@
-<?php namespace spitfire\mvc\middleware;
+<?php namespace spitfire\io\cli\arguments;
 
-use spitfire\core\Context;
+use spitfire\core\Collection;
 
 /* 
  * The MIT License
@@ -26,39 +26,33 @@ use spitfire\core\Context;
  * THE SOFTWARE.
  */
 
-class MiddlewareStack
+class CLIArguments
 {
 	
+	private $script;
+	
+	private $arguments;
+	
+	private $parameters;
+	
+	public function __construct($script, $arguments, $parameters) {
+		$this->arguments = new Collection($arguments);
+		$this->parameters = new CLIParameters($parameters);
+	}
+	
+	public function script() {
+		return $this->script;
+	}
+	
 	/**
-	 *
-	 * @var Context
+	 * 
+	 * @return Collection
 	 */
-	private $ctx;
-	
-	/**
-	 *
-	 * @var MiddlewareInterface[]
-	 */
-	private $middleware = [];
-	
-	public function __construct(\spitfire\core\ContextInterface$ctx) {
-		$this->ctx = $ctx;
+	public function arguments() {
+		return $this->arguments;
 	}
-	
-	public function register(MiddlewareInterface$mw) {
-		$this->middleware[] = $mw;
+
+	public function parameters() {
+		return $this->parameters;
 	}
-	
-	public function before() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->before($this->ctx);
-		}
-	}
-	
-	public function after() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->after($this->ctx, $this->ctx->response);
-		}
-	}
-	
 }

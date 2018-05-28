@@ -1,9 +1,11 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
+use spitfire\exceptions\PublicException;
 use spitfire\mvc\middleware\MiddlewareInterface;
 use spitfire\validation\parser\Parser;
+use function collect;
 
 /* 
  * The MIT License
@@ -32,7 +34,7 @@ use spitfire\validation\parser\Parser;
 class ValidationMiddleware implements MiddlewareInterface
 {
 	
-	public function before(Context $context) {
+	public function before(ContextInterface $context) {
 		$expressions = $context->annotations['validate'];
 		$parser      = new Parser();
 		
@@ -49,13 +51,13 @@ class ValidationMiddleware implements MiddlewareInterface
 			$validator = $parser->parse($expression)->setValue(['GET' => $_GET->getRaw(), 'POST' => $_POST, 'OBJ' => $context->object]);
 			
 			if (!$validator->isOk()) {
-				if ($throw) { throw new \spitfire\exceptions\PublicException('Validation failed', 400); }
+				if ($throw) { throw new PublicException('Validation failed', 400); }
 				$context->validation->add($validator->getMessages());
 			}
 		}
 	}
 	
-	public function after(Context $context, Response $response) {
+	public function after(ContextInterface $context, Response $response = null) {
 		
 	}
 

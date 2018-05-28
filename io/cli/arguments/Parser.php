@@ -36,20 +36,29 @@ class Parser
 	private $parameters;
 	private $arguments;
 	
-	public function __construct($argv, $aliases = []) {
+	public function __construct() {
+		$this->extractors = [
+			new StopCommandExtractor(),
+			new LongParamExtractor(),
+			new STDINExtractor(),
+			new ShortParamExtractor()
+		];
+	}
+	
+	/**
+	 * 
+	 * @param string[] $argv
+	 * @return CLIArguments
+	 */
+	public function read($argv) {
+		
 		$script     = array_shift($argv);
 		$parameters = [];
 		$arguments  = [];
 		
-		$extractors = [
-			new StopCommandExtractor(),
-			new LongParamExtractor(),
-			new STDINExtractor(),
-			new ShortParamExtractor($aliases)
-		];
 		
 		foreach ($argv as $arg) {
-			foreach ($extractors as $extractor) {
+			foreach ($this->extractors as $extractor) {
 				
 				$r = $extractor->extract($arg);
 				
@@ -74,21 +83,7 @@ class Parser
 			
 		}
 		
-		$this->script = $script;
-		$this->arguments = $arguments;
-		$this->parameters = $parameters;
-	}
-	
-	public function getScript() {
-		return $this->script;
-	}
-	
-	public function getParameters() {
-		return $this->parameters;
-	}
-	
-	public function getArguments() {
-		return $this->arguments;
+		return new CLIArguments($script, $arguments, $parameters);
 	}
 	
 }

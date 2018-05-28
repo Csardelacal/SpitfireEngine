@@ -1,8 +1,9 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\mvc\middleware\MiddlewareInterface;
+use function current_context;
 
 /* 
  * The MIT License
@@ -31,7 +32,7 @@ use spitfire\mvc\middleware\MiddlewareInterface;
 class TemplateMiddleware implements MiddlewareInterface
 {
 	
-	public function after(Context $context, Response $response) {
+	public function after(ContextInterface $context, Response $response = null) {
 		
 	}
 	
@@ -42,7 +43,7 @@ class TemplateMiddleware implements MiddlewareInterface
 	 * 
 	 * @return mixed
 	 */
-	public function before(Context $context) {
+	public function before(ContextInterface $context) {
 		
 		$file = reset($context->annotations['template']);
 		
@@ -51,10 +52,10 @@ class TemplateMiddleware implements MiddlewareInterface
 		}
 		
 		if ($file == 'none') {
-			return current_context()->view->setRenderTemplate(false);
+			return $context->view->setRenderTemplate(false);
 		}
 		
-		current_context()->view->setFile($file);
+		$context->view->setFile($file);
 	}
 
 }

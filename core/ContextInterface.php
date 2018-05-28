@@ -1,6 +1,4 @@
-<?php namespace spitfire\mvc\middleware;
-
-use spitfire\core\Context;
+<?php namespace spitfire\core;
 
 /* 
  * The MIT License
@@ -26,39 +24,7 @@ use spitfire\core\Context;
  * THE SOFTWARE.
  */
 
-class MiddlewareStack
+interface ContextInterface
 {
-	
-	/**
-	 *
-	 * @var Context
-	 */
-	private $ctx;
-	
-	/**
-	 *
-	 * @var MiddlewareInterface[]
-	 */
-	private $middleware = [];
-	
-	public function __construct(\spitfire\core\ContextInterface$ctx) {
-		$this->ctx = $ctx;
-	}
-	
-	public function register(MiddlewareInterface$mw) {
-		$this->middleware[] = $mw;
-	}
-	
-	public function before() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->before($this->ctx);
-		}
-	}
-	
-	public function after() {
-		foreach ($this->middleware as $middleware) {
-			$middleware->after($this->ctx, $this->ctx->response);
-		}
-	}
 	
 }
