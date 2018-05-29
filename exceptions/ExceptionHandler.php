@@ -86,6 +86,7 @@ class ExceptionHandler {
 			$response = new Response(null);
 			
 			if ( $e instanceof PublicException) {
+				error_log($e->getMessage());
 				$previous = $e->getPrevious();
 				$trace    = $e->getTraceAsString();
 				$prevmsg  = ($previous)? '###' . $previous->getMessage() . "###\n" : '';

@@ -87,8 +87,9 @@ class SpitFire extends App
 			/*@var $initContext Context*/
 			$initContext = ($path instanceof Context)? $path : $request->makeContext();
 			
-			#Define the context for the helper function lang()
+			#Define the context, include the application's middleware configuration.
 			current_context($initContext);
+			include CONFIG_DIRECTORY . 'middleware.php';
 			
 			#Get the return context
 			/*@var $context Context*/

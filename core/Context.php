@@ -1,16 +1,19 @@
 <?php namespace spitfire\core;
 
-use \spitfire\App;
 use Controller;
 use publicException;
+use spitfire\App;
 use spitfire\cache\MemcachedAdapter;
 use spitfire\core\annotations\ActionReflector;
+use spitfire\core\annotations\AnnotationParser;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
 use spitfire\InputSanitizer;
 use spitfire\io\session\Session;
+use spitfire\mvc\middleware\MiddlewareStack;
 use spitfire\mvc\View;
+use function spitfire;
 
 /**
  * The context is a wrapper for an Intent. Basically it describes a full request
@@ -24,7 +27,7 @@ use spitfire\mvc\View;
  * @author César de la Cal <cesar@magic3w.com>
  * @last-revision 2013-10-25
  */
-class Context
+class Context implements ContextInterface
 {
 	/**
 	 * This is a reference to the context itself. This is a little helper for the
@@ -34,6 +37,12 @@ class Context
 	 * @var Context
 	 */
 	public $context;
+	
+	/**
+	 *
+	 * @var MiddlewareStack
+	 */
+	public $middleware;
 	
 	/**
 	 * The application running the current context. The app will provide the controller
@@ -53,6 +62,7 @@ class Context
 	public $action;
 	public $object;
 	public $extension;
+	public $annotations;
 	
 	/**
 	 * Holds the view the app uses to handle the current request. This view is in 
@@ -88,6 +98,7 @@ class Context
 		$context->request    = Request::get();
 		$context->parameters = new InputSanitizer($context->request->getPath()->getParameters());
 		$context->response   = new Response($context);
+		$context->middleware = new MiddlewareStack($context);
 		
 		$context->app        = spitfire()->getApp($context->request->getPath()->getApp());
 		$context->controller = $context->app->getController($context->request->getPath()->getController(), $context);
@@ -95,6 +106,11 @@ class Context
 		$context->object     = $context->request->getPath()->getObject();
 		
 		$context->view       = $context->app->getView($context->controller);
+		
+		$reflector            = new \ReflectionMethod($context->controller, $context->action);
+		$annotationParser     = new AnnotationParser();
+		$context->annotations = $annotationParser->parse($reflector->getDocComment());
+		
 		return $context;
 	}
 	
@@ -104,13 +120,14 @@ class Context
 			call_user_func_array(Array($this->controller, '_onload'), Array($this->action));
 		}
 		
-		$reflector = new ActionReflector($this->controller, $this->action);
-		$reflector->execute();
+		$this->middleware->before();
 		
 		#Check if the controller can handle the request
 		$request = Array($this->controller, $this->action);
 		if (is_callable($request)) { $_return = call_user_func_array($request, $this->object); }
 		else { throw new publicException('Page not found', 404, new PrivateException('Action not found', 0)); }
+		
+		$this->middleware->after();
 		
 		if ($_return instanceof Context) { return $_return; }
 		else                             { return $this; }
