@@ -106,7 +106,7 @@ class AnnotationParser
 			if (!isset($annotations[$name])) { $annotations[$name] = Array(); }
 			
 			#Add the value we parsed
-			$annotations[$name][] = array_shift($segments);
+			$annotations[$name][] = trim(array_shift($segments));
 		}
 		
 		return $annotations;
