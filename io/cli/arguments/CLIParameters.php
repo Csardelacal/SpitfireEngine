@@ -1,9 +1,4 @@
-<?php namespace spitfire\mvc\middleware\standard;
-
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\MiddlewareInterface;
-use function current_context;
+<?php namespace spitfire\io\cli\arguments;
 
 /* 
  * The MIT License
@@ -29,33 +24,28 @@ use function current_context;
  * THE SOFTWARE.
  */
 
-class TemplateMiddleware implements MiddlewareInterface
+class CLIParameters
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
-		
+	private $params;
+	
+	public function __construct($params) {
+		$this->params = $params;
 	}
 	
-	/**
-	 * Defines whether the current template is rendered or not and what file is
-	 * used for that purpose. This allows your application to quickly define
-	 * templates that are not located in normal locations.
-	 * 
-	 * @return mixed
-	 */
-	public function before(ContextInterface $context) {
+	public function redirect($from, $to) {
 		
-		if (!isset($context->annotations['template'])) {
-			return;
+		if (isset($this->params[$from]) && !isset($this->params[$to])) {
+			$this->params[$to] = $this->params[$from];
+			unset($this->params[$from]);
 		}
-		
-		$file = reset($context->annotations['template']);
-		
-		if ($file == 'none') {
-			return $context->view->setRenderTemplate(false);
+		elseif (isset($this->params[$from]) && !isset($this->params[$to])) {
+			throw new PrivateException('Redirection collission', 1805291301);
 		}
-		
-		$context->view->setFile($file);
 	}
-
+	
+	public function get($name) {
+		return isset($this->params[$name])? $this->params[$name] : false;
+	}
+	
 }

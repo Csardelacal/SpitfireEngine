@@ -1,9 +1,4 @@
-<?php namespace spitfire\mvc\middleware\standard;
-
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\MiddlewareInterface;
-use function current_context;
+<?php namespace spitfire\io\cli;
 
 /* 
  * The MIT License
@@ -29,33 +24,30 @@ use function current_context;
  * THE SOFTWARE.
  */
 
-class TemplateMiddleware implements MiddlewareInterface
+class ProgressBar extends Stream
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
+	private $msg;
+	private $progress = 0;
+	
+	public function __construct($msg) {
+		parent::__construct();
 		
+		$this->msg = $msg;
+		$this->redraw();
 	}
 	
-	/**
-	 * Defines whether the current template is rendered or not and what file is
-	 * used for that purpose. This allows your application to quickly define
-	 * templates that are not located in normal locations.
-	 * 
-	 * @return mixed
-	 */
-	public function before(ContextInterface $context) {
-		
-		if (!isset($context->annotations['template'])) {
-			return;
-		}
-		
-		$file = reset($context->annotations['template']);
-		
-		if ($file == 'none') {
-			return $context->view->setRenderTemplate(false);
-		}
-		
-		$context->view->setFile($file);
+	public function progress($progress) {
+		$this->progress = $progress;
+		$this->redraw();
+		return $this;
 	}
-
+	
+	public function redraw() {
+		$this->rewind();
+		
+		$width = exec('tput cols') - strlen($this->msg) - 10;
+		$drawn = (int)($this->progress * $width);
+		$this->out(sprintf('[WAIT] %s [%s%s]', $this->msg, str_repeat('#', $drawn), str_repeat(' ', $width - $drawn)));
+	}
 }

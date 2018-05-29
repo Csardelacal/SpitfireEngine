@@ -1,9 +1,6 @@
-<?php namespace spitfire\mvc\middleware\standard;
+<?php namespace spitfire\io\cli\arguments;
 
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\MiddlewareInterface;
-use function current_context;
+use spitfire\core\Collection;
 
 /* 
  * The MIT License
@@ -29,33 +26,34 @@ use function current_context;
  * THE SOFTWARE.
  */
 
-class TemplateMiddleware implements MiddlewareInterface
+class CLIArguments
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
-		
+	private $script;
+	
+	private $arguments;
+	
+	private $parameters;
+	
+	public function __construct($script, $arguments, $parameters) {
+		$this->script = $script;
+		$this->arguments = new Collection($arguments);
+		$this->parameters = new CLIParameters($parameters);
+	}
+	
+	public function script() {
+		return $this->script;
 	}
 	
 	/**
-	 * Defines whether the current template is rendered or not and what file is
-	 * used for that purpose. This allows your application to quickly define
-	 * templates that are not located in normal locations.
 	 * 
-	 * @return mixed
+	 * @return Collection
 	 */
-	public function before(ContextInterface $context) {
-		
-		if (!isset($context->annotations['template'])) {
-			return;
-		}
-		
-		$file = reset($context->annotations['template']);
-		
-		if ($file == 'none') {
-			return $context->view->setRenderTemplate(false);
-		}
-		
-		$context->view->setFile($file);
+	public function arguments() {
+		return $this->arguments;
 	}
 
+	public function parameters() {
+		return $this->parameters;
+	}
 }

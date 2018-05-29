@@ -1,6 +1,6 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\mvc\middleware\MiddlewareInterface;
 
@@ -31,7 +31,7 @@ use spitfire\mvc\middleware\MiddlewareInterface;
 class CacheDurationMiddleware implements MiddlewareInterface
 {
 	
-	public function after(Context $context, Response $response) {
+	public function after(ContextInterface $context, Response $response = null) {
 		
 	}
 	
@@ -41,14 +41,18 @@ class CacheDurationMiddleware implements MiddlewareInterface
 	 * that are not expected to change in foreseeable time, especially big requests
 	 * like images.
 	 */
-	public function before(Context $context) {
-		$duration = reset($context->annotations['cache']);
+	public function before(ContextInterface $context) {
+		
 		
 		/**
 		 * If duration was not provided, this middleware component does nothing at
 		 * all. Just return.
 		 */
-		if (!$duration) { return; }
+		if (empty($context->annotations['cache'])) {
+			return;
+		}
+		
+		$duration = reset($context->annotations['cache']);
 		
 		$context
 			->response

@@ -1,9 +1,10 @@
-<?php namespace spitfire\mvc\middleware\standard;
+<?php namespace spitfire;
 
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
+use spitfire\core\ContextCLI;
 use spitfire\exceptions\PublicException;
-use spitfire\mvc\middleware\MiddlewareInterface;
+use spitfire\io\cli\arguments\Parser;
+use const CONFIG_DIRECTORY;
+use function current_context;
 
 /* 
  * The MIT License
@@ -29,43 +30,34 @@ use spitfire\mvc\middleware\MiddlewareInterface;
  * THE SOFTWARE.
  */
 
-/**
- * 
- * @author César de la Cal Bretschneider <cesar@magic3w.com>
- */
-class RequestMethodMiddleware implements MiddlewareInterface
+class SpitFireCLI extends SpitFire
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
+	public function fire() {
+		if (php_sapi_name() !== 'cli') {
+			throw new PublicException('Invalid request', 400);
+		}
+		
+		#Import the apps
+		include CONFIG_DIRECTORY . 'apps.php';
+		
+		#Get the parameters from the command line interface
+		$parser = new Parser();
+		$args   = $parser->read($_SERVER['argv']);
+		
+		#The first two arguments are gonna be the director and action
+		$director = $args->arguments()->shift();
+		$action   = $args->arguments()->shift();
+		
+		#Create the appropriate context
+		$context  = ContextCLI::create(str_replace('.', '\\', $director) . 'Director', $action, $args);
+		
+		#Set the context as the current one, and load the user's middleware configuration
+		current_context($context);
+		include CONFIG_DIRECTORY . 'middleware.php';
+		
+		return $context->run();
 		
 	}
 	
-	/**
-	 * Checks whether the request being sent by the user is acceptable for the 
-	 * selected action. This allows your application to set a bunch of valid methods
-	 * that will avoid this one throwing an exception informing about the invalid
-	 * request.
-	 * 
-	 * @return mixed
-	 * @throws PublicException If the user is throwing a request with one method
-	 *			that is not accepted.
-	 */
-	public function before(ContextInterface $context) {
-		
-		if (empty($context->annotations['request-method'])) {
-			return;
-		}
-		
-		$annotation = reset($context->annotations['request-method']);
-		$accepted   = explode(' ', $annotation);
-		
-		foreach($accepted as $ok) {
-			if (strtolower($ok) === strtolower($_SERVER['REQUEST_METHOD'])) {
-				return;
-			}
-		}
-		
-		throw new PublicException("No valid request", 400);
-	}
-
 }

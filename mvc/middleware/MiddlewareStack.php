@@ -41,7 +41,7 @@ class MiddlewareStack
 	 */
 	private $middleware = [];
 	
-	public function __construct(Context$ctx) {
+	public function __construct(\spitfire\core\ContextInterface$ctx) {
 		$this->ctx = $ctx;
 	}
 	
@@ -57,7 +57,7 @@ class MiddlewareStack
 	
 	public function after() {
 		foreach ($this->middleware as $middleware) {
-			$middleware->after($this->ctx, $this->ctx->response);
+			$middleware->after($this->ctx, $this->ctx instanceof Context? $this->ctx->response : null);
 		}
 	}
 	

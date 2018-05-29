@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\core;
 
 /* 
  * The MIT License
@@ -24,5 +24,7 @@
  * THE SOFTWARE.
  */
 
-var_dump($argv);
-var_dump(file_get_contents('php://stdin'));
+interface ContextInterface
+{
+	
+}

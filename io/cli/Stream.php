@@ -1,9 +1,4 @@
-<?php namespace spitfire\mvc\middleware\standard;
-
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\MiddlewareInterface;
-use function current_context;
+<?php namespace spitfire\io\cli;
 
 /* 
  * The MIT License
@@ -29,33 +24,30 @@ use function current_context;
  * THE SOFTWARE.
  */
 
-class TemplateMiddleware implements MiddlewareInterface
+class Stream
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
-		
+	private $stream;
+	
+	public function __construct($stream = STDOUT) {
+		$this->stream = $stream;
 	}
 	
 	/**
-	 * Defines whether the current template is rendered or not and what file is
-	 * used for that purpose. This allows your application to quickly define
-	 * templates that are not located in normal locations.
 	 * 
-	 * @return mixed
+	 * @param string $msg
+	 * @return Stream
 	 */
-	public function before(ContextInterface $context) {
-		
-		if (!isset($context->annotations['template'])) {
-			return;
-		}
-		
-		$file = reset($context->annotations['template']);
-		
-		if ($file == 'none') {
-			return $context->view->setRenderTemplate(false);
-		}
-		
-		$context->view->setFile($file);
+	public function out($msg) {
+		fwrite($this->stream, $msg);
+		return $this;
 	}
-
+	
+	public function rewind() {
+		return $this->out("\r" . exec('tput el'));
+	}
+	
+	public function line() {
+		return $this->out(PHP_EOL);
+	}
 }

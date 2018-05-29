@@ -1,7 +1,10 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
+use ReflectionClass;
 use spitfire\core\Context;
+use spitfire\core\ContextInterface;
 use spitfire\core\Response;
+use spitfire\Model;
 use spitfire\mvc\middleware\MiddlewareInterface;
 
 /* 
@@ -60,8 +63,8 @@ class ModelMiddleware implements MiddlewareInterface
 	 * 
 	 * @param Context $context
 	 */
-	public function before(Context $context) {
-		$controller = new \ReflectionClass($context->controller);
+	public function before(ContextInterface $context) {
+		$controller = new ReflectionClass($context instanceof Context? $context->controller : $context->director);
 		$action     = $controller->getMethod($context->action);
 		$object     = $context->object;
 		
@@ -71,7 +74,8 @@ class ModelMiddleware implements MiddlewareInterface
 			/*@var $param \ParameterReflection*/
 			$param = $params[$i];
 			
-			if (!$param->getClass()->isSubclassOf(\spitfire\Model::class)) { continue; }
+			if (!$param->getClass()) { continue; }
+			if (!$param->getClass()->isSubclassOf(Model::class)) { continue; }
 			
 			$table = $this->db->table(substr($param->getClass()->getName(), 0, 0 - strlen('model')));
 			$object[$i] = $table->getById($object[$i]);
@@ -81,7 +85,7 @@ class ModelMiddleware implements MiddlewareInterface
 		$context->object = $object;
 	}
 	
-	public function after(Context $context, Response $response) {
+	public function after(ContextInterface $context, Response $response = null) {
 		
 	}
 

@@ -1,9 +1,9 @@
-<?php namespace spitfire\mvc\middleware\standard;
+<?php namespace spitfire\io\cli\arguments;
 
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\exceptions\PublicException;
-use spitfire\mvc\middleware\MiddlewareInterface;
+use spitfire\io\cli\arguments\extractor\LongParamExtractor;
+use spitfire\io\cli\arguments\extractor\ShortParamExtractor;
+use spitfire\io\cli\arguments\extractor\STDINExtractor;
+use spitfire\io\cli\arguments\extractor\StopCommandExtractor;
 
 /* 
  * The MIT License
@@ -29,43 +29,57 @@ use spitfire\mvc\middleware\MiddlewareInterface;
  * THE SOFTWARE.
  */
 
-/**
- * 
- * @author César de la Cal Bretschneider <cesar@magic3w.com>
- */
-class RequestMethodMiddleware implements MiddlewareInterface
+class Parser
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
-		
+	private $extractors;
+	
+	public function __construct() {
+		$this->extractors = [
+			new StopCommandExtractor(),
+			new LongParamExtractor(),
+			new STDINExtractor(),
+			new ShortParamExtractor()
+		];
 	}
 	
 	/**
-	 * Checks whether the request being sent by the user is acceptable for the 
-	 * selected action. This allows your application to set a bunch of valid methods
-	 * that will avoid this one throwing an exception informing about the invalid
-	 * request.
 	 * 
-	 * @return mixed
-	 * @throws PublicException If the user is throwing a request with one method
-	 *			that is not accepted.
+	 * @param string[] $argv
+	 * @return CLIArguments
 	 */
-	public function before(ContextInterface $context) {
+	public function read($argv) {
 		
-		if (empty($context->annotations['request-method'])) {
-			return;
-		}
+		$script     = array_shift($argv);
+		$parameters = [];
+		$arguments  = [];
 		
-		$annotation = reset($context->annotations['request-method']);
-		$accepted   = explode(' ', $annotation);
 		
-		foreach($accepted as $ok) {
-			if (strtolower($ok) === strtolower($_SERVER['REQUEST_METHOD'])) {
-				return;
+		foreach ($argv as $arg) {
+			foreach ($this->extractors as $extractor) {
+				
+				$r = $extractor->extract($arg);
+				
+				if ($r === false) {
+					//Do nothing, the extractor can't handle this data
+				}
+				
+				elseif (is_array($r)) {
+					$parameters = array_merge($parameters, $r);
+					continue 2;
+				}
+				
+				elseif (is_string($r)) {
+					$arguments[] = $r;
+					continue 2;
+				}
 			}
+				
+			$arguments[] = $arg;
+			
 		}
 		
-		throw new PublicException("No valid request", 400);
+		return new CLIArguments($script, $arguments, $parameters);
 	}
-
+	
 }

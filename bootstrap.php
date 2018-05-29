@@ -64,6 +64,7 @@ $autoload->registerLocator(new NamespacedClassLocator('', BASEDIR . '/bin/models
 $autoload->registerLocator(new NamespacedClassLocator('', BASEDIR . '/bin/locales',     'Locale'));
 $autoload->registerLocator(new NamespacedClassLocator('', BASEDIR . '/bin/views',       'View'));
 $autoload->registerLocator(new NamespacedClassLocator('', BASEDIR . '/bin/beans',       'Bean'));
+$autoload->registerLocator(new NamespacedClassLocator('', BASEDIR . '/bin/directors',   'Director'));
 $autoload->registerLocator(new NamespacedClassLocator('', BASEDIR . '/bin/classes'));
 
 #Import the locations of the most critical components to Spitfire so it has no

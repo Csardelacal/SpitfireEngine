@@ -1,9 +1,4 @@
-<?php namespace spitfire\mvc\middleware\standard;
-
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\MiddlewareInterface;
-use function current_context;
+<?php namespace spitfire\io\cli\arguments\extractor;
 
 /* 
  * The MIT License
@@ -29,33 +24,23 @@ use function current_context;
  * THE SOFTWARE.
  */
 
-class TemplateMiddleware implements MiddlewareInterface
+class StopCommandExtractor implements ExtractorInterface
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
-		
-	}
+	private $switch = false;
 	
-	/**
-	 * Defines whether the current template is rendered or not and what file is
-	 * used for that purpose. This allows your application to quickly define
-	 * templates that are not located in normal locations.
-	 * 
-	 * @return mixed
-	 */
-	public function before(ContextInterface $context) {
-		
-		if (!isset($context->annotations['template'])) {
-			return;
+	public function extract($argument) {
+		if ($argument === '--') { 
+			$this->switch = true; 
+			return null;
 		}
 		
-		$file = reset($context->annotations['template']);
-		
-		if ($file == 'none') {
-			return $context->view->setRenderTemplate(false);
+		if ($this->switch) {
+			return $argument;
 		}
-		
-		$context->view->setFile($file);
+		else {
+			return false;
+		}
 	}
 
 }

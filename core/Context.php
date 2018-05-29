@@ -27,7 +27,7 @@ use function spitfire;
  * @author César de la Cal <cesar@magic3w.com>
  * @last-revision 2013-10-25
  */
-class Context
+class Context implements ContextInterface
 {
 	/**
 	 * This is a reference to the context itself. This is a little helper for the
@@ -38,6 +38,10 @@ class Context
 	 */
 	public $context;
 	
+	/**
+	 *
+	 * @var MiddlewareStack
+	 */
 	public $middleware;
 	
 	/**

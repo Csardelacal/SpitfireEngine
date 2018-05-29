@@ -1,9 +1,4 @@
-<?php namespace spitfire\mvc\middleware\standard;
-
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\MiddlewareInterface;
-use function current_context;
+<?php namespace spitfire\io\cli;
 
 /* 
  * The MIT License
@@ -29,33 +24,24 @@ use function current_context;
  * THE SOFTWARE.
  */
 
-class TemplateMiddleware implements MiddlewareInterface
+class CLIColor
 {
 	
-	public function after(ContextInterface $context, Response $response = null) {
-		
-	}
+	const FG_RED = '0;31';
+	const BG_RED = '41';
 	
-	/**
-	 * Defines whether the current template is rendered or not and what file is
-	 * used for that purpose. This allows your application to quickly define
-	 * templates that are not located in normal locations.
-	 * 
-	 * @return mixed
-	 */
-	public function before(ContextInterface $context) {
-		
-		if (!isset($context->annotations['template'])) {
-			return;
-		}
-		
-		$file = reset($context->annotations['template']);
-		
-		if ($file == 'none') {
-			return $context->view->setRenderTemplate(false);
-		}
-		
-		$context->view->setFile($file);
+	const FG_GREEN = '0;32';
+	const BG_GREEN = '42';
+	
+	const FG_BLUE = '0;34';
+	const BG_BLUE = '44';
+	
+	const FG_WHITE = '1;37';
+	
+	const RESET = '0';
+	
+	
+	public function color($color) {
+		return "\033[{$color}m";
 	}
-
 }
