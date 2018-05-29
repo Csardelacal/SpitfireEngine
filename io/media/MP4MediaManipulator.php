@@ -1,0 +1,102 @@
+<?php namespace spitfire\io\media;
+
+/* 
+ * The MIT License
+ *
+ * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+class MP4MediaManipulator implements MediaManipulatorInterface
+{
+	
+	private $src = null;
+	
+	private $operations = [];
+	
+	public function blur(): MediaManipulatorInterface {
+		throw new PrivateException('Unsupported method', 1805291311);
+	}
+
+	public function fit($x, $y): MediaManipulatorInterface {
+		$w = ((int)($x/2)) * 2;
+		$h = ((int)($y/2)) * 2;
+		
+		$this->operations['scale'] = "scale={$w}:{$h}:force_original_aspect_ratio=increase";
+		$this->operations['crop']  = "crop={$w}:{$h}";
+		
+		return $this;
+	}
+
+	public function grayscale(): MediaManipulatorInterface {
+		throw new PrivateException('Unsupported method', 1805291311);
+	}
+
+	public function load(\spitfire\storage\objectStorage\BlobInterface $blob): MediaManipulatorInterface {
+		$this->src = $blob;
+		$this->operations = [];
+		
+		return $this;
+	}
+
+	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
+		//Ignore this for now
+	}
+
+	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
+		if ($side === self::WIDTH) {
+			$w = $target;
+			$h = -2;
+		}
+		else {
+			$h = $target;
+			$w = -2;
+		}
+		
+		$this->operations['scale'] = "scale={$w}:{$h}";
+		return $this;
+	}
+
+	public function store(\spitfire\storage\objectStorage\BlobInterface $location): \spitfire\storage\objectStorage\BlobInterface {
+		$tmpi = '/tmp/' . rand();
+		$tmpo = '/tmp/' . rand() . '.mp4';
+		
+		file_put_contents($tmpi, $this->src->read());;
+		exec(sprintf('ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -vf "%s" %s', $tmpi, implode(',', $this->operations), $tmpo));
+		
+		$location->write(file_get_contents($tmpo));
+		
+		unlink($tmpi);
+		unlink($tmpo);
+		
+		return $location;
+	}
+
+	public function supports(string $mime): bool {
+		switch ($mime) {
+			case 'image/gif':
+			case 'video/mp4':
+				return true;
+			default:
+				return false;
+		}
+	}
+
+}
