@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-interface BlobInterface
+interface BlobInterface extends ObjectStorageInterface
 {
 	
 	public function write(string$data) : bool;
@@ -39,10 +39,6 @@ interface BlobInterface
 	
 	public function isWritable() : bool;
 	
-	public function getLocation() : ObjectStorageInterface;
-	
-	public function move(ObjectStorageInterface$to, string$name) : BlobInterface;
-	
-	public function getURI();
+	public function move(ObjectDirectoryInterface$to, string$name) : BlobInterface;
 	
 }

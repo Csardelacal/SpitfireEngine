@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\objectStorage;
 
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *
@@ -24,12 +26,28 @@
  * THE SOFTWARE.
  */
 
-interface ObjectStorageInterface
+class ObjectStorageDispatcher
 {
 	
+	private $drivers = [];
 	
-	public function getParent() : ObjectDirectoryInterface;
 	
-	public function getURI() : string;
+	public function register($scheme, ObjectDirectoryInterface$directory) {
+		$this->drivers[trim($scheme, ':/')] = $directory;
+	}
+	
+	public function get($location) {
+		$pieces = explode('://', $location, 2);
+		
+		if(!isset($pieces[1])) {
+			throw new PrivateException('Invalid URI provided', 1805301529);
+		}
+		
+		if (isset($this->drivers[$pieces[0]])) {
+			return $this->drivers[$pieces[0]]->get($pieces[1]);
+		}
+		
+		throw new PrivateException('');
+	}
 	
 }

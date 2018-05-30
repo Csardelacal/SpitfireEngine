@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\drive;
 
 use spitfire\storage\objectStorage\BlobInterface;
-use spitfire\storage\objectStorage\ObjectStorageInterface;
+use spitfire\storage\objectStorage\ObjectDirectoryInterface;
 
 /* 
  * The MIT License
@@ -44,7 +44,7 @@ class File implements BlobInterface
 		return file_exists($this->path);
 	}
 
-	public function getLocation(): ObjectStorageInterface {
+	public function getParent(): ObjectDirectoryInterface {
 		return new Directory(dirname($this->path));
 	}
 
@@ -52,7 +52,7 @@ class File implements BlobInterface
 		return file_exists($this->path) && is_writable($this->path);
 	}
 
-	public function move(ObjectStorageInterface $to, string $name): BlobInterface {
+	public function move(ObjectDirectoryInterface $to, string $name): BlobInterface {
 		/*
 		 * If the target is a directory we can directly move the file on the drive,
 		 * therefore we don't have to get the file from the drive a second time.

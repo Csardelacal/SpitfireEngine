@@ -1,11 +1,13 @@
 <?php namespace spitfire\storage\drive;
 
 use spitfire\core\CollectionInterface;
+use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\FilePermissionsException;
-use spitfire\storage\objectStorage\BlobInterface;
+use spitfire\storage\objectStorage\ObjectDirectoryInterface;
 use spitfire\storage\objectStorage\ObjectStorageInterface;
+use function collect;
 
-class Directory implements ObjectStorageInterface
+class Directory implements ObjectDirectoryInterface
 {
 	
 	private $path;
@@ -40,12 +42,26 @@ class Directory implements ObjectStorageInterface
 		return is_writable($this->path);
 	}
 
-	public function get($name): BlobInterface {
-		if (is_dir($this->path . '/' . $name)) { throw new FileNotFoundException('Object is a file'); }
-		else                                   { return new File(realpath($this->path . '/' . $name)); }
+	public function get($name): ObjectStorageInterface {
+		if (is_dir($this->path . '/' . $name)) { 
+			return new Directory(realpath($this->path . '/' . $name)); 
+		}
+		elseif(file_exists($this->path . '/' . $name)) { 
+			return new File(realpath($this->path . '/' . $name)); 
+		}
+		
+		throw new FileNotFoundException($this->path . '/' . $name . ' was not found', 1805301553);
+	}
+	
+	public function make($name) {
+		if (file_exists($this->path . '/' . $name)) {
+			throw new FilePermissionsException('File ' . $name . ' already exists', 1805301554);
+		}
+		
+		return new File(realpath($this->path . '/' . $name));
 	}
 
-	public function list(): CollectionInterface {
+	public function all(): CollectionInterface {
 		$contents = scandir($this->path);
 		
 		return collect($contents)->each(function ($e) {
@@ -56,6 +72,10 @@ class Directory implements ObjectStorageInterface
 
 	public function getURI() {
 		return 'file://' . $this->path;
+	}
+
+	public function getParent(): ObjectDirectoryInterface {
+		return new Directory(dirname($this->path));
 	}
 
 }

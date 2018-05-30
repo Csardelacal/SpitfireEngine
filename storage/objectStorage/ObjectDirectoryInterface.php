@@ -24,12 +24,17 @@
  * THE SOFTWARE.
  */
 
-interface ObjectStorageInterface
+interface ObjectDirectoryInterface extends ObjectStorageInterface
 {
 	
+	public function all() : \spitfire\core\CollectionInterface;
 	
-	public function getParent() : ObjectDirectoryInterface;
+	public function get($name) : ObjectStorageInterface;
 	
-	public function getURI() : string;
+	public function make($name) : BlobInterface;
+	
+	public function exists() : bool;
+	
+	public function isWritable() : bool;
 	
 }

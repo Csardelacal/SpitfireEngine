@@ -306,3 +306,14 @@ function media() {
 	
 	return $dispatcher;
 }
+
+function storage() {
+	static $dispatcher = null;
+	
+	if (!$dispatcher) {
+		$dispatcher = new \spitfire\storage\objectStorage\ObjectStorageDispatcher();
+		$dispatcher->register('file://', new spitfire\storage\drive\Directory('/'));
+	}
+	
+	return $dispatcher;
+}

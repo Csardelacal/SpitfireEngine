@@ -1,4 +1,4 @@
-<?php namespace spitfire\storage\objectStorage;
+<?php namespace spitfire\io\curl;
 
 /* 
  * The MIT License
@@ -24,12 +24,56 @@
  * THE SOFTWARE.
  */
 
-interface ObjectStorageInterface
+class Request
 {
 	
+	private $method = 'GET';
 	
-	public function getParent() : ObjectDirectoryInterface;
+	private $url;
 	
-	public function getURI() : string;
+	private $headers = [];
+		
+	private $body = [];
 	
+	public function __construct($url) {
+		$this->url = URLReflection::fromURL($url);
+	}
+	
+	public function header($name, $value) {
+		$this->headers[$name] = $value;
+	}
+	
+	public function post($parameter, $value = null) {
+		$this->method = 'POST';
+		
+		if ($value === null) {
+			$this->body = $parameter;
+		}
+		else {
+			$this->body[$parameter] = $value;
+		}
+		
+		return $this;
+	}
+	
+	public function send() {
+		$ch = curl_init((string)$this->url);
+		
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		
+		if (!empty($this->body)) {
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->body);
+		}
+		
+		/*
+		 * Set the appropriate headers for the request (in case we need some special
+		 * headers that do not conform)
+		 */
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array_map(function ($k, $v) { 
+			return "$k : $v"; 
+		}, array_keys($this->headers), $this->headers));
+		
+		//Todo: CURLOPT_PROGRESSFUNCTION
+	}
 }
