@@ -31,4 +31,8 @@ include './bootstrap.php';
 ini_set('memory_limit', '4G');/**/
 
 /* Call the selected controller with the selected method. */
-spitfire()->fire();
+//spitfire()->fire();
+$m = media()->load(new \spitfire\storage\drive\File('/Users/cesaradelacalbretschneider/Desktop/test.gif'));
+$m
+	->fit(300, 300)
+	->store(new \spitfire\storage\drive\File('/Users/cesaradelacalbretschneider/Desktop/test.mp4'));

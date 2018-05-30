@@ -290,3 +290,19 @@ function url() {
 function within($min, $val, $max) {
 	return min(max($min, $val), $max);
 }
+
+function media() {
+	static $dispatcher = null;
+	
+	if (!$dispatcher) {
+		$dispatcher = new \spitfire\io\media\MediaDispatcher();
+		$dispatcher->register('image/png', new \spitfire\io\media\GDManipulator());
+		$dispatcher->register('image/jpg', new \spitfire\io\media\GDManipulator());
+		$dispatcher->register('image/psd', new \spitfire\io\media\ImagickManipulator());
+		$dispatcher->register('image/gif', new \spitfire\io\media\FFMPEGManipulator());
+		$dispatcher->register('video/mp4', new \spitfire\io\media\FFMPEGManipulator());
+		$dispatcher->register('image/vnd.adobe.photoshop', new \spitfire\io\media\ImagickManipulator());
+	}
+	
+	return $dispatcher;
+}

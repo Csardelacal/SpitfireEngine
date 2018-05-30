@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class MP4MediaManipulator implements MediaManipulatorInterface
+class FFMPEGManipulator implements MediaManipulatorInterface
 {
 	
 	private $src = null;
@@ -32,7 +32,8 @@ class MP4MediaManipulator implements MediaManipulatorInterface
 	private $operations = [];
 	
 	public function blur(): MediaManipulatorInterface {
-		throw new PrivateException('Unsupported method', 1805291311);
+		$this->operations['blur'] = "boxblur=5:1";
+		return $this;
 	}
 
 	public function fit($x, $y): MediaManipulatorInterface {
@@ -46,7 +47,8 @@ class MP4MediaManipulator implements MediaManipulatorInterface
 	}
 
 	public function grayscale(): MediaManipulatorInterface {
-		throw new PrivateException('Unsupported method', 1805291311);
+		$this->operations['gray'] = "hue=s=0";
+		return $this;
 	}
 
 	public function load(\spitfire\storage\objectStorage\BlobInterface $blob): MediaManipulatorInterface {
@@ -78,8 +80,8 @@ class MP4MediaManipulator implements MediaManipulatorInterface
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.mp4';
 		
-		file_put_contents($tmpi, $this->src->read());;
-		exec(sprintf('ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -vf "%s" %s', $tmpi, implode(',', $this->operations), $tmpo));
+		file_put_contents($tmpi, $this->src->read());
+		exec(sprintf('ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -vf "%s" %s 2>&1', $tmpi, implode(',', $this->operations), $tmpo));
 		
 		$location->write(file_get_contents($tmpo));
 		
