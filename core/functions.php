@@ -317,3 +317,7 @@ function storage() {
 	
 	return $dispatcher;
 }
+
+function request($url) {
+	return new \spitfire\io\curl\Request($url);
+}

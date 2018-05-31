@@ -71,7 +71,7 @@ class File implements BlobInterface
 		return file_put_contents($this->path, $data);
 	}
 
-	public function getURI() {
+	public function getURI() : string {
 		return 'file://' . $this->path;
 	}
 

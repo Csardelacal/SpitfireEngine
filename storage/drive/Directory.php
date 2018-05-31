@@ -70,7 +70,7 @@ class Directory implements ObjectDirectoryInterface
 		});
 	}
 
-	public function getURI() {
+	public function getURI() : string {
 		return 'file://' . $this->path;
 	}
 

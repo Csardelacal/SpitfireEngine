@@ -1,4 +1,6 @@
-<?php namespace spitfire\io\cli;
+<?php namespace spitfire\io\curl;
+
+use spitfire\exceptions\PrivateException;
 
 /* 
  * The MIT License
@@ -24,39 +26,7 @@
  * THE SOFTWARE.
  */
 
-class ProgressBar extends Stream
+class BadStatusCodeException extends PrivateException
 {
 	
-	private $msg;
-	private $progress = 0;
-	private $lastredraw = 0;
-	
-	public function __construct($msg) {
-		parent::__construct();
-		
-		$this->msg = $msg;
-		$this->redraw();
-	}
-	
-	public function progress($progress) {
-		$this->progress = $progress;
-		$this->redraw();
-		return $this;
-	}
-	
-	public function redraw() {
-		if (time() === $this->lastredraw) { return; }
-		
-		$this->lastredraw = time();
-		$this->rewind();
-		
-		if ($this->progress < 0 || $this->progress > 1) {
-			$this->out(sprintf('[WAIT] %s [%s]', $this->msg, 'Invalid value ' . $this->progress));
-		}
-		else {
-			$width = exec('tput cols') - strlen($this->msg) - 10;
-			$drawn = (int)($this->progress * $width);
-			$this->out(sprintf('[WAIT] %s [%s%s]', $this->msg, str_repeat('#', $drawn), str_repeat(' ', $width - $drawn)));
-		}
-	}
 }

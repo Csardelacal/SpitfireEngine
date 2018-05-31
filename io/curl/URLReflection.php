@@ -143,7 +143,7 @@ class URLReflection
 			$path = $path . '?' . http_build_query($this->queryString);
 		}
 		
-		return sprintf('%s://%s/%s');
+		return sprintf('%s://%s/%s', $this->protocol, $server, $path);
 	}
 	
 	/**

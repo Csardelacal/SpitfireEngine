@@ -1,5 +1,7 @@
 <?php namespace spitfire\io\curl;
 
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *
@@ -24,63 +26,42 @@
  * THE SOFTWARE.
  */
 
-class Request
+class Response
 {
 	
-	private $method = 'GET';
+	private $status;
 	
-	private $url;
+	private $body;
 	
-	private $headers = [];
-		
-	private $body = [];
-	
-	public function __construct($url) {
-		$this->url = URLReflection::fromURL($url);
+	public function __construct($status, $body) {
+		$this->status = $status;
+		$this->body = $body;
 	}
 	
-	public function header($name, $value) {
-		$this->headers[$name] = $value;
+	public function status() {
+		return $this->status;
 	}
 	
-	public function post($parameter, $value = null) {
-		$this->method = 'POST';
-		
-		if ($value === null) {
-			$this->body = $parameter;
-		}
-		else {
-			$this->body[$parameter] = $value;
+	public function expect($code) {
+		if ($code !== $this->status) {
+			throw new BadStatusCodeException('Bad status code, ' . $this->status, 1805311227);
 		}
 		
 		return $this;
 	}
 	
-	public function send($progress = null) {
-		$ch = curl_init((string)$this->url);
+	public function html() {
+		return $this->body;
+	}
+	
+	public function json() {
+		$parsed = json_decode($this->body);
 		
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		
-		if (!empty($this->body)) {
-			curl_setopt($ch, CURLOPT_POST, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->body);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			throw new PrivateException('Error while parsing JSON data: ' . json_last_error_msg(), 1805311215);
 		}
 		
-		/*
-		 * Set the appropriate headers for the request (in case we need some special
-		 * headers that do not conform)
-		 */
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array_map(function ($k, $v) { 
-			return "$k : $v"; 
-		}, array_keys($this->headers), $this->headers));
-		
-		$progress && curl_setopt($ch, CURLOPT_NOPROGRESS, false);
-		$progress && curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, $progress);
-		
-		$_ret = curl_exec($ch);
-		
-		$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		
-		return new Response($status, $_ret);
+		return $parsed;
 	}
+	
 }
