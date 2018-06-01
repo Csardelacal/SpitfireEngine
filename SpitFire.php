@@ -41,7 +41,7 @@ class SpitFire extends App
 		$this->cwd = BASEDIR;
 		
 		#Import the exception handler for logging
-		$this->debug = ExceptionHandler::getInstance();
+		$this->debug = new ExceptionHandler();
 		
 		#Call parent
 		parent::__construct('bin/', null);
