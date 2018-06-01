@@ -74,7 +74,7 @@ class Template
 			$$__var = $__content;
 		}
 		
-		include $this->file;
+		include $__file;
 		
 		return ob_get_clean();
 	}

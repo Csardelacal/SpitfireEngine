@@ -54,6 +54,11 @@ abstract class StackTracePrinter
 		$trace = $this->exception->getTrace();
 		$_ret  = '';
 		
+		array_unshift($trace, [
+			'line' => $this->exception->getLine(), 
+			'file' => $this->exception->getFile()]
+		);
+		
 		#Loop over the trace and collect the results into _ret
 		foreach($trace as $entry) {
 			$_ret.= $this->stringifyEntry($entry);

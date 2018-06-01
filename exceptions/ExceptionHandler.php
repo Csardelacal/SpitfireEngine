@@ -61,7 +61,7 @@ class ExceptionHandler {
 				$response->getHeaders()->status($e->getCode());
 			}
 			
-			$response->setBody($template->render(Environment::get('debug_mode')? [
+			$response->setBody($template->render(!Environment::get('debug_mode')? [
 				'code'    => $e instanceof PublicException? $e->getCode() : 500,
 				'message' => $e instanceof PublicException? $e->getMessage() : 'Server error'
 			] : [

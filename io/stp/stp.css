@@ -27,6 +27,7 @@
 .excerpt .line {
 	background: #FFF;
 	padding-left: 15px;
+	white-space: pre-wrap;
 }
 
 .excerpt .line.error {
