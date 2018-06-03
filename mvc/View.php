@@ -86,7 +86,7 @@ class View extends MVC
 	public function setLayoutFile($filename) {
 		$filename = $this->app->getTemplateDirectory() . $filename;
 		
-		if (file_exists($filename)) { $this->layout = $filename; }
+		if (file_exists($filename)) { $this->layout = new Layout($filename); }
 		else { throw new FileNotFoundException('File ' . $filename . ' not found. View can\'t use it as layout'); }
 	}
 

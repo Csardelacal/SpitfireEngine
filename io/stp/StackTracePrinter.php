@@ -1,6 +1,7 @@
 <?php namespace spitfire\io\stp;
 
 use Exception;
+use InvalidArgumentException;
 
 /**
  * This class provides Spitfire with tools to print a pretty and informative
@@ -37,7 +38,11 @@ abstract class StackTracePrinter
 	 * 
 	 * @param Exception $e
 	 */
-	public function __construct(Exception$e) {
+	public function __construct($e) {
+		if (!$e instanceof \Exception && !$e instanceof \Throwable) {
+			throw new InvalidArgumentException('Stack Trace Printer requires throwable to be passed, received ' . get_class($e), 1806031136);
+		}
+		
 		$this->exception = $e;
 	}
 	
@@ -56,8 +61,18 @@ abstract class StackTracePrinter
 		
 		array_unshift($trace, [
 			'line' => $this->exception->getLine(), 
-			'file' => $this->exception->getFile()]
+			'file' => $this->exception->getFile()
+			]
 		);
+		
+		for ($i = 0; $i < count($trace); $i++) {
+			if (!isset($trace[$i + 1])) {
+				$trace[$i]  = [ 'line' => $trace[$i]['line'], 'file' => $trace[$i]['file'], 'function' => $trace[$i]['file'], 'args' => []];
+			}
+			else {
+				$trace[$i]  = array_merge($trace[$i+1], [ 'line' => $trace[$i]['line'], 'file' => $trace[$i]['file']]);
+			}
+		}
 		
 		#Loop over the trace and collect the results into _ret
 		foreach($trace as $entry) {
@@ -100,14 +115,14 @@ abstract class StackTracePrinter
 		$content = file($file);
 		$_ret    = Array();
 		
-		for ($i = $line - 5; $i < $line; $i++) {
+		for ($i = $line - 7; $i < $line; $i++) {
 			if ($i > 0) {$_ret[] = $this->printLine($content[$i]); }
 		}
 		
 		#The affected line displays the error source
 		$_ret[] = $this->printLine($content[$line], self::LINE_TYPE_ERROR);
 		
-		for ($i = $line + 1; $i < $line + 6; $i++) {
+		for ($i = $line + 1; $i < $line + 4; $i++) {
 			if (isset($content[$i])) {$_ret[] = $this->printLine($content[$i]); }
 		}
 		
@@ -117,11 +132,11 @@ abstract class StackTracePrinter
 	public function __toString() {
 		if (php_sapi_name() === 'cli') { return $this->exception->getTraceAsString(); }
 		
-		return $this->wrapStackTrace($this->iterateTrace());
+		return $this->wrapStackTrace($this->iterateTrace(), sprintf('Stack trace for "%s"', $this->exception->getMessage()));
 	}
 	
 	#Abstract methods which are in charge of styling and interactivity
-	abstract public function wrapStackTrace($html);
+	abstract public function wrapStackTrace($html, $title);
 	abstract public function wrapMethodSignature($html);
 	abstract public function printMethodSignature($function, $args);
 	abstract public function printLine($line, $type = StackTracePrinter::LINE_TYPE_NORMAL);

@@ -4,9 +4,9 @@ use BadMethodCallException;
 use Exception;
 use spitfire\core\Environment;
 use spitfire\core\Response;
+use spitfire\core\Request;
 use spitfire\io\template\Template;
 use Throwable;
-use function current_context;
 use function spitfire;
 
 /**
@@ -48,7 +48,7 @@ class ExceptionHandler {
 
 			$response  = new Response(null);
 			$basedir   = spitfire()->getCWD();
-			$extension = current_context() && current_context()->request->getPath()? '.' . current_context()->request->getPath()->getFormat() : '';
+			$extension = Request::get()->getPath()->getFormat()? '.' . Request::get()->getPath()->getFormat() : '';
 			
 			$template = new Template([
 				 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
@@ -90,10 +90,33 @@ class ExceptionHandler {
 			case E_PARSE:
 			case E_RECOVERABLE_ERROR:
 				while(ob_get_clean()); 
-				get_error_page(500, $last_error['message'] . "@$last_error[file] [$last_error[line]]", print_r($last_error, 1) );
+				
+				$response  = new Response(null);
+				$basedir   = spitfire()->getCWD();
+				$extension = Request::get()->getPath()? '.' . Request::get()->getPath()->getFormat() : '';
+					
+				$template = new Template([
+					 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
+					 "{$basedir}/bin/error_pages/default{$extension}.php",
+					 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
+					 "{$basedir}/bin/error_pages/default.php"
+				]);
+
+				if ( $e instanceof PublicException) {
+					$response->getHeaders()->status($e->getCode());
+				}
+
+				$response->setBody($template->render(!Environment::get('debug_mode')? [
+					'code'    => 500,
+					'message' => 'Server error'
+				] : [
+					'code'      => 500,
+					'message'   => $last_error['message'] . "@$last_error[file] [$last_error[line]]",
+				]));
+
+				$response->send();
 		}
 		
-		while ($ob = ob_get_clean()) echo $ob;
 	}
 
 	public function log ($msg) {

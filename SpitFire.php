@@ -66,43 +66,45 @@ class SpitFire extends App
 	public function fire() {
 		
 		#Import the apps
-		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'apps.php');
+		include CONFIG_DIRECTORY . 'apps.php';
+		
+		#Every app now gets the chance to create appropriate routes for it's operation
 		foreach ($this->apps as $app) { $app->createRoutes(); }
 		$this->createRoutes();
 		
 		#Get the current path...
 		$request = $this->request = Request::fromServer();
 		
-		#If the user responded to the current route with a response we do not need 
+		#If the developer responded to the current route with a response we do not need 
 		#to handle the request
-		if (!$request instanceof Response) {
-			#Start debugging output
-			ob_start();
-
-			#If the request has no defined controller, action and object it will define
-			#those now.
-			$path    = $request->getPath();
-			
-			#Receive the initial context for the app. The controller can replace this later
-			/*@var $initContext Context*/
-			$initContext = ($path instanceof Context)? $path : $request->makeContext();
-			
-			#Define the context, include the application's middleware configuration.
-			current_context($initContext);
-			include CONFIG_DIRECTORY . 'middleware.php';
-			
-			#Get the return context
-			/*@var $context Context*/
-			$context = $initContext->run();
-
-			#End debugging output
-			$context->view->set('_SF_DEBUG_OUTPUT', ob_get_clean());
-
-			#Send the response
-			$context->response->send();
-		} else {
-			$request->getPath()->send();
+		if ($request instanceof Response) {
+			return $request->getPath()->send();
 		}
+		
+		#Start debugging output
+		ob_start();
+
+		#If the request has no defined controller, action and object it will define
+		#those now.
+		$path    = $request->getPath();
+
+		#Receive the initial context for the app. The controller can replace this later
+		/*@var $initContext Context*/
+		$initContext = ($path instanceof Context)? $path : $request->makeContext();
+
+		#Define the context, include the application's middleware configuration.
+		current_context($initContext);
+		include CONFIG_DIRECTORY . 'middleware.php';
+
+		#Get the return context
+		/*@var $context Context*/
+		$context = $initContext->run();
+
+		#End debugging output
+		$context->view->set('_SF_DEBUG_OUTPUT', ob_get_clean());
+
+		#Send the response
+		$context->response->send();
 		
 	}
 	

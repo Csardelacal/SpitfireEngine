@@ -105,11 +105,13 @@ class Context implements ContextInterface
 		$context->action     = $context->request->getPath()->getAction();
 		$context->object     = $context->request->getPath()->getObject();
 		
-		$context->view       = $context->app->getView($context->controller);
-		
-		$reflector            = new \ReflectionMethod($context->controller, $context->action);
-		$annotationParser     = new AnnotationParser();
-		$context->annotations = $annotationParser->parse($reflector->getDocComment());
+		if ($context->controller) {
+			$context->view        = $context->app->getView($context->controller);
+
+			$reflector            = new \ReflectionMethod($context->controller, $context->action);
+			$annotationParser     = new AnnotationParser();
+			$context->annotations = $annotationParser->parse($reflector->getDocComment());
+		}
 		
 		return $context;
 	}
