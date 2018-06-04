@@ -32,17 +32,18 @@ abstract class Controller extends MVC
 		$object = $arguments;
 		
 		if (class_exists(strtolower(implode('\\', $controller)) . '\\' . ucfirst($action) . 'Controller')) {
-			array_push($controller, $action);
-			$action     = array_shift($object);
 			
-			$controllerName = implode('\\', $controller) . 'Controller';
-			$context = clone $this->context;
-			$context->controller = new $controllerName($context);
-			$context->action = $action;
-			$context->object = $object;
-			$context->view   = $this->app->getView($context->controller);
-			$context->response->setBody($context);
-			return current_context($context)->run();
+			array_push($controller, $action);
+			
+			$action     = array_shift($object);
+			$request    = spitfire\core\Request::get();
+			$path       = $request->getPath();
+			
+			$path->setController($controller);
+			$path->setAction($action);
+			$path->setObject($object);
+			
+			return current(Context::make())->run();
 		}
 		else {
 			throw new PublicException("Page not found", 404, new PrivateException('Action not found', 0));
