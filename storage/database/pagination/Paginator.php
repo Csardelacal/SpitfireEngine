@@ -158,7 +158,7 @@ class Paginator
 	 * Gets the records that populate the current page.
 	 */
 	public function records() {
-		return $this->query->range($this->io->current() * $this->pageSize, $this->pageSize);
+		return $this->query->range( ($this->io->current() - 1) * $this->pageSize, $this->pageSize);
 	}
 	
 	/**

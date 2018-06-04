@@ -56,23 +56,8 @@ abstract class StackTracePrinter
 	 */
 	public function iterateTrace() {
 		#Get the trace and init the string we're gonna be using to collect results
-		$trace = $this->exception->getTrace();
+		$trace = $this->makeTrace();
 		$_ret  = '';
-		
-		array_unshift($trace, [
-			'line' => $this->exception->getLine(), 
-			'file' => $this->exception->getFile()
-			]
-		);
-		
-		for ($i = 0; $i < count($trace); $i++) {
-			if (!isset($trace[$i + 1])) {
-				$trace[$i]  = [ 'line' => $trace[$i]['line'], 'file' => $trace[$i]['file'], 'function' => $trace[$i]['file'], 'args' => []];
-			}
-			else {
-				$trace[$i]  = array_merge($trace[$i+1], [ 'line' => $trace[$i]['line'], 'file' => $trace[$i]['file']]);
-			}
-		}
 		
 		#Loop over the trace and collect the results into _ret
 		foreach($trace as $entry) {
@@ -127,6 +112,29 @@ abstract class StackTracePrinter
 		}
 		
 		return $this->wrapExcerpt(implode('', $_ret), $line + 1);
+	}
+	
+	public function makeTrace() {
+		$trace = $this->exception->getTrace();
+		$count = count($trace) + 1;
+		
+		array_unshift($trace, [
+			'line' => $this->exception->getLine(), 
+			'file' => $this->exception->getFile()
+			]
+		);
+		
+		for ($i = 0; $i < $count; $i++) {
+			if (!isset($trace[$i + 1])) {
+				$trace[$i]  = [ 'line' => $trace[$i]['line'], 'file' => $trace[$i]['file'], 'function' => $trace[$i]['file'], 'args' => []];
+			}
+			else {
+				$merge      = isset($trace[$i]['file'])? [ 'line' => $trace[$i]['line'], 'file' => $trace[$i]['file']] : ['file' => null];
+				$trace[$i]  = array_merge($trace[$i+1], $merge);
+			}
+		}
+		
+		return $trace;
 	}
 	
 	public function __toString() {

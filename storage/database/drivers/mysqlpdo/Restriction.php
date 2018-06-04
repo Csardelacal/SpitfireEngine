@@ -19,9 +19,12 @@ class Restriction extends AbstractRestriction
 		elseif ($value instanceof QueryField) {
 			return "{$this->getField()} {$this->getOperator()} {$this->getValue()}";
 		}
-
+		elseif ($value === null) {
+			$operator = in_array($this->getOperator(), ['IS', '='])? 'IS' : 'IS NOT';
+			return "{$this->getField()} {$operator} NULL";
+		}
 		else {
-			$quoted = $this->getTable()->getDb()->quote($this->getValue());
+			$quoted = $this->getTable()->getDb()->quote($value);
 			return "{$this->getField()} {$this->getOperator()} {$quoted}";
 		}
 	}

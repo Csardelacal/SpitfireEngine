@@ -96,9 +96,7 @@ class ExceptionHandler {
 				$extension = Request::get()->getPath()? '.' . Request::get()->getPath()->getFormat() : '';
 					
 				$template = new Template([
-					 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
 					 "{$basedir}/bin/error_pages/default{$extension}.php",
-					 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
 					 "{$basedir}/bin/error_pages/default.php"
 				]);
 

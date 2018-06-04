@@ -53,7 +53,7 @@ class Directory implements ObjectDirectoryInterface
 		throw new FileNotFoundException($this->path . '/' . $name . ' was not found', 1805301553);
 	}
 	
-	public function make($name) {
+	public function make($name) : \spitfire\storage\objectStorage\BlobInterface {
 		if (file_exists($this->path . '/' . $name)) {
 			throw new FilePermissionsException('File ' . $name . ' already exists', 1805301554);
 		}

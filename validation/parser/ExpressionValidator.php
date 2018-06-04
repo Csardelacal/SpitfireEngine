@@ -41,12 +41,12 @@ class ExpressionValidator extends \spitfire\validation\Validator
 	public function setValue($value) {
 		if (!isset($value[$this->src]) || !isset($value[$this->src][$this->parameter])) { 
 			parent::setValue(null);
-			return false; 
 		}
 		else {
 			parent::setValue($value[$this->src][$this->parameter]);
-			return true;
 		}
+		
+		return $this;
 	}
 
 }

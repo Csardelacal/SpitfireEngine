@@ -86,7 +86,7 @@ class CompositeRestriction
 	public function getSimpleRestrictions() {
 		if ($this->field === null) {
 			$table = $this->getQuery()->getTable();
-			$fields = $table->getFields();
+			$fields = $table->getLayout()->getFields();
 			$restrictions = $this->query->restrictionGroupInstance();
 			
 			foreach ($fields as $field) {

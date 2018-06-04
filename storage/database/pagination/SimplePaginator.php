@@ -58,17 +58,11 @@ class SimplePaginator implements PaginationInterface
 	}
 
 	public function first() {
-		$url = clone $this->url;
-		$url->setParam($this->parameter, 1);
-		
-		return sprintf('<li><a href="%s">%s</a></li>', $url, 1);
+		return '';
 	}
 
 	public function last($number) {
-		$url = clone $this->url;
-		$url->setParam($this->parameter, $number);
-		
-		return sprintf('<li><a href="%s">%s</a></li>', $url, $number);
+		return '';
 	}
 
 	public function next() {

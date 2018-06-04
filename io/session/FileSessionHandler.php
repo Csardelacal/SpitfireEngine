@@ -92,7 +92,7 @@ class FileSessionHandler extends SessionHandler
 		ftruncate($this->getHandle(), 0);
 		fseek($this->getHandle(), 0);
 		
-		fwrite($this->getHandle(), $data);
+		return fwrite($this->getHandle(), $data);
 	}
 
 }
