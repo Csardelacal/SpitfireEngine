@@ -163,7 +163,7 @@ abstract class Model implements Serializable
 		$query     = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTable());
 		$primaries = $this->table->getModel()->getPrimary();
 		
-		foreach ($primaries as $primary) {
+		foreach ($primaries->getFields() as $primary) {
 			$name = $primary->getName();
 			$query->addRestriction($name, $this->$name);
 		}

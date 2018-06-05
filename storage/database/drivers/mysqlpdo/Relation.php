@@ -41,10 +41,13 @@ class Relation extends \spitfire\storage\database\Relation
 		$key   = $record->getPrimaryData();
 		
 		$restrictions = Array();
-		foreach ($key as $k => $v) {$restrictions[] = sprintf('%s = %s', $k, $db->quote($v));}
+		
+		foreach ($key as $k => $v) {
+			$restrictions[] = sprintf('%s = %s', $k, $db->quote($v));
+		}
 		
 		$stt = sprintf('DELETE FROM `%s` WHERE %s',
-			$table->getTablename(),
+			$table->getLayout()->getTablename(),
 			implode(' AND ', $restrictions)
 			);
 		$db->execute($stt);

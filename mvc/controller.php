@@ -43,7 +43,10 @@ abstract class Controller extends MVC
 			$path->setAction($action);
 			$path->setObject($object);
 			
-			return current(Context::make())->run();
+			//TODO: This is a temporaty fix, the code should not be loading the middleware twice.
+			$ctx = current_context(Context::create());
+			include CONFIG_DIRECTORY . 'middleware.php';
+			return $ctx->run();
 		}
 		else {
 			throw new PublicException("Page not found", 404, new PrivateException('Action not found', 0));
