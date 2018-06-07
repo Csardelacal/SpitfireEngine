@@ -23,7 +23,7 @@ use spitfire\validation\ValidatorInterface;
  * to make it easier to read and maintain the code being created.
  * 
  * @staticvar type $sf
- * @return SpitFire
+ * @return \spitfire\SpitFire
  */
 function spitfire() {
 	static $sf = null;
@@ -244,7 +244,7 @@ function url() {
 
 	#Extract the app
 	if (reset($params) instanceof App || $sf->appExists(reset($params))) {
-		$app = array_shift($params);
+		$app = $sf->getApp(array_shift($params));
 	}
 	else {
 		$app = $sf;
@@ -256,7 +256,7 @@ function url() {
 	$object     = Array();
 
 	#Get the object
-	while(!empty($params) && !is_array(reset($params)) ) {
+	while(!empty($params) && (!is_array(reset($params)) || (!$controller && $app->hasController(reset($params))))) {
 		if     (!$controller) { $controller = array_shift($params); }
 		elseif (!$action)     { $action     = array_shift($params); }
 		else                  { $object[]   = array_shift($params); }

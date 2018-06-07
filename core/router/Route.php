@@ -64,7 +64,7 @@ class Route extends RewriteRule
 		 * used to answer the request.
 		 */
 		if ($this->getTarget() instanceof ParametrizedPath) {
-			return $this->getTarget()->replace($server->merge($params))->setFormat($extension);
+			return $this->getTarget()->replace($server->merge($params)->setUnparsed($params->getUnparsed()))->setFormat($extension);
 		}
 		
 	}

@@ -41,7 +41,7 @@ class SpitFire extends App
 		$this->cwd = BASEDIR;
 		
 		#Import the exception handler for logging
-		$this->debug = new ExceptionHandler();
+		$this->debug = php_sapi_name() === 'cli'? new exceptions\ExceptionHandlerCLI() : new ExceptionHandler();
 		
 		#Call parent
 		parent::__construct('bin/', null);

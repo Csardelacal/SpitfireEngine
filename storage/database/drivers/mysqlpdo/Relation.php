@@ -117,7 +117,7 @@ class Relation extends \spitfire\storage\database\Relation
 		$key   = $record->getPrimaryData();
 		
 		$restrictions = Array();
-		foreach ($key as $k => $v) {$restrictions[] = "{$table->getField($k)} = {$db->quote($v)}";}
+		foreach ($key as $k => $v) {$restrictions[] = "{$table->getLayout()->getField($k)} = {$db->quote($v)}";}
 		
 		$write = Array();
                 
@@ -132,7 +132,7 @@ class Relation extends \spitfire\storage\database\Relation
 		if (empty($write)) { return; }
 		
 		$quoted = Array();
-		foreach ($write as $f => $v) { $quoted[] = "{$table->getField($f)} = {$db->quote($v)}"; }
+		foreach ($write as $f => $v) { $quoted[] = "{$table->getLayout()->getField($f)} = {$db->quote($v)}"; }
 		
 		$stt = sprintf('UPDATE %s SET %s WHERE %s',
 			$table->getLayout(), 
