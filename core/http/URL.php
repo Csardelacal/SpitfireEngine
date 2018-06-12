@@ -154,7 +154,7 @@ class URL
 			$url.= '?' . http_build_query($this->params);
 		}
 		
-		return '/' . implode('/', [trim(SpitFire::baseUrl(), '/'), ltrim($url, '/')]);
+		return '/' . ltrim(implode('/', [trim(SpitFire::baseUrl(), '/'), ltrim($url, '/')]), '/');
 	}
 
 	/**
