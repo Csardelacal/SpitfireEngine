@@ -92,6 +92,15 @@ class Get implements Iterator, ArrayAccess
 		return $_ret;
 	}
 	
+	public function string($key) {
+		if (!is_string($this->data[$key])) { throw new \spitfire\exceptions\PublicException('Invalid GET data', 400); }
+		return $this->data[$key];
+	}
+	
+	public function array($key) {
+		return $this->data[$key] instanceof Get? $this->data[$key]->getRaw() : (array)$this->data[$key];
+	}
+	
 	/**
 	 * Returns the data the way it was received. As an array of basic types 
 	 * (usually strings), just like PHP would usually return them. This function

@@ -68,5 +68,9 @@ class XSSToken implements RenderableFieldHidden
 	public function getCaption() {
 		return null;
 	}
+	
+	public function __toString() {
+		return $this->getValue();
+	}
 
 }
