@@ -214,6 +214,22 @@ class Collection implements ArrayAccess, CollectionInterface
 		return $this;
 	}
 	
+	public function groupBy($callable) {
+		$groups = new self();
+		
+		$this->each(function ($e) use ($groups, $callable) {
+			$key = $callable($e);
+			
+			if (!isset($groups[$key])) {
+				$groups[$key] = new self();
+			}
+			
+			$groups[$key]->push($e);
+		});
+		
+		return $groups;
+	}
+	
 	public function remove($element) {
 		$i = array_search($element, $this->items);
 		if ($i === false) { throw new OutOfRangeException('Not found', 1804292224); }
