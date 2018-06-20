@@ -57,9 +57,14 @@ class FilterValidationRule implements ValidationRule
 	 * @return ValidationError|boolean A validation error or boolean on success
 	 */
 	public function test($value) {
+		if ($value === null) {
+			return false;
+		}
+		
 		if (!filter_var($value, $this->filter)) {
 			return new ValidationError($this->message, $this->extendedMessage);
 		}
+		
 		return false;
 	}
 

@@ -79,7 +79,9 @@ class GroupComponent
 		}
 		else {
 			foreach ($items as &$item) { 
-				if (!$item instanceof GroupComponent) { throw new PrivateException('Invalid expression!', 1805211230); }
+				if (!$item instanceof GroupComponent) { 
+					throw new PrivateException('Invalid expression, received ' . get_class($item), 1805211230); 
+				}
 				$item = $item->make($ctx); 
 			}
 			return new ValidatorGroup($items, $this->type? : ValidatorGroup::TYPE_AND);

@@ -1,5 +1,8 @@
 <?php namespace spitfire\io\template;
 
+use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\FileNotFoundException;
+
 /* 
  * The MIT License
  *
@@ -65,7 +68,7 @@ class Template
 	public function render($__data) {
 		#Consider that a missing template file that should be rendered is an error
 		if (!$__file = $this->renderable()) { 
-			throw new PrivateException('No valid template file provided', 1806011423);
+			throw new FileNotFoundException('No valid template file provided', 1806011423);
 		}
 		
 		ob_start();

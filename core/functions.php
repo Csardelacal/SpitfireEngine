@@ -213,7 +213,7 @@ function _def(&$a, $b) {
  * @param mixed $elements
  * @return Collection
  */
-function collect($elements) {
+function collect($elements = []) {
 	return new Collection($elements);
 }
 

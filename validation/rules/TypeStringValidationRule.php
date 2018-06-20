@@ -37,6 +37,10 @@ class TypeStringValidationRule implements ValidationRule
 	 * @return ValidationError|boolean
 	 */
 	public function test($value) {
+		if ($value === null) {
+			return false;
+		}
+		
 		if (!is_string($value)) {
 			return new ValidationError($this->message, $this->extendedMessage);
 		}

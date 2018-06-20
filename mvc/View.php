@@ -119,7 +119,7 @@ class View extends MVC
 			
 			echo $output;
 		}
-		catch (PrivateException$e) {
+		catch (FileNotFoundException$e) {
 			#Consider that a missing template file that should be rendered is an error
 			throw new PrivateException('Missing template file for ' . get_class($this->controller) . '::' . $this->action, 1806011508, $e); 
 		}

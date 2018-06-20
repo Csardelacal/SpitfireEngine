@@ -14,6 +14,10 @@ class TypeNumberValidationRule extends BaseRule
 	 * @return ValidationError|boolean
 	 */
 	public function test($value) {
+		if ($value === null) {
+			return false;
+		}
+		
 		if (!is_numeric($value)) {
 			return new ValidationError($this->getMessage(), $this->getExtendedMessage());
 		}

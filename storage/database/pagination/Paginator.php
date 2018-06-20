@@ -103,7 +103,7 @@ class Paginator
 	 */
 	public function getPageCount() {
 		$results = $this->query->count();
-		return ceil($results/$this->pageSize);
+		return (int)ceil($results/$this->pageSize);
 	}
 	
 	/**
@@ -176,7 +176,7 @@ class Paginator
 		$pages      = $this->pages();
 		$previous   = 0;
 		
-		if (empty($pages)) {
+		if ($this->getPageCount() === 0) {
 			return $this->io->emptyResultMessage();
 		}
 		
@@ -198,7 +198,7 @@ class Paginator
 		 * Print a "Jump to previous page". Again, these can have special layouts
 		 * or styling. The previous page is always included in the pages.
 		 */
-		$_ret.= $this->io->previous();
+		$_ret.= $this->io->previous($this->io->current() <= 1);
 		
 		/*
 		 * Render the pages. All the pages sent to the io component are valid, but
@@ -216,7 +216,7 @@ class Paginator
 		 * Just like the before and first jump buttons, the system terminates by
 		 * adding the next and last pages.
 		 */
-		$_ret.= $this->io->next();
+		$_ret.= $this->io->next($this->io->current() >= $this->getPageCount());
 		$_ret.= $this->io->last($this->getPageCount());
 		
 		/*
