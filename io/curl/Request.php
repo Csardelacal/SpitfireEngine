@@ -41,6 +41,7 @@ class Request
 	
 	public function header($name, $value) {
 		$this->headers[$name] = $value;
+		return $this;
 	}
 	
 	public function post($parameter, $value = null) {
