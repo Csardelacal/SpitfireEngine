@@ -131,7 +131,7 @@ class URLReflection
 		$server = $this->server;
 		$path   = $this->path;
 		
-		if (isset($this->user)) {
+		if (isset($this->user) && !empty($this->user)) {
 			$server = $this->user . ':' . $this->password . '@' . $server;
 		}
 		
@@ -143,7 +143,7 @@ class URLReflection
 			$path = $path . '?' . http_build_query($this->queryString);
 		}
 		
-		return sprintf('%s://%s/%s', $this->protocol, $server, $path);
+		return sprintf('%s://%s/%s', $this->protocol, $server, ltrim($path, '/'));
 	}
 	
 	/**

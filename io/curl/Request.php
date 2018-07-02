@@ -43,6 +43,14 @@ class Request
 		$this->headers[$name] = $value;
 	}
 	
+	public function get($parameter, $value = null) {
+		$qs = $this->url->getQueryString();
+		$qs[$parameter] = $value;
+		$this->url->setQueryString($qs);
+		
+		return $this;
+	}
+	
 	public function post($parameter, $value = null) {
 		$this->method = 'POST';
 		
