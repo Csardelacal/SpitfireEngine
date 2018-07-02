@@ -100,10 +100,6 @@ class ExceptionHandler {
 					 "{$basedir}/bin/error_pages/default.php"
 				]);
 
-				if ( $e instanceof PublicException) {
-					$response->getHeaders()->status($e->getCode());
-				}
-
 				$response->setBody($template->render(!Environment::get('debug_mode')? [
 					'code'    => 500,
 					'message' => 'Server error'
