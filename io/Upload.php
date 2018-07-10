@@ -106,9 +106,13 @@ class Upload
 
 	/**
 	 * This function should be called before storing any uploaded file
+	 * 
+	 * Validation should be performed in the validation classes and therefore this
+	 * method has been marked as deprecated.
 	 *
 	 * @param string $expect The string corresponting to the type we want to check against
-	 *
+	 * 
+	 * @deprecated since version 0.1-dev 20180710
 	 * @return self
 	 * @throws UploadValidationException
 	 */
