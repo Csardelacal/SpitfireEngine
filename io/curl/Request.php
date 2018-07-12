@@ -80,7 +80,7 @@ class Request
 		 * headers that do not conform)
 		 */
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array_map(function ($k, $v) { 
-			return "$k : $v"; 
+			return "{$k}:{$v}"; 
 		}, array_keys($this->headers), $this->headers));
 		
 		$progress && curl_setopt($ch, CURLOPT_NOPROGRESS, false);
