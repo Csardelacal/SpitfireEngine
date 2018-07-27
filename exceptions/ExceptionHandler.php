@@ -73,8 +73,8 @@ class ExceptionHandler {
 			$response->send();
 
 		} catch (Exception $e) { //Whatever happens, it won't leave this function
-			echo '<!--'.$e->getMessage().'-->';
-			ob_flush();
+			echo '<!--'.$e->getMessage() . $e->getTraceAsString().'-->';
+			ob_get_level() && ob_flush();
 			die();
 		}
 	}

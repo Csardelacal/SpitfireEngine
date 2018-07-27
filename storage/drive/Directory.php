@@ -17,10 +17,14 @@ class Directory implements ObjectDirectoryInterface
 	}
 	
 	public function create() {
+		if (!$this->getParent()->exists()) {
+			$this->getParent()->create();
+		}
+		
 		#We run a recursive mkdir to create the directories needed to get to the 
 		#path. If this feils, we'll throw an exception.
 		if (!mkdir($this->path, umask(), true)) {
-			throw new FilePermissionsException();
+			throw new FilePermissionsException('Could not create ' . $this->path . ' - Permission denied', 1807231752);
 		}
 		
 		return true;
@@ -43,14 +47,21 @@ class Directory implements ObjectDirectoryInterface
 	}
 
 	public function get($name): ObjectStorageInterface {
-		if (is_dir($this->path . '/' . $name)) { 
-			return new Directory(realpath($this->path . '/' . $name)); 
+		if (\Strings::startsWith($name, '/') || \Strings::startsWith($name, './')) {
+			$path = $name;
 		}
-		elseif(file_exists($this->path . '/' . $name)) { 
-			return new File(realpath($this->path . '/' . $name)); 
+		else {
+			$path = $this->path . $name;
 		}
 		
-		throw new FileNotFoundException($this->path . '/' . $name . ' was not found', 1805301553);
+		if (is_dir($path)) { 
+			return new Directory(realpath($path)); 
+		}
+		elseif(file_exists($path)) { 
+			return new File(realpath($path)); 
+		}
+		
+		throw new FileNotFoundException($path . ' was not found', 1805301553);
 	}
 	
 	public function make($name) : \spitfire\storage\objectStorage\BlobInterface {
@@ -72,6 +83,10 @@ class Directory implements ObjectDirectoryInterface
 
 	public function getURI() : string {
 		return 'file://' . $this->path;
+	}
+	
+	public function getPath() {
+		return $this->exists()? realpath($this->path) : $this->path;
 	}
 
 	public function getParent(): ObjectDirectoryInterface {
