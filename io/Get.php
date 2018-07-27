@@ -92,12 +92,12 @@ class Get implements Iterator, ArrayAccess
 		return $_ret;
 	}
 	
-	public function string($key) {
+	public function toString($key) {
 		if (!is_string($this->data[$key])) { throw new \spitfire\exceptions\PublicException('Invalid GET data', 400); }
 		return $this->data[$key];
 	}
 	
-	public function array($key) {
+	public function toArray($key) {
 		return $this->data[$key] instanceof Get? $this->data[$key]->getRaw() : (array)$this->data[$key];
 	}
 	
