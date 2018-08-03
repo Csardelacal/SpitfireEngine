@@ -98,6 +98,11 @@ class Image
 			$offset_x = 0;
 		}
 
+		if ($offset_x == 0 && $offset_y == 0){
+			$width = min($this->meta[0], $width);
+			$height = min($this->meta[1], $height);
+		}
+		
 		$img = imagecreatetruecolor($width, $height);
 		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));
 		imagealphablending($img, false);
@@ -127,6 +132,9 @@ class Image
 		imagesavealpha($img, true);
 		imagecopyresampled($img, $this->img, 0, 0, 0, 0, $width, $height, $this->meta[0], $this->meta[1]);
 		$this->img = $img;
+		
+		$this->meta[0] = $width;
+		$this->meta[1] = $height;
 		
 		return $this;
 		
