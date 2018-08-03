@@ -117,6 +117,16 @@ class TablePool
 		throw new PrivateException(sprintf('Table %s was not found', $key));
 	}
 	
+	public function contains($key) {
+		
+		try {
+			$this->get($key);
+			return true;
+		} catch (Exception $ex) {
+			return false;
+		}
+	}
+	
 	public function getCache() {
 		return $this->cache;
 	}
