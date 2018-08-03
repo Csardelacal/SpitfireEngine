@@ -122,7 +122,7 @@ class TablePool
 		try {
 			$this->get($key);
 			return true;
-		} catch (Exception $ex) {
+		} catch (PrivateException $ex) {
 			return false;
 		}
 	}
