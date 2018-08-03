@@ -1,5 +1,7 @@
 <?php namespace spitfire\validation\rules;
 
+use spitfire\validation\ValidationError;
+
 /**
  * This filter ensures that a number provided to it was positive.
  * 
