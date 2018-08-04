@@ -100,10 +100,10 @@ class ManyToManyField extends ChildrenField
 			foreach ($fields as $field) {
 				if ($field->getTarget() === $this->getModel()) {
 					$physical = $field->getPhysical();
-					foreach ($physical as $p) { $route->where($of->queryFieldInstance($route, $p), $of->queryFieldInstance($parent, $p->getReferencedField()));}
+					foreach ($physical as $p) { $route->where($of->queryFieldInstance($route->getQueryTable(), $p), $of->queryFieldInstance($parent->getQueryTable(), $p->getReferencedField()));}
 				} else {
 					$physical = $field->getPhysical();
-					foreach ($physical as $p) { $query->where($of->queryFieldInstance($route, $p), $of->queryFieldInstance($query, $p->getReferencedField()));}
+					foreach ($physical as $p) { $query->where($of->queryFieldInstance($route->getQueryTable(), $p), $of->queryFieldInstance($query->getQueryTable(), $p->getReferencedField()));}
 				}
 			}
 			return Array($route, $query);
@@ -124,12 +124,12 @@ class ManyToManyField extends ChildrenField
 			$f2p = $f2->getPhysical();
 			
 			#Start with routes from src
-			foreach ($f1p as $p) {$route1->where($of->queryFieldInstance($route1, $p), $of->queryFieldInstance($parent, $p->getReferencedField()));}
-			foreach ($f2p as $p) {$route2->where($of->queryFieldInstance($route2, $p), $of->queryFieldInstance($parent, $p->getReferencedField()));}
+			foreach ($f1p as $p) {$route1->where($of->queryFieldInstance($route1->getQueryTable(), $p), $of->queryFieldInstance($parent->getQueryTable(), $p->getReferencedField()));}
+			foreach ($f2p as $p) {$route2->where($of->queryFieldInstance($route2->getQueryTable(), $p), $of->queryFieldInstance($parent->getQueryTable(), $p->getReferencedField()));}
 			
 			#Exclude repeated results from Route2
 			$group = $route2->group(\spitfire\storage\database\RestrictionGroup::TYPE_OR);
-			foreach ($f1p as $k => $v) {$group->where($of->queryFieldInstance($route2, $v), '<>', $of->queryFieldInstance($route2, $f2p[$k]));}
+			foreach ($f1p as $k => $v) {$group->where($of->queryFieldInstance($route2->getQueryTable(), $v), '<>', $of->queryFieldInstance($route2->getQueryTable(), $f2p[$k]));}
 			
 			#Link back
 			$groupback = $query->group(spitfire\storage\database\RestrictionGroup::TYPE_OR);
@@ -137,8 +137,8 @@ class ManyToManyField extends ChildrenField
 			$r2group   = $groupback->group(spitfire\storage\database\RestrictionGroup::TYPE_AND);
 			
 			#Note that the fields are now swaped
-			foreach ($f2p as $p) {$r1group->addRestriction($of->queryFieldInstance($route1, $p), $of->queryFieldInstance($query, $p->getReferencedField()));}
-			foreach ($f1p as $p) {$r2group->addRestriction($of->queryFieldInstance($route2, $p), $of->queryFieldInstance($query, $p->getReferencedField()));}
+			foreach ($f2p as $p) {$r1group->addRestriction($of->queryFieldInstance($route1->getQueryTable(), $p), $of->queryFieldInstance($query->getQueryTable(), $p->getReferencedField()));}
+			foreach ($f1p as $p) {$r2group->addRestriction($of->queryFieldInstance($route2->getQueryTable(), $p), $of->queryFieldInstance($query->getQueryTable(), $p->getReferencedField()));}
 			
 			return Array($route1, $route2, $query);
 		}
