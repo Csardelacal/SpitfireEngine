@@ -57,7 +57,7 @@ class MockPaginator implements PaginationInterface
 		return '::last' . PHP_EOL;
 	}
 
-	public function next() {
+	public function next($disabled = false) {
 		return '::next' . PHP_EOL;
 	}
 
@@ -65,7 +65,7 @@ class MockPaginator implements PaginationInterface
 		return '::page #' . $number . PHP_EOL;
 	}
 
-	public function previous() {
+	public function previous($disabled = false) {
 		return '::previous' . PHP_EOL;
 	}
 

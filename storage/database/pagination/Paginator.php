@@ -132,7 +132,7 @@ class Paginator
 		 * Optimizing for drawing the most possible pages provides the user with a
 		 * consistent interface and with the biggest amount of options.
 		 */
-		$start = within(2, $this->io->current() - $this->distance, max(2, $count - $this->distance * 2 - 2)); 
+		$start = within(2, $this->io->current() - $this->distance, $count - $this->distance * 2 - 2); 
 		
 		/*
 		 * Generate the page numbers from start to start + 2(distance). This ensures

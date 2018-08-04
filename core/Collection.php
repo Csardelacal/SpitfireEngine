@@ -166,8 +166,12 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function sort($callback = null) {
-		if (!$callback) { return new Collection(sort($this->items)); }
-		else            { return new Collection(usort($this->items, $callback)); }
+		$copy = $this->items;
+		
+		if (!$callback) { sort($this->items); }
+		else            { usort($this->items, $callback); }
+		
+		return new Collection($copy);
 	}
 	
 	/**

@@ -59,7 +59,7 @@ class PaginatorTest extends TestCase
 	 */
 	public function testPagination() {
 		
-		for ($i = 0; $i < 100; $i++) {
+		for ($i = 0; $i < 40; $i++) {
 			$record = $this->table->newRecord();
 			$record->field1 = $i;
 			$record->field2 = 'Test';
@@ -70,7 +70,8 @@ class PaginatorTest extends TestCase
 		$paginator = new Paginator($query, new MockPaginator(1));
 		
 		$this->assertEquals(20, $paginator->records()->count());
-		$this->assertEquals( 5, $paginator->getPageCount());
+		$this->assertEquals( 2, $paginator->getPageCount());
+		$this->assertCount ( 2, $paginator->pages()->toArray());
 	}
 	
 }
