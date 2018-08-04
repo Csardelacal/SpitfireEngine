@@ -199,6 +199,10 @@ abstract class Model implements Serializable
 		}
 	}
 	
+	public function __isset($name) {
+		return (array_key_exists($name, $this->data));
+	}
+	
 	//TODO: This now breaks due to the adapters
 	public function serialize() {
 		$data = array();
