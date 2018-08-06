@@ -163,7 +163,7 @@ abstract class Model implements Serializable
 		$query     = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTable());
 		$primaries = $this->table->getModel()->getPrimary()->getFields();
 		
-		foreach ($primaries as $primary) {
+		foreach ($primaries->getFields() as $primary) {
 			$name = $primary->getName();
 			$query->addRestriction($name, $this->$name);
 		}
@@ -197,6 +197,10 @@ abstract class Model implements Serializable
 			//TODO: In case debug is enabled this should throw an exception
 			return null;
 		}
+	}
+	
+	public function __isset($name) {
+		return (array_key_exists($name, $this->data));
 	}
 	
 	//TODO: This now breaks due to the adapters

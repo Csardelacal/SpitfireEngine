@@ -154,7 +154,39 @@ class URIPattern
 			 */
 			$defined  = isset($params[$p->getName()])? $params[$p->getName()] : null;
 			$replaced = array_merge($replaced, $p->test($defined));
+			
 			$defined? $left-- : null;
+		}
+		
+		/*
+		 * After the system has assembled all the parts for the URL, it tries to 
+		 * clean up by removing all components that were provided that are optional
+		 * and set to the default value.
+		 * 
+		 * By making this, I'd expect URL's to gain longevity, since urls like
+		 * <code>/about</code> are more likely to be remembered than <code>/about/index/</code>
+		 */
+		foreach (array_reverse($this->patterns) as $p) {
+			if ($p->isOptional() && $p->getDefault() === end($replaced)) {
+				array_pop($replaced);
+			}
+			/*
+			 * Once we found an element that is either, not optional or not the default
+			 * value, we stop searching. This is because all preceeding parameters
+			 * are needed to override the current value.
+			 * 
+			 * For example, the route /about/:company?m3w/:department?it will be 
+			 * reversed to /about when [company => m3w, department => it] is provided.
+			 * 
+			 * It will also, rather obviously, generate /about/ibm when we provide it
+			 * with [company => ibm, department => it] or just [company => ibm]
+			 * 
+			 * But, it will generate /about/m3w/finance if provided with [department => finance]
+			 * this is, because the URL /about/finance would be ambiguous.
+			 */
+			else {
+				break;
+			}
 		}
 		
 		/*

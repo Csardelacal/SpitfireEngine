@@ -186,9 +186,8 @@ class Layout implements LayoutInterface
 	}
 
 	public function repair() {
-		$table = $this->table;
 		$stt = "DESCRIBE {$this}";
-		$fields = $table->getFields();
+		$fields = $this->getFields();
 		
 		foreach ($this->table->getSchema()->getFields() as $f) {
 			if ($f instanceof Reference && $f->getTarget() !== $this->table->getSchema()) {
@@ -208,7 +207,7 @@ class Layout implements LayoutInterface
 				$field = $this->getField($f['Field']);
 				unset($fields[$field->getName()]);
 			}
-			catch(Exception $e) {/*Ignore*/}
+			catch(\Exception $e) {/*Ignore*/}
 		}
 		
 		foreach($fields as $field) $field->add();

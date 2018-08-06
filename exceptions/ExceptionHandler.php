@@ -4,41 +4,10 @@ use BadMethodCallException;
 use Exception;
 use spitfire\core\Environment;
 use spitfire\core\Response;
-use spitfire\exceptions\FileNotFoundException;
+use spitfire\core\Request;
+use spitfire\io\template\Template;
 use Throwable;
-
-/**
- * Output error page to browser
- * 
- * This function retrieves the error page for discrete failure when
- * the system encounters an error. If it doesn't find any file
- * to use it will throw an exception informing that no error
- * page could be found.
- * 
- * @param mixed  $code
- * @param string $message
- * @param string $moreInfo
- *
- * @throws \spitfire\exceptions\FileNotFoundException
- */
-function get_error_page($code, $message, $moreInfo = '') {
-	$error_page = spitfire()->getCWD() . '/bin/error_pages/'.$code.'.php';
-	
-	if (php_sapi_name() === 'cli') {
-		echo $code, ': ', $message, PHP_EOL;
-	}
-	elseif (file_exists($error_page)) {
-		include $error_page;
-	} 
-	elseif (file_exists($error_page = spitfire()->getCWD() . '/bin/error_pages/default.php')) {
-		include $error_page;
-	} 
-	else {
-		echo 'Error page not found. 
-			  To avoid this message please go to bin/error_pages and create '.$error_page .' with the data about the error you want.';
-		throw new FileNotFoundException('File not found: '.$error_page, 500);
-	}
-}
+use function spitfire;
 
 /**
  * Silent exception handler.
@@ -59,12 +28,8 @@ function get_error_page($code, $message, $moreInfo = '') {
 class ExceptionHandler {
 
 	private $msgs     = Array();
-	static  $instance = null;
 
 	public function __construct() {
-		#Make this the instance for the singleton
-		self::$instance = $this;
-		
 		set_exception_handler( Array($this, 'exceptionHandle'));
 		register_shutdown_function( Array($this, 'shutdownHook'));
 	}
@@ -81,33 +46,35 @@ class ExceptionHandler {
 		try {
 			while(ob_get_clean()); //The content generated till now is not valid. DESTROY. DESTROY!
 
-			ob_start();
-				
-			$response = new Response(null);
+			$response  = new Response(null);
+			$basedir   = spitfire()->getCWD();
+			$extension = Request::get()->getPath()->getFormat()? '.' . Request::get()->getPath()->getFormat() : '';
+			
+			$template = new Template([
+				 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
+				 "{$basedir}/bin/error_pages/default{$extension}.php",
+				 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
+				 "{$basedir}/bin/error_pages/default.php"
+			]);
 			
 			if ( $e instanceof PublicException) {
-				error_log($e->getMessage());
-				$previous = $e->getPrevious();
-				$trace    = $e->getTraceAsString();
-				$prevmsg  = ($previous)? '###' . $previous->getMessage() . "###\n" : '';
 				$response->getHeaders()->status($e->getCode());
-				get_error_page($e->getCode(), $e->getMessage(),  $prevmsg . $trace);
-			} else { 
-				error_log($e->getMessage());
-				$trace = $e->getTraceAsString();
-				
-				$response->getHeaders()->status(500);
-				
-				if (Environment::get('debug_mode')) { get_error_page(500, $e->getMessage(), $trace ); }
-				else                                { get_error_page(500, 'Server error'); }
 			}
-			$response->getHeaders()->send();
-			if(ob_get_length()) ob_flush();
-			die();
+			
+			$response->setBody($template->render(!Environment::get('debug_mode')? [
+				'code'    => $e instanceof PublicException? $e->getCode() : 500,
+				'message' => $e instanceof PublicException? $e->getMessage() : 'Server error'
+			] : [
+				'code'      => $e instanceof PublicException? $e->getCode() : 500,
+				'message'   => $e->getMessage(),
+				'exception' => $e
+			]));
+			
+			$response->send();
 
 		} catch (Exception $e) { //Whatever happens, it won't leave this function
-			echo '<!--'.$e->getMessage().'-->';
-			ob_flush();
+			echo '<!--'.$e->getMessage() . $e->getTraceAsString().'-->';
+			ob_get_level() && ob_flush();
 			die();
 		}
 	}
@@ -123,10 +90,27 @@ class ExceptionHandler {
 			case E_PARSE:
 			case E_RECOVERABLE_ERROR:
 				while(ob_get_clean()); 
-				get_error_page(500, $last_error['message'] . "@$last_error[file] [$last_error[line]]", print_r($last_error, 1) );
+				
+				$response  = new Response(null);
+				$basedir   = spitfire()->getCWD();
+				$extension = Request::get()->getPath()? '.' . Request::get()->getPath()->getFormat() : '';
+					
+				$template = new Template([
+					 "{$basedir}/bin/error_pages/default{$extension}.php",
+					 "{$basedir}/bin/error_pages/default.php"
+				]);
+
+				$response->setBody($template->render(!Environment::get('debug_mode')? [
+					'code'    => 500,
+					'message' => 'Server error'
+				] : [
+					'code'      => 500,
+					'message'   => $last_error['message'] . "@$last_error[file] [$last_error[line]]",
+				]));
+
+				$response->send();
 		}
 		
-		while ($ob = ob_get_clean()) echo $ob;
 	}
 
 	public function log ($msg) {
@@ -137,7 +121,4 @@ class ExceptionHandler {
 		return $this->msgs;
 	}
 	
-	public static function getInstance() {
-		return self::$instance;
-	}
 }

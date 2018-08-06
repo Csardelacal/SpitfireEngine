@@ -3,7 +3,7 @@
 class SimpleStackTracePrinter extends StackTracePrinter
 {
 	public function printLine($line, $type = StackTracePrinter::LINE_TYPE_NORMAL){
-		return sprintf('<li class="line %s">%s</li>', $type, $line);
+		return sprintf('<li class="line %s">%s</li>', $type, \Strings::strToHTML($line));
 	}
 	
 	public function makeCSS() {
@@ -22,8 +22,8 @@ class SimpleStackTracePrinter extends StackTracePrinter
 		return sprintf('<div class="signature">%s</div>', $html);
 	}
 	
-	public function wrapStackTrace($html) {
-		return sprintf('<div class="stacktrace"><h1>Stack trace</h1>%s</div>', $html);
+	public function wrapStackTrace($html, $title) {
+		return sprintf('<div class="stacktrace"><h2>%s</h2>%s</div>', $title, $html);
 	}
 
 }

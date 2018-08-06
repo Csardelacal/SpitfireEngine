@@ -270,25 +270,4 @@ class Table
 		return $this->relation->newRecord($data);
 	}
 
-	/**
-	 * If the table cannot handle the request it will pass it on to the db
-	 * and add itself to the arguments list.
-	 *
-	 * @param string $name
-	 * @param mixed  $arguments
-	 *
-	 * @return mixed
-	 */
-	public function __call($name, $arguments) {
-		
-		#We basically reject __call since it is a bad programming habit to rely on 
-		#redirecting every call
-		trigger_error("Called Table::__call() requesting $name()", E_USER_DEPRECATED);
-		
-		#Add the table to the arguments for the db
-		array_unshift($arguments, $this);
-		#Pass on
-		return call_user_func_array(Array($this->db, $name), $arguments);
-	}
-
 }

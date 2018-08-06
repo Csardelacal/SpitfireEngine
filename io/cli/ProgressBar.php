@@ -29,6 +29,7 @@ class ProgressBar extends Stream
 	
 	private $msg;
 	private $progress = 0;
+	private $lastredraw = 0;
 	
 	public function __construct($msg) {
 		parent::__construct();
@@ -44,10 +45,18 @@ class ProgressBar extends Stream
 	}
 	
 	public function redraw() {
+		if (time() === $this->lastredraw) { return; }
+		
+		$this->lastredraw = time();
 		$this->rewind();
 		
-		$width = exec('tput cols') - strlen($this->msg) - 10;
-		$drawn = (int)($this->progress * $width);
-		$this->out(sprintf('[WAIT] %s [%s%s]', $this->msg, str_repeat('#', $drawn), str_repeat(' ', $width - $drawn)));
+		if ($this->progress < 0 || $this->progress > 1) {
+			$this->out(sprintf('[WAIT] %s [%s]', $this->msg, 'Invalid value ' . $this->progress));
+		}
+		else {
+			$width = exec('tput cols') - strlen($this->msg) - 10;
+			$drawn = (int)($this->progress * $width);
+			$this->out(sprintf('[WAIT] %s [%s%s]', $this->msg, str_repeat('#', $drawn), str_repeat(' ', $width - $drawn)));
+		}
 	}
 }

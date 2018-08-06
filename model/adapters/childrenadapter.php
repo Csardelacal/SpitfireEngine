@@ -33,7 +33,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$query = $this->field->getTable()->getDb()->getObjectFactory()
 				  ->queryInstance($this->field->getTarget()->getTable());
 				
-		return $query->addRestriction($this->field->getReferencedField()->getName(), $this->parent->getQuery());
+		return $query->where($this->field->getReferencedField()->getName(), $this->parent->getQuery());
 		
 	}
 	

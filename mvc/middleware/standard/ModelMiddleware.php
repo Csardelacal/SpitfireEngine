@@ -64,13 +64,12 @@ class ModelMiddleware implements MiddlewareInterface
 	 * @param Context $context
 	 */
 	public function before(ContextInterface $context) {
-		try {
-			$controller = new ReflectionClass($context instanceof Context? $context->controller : $context->director);
-			$action     = $controller->getMethod($context->action);
-			$object     = $context->object;
-		} catch (\Exception$e) {
-			return;
-		}
+		
+		if (!method_exists($context instanceof Context? $context->controller : $context->director, $context->action)) { return; }
+		
+		$controller = new ReflectionClass($context instanceof Context? $context->controller : $context->director);
+		$action     = $controller->getMethod($context->action);
+		$object     = $context->object;
 		
 		$params     = $action->getParameters();
 		

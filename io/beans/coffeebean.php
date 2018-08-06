@@ -1,27 +1,30 @@
 <?php
 
+use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\PublicException;
+use spitfire\io\beans\BooleanField;
 use spitfire\io\beans\ChildBean;
-use spitfire\storage\database\Table;
-use spitfire\Model;
-
-use spitfire\io\beans\Field;
-use spitfire\io\beans\TextField;
-use spitfire\io\beans\LongTextField;
-use spitfire\io\beans\FileField;
-use spitfire\io\beans\ReferenceField;
-use spitfire\io\beans\ManyToManyField;
 use spitfire\io\beans\DateTimeField;
 use spitfire\io\beans\EnumField;
-use spitfire\io\beans\BooleanField;
+use spitfire\io\beans\Field;
+use spitfire\io\beans\FileField;
 use spitfire\io\beans\IntegerField;
+use spitfire\io\beans\LongTextField;
+use spitfire\io\beans\ManyToManyField;
+use spitfire\io\beans\ReferenceField;
+use spitfire\io\beans\TextField;
 use spitfire\io\beans\UnSubmittedException;
-
-use spitfire\io\XSSToken;
 use spitfire\io\PostTarget;
-use spitfire\validation\ValidatorInterface;
-
-use spitfire\io\renderers\RenderableForm;
+use spitfire\io\renderers\Renderable;
 use spitfire\io\renderers\RenderableFieldGroup;
+use spitfire\io\renderers\RenderableForm;
+use spitfire\io\XSSToken;
+use spitfire\Model;
+use spitfire\model\Field as Field2;
+use spitfire\storage\database\Table;
+use spitfire\validation\ValidationException;
+use spitfire\validation\ValidationRule;
+use spitfire\validation\ValidatorInterface;
 
 /**
  * A Bean is the equivalent to a Model for users. Instead of generating SQL and
@@ -47,7 +50,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	 * Create a new bean. This allows to generate forms to receive data from a 
 	 * client, it requires a Table to know which model it shall work on.
 	 * 
-	 * @param \spitfire\storage\database\Table $table
+	 * @param Table $table
 	 */
 	public final function __construct(Table$table = null) {
 		$this->table = $table;
@@ -75,16 +78,15 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	public function validate() {
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			
-			$xss = $_POST['_XSS_'] !== $this->xss->getValue();
-			if ($xss) { throw new publicException('XSS Attack', 403); }
+			if (!$this->xss->verify($_POST['_XSS_'])) { throw new PublicException('XSS Attack', 403); }
 			
-			if (!$this->isOk()) { throw new \spitfire\validation\ValidationException('Validation failed', 1604172344, $this->getMessages()); }
+			if (!$this->isOk()) { throw new ValidationException('Validation failed', 1604172344, $this->getMessages()); }
 		}
 		else { throw new UnSubmittedException(); }
 	}
 
-	public function addRule(\spitfire\validation\ValidationRule $rule) {
-		throw new spitfire\exceptions\PrivateException('You cannot add validation rules to beans');
+	public function addRule(ValidationRule $rule) {
+		throw new PrivateException('You cannot add validation rules to beans');
 	}
 
 	public function getMessages() {
@@ -130,7 +132,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	}
 	
 	public function setDBRecord($record) {
-		if ($record instanceof \spitfire\Model || is_null($record)) {
+		if ($record instanceof Model || is_null($record)) {
 			$this->record = $record;
 		}
 	}
@@ -148,40 +150,40 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	/**
 	 * Creates a new field for the bean.
 	 * 
-	 * @param model\Field $field
+	 * @param Field2 $field
 	 * @param string $caption
-	 * @return \spitfire\io\beans\Field
+	 * @return Field
 	 */
 	public function field($field, $caption) {
 		$logical = $this->table->getModel()->getField($field);
 		
-		if (!$logical) { throw new spitfire\exceptions\PrivateException('No field ' . $field . ' in ' . $this->table->getModel()->getName()); }
+		if (!$logical) { throw new PrivateException('No field ' . $field . ' in ' . $this->table->getModel()->getName()); }
 		
 		$suggested = $logical->getBeanField($this, $logical, $caption);
 		if ($suggested !== null) {return $this->fields[$field] = $suggested;}
 		
 		switch($logical->getDataType()) {
-			case model\Field::TYPE_STRING:
-			case model\Field::TYPE_LONG:
+			case Field2::TYPE_STRING:
+			case Field2::TYPE_LONG:
 				if ($logical instanceof \EnumField)
 					{ return $this->fields[$field] = new EnumField($this, $logical, $caption); }
 				else
 					{ return $this->fields[$field] = new TextField($this, $logical, $caption); }
-			case model\Field::TYPE_INTEGER:
+			case Field2::TYPE_INTEGER:
 				return $this->fields[$field] = new IntegerField($this, $logical, $caption);
-			case model\Field::TYPE_DATETIME:
+			case Field2::TYPE_DATETIME:
 				return $this->fields[$field] = new DateTimeField($this, $logical, $caption);
-			case model\Field::TYPE_TEXT:
+			case Field2::TYPE_TEXT:
 				return $this->fields[$field] = new LongTextField($this, $logical, $caption);
-			case model\Field::TYPE_FILE:
+			case Field2::TYPE_FILE:
 				return $this->fields[$field] = new FileField($this, $logical, $caption);
-			case model\Field::TYPE_REFERENCE:
+			case Field2::TYPE_REFERENCE:
 				return $this->fields[$field] = new ReferenceField($this, $logical, $caption);
-			case model\Field::TYPE_CHILDREN:
+			case Field2::TYPE_CHILDREN:
 				return $this->fields[$field] = new ChildBean($this, $logical, $caption);
-			case model\Field::TYPE_BRIDGED:
+			case Field2::TYPE_BRIDGED:
 				return $this->fields[$field] = new ManyToManyField($this, $logical, $caption);
-			case model\Field::TYPE_BOOLEAN:
+			case Field2::TYPE_BOOLEAN:
 				return $this->fields[$field] = new BooleanField($this, $logical, $caption);
 		}
 	}
@@ -204,7 +206,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	/**
 	 * Returns the table using this bean to generate it's forms.
 	 * 
-	 * @return \spitfire\storage\database\Table
+	 * @return Table
 	 */
 	public function getTable() {
 		return $this->table;
@@ -249,7 +251,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	}
 	
 	public function getVisibility() {
-		return spitfire\io\renderers\Renderable::VISIBILITY_ALL;
+		return Renderable::VISIBILITY_ALL;
 	}
 	
 	public function getAction() {
@@ -295,7 +297,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 	 *                     the string.
 	 *
 	 * @return CoffeeBean
-	 * @throws \spitfire\exceptions\PrivateException
+	 * @throws PrivateException
 	 */
 	public static function getBean($name) {
 		#Create a camel cased string for the class
@@ -305,7 +307,7 @@ abstract class CoffeeBean extends PostTarget implements RenderableForm, Renderab
 		if (class_exists($class_name)) {
 			return new $class_name();
 		}
-		else throw new spitfire\exceptions\PrivateException('Bean not found');
+		else throw new PrivateException('Bean not found');
 	}
 
 }

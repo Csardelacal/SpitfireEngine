@@ -45,8 +45,8 @@ interface PaginationInterface
 	
 	public function page($number);
 	
-	public function previous();
-	public function next();
+	public function previous($disabled = false);
+	public function next($disabled = false);
 	
 	public function first();
 	public function last($number);

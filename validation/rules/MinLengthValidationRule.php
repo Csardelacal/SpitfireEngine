@@ -1,5 +1,7 @@
 <?php namespace spitfire\validation\rules;
 
+use spitfire\validation\ValidationError;
+
 /**
  * Validates that the length of a content is bigger than the indicated minimum
  * length. This validates only data as strings which may cause unexpected 

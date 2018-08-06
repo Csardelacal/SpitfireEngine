@@ -30,10 +30,13 @@ class ExpressionValidator extends \spitfire\validation\Validator
 	
 	private $parameter;
 	
+	private $caption;
+	
 	public function __construct($parameter) {
 		$p = explode('#', $parameter);
 		
-		if (isset($p[1])) { list($this->src, $this->parameter) = $p; }
+		if     (isset($p[2])) { list($this->src, $this->parameter, $this->caption) = $p; }
+		elseif (isset($p[1])) { list($this->src, $this->parameter) = $p; }
 		else              { $this->parameter = $p[0]; }
 		
 	}
@@ -41,12 +44,24 @@ class ExpressionValidator extends \spitfire\validation\Validator
 	public function setValue($value) {
 		if (!isset($value[$this->src]) || !isset($value[$this->src][$this->parameter])) { 
 			parent::setValue(null);
-			return false; 
 		}
 		else {
 			parent::setValue($value[$this->src][$this->parameter]);
-			return true;
 		}
+		
+		return $this;
+	}
+	
+	public function getMessages() {
+		$msgs = parent::getMessages();
+		
+		foreach ($msgs as $msg) {
+			if ($msg instanceof \spitfire\validation\ValidationError) {
+				$msg->setMessage(ucfirst($this->caption?: $this->parameter) . ': ' . $msg->getMessage());
+			}
+		}
+		
+		return $msgs;
 	}
 
 }

@@ -168,7 +168,7 @@ abstract class Query extends RestrictionGroup
 	//@TODO: Add a decent way to sorting fields that doesn't resort to this awful thing.
 	public function setOrder ($field, $mode) {
 		try {
-			$this->order['field'] = $this->table->getTable()->getField($field);
+			$this->order['field'] = $this->table->getTable()->getLayout()->getField($field);
 		} catch (Exception $ex) {
 			$physical = $this->table->getTable()->getModel()->getField($field)->getPhysical();
 			$this->order['field'] = reset($physical);

@@ -104,7 +104,7 @@ abstract class SQLQuery extends Query
 	 * @throws PrivateException
 	 */
 	public function denormalize($root = false) {
-		if (!$root && $this->isMixed()) {
+		if (!$root && $this->isMixed() && !$this->getCompositeRestrictions()->isEmpty()) {
 			throw new PrivateException('Impossible condition satisfied. This is a bug.', 1804292159);
 		}
 		

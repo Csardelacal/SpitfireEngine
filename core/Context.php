@@ -91,12 +91,12 @@ class Context implements ContextInterface
 	
 	public static function create() {
 		$context = new Context;
-		$context->get        = new InputSanitizer($_GET);
+		$context->get        = $_GET;
 		$context->post       = new InputSanitizer($_POST);
 		$context->session    = Session::getInstance();
 		$context->cache      = MemcachedAdapter::getInstance();
 		$context->request    = Request::get();
-		$context->parameters = new InputSanitizer($context->request->getPath()->getParameters());
+		$context->parameters = $context->request->getPath()->getParameters();
 		$context->response   = new Response($context);
 		$context->middleware = new MiddlewareStack($context);
 		
@@ -105,7 +105,7 @@ class Context implements ContextInterface
 		$context->action     = $context->request->getPath()->getAction();
 		$context->object     = $context->request->getPath()->getObject();
 		
-		$context->view       = $context->app->getView($context->controller);
+		$context->view        = $context->app->getView($context->controller);
 		
 		try {
 			$reflector            = new \ReflectionMethod($context->controller, $context->action);

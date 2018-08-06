@@ -1,5 +1,7 @@
 <?php namespace spitfire\validation\rules;
 
+use spitfire\validation\ValidationError;
+
 /**
  * This filter ensures that a number provided to it was positive.
  * 
@@ -38,6 +40,10 @@ class PositiveNumberValidationRule implements \spitfire\validation\ValidationRul
 	 * @return \spitfire\validation\ValidationError|boolean
 	 */
 	public function test($value) {
+		if ($value === null) {
+			return false;
+		}
+		
 		if ($value < 0) {
 			return new ValidationError($this->message, $this->extendedMessage);
 		}

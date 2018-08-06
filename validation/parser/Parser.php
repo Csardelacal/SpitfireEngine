@@ -5,6 +5,7 @@ use spitfire\exceptions\PrivateException;
 use spitfire\validation\parser\preprocessor\Preprocessor;
 use spitfire\validation\rules\EmptyValidationRule;
 use spitfire\validation\rules\FilterValidationRule;
+use spitfire\validation\rules\InValidationRule;
 use spitfire\validation\rules\LengthValidationRule;
 use spitfire\validation\rules\NotValidationRule;
 use spitfire\validation\rules\PositiveNumberValidationRule;
@@ -13,6 +14,7 @@ use spitfire\validation\rules\TypeStringValidationRule;
 use spitfire\validation\ValidationRule;
 use spitfire\validation\ValidatorGroup;
 use spitfire\validation\ValidatorInterface;
+use function __;
 
 /* 
  * The MIT License
@@ -93,6 +95,7 @@ class Parser
 		$this->rules['number'] = function() { return new TypeNumberValidationRule('Value must be a number'); };
 		$this->rules['required']=function() { return new EmptyValidationRule('Value is required. Cannot be empty'); };
 		$this->rules['not']    = function($value) { return new NotValidationRule($value, sprintf('Value "%s" is not allowed', $value)); };
+		$this->rules['in']     = function() { return new InValidationRule(func_get_args(), sprintf('Value must be one of (%s)', __(implode(', ', func_get_args())))); };
 		$this->rules['length'] = function($min, $max = null) { return new LengthValidationRule($min, $max, sprintf('Field length must be between %s and %s characters', $min, $max)); };
 	}
 	

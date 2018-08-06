@@ -166,8 +166,12 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function sort($callback = null) {
-		if (!$callback) { return new Collection(sort($this->items)); }
-		else            { return new Collection(usort($this->items, $callback)); }
+		$copy = $this->items;
+		
+		if (!$callback) { sort($this->items); }
+		else            { usort($this->items, $callback); }
+		
+		return new Collection($copy);
 	}
 	
 	/**
@@ -212,6 +216,22 @@ class Collection implements ArrayAccess, CollectionInterface
 		
 		$this->items = array_merge($this->items, $elements);
 		return $this;
+	}
+	
+	public function groupBy($callable) {
+		$groups = new self();
+		
+		$this->each(function ($e) use ($groups, $callable) {
+			$key = $callable($e);
+			
+			if (!isset($groups[$key])) {
+				$groups[$key] = new self();
+			}
+			
+			$groups[$key]->push($e);
+		});
+		
+		return $groups;
 	}
 	
 	public function remove($element) {

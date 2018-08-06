@@ -1,6 +1,7 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
 use spitfire\core\Collection;
+use spitfire\core\ContextCLI;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\exceptions\PublicException;
@@ -52,7 +53,13 @@ class ValidationMiddleware implements MiddlewareInterface
 				$throw      = false;
 			}
 			
-			$validator = $parser->parse($expression)->setValue(['GET' => $_GET->getRaw(), 'POST' => $_POST, 'OBJ' => $context->object]);
+			$data = [
+				'GET'  => $_GET->getRaw(), 
+				'POST' => $_POST, 
+				'OBJ'  => $context instanceof ContextCLI? $context->parameters : $context->object
+			];
+			
+			$validator = $parser->parse($expression)->setValue($data);
 			
 			if (!$validator->isOk()) {
 				if ($throw) { throw new PublicException('Validation failed', 400); }

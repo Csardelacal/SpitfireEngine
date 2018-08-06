@@ -23,7 +23,7 @@ use spitfire\validation\ValidatorInterface;
  * to make it easier to read and maintain the code being created.
  * 
  * @staticvar type $sf
- * @return SpitFire
+ * @return \spitfire\SpitFire
  */
 function spitfire() {
 	static $sf = null;
@@ -213,7 +213,7 @@ function _def(&$a, $b) {
  * @param mixed $elements
  * @return Collection
  */
-function collect($elements) {
+function collect($elements = []) {
 	return new Collection($elements);
 }
 
@@ -244,7 +244,7 @@ function url() {
 
 	#Extract the app
 	if (reset($params) instanceof App || $sf->appExists(reset($params))) {
-		$app = array_shift($params);
+		$app = $sf->getApp(array_shift($params));
 	}
 	else {
 		$app = $sf;
@@ -256,7 +256,7 @@ function url() {
 	$object     = Array();
 
 	#Get the object
-	while(!empty($params) && !is_array(reset($params)) ) {
+	while(!empty($params) && (!is_array(reset($params)) || (!$controller && $app->hasController(reset($params))))) {
 		if     (!$controller) { $controller = array_shift($params); }
 		elseif (!$action)     { $action     = array_shift($params); }
 		else                  { $object[]   = array_shift($params); }
@@ -289,4 +289,36 @@ function url() {
  */
 function within($min, $val, $max) {
 	return min(max($min, $val), $max);
+}
+
+function media() {
+	static $dispatcher = null;
+	
+	if (!$dispatcher) {
+		$dispatcher = new \spitfire\io\media\MediaDispatcher();
+		$dispatcher->register('image/png', new \spitfire\io\media\GDManipulator());
+		$dispatcher->register('image/jpg', new \spitfire\io\media\GDManipulator());
+		$dispatcher->register('image/psd', new \spitfire\io\media\ImagickManipulator());
+		$dispatcher->register('image/gif', new \spitfire\io\media\FFMPEGManipulator());
+		$dispatcher->register('video/mp4', new \spitfire\io\media\FFMPEGManipulator());
+		$dispatcher->register('image/vnd.adobe.photoshop', new \spitfire\io\media\ImagickManipulator());
+	}
+	
+	return $dispatcher;
+}
+
+function storage() {
+	static $dispatcher = null;
+	
+	if (!$dispatcher) {
+		$dispatcher = new \spitfire\storage\objectStorage\ObjectStorageDispatcher();
+		$dispatcher->register('file://', new \spitfire\storage\drive\Directory('/'));
+		$dispatcher->register('dir://', new \spitfire\storage\drive\DirectoryOnly('/'));
+	}
+	
+	return $dispatcher;
+}
+
+function request($url) {
+	return new \spitfire\io\curl\Request($url);
 }
