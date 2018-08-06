@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\drive;
 
-use spitfire\storage\objectStorage\ObjectStorageInterface;
+use spitfire\storage\objectStorage\NodeInterface;
 
 /* 
  * The MIT License
@@ -29,7 +29,7 @@ use spitfire\storage\objectStorage\ObjectStorageInterface;
 class DirectoryOnly extends Directory
 {
 	
-	public function get($name): ObjectStorageInterface {
+	public function get($name): NodeInterface {
 		
 		if (\Strings::startsWith($name, '/') || \Strings::startsWith($name, './')) {
 			$path = $name;

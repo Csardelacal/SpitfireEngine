@@ -24,21 +24,12 @@
  * THE SOFTWARE.
  */
 
-interface BlobInterface extends ObjectStorageInterface
+interface NodeInterface
 {
 	
-	public function write(string$data) : bool;
 	
-	public function read() : string;
+	public function getParent() : DirectoryInterface;
 	
-	public function mime() : string;
-	
-	public function exists() : bool;
-	
-	public function delete() : bool;
-	
-	public function isWritable() : bool;
-	
-	public function move(ObjectDirectoryInterface$to, string$name) : BlobInterface;
+	public function getURI() : string;
 	
 }

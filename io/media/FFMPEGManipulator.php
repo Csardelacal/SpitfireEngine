@@ -51,7 +51,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function load(\spitfire\storage\objectStorage\BlobInterface $blob): MediaManipulatorInterface {
+	public function load(\spitfire\storage\objectStorage\FileInterface $blob): MediaManipulatorInterface {
 		$this->src = $blob;
 		$this->operations = [];
 		
@@ -76,7 +76,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function store(\spitfire\storage\objectStorage\BlobInterface $location): \spitfire\storage\objectStorage\BlobInterface {
+	public function store(\spitfire\storage\objectStorage\FileInterface $location): \spitfire\storage\objectStorage\FileInterface {
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.mp4';
 		

@@ -1,6 +1,4 @@
-<?php namespace spitfire\io\media;
-
-use spitfire\storage\objectStorage\FileInterface;
+<?php namespace spitfire\storage\objectStorage;
 
 /* 
  * The MIT License
@@ -26,33 +24,19 @@ use spitfire\storage\objectStorage\FileInterface;
  * THE SOFTWARE.
  */
 
-interface MediaManipulatorInterface
+interface FileInterface extends NodeInterface
 {
 	
-	const WIDTH = 0;
+	public function write(string$data) : bool;
 	
-	const HEIGHT = 1;
+	public function read() : string;
 	
-	const QUALITY_MINIMAL  = 0;
-	const QUALITY_LOW      = 1;
-	const QUALITY_MEDIUM   = 2;
-	const QUALITY_HIGH     = 3;
-	const QUALITY_VERYHIGH = 4;
-	const QUALITY_OPTIMAL  = 5;
+	public function mime() : string;
 	
-	public function supports(string$mime) : bool;
+	public function delete() : bool;
 	
-	public function load(FileInterface$blob) : MediaManipulatorInterface;
+	public function isWritable() : bool;
 	
-	public function store(FileInterface$location) : FileInterface;
+	public function move(DirectoryInterface$to, string$name) : FileInterface;
 	
-	public function fit($x, $y) : MediaManipulatorInterface;
-	
-	public function scale($target, $side = MediaManipulatorInterface::WIDTH) : MediaManipulatorInterface;
-	
-	public function blur() : MediaManipulatorInterface;
-	
-	public function grayscale() : MediaManipulatorInterface;
-	
-	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH) : MediaManipulatorInterface;
 }

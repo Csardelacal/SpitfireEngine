@@ -52,7 +52,7 @@ class ImagickManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function load(\spitfire\storage\objectStorage\BlobInterface $blob): MediaManipulatorInterface {
+	public function load(\spitfire\storage\objectStorage\FileInterface $blob): MediaManipulatorInterface {
 		if ($this->tmp) {
 			unlink($this->tmp);
 		}
@@ -82,7 +82,7 @@ class ImagickManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function store(\spitfire\storage\objectStorage\BlobInterface $location): \spitfire\storage\objectStorage\BlobInterface {
+	public function store(\spitfire\storage\objectStorage\FileInterface $location): \spitfire\storage\objectStorage\FileInterface {
 		$this->img->writeimage($this->tmp);
 		$location->write(file_get_contents($this->tmp));
 		

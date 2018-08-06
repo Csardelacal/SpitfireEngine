@@ -3,11 +3,11 @@
 use spitfire\core\CollectionInterface;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\FilePermissionsException;
-use spitfire\storage\objectStorage\ObjectDirectoryInterface;
-use spitfire\storage\objectStorage\ObjectStorageInterface;
+use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\NodeInterface;
 use function collect;
 
-class Directory implements ObjectDirectoryInterface
+class Directory implements DirectoryInterface
 {
 	
 	private $path;
@@ -46,7 +46,7 @@ class Directory implements ObjectDirectoryInterface
 		return is_writable($this->path);
 	}
 
-	public function get($name): ObjectStorageInterface {
+	public function get($name): NodeInterface {
 		if (\Strings::startsWith($name, '/') || \Strings::startsWith($name, './')) {
 			$path = $name;
 		}
@@ -64,7 +64,7 @@ class Directory implements ObjectDirectoryInterface
 		throw new FileNotFoundException($path . ' was not found', 1805301553);
 	}
 	
-	public function make($name) : \spitfire\storage\objectStorage\BlobInterface {
+	public function make($name) : \spitfire\storage\objectStorage\FileInterface {
 		if (file_exists($this->path . '/' . $name)) {
 			throw new FilePermissionsException('File ' . $name . ' already exists', 1805301554);
 		}
@@ -89,7 +89,7 @@ class Directory implements ObjectDirectoryInterface
 		return $this->exists()? realpath($this->path) : $this->path;
 	}
 
-	public function getParent(): ObjectDirectoryInterface {
+	public function getParent(): DirectoryInterface {
 		return new Directory(dirname($this->path));
 	}
 

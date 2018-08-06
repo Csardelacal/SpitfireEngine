@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\objectStorage;
 
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *
@@ -24,12 +26,46 @@
  * THE SOFTWARE.
  */
 
-interface ObjectStorageInterface
+class DriveDispatcher
 {
 	
+	private $drives = [];
 	
-	public function getParent() : ObjectDirectoryInterface;
+	/**
+	 * Registers a drive with the dispatcher. Once your drive is registered, you
+	 * can use it normally.
+	 * 
+	 * @param DriveInterface $drive
+	 */
+	public function register(DriveInterface$drive) {
+		$this->drives[trim($drive->scheme(), ':/')] = $drive;
+	}
 	
-	public function getURI() : string;
+	/**
+	 * Mount a location as a virtual drive. Please note that this uses the standard
+	 * drive mechanism.
+	 * 
+	 * @param string $scheme
+	 * @param DirectoryInterface $location
+	 * @return DriveInterface
+	 */
+	public function mount($scheme, DirectoryInterface$location) {
+		$sc = trim($scheme, ':/');
+		$drive = new Drive($sc, $location);
+		
+		return $this->register($drive);
+	}
+	
+	public function get($location) : NodeInterface {
+		$pieces = explode('://', $location, 2);
+		
+		if(!isset($pieces[1])) {
+			throw new PrivateException('Invalid URI provided', 1805301529);
+		}
+		
+		list($scheme, $path) = $pieces;
+		
+		return $this->drives[$scheme]->get($path);
+	}
 	
 }

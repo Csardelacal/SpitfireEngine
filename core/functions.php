@@ -311,7 +311,7 @@ function storage() {
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
-		$dispatcher = new \spitfire\storage\objectStorage\ObjectStorageDispatcher();
+		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
 		$dispatcher->register('file://', new \spitfire\storage\drive\Directory('/'));
 		$dispatcher->register('dir://', new \spitfire\storage\drive\DirectoryOnly('/'));
 	}

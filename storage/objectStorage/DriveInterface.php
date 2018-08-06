@@ -1,7 +1,5 @@
 <?php namespace spitfire\storage\objectStorage;
 
-use spitfire\exceptions\PrivateException;
-
 /* 
  * The MIT License
  *
@@ -26,28 +24,13 @@ use spitfire\exceptions\PrivateException;
  * THE SOFTWARE.
  */
 
-class ObjectStorageDispatcher
+interface DriveInterface extends NodeInterface
 {
 	
-	private $drivers = [];
+	public function scheme();
 	
+	public function root();
 	
-	public function register($scheme, ObjectDirectoryInterface$directory) {
-		$this->drivers[trim($scheme, ':/')] = $directory;
-	}
-	
-	public function get($location) {
-		$pieces = explode('://', $location, 2);
-		
-		if(!isset($pieces[1])) {
-			throw new PrivateException('Invalid URI provided', 1805301529);
-		}
-		
-		if (isset($this->drivers[$pieces[0]])) {
-			return $this->drivers[$pieces[0]]->get($pieces[1]);
-		}
-		
-		throw new PrivateException('');
-	}
+	public function get($location) : NodeInterface;
 	
 }

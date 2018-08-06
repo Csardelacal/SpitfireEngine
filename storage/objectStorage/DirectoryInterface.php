@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-interface ObjectDirectoryInterface extends ObjectStorageInterface
+interface DirectoryInterface extends NodeInterface
 {
 	
 	public function all() : \spitfire\core\CollectionInterface;
 	
-	public function get($name) : ObjectStorageInterface;
+	public function get($name) : NodeInterface;
 	
-	public function make($name) : BlobInterface;
+	public function make($name) : FileInterface;
 	
 	public function exists() : bool;
 	
