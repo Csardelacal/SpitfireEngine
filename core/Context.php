@@ -111,8 +111,7 @@ class Context implements ContextInterface
 			$reflector            = new \ReflectionMethod($context->controller, $context->action);
 			$annotationParser     = new AnnotationParser();
 			$context->annotations = $annotationParser->parse($reflector->getDocComment());
-		}
-		catch (\Exception$e) {
+		} catch(\Exception$e) {
 			$context->annotations = [];
 		}
 		
