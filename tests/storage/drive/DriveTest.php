@@ -42,7 +42,9 @@ class DriveTest extends TestCase
 		parent::setUp();
 		
 		$this->storage = storage();
-		$this->storage->register(new MountPoint('tests://', dirname(__FILE__)));
+		$this->storage->register(new MountPoint('tests://', sys_get_temp_dir()));
+		
+		storage('tests://')->contains('test') === DirectoryInterface::CONTAINS_DIR? null : storage('tests://')->mkdir('test');
 	}
 	
 	public function testOpenDrive() {
