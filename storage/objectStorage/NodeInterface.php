@@ -27,9 +27,10 @@
 interface NodeInterface
 {
 	
+	public function up() : NodeInterface;
 	
-	public function getParent() : DirectoryInterface;
+	public function uri() : string;
 	
-	public function getURI() : string;
+	public function isWritable() : bool;
 	
 }

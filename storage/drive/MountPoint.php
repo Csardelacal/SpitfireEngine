@@ -1,4 +1,10 @@
-<?php namespace spitfire\storage\objectStorage;
+<?php namespace spitfire\storage\drive;
+
+use BadMethodCallException;
+use spitfire\exceptions\FileNotFoundException;
+use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\MountPointInterface;
+use spitfire\storage\objectStorage\NodeInterface;
 
 /* 
  * The MIT License
@@ -24,27 +30,9 @@
  * THE SOFTWARE.
  */
 
-/**
- * The virtual drive class. This class is the "entry point" to any storage interface
- * and access the data within the driver.
- * 
- * Drives can be registered with the dispatcher to allow applications to retrieve
- * data from locations they have programmed in. For example, if you use an external
- * storage provider like s3, you could register s3:// as a scheme to store your 
- * data to and point the directory.uploads environment variable to your S3 server.
- * 
- * The data will be stored and you'll receive a URI like s3://xxxx/yyyy/zzzz that
- * points you to the file.
- * 
- * If, in the future you wished to start storing your data somewhere else, you can 
- * just point the directory.uploads variable somewhere else completely.
- * 
- * This is somewhat based on the way other "Virtual drive" libraries work, except 
- * that it focuses on providing text based URIs for convenient storage, which
- * allow your app to work with the data with absolute transparency.
- */
-class Drive implements DriveInterface
+class MountPoint extends Directory implements MountPointInterface
 {
+	
 	
 	/**
 	 * The URI scheme used to identify the drive. This works much like URI schemes
@@ -60,7 +48,7 @@ class Drive implements DriveInterface
 	 * and should be able to retrieve the data appropriately. This  may contain the
 	 * login settings for cloud based storage.
 	 *
-	 * @var Directory
+	 * @var string
 	 */
 	private $root;
 	
@@ -74,11 +62,17 @@ class Drive implements DriveInterface
 	 * virtual drive.
 	 * 
 	 * @param string $scheme
-	 * @param \spitfire\storage\objectStorage\Directory $root
+	 * @param string $root
 	 */
-	public function __construct($scheme, Directory$root) {
-		$this->scheme = $scheme;
-		$this->root = $root;
+	public function __construct($scheme, $root) {
+		if (!is_dir($root)) {
+			throw new FileNotFoundException('Mount point does not exist', 1808121224);
+		}
+		
+		$this->scheme = trim($scheme, ':/');
+		$this->root = rtrim($root, '\/') . DIRECTORY_SEPARATOR;
+		
+		parent::__construct($this, null);
 	}
 	
 	/**
@@ -91,39 +85,12 @@ class Drive implements DriveInterface
 		return $this->scheme;
 	}
 	
-	/**
-	 * Get the root location for the virtual drive.
-	 * 
-	 * @return \spitfire\storage\objectStorage\Directory
-	 */
-	public function root(): Directory {
+	public function uri(): string {
+		return trim($this->scheme, ':/') . '://';
+	}
+	
+	public function getPath() {
 		return $this->root;
-	}
-	
-	/**
-	 * Retrieves a file or directory (node) from a given string. By default, URIs
-	 * are extracted by splitting it by forward slashes.
-	 * 
-	 * @param string $name
-	 * @return \spitfire\storage\objectStorage\Node
-	 */
-	public function get($name) : NodeInterface {
-		$pieces = explode('/', $name);
-		$location = $this->root;
-		
-		foreach ($pieces as $piece) {
-			$location = $location->open($piece);
-		}
-		
-		return  $location;
-	}
-	
-	public function getParent(): DirectoryInterface {
-		throw new \BadMethodCallException('Called getParent on drive', 1808061411);
-	}
-	
-	public function getURI(): string {
-		return $this->scheme . '://';
 	}
 
 }

@@ -35,8 +35,6 @@ interface FileInterface extends NodeInterface
 	
 	public function delete() : bool;
 	
-	public function isWritable() : bool;
-	
 	public function move(DirectoryInterface$to, string$name) : FileInterface;
 	
 }

@@ -27,14 +27,19 @@
 interface DirectoryInterface extends NodeInterface
 {
 	
+	const CONTAINS_NONX = 0;
+	const CONTAINS_FILE = 1;
+	const CONTAINS_DIR  = 2;
+	
+	
 	public function all() : \spitfire\core\CollectionInterface;
 	
-	public function get($name) : NodeInterface;
+	public function open($name) : NodeInterface;
 	
 	public function make($name) : FileInterface;
 	
-	public function exists() : bool;
+	public function mkdir($name) : FileInterface;
 	
-	public function isWritable() : bool;
+	public function contains($name) : int;
 	
 }

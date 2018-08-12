@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\objectStorage;
 
+use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
 
 /* 
@@ -37,25 +38,31 @@ class DriveDispatcher
 	 * 
 	 * @param DriveInterface $drive
 	 */
-	public function register(DriveInterface$drive) {
-		$this->drives[trim($drive->scheme(), ':/')] = $drive;
+	public function register(MountPointInterface$drive) {
+		$this->drives[$drive->scheme()] = $drive;
 	}
 	
 	/**
-	 * Mount a location as a virtual drive. Please note that this uses the standard
-	 * drive mechanism.
+	 * Registers a drive with the dispatcher. Once your drive is registered, you
+	 * can use it normally.
 	 * 
-	 * @param string $scheme
-	 * @param DirectoryInterface $location
-	 * @return DriveInterface
+	 * @param DriveInterface|string $drive
 	 */
-	public function mount($scheme, DirectoryInterface$location) {
-		$sc = trim($scheme, ':/');
-		$drive = new Drive($sc, $location);
+	public function unregister($drive) {
+		if ($drive instanceof DriveInterface) {
+			$drive = $drive->scheme();
+		}
 		
-		return $this->register($drive);
+		unset($this->drives[trim($drive, ':/')]);
 	}
 	
+	/**
+	 * Retrieves a file or directory (node) from a given string. By default, URIs
+	 * are extracted by splitting it by forward slashes.
+	 * 
+	 * @param string $name
+	 * @return \spitfire\storage\objectStorage\Node
+	 */
 	public function get($location) : NodeInterface {
 		$pieces = explode('://', $location, 2);
 		
@@ -65,7 +72,25 @@ class DriveDispatcher
 		
 		list($scheme, $path) = $pieces;
 		
-		return $this->drives[$scheme]->get($path);
+		$mount  = $this->drives[$scheme];
+		
+		/*
+		 * Now that the mount has been located, recurse over the pieces to find
+		 * the resource the user is looking for.
+		 */
+		$pieces = array_filter(explode('/', $path));
+		$resource = $mount;
+		
+		foreach ($pieces as $piece) {
+			
+			if (!$resource instanceof DirectoryInterface) {
+				throw new FileNotFoundException('Trying to recurse into a file', 1808111144);
+			}
+			
+			$resource = $resource->open($piece);
+		}
+		
+		return $resource;
 	}
 	
 }

@@ -9,7 +9,6 @@
 	convertNoticesToExceptions="false"
 	convertWarningsToExceptions="false"
 	forceCoversAnnotation="false"
-	mapTestClassNameToCoveredClassName="false"
 	processIsolation="false"
 	stopOnError="false"
 	stopOnFailure="false"

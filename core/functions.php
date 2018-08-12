@@ -307,18 +307,30 @@ function media() {
 	return $dispatcher;
 }
 
-function storage() {
+function storage($uri = null) {
+	
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
 		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
-		$dispatcher->register('file://', new \spitfire\storage\drive\Directory('/'));
-		$dispatcher->register('dir://', new \spitfire\storage\drive\DirectoryOnly('/'));
+		$dispatcher->register(new \spitfire\storage\drive\MountPoint('file://', '/'));
+		$dispatcher->register(new \spitfire\storage\drive\MountPoint('app://', spitfire()->getCWD()));
+		$dispatcher->register(new \spitfire\storage\drive\MountPoint('temp://', sys_get_temp_dir()));
 	}
 	
-	return $dispatcher;
+	if ($uri) {
+		return $dispatcher->get($uri);
+	}
+	else {
+		return $dispatcher;
+	}
 }
 
 function request($url) {
 	return new \spitfire\io\curl\Request($url);
+}
+
+function mime($file) {
+	if (function_exists('mime_content_type')) { return mime_content_type($file); }
+	else { return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0]; }
 }
