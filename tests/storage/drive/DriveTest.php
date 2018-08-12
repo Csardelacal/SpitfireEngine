@@ -45,6 +45,7 @@ class DriveTest extends TestCase
 		$this->storage->register(new MountPoint('tests://', sys_get_temp_dir()));
 		
 		storage('tests://')->contains('test') === DirectoryInterface::CONTAINS_DIR? null : storage('tests://')->mkdir('test');
+		storage('tests://')->contains('temp.txt') === DirectoryInterface::CONTAINS_FILE? null : storage('tests://')->make('temp.txt')->write('Hello');
 	}
 	
 	public function testOpenDrive() {
@@ -108,7 +109,7 @@ class DriveTest extends TestCase
 	
 	public function testContains() {
 		$this->assertEquals(DirectoryInterface::CONTAINS_DIR, storage('tests://')->contains('test'));
-		$this->assertEquals(DirectoryInterface::CONTAINS_FILE, storage('tests://')->contains('DriveTest.php'));
+		$this->assertEquals(DirectoryInterface::CONTAINS_FILE, storage('tests://')->contains('temp.txt'));
 		$this->assertEquals(DirectoryInterface::CONTAINS_NONX, storage('tests://')->contains('nada.file'));
 	}
 	

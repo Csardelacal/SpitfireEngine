@@ -33,4 +33,6 @@ interface NodeInterface
 	
 	public function isWritable() : bool;
 	
+	public function delete() : bool;
+	
 }

@@ -53,15 +53,15 @@ class Directory implements DirectoryInterface
 		return $this->parent;
 	}
 
-	public function mkdir($name): FileInterface {
+	public function mkdir($name): NodeInterface {
 		
 		#We run a recursive mkdir to create the directories needed to get to the 
 		#path. If this feils, we'll throw an exception.
-		if (!mkdir($this->getPath() . $name, umask(), true)) {
+		if (!mkdir($this->getPath() . $name, 0755, true)) {
 			throw new FilePermissionsException('Could not create ' . $this->path . ' - Permission denied', 1807231752);
 		}
 		
-		return true;
+		return $this->open($name);
 	}
 
 	public function open($name): NodeInterface {
@@ -90,6 +90,10 @@ class Directory implements DirectoryInterface
 		else {
 			return DirectoryInterface::CONTAINS_NONX;
 		}
+	}
+
+	public function delete(): bool {
+		return rmdir($this->getPath());
 	}
 
 }

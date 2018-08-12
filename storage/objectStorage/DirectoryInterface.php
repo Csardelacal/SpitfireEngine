@@ -38,7 +38,7 @@ interface DirectoryInterface extends NodeInterface
 	
 	public function make($name) : FileInterface;
 	
-	public function mkdir($name) : FileInterface;
+	public function mkdir($name) : NodeInterface;
 	
 	public function contains($name) : int;
 	
