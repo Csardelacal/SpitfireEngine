@@ -48,7 +48,7 @@ class SimplePaginator implements PaginationInterface
 	}
 
 	public function current() {
-		return isset($_GET[$this->parameter])? $_GET[$this->parameter] : 1;
+		return isset($_GET[$this->parameter]) && is_numeric($_GET[$this->parameter])? (int)$_GET[$this->parameter] : 1;
 	}
 
 	public function emptyResultMessage() {
