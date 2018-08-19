@@ -48,7 +48,7 @@ class Router extends Routable
 			}
 		}
 		#Implicit else.
-		throw new \publicException('No such route', 404);
+		throw new \spitfire\exceptions\PublicException('No such route', 404);
 	}
 	
 	/**

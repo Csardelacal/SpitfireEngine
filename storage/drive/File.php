@@ -1,7 +1,8 @@
 <?php namespace spitfire\storage\drive;
 
-use spitfire\storage\objectStorage\FileInterface;
 use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\FileInterface;
+use spitfire\storage\objectStorage\NodeInterface;
 
 /* 
  * The MIT License
@@ -30,26 +31,29 @@ use spitfire\storage\objectStorage\DirectoryInterface;
 class File implements FileInterface
 {
 	
+	private $parent;
+	
 	private $path;
 	
-	public function __construct($path) {
-		$this->path = $path;
+	public function __construct($_1, $_2 = null) {
+		$this->parent = $_2 === null? null : $_1;
+		$this->path = $_2 === null? $_1 : $_2;
 	}
 	
 	public function delete(): bool {
-		return unlink($this->path);
+		return unlink($this->getPath());
+	}
+	
+	public function getPath() {
+		return $this->up()->getPath() . $this->path;
 	}
 
-	public function exists(): bool {
-		return file_exists($this->path);
-	}
-
-	public function getParent(): DirectoryInterface {
-		return new Directory(dirname($this->path));
+	public function up(): NodeInterface {
+		return $this->parent;
 	}
 
 	public function isWritable(): bool {
-		return file_exists($this->path) && is_writable($this->path);
+		return file_exists($this->getPath()) && is_writable($this->getPath());
 	}
 
 	public function move(DirectoryInterface $to, string $name): FileInterface {
@@ -57,22 +61,22 @@ class File implements FileInterface
 		 * If the target is a directory we can directly move the file on the drive,
 		 * therefore we don't have to get the file from the drive a second time.
 		 */
-		if ($to instanceof Directory) { rename($this->path, $to->get($name)->getURI()); }
+		if ($to instanceof Directory) { rename($this->getPath(), $to->get($name)->getPath()); }
 		else                          { $to->get($name)->write($this->read()); }
 		
 		return $to->get($name);
 	}
 	
 	public function read(): string {
-		return file_get_contents($this->path);
+		return file_get_contents($this->getPath());
 	}
 	
 	public function write(string $data): bool {
-		return file_put_contents($this->path, $data);
+		return file_put_contents($this->getPath(), $data);
 	}
 
-	public function getURI() : string {
-		return 'file://' . $this->path;
+	public function uri() : string {
+		return $this->up()->uri() . $this->path;
 	}
 
 	public function mime(): string {

@@ -24,13 +24,9 @@
  * THE SOFTWARE.
  */
 
-interface DriveInterface extends NodeInterface
+interface MountPointInterface extends DirectoryInterface
 {
 	
 	public function scheme();
-	
-	public function root();
-	
-	public function get($location) : NodeInterface;
 	
 }

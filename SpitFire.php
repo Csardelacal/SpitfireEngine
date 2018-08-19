@@ -38,7 +38,7 @@ class SpitFire extends App
 		if (self::$started) { throw new PrivateException('Spitfire is already running'); }
 		
 		#Set the current working directory
-		$this->cwd = BASEDIR;
+		$this->cwd = rtrim(dirname(dirname(__FILE__)), '\/');
 		
 		#Import the exception handler for logging
 		$this->debug = php_sapi_name() === 'cli'? new exceptions\ExceptionHandlerCLI() : new ExceptionHandler();
