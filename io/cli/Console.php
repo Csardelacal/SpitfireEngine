@@ -43,7 +43,7 @@ class Console
 	
 	public function error($msg) {
 		$this->current = $this->stdout;
-		$out = str_replace(PHP_EOL, PHP_EOL . '       ', $msg);
+		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, (exec('tput cols')?? 80) - 7, PHP_EOL)));
 		
 		$this->current
 			->out('[')
@@ -58,7 +58,7 @@ class Console
 	
 	public function info($msg) {
 		$this->current = $this->stdout;
-		$out = str_replace(PHP_EOL, PHP_EOL . '       ', $msg);
+		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, (exec('tput cols')?? 80) - 7, PHP_EOL)));
 		
 		$this->current
 			->out('[')
@@ -73,7 +73,7 @@ class Console
 	
 	public function success($msg) {
 		$this->current = $this->stdout;
-		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, exec('tput cols') - 7, PHP_EOL)));
+		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, (exec('tput cols')?? 80) - 7, PHP_EOL)));
 		
 		$this->current
 			->out('[')
