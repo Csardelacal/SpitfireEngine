@@ -21,7 +21,7 @@ class Directory implements DirectoryInterface
 	}
 	
 	public function isWritable() : bool {
-		return is_writable($this->path);
+		return is_writable($this->getPath());
 	}
 	
 	public function make($name) : FileInterface {
@@ -33,7 +33,7 @@ class Directory implements DirectoryInterface
 	}
 
 	public function all(): CollectionInterface {
-		$contents = scandir($this->path);
+		$contents = scandir($this->getPath());
 		
 		return collect($contents)->each(function ($e) {
 			if (is_dir($this->getPath() . $e)) { return new Directory($this, $e); }

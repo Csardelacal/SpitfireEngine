@@ -1,11 +1,13 @@
 <?php namespace spitfire\io;
 
-use filePermissionsException;
-use spitfire\io\Filesize;
+use spitfire\exceptions\FilePermissionsException;
 use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\UploadValidationException;
-use spitfire\storage\drive\Directory;
+use spitfire\io\Filesize;
+use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\FileInterface;
 use Strings;
+use function storage;
 
 /**
  * This class merges the file Uploads coming from a client into the POST array,
@@ -48,7 +50,7 @@ class Upload
 	
 	public function __construct($meta) {
 		$this->meta      = $meta;
-		$this->uploadDir = 'bin/usr/uploads';
+		$this->uploadDir = 'app://bin/usr/uploads';
 	}
 	
 	public function isOk() {
@@ -73,6 +75,11 @@ class Upload
 		return true;
 	}
 	
+	/**
+	 * 
+	 * @return FileInterface
+	 * @throws filePermissionsException
+	 */
 	public function store() {
 		#If the data was already stored (this may happen in certain events where a
 		#store function is called several times) return the location of the file.
@@ -84,11 +91,11 @@ class Upload
 		$this->isOk();
 		
 		#Create the directory to write to
-		$dir = new Directory($this->uploadDir);
+		$dir = storage($this->uploadDir);
 		
 		#Ensure the directory exists and is writable.
-		if (!$dir->exists())     { $dir->create(); }
-		if (!$dir->isWritable()) { throw new filePermissionsException('Upload directory is not writable'); }
+		if (!$dir instanceof DirectoryInterface) { throw new FilePermissionsException('Upload directory is not a directory', 1808200912); }
+		if (!$dir->isWritable()) { throw new FilePermissionsException('Upload directory is not writable'); }
 		
 		#Assemble the different components of the filename. This will be necessary 
 		#to tell the system where to write the data to
@@ -97,11 +104,11 @@ class Upload
 		$filename = Strings::slug(pathinfo($this->meta['name'], PATHINFO_FILENAME));
 		$extension= pathinfo($this->meta['name'], PATHINFO_EXTENSION);
 		
-		$path = $this->uploadDir . '/' . $time . '_' . $rand . '_' . $filename . '.' . $extension;
+		$file = $dir->make($time . '_' . $rand . '_' . $filename . '.' . $extension);
+		$file->write(file_get_contents($this->meta['tmp_name']));
 		
 		#Move the file and return the path.
-		move_uploaded_file($this->meta['tmp_name'], $path);
-		return $this->stored = $path;
+		return $this->stored = $file;
 	}
 
 	/**
