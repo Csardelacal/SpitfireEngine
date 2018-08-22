@@ -29,6 +29,7 @@ class GDManipulator implements MediaManipulatorInterface
 	
 	private $tmp;
 	private $meta;
+	private $compression = 8;
 	
 	public function blur(): MediaManipulatorInterface {
 		imagefilter($this->img, IMG_FILTER_SELECTIVE_BLUR);
@@ -93,12 +94,15 @@ class GDManipulator implements MediaManipulatorInterface
 				$this->img = imagecreatefrompng($this->tmp);
 				imagealphablending($this->img, false);
 				imagesavealpha($this->img, true);
-			case IMAGETYPE_JPEG: 
+				break;
+			case IMAGETYPE_JPEG:  
 				$this->img = imagecreatefromjpeg($this->tmp);
+				break;
 			case IMAGETYPE_GIF: 
 				$this->img = imagecreatefromgif($this->tmp);
+				break;
 			default:
-				throw new PrivateException('Unsupported image type: ' . $this->meta[2]);
+				throw new \spitfire\exceptions\PrivateException('Unsupported image type: ' . $this->meta[2]);
 		}
 		
 		return $this;
@@ -106,6 +110,23 @@ class GDManipulator implements MediaManipulatorInterface
 
 	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
 		//TODO: Implement
+	}
+	
+	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
+		
+		
+		$img = imagecreatetruecolor($this->meta[0], $this->meta[1]);
+		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));
+		imagealphablending($img, true);
+		imagesavealpha($img, true);
+		
+		$bgcolor = imagecolorallocatealpha($img, $r, $g, $b, $alpha);
+		imagefilledrectangle($img, 0, 0, $this->meta[0], $this->meta[1], $bgcolor);
+		
+		imagecopy($img, $this->img, 0, 0, 0, 0, $this->meta[0], $this->meta[1]);
+		$this->img = $img;
+		
+		return $this;
 	}
 
 	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
@@ -137,7 +158,7 @@ class GDManipulator implements MediaManipulatorInterface
 			throw new \spitfire\exceptions\PrivateException('Cannot write to target', 1805301104);
 		}
 		
-		switch (pathinfo($location->getURI(), PATHINFO_EXTENSION)) {
+		switch (pathinfo($location->uri(), PATHINFO_EXTENSION)) {
 			case 'jpg':
 				imagejpeg($this->img, $this->tmp, $this->compression * 10);
 				break;
@@ -148,11 +169,14 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		$location->write(file_get_contents($this->tmp));
 		unlink($this->tmp);
+		
+		return $location;
 	}
 
 	public function supports(string $mime): bool {
 		
 		switch($mime) {
+			case 'image/jpeg':
 			case 'image/jpg':
 			case 'image/png':
 			case 'image/gif':
@@ -161,5 +185,6 @@ class GDManipulator implements MediaManipulatorInterface
 				return false;
 		}
 	}
+
 
 }

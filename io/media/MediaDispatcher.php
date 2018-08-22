@@ -38,14 +38,14 @@ class MediaDispatcher
 		$this->associations[$mime] = $manipulator;
 	}
 	
-	public function load(\spitfire\storage\objectStorage\FileInterface$object) {
+	public function load(\spitfire\storage\objectStorage\FileInterface$object) : MediaManipulatorInterface {
 		if (isset($this->associations[$object->mime()])) {
 			$copy = clone $this->associations[$object->mime()];
 			$copy->load($object);
 			return $copy;
 		}
 		
-		throw new PrivateException('No manipulator found', 1805301140);
+		throw new \spitfire\exceptions\PrivateException('No manipulator found', 1805301140);
 	}
 	
 }

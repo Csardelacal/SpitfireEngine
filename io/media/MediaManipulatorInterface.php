@@ -55,4 +55,6 @@ interface MediaManipulatorInterface
 	public function grayscale() : MediaManipulatorInterface;
 	
 	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH) : MediaManipulatorInterface;
+	
+	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface;
 }
