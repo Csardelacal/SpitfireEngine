@@ -43,6 +43,10 @@ class ExceptionHandler {
 			throw new BadMethodCallException('Requires throwable type to work.', 1608011002);
 		}
 		
+		if (!$e instanceof PublicException) {
+			trigger_error(sprintf('Exception caught: %s (%s:%s). Trace: %s', $e->getMessage(), $e->getFile(), $e->getCode(), $e->getTraceAsString()), E_USER_WARNING);
+		}
+		
 		try {
 			while(ob_get_clean()); //The content generated till now is not valid. DESTROY. DESTROY!
 

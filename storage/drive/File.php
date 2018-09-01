@@ -53,7 +53,7 @@ class File implements FileInterface
 	}
 
 	public function isWritable(): bool {
-		return file_exists($this->getPath()) && is_writable($this->getPath());
+		return (file_exists($this->getPath()) && is_writable($this->getPath())) || $this->up()->isWritable();
 	}
 
 	public function move(DirectoryInterface $to, string $name): FileInterface {
@@ -80,7 +80,21 @@ class File implements FileInterface
 	}
 
 	public function mime(): string {
-		return mime_content_type($this->path);
+		
+		$lib = [
+			'jpeg' => 'image/jpeg',
+			'jpg'  => 'image/jpeg',
+			'png'  => 'image/png',
+			'gif'  => 'image/gif',
+			'psd'  => 'image/psd',
+			'mp4'  => 'video/mp4'
+		];
+		
+		return mime($this->getPath())? : $lib[pathinfo($this->getPath(), PATHINFO_EXTENSION)];
+	}
+
+	public function basename(): string {
+		return pathinfo($this->getPath(), PATHINFO_FILENAME);
 	}
 
 }

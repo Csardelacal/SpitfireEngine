@@ -101,4 +101,8 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		}
 	}
 
+	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
+		return $this;
+	}
+
 }

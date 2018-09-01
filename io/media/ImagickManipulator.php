@@ -105,4 +105,10 @@ class ImagickManipulator implements MediaManipulatorInterface
 		}
 	}
 
+	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
+		$this->img->setimagebackgroundcolor(new \ImagickPixel(sprintf('rgba(%d, %d, %d, %f)'), $r, $g, $g, $alpha));
+		$this->img->mergeimagelayers(Imagick::LAYERMETHOD_FLATTEN);
+		return $this;
+	}
+
 }
