@@ -143,10 +143,6 @@ abstract class SQLQuery extends Query
 			
 			$sg->push($r);
 			
-			if ($r->getOperator() !== '=') {
-				$sg->negate();
-			}
-			
 			$r->getParent()->remove($r)->push($sg);
 			$r->setParent($sg);
 			$_ret->push($sg);
