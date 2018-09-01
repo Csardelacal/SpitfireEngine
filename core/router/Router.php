@@ -38,8 +38,14 @@ class Router extends Routable
 		$servers = $this->servers;
 		
 		#Split up the URL, get the extension
-		$url     = pathinfo($route, PATHINFO_DIRNAME) . '/' . pathinfo($route, PATHINFO_FILENAME);
-		$ext     = pathinfo($route, PATHINFO_EXTENSION);
+		if (\Strings::endsWith($route, '/')) {
+			$url     = pathinfo($route, PATHINFO_DIRNAME) . '/' . pathinfo($route, PATHINFO_BASENAME);
+			$ext     = null;
+		} 
+		else {
+			$url     = pathinfo($route, PATHINFO_DIRNAME) . '/' . pathinfo($route, PATHINFO_FILENAME);
+			$ext     = pathinfo($route, PATHINFO_EXTENSION);
+		}
 		
 		#Loop over the servers
 		foreach ($servers as $box) { /* @var $box Server */
