@@ -130,11 +130,13 @@ class RouterTest extends TestCase
 		$router = $this->router;
 		$router->get('/test/:param1', Array('controller' => ':param1'));
 		
-		$p1 = $router->rewrite('localhost', '/test/provided.xml',  'GET', Route::PROTO_HTTP);
-		$p2 = $router->rewrite('localhost', '/test/provided.json', 'GET', Route::PROTO_HTTP);
+		$p1 = $router->rewrite('localhost', '/test/provided.xml',   'GET', Route::PROTO_HTTP);
+		$p2 = $router->rewrite('localhost', '/test/provided.json',  'GET', Route::PROTO_HTTP);
+		$p3 = $router->rewrite('localhost', '/test/provided.json/', 'GET', Route::PROTO_HTTP);
 		
 		$this->assertEquals('xml',  $p1->getFormat());
 		$this->assertEquals('json', $p2->getFormat());
+		$this->assertEquals('php',  $p3->getFormat());
 	}
 	
 	public function testExtraction() {
