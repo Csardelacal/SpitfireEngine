@@ -87,9 +87,8 @@ class Request
 		$progress && curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, $progress);
 		
 		$_ret = curl_exec($ch);
+		$meta = curl_getinfo($ch);
 		
-		$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		
-		return new Response($status, $_ret);
+		return new Response($meta['http_code'], $_ret, $meta['content_type']);
 	}
 }

@@ -235,7 +235,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function remove($element) {
-		$i = array_search($element, $this->items);
+		$i = array_search($element, $this->items, true);
 		if ($i === false) { throw new OutOfRangeException('Not found', 1804292224); }
 		
 		unset($this->items[$i]);

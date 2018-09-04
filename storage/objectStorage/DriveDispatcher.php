@@ -60,7 +60,7 @@ class DriveDispatcher
 	 * Retrieves a file or directory (node) from a given string. By default, URIs
 	 * are extracted by splitting it by forward slashes.
 	 * 
-	 * @param string $name
+	 * @param string $location
 	 * @return \spitfire\storage\objectStorage\Node
 	 */
 	public function get($location) : NodeInterface {
@@ -91,6 +91,45 @@ class DriveDispatcher
 		}
 		
 		return $resource;
+	}
+	
+	public function dir($location) : NodeInterface {
+		$pieces = explode('://', $location, 2);
+		
+		if(!isset($pieces[1])) {
+			throw new PrivateException('Invalid URI provided', 1805301529);
+		}
+		
+		list($scheme, $path) = $pieces;
+		
+		$mount  = $this->drives[$scheme];
+		
+		/*
+		 * Now that the mount has been located, recurse over the pieces to find
+		 * the resource the user is looking for.
+		 */
+		$pieces = array_filter(explode('/', $path));
+		$resource = $mount;
+		
+		foreach ($pieces as $piece) {
+			
+			if (!$resource instanceof DirectoryInterface) {
+				throw new FileNotFoundException('Trying to recurse into a file', 1808111145);
+			}
+			
+			try {
+				$resource = $resource->open($piece);
+			} catch (\Exception$e) {
+				$resource = $resource->mkdir($piece);
+			}
+		}
+		
+		if ($resource instanceof DirectoryInterface) {
+			return $resource;
+		}
+		
+		throw new PrivateException($location . ' is not a directory', 1808261641);
+		
 	}
 	
 }

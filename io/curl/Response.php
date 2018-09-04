@@ -33,9 +33,12 @@ class Response
 	
 	private $body;
 	
-	public function __construct($status, $body) {
+	private $mime;
+	
+	public function __construct($status, $body, $mime) {
 		$this->status = $status;
 		$this->body = $body;
+		$this->mime = explode(';', $mime)[0];
 	}
 	
 	public function status() {
@@ -52,6 +55,10 @@ class Response
 	
 	public function html() {
 		return $this->body;
+	}
+	
+	public function mime() {
+		return $this->mime;
 	}
 	
 	public function json() {

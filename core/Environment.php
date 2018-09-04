@@ -44,8 +44,8 @@ class Environment
 		'memcached_port'           => '11211',
 		 
 		#Directory settings
-		'cachefile.directory'     => 'dir://./bin/usr/cache/',
-		'uploads.directory'       => 'dir://./bin/usr/uploads/',
+		'cachefile.directory'     => 'app://bin/usr/cache/',
+		'uploads.directory'       => 'app://bin/usr/uploads/',
 	    
 		#Timezone settings
 		'timezone'                 => 'Europe/Berlin',
