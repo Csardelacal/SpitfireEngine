@@ -137,7 +137,7 @@ class Session
 
 		if ($instance !== null) { return $instance; }
 
-		$handler = Environment::get('session.handler')? : new FileSessionHandler(spitfire()->getCWD() . DIRECTORY_SEPARATOR . SESSION_SAVE_PATH);
+		$handler = Environment::get('session.handler')? : new FileSessionHandler(SESSION_SAVE_PATH);
 		return $instance = new Session($handler);
 	}
 	
