@@ -301,6 +301,7 @@ function media() {
 		$dispatcher->register('image/psd', new \spitfire\io\media\ImagickManipulator());
 		$dispatcher->register('image/gif', new \spitfire\io\media\FFMPEGManipulator());
 		$dispatcher->register('video/mp4', new \spitfire\io\media\FFMPEGManipulator());
+		$dispatcher->register('video/quicktime', new \spitfire\io\media\FFMPEGManipulator());
 		$dispatcher->register('image/jpeg', new \spitfire\io\media\GDManipulator());
 		$dispatcher->register('image/vnd.adobe.photoshop', new \spitfire\io\media\ImagickManipulator());
 	}

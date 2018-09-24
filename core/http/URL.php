@@ -169,7 +169,7 @@ class URL
 		$fpath = (!isset($app) ? ASSET_DIRECTORY : '/assets/').$asset_name;
 		$modifiedAt = filemtime($fpath);
 		$fpath .= "?$modifiedAt";
-		return SpitFire::baseUrl() . '/' . $fpath;
+		return SpitFire::baseUrl() . '/assets/' . $asset_name;
 	}
 	
 	public static function make($url) {

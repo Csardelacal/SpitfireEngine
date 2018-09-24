@@ -35,13 +35,23 @@ class Request
 		
 	private $body = [];
 	
+	private $follow = true;
+	
 	public function __construct($url) {
+		$this->url = URLReflection::fromURL($url);
+	}
+	
+	public function url($url) {
 		$this->url = URLReflection::fromURL($url);
 	}
 	
 	public function header($name, $value) {
 		$this->headers[$name] = $value;
 		return $this;
+	}
+	
+	public function follow($set = true) {
+		$this->follow = !!$set;
 	}
 	
 	public function get($parameter, $value = null) {
@@ -69,6 +79,7 @@ class Request
 		$ch = curl_init((string)$this->url);
 		
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 		
 		if (!empty($this->body)) {
 			curl_setopt($ch, CURLOPT_POST, true);
@@ -85,6 +96,8 @@ class Request
 		
 		$progress && curl_setopt($ch, CURLOPT_NOPROGRESS, false);
 		$progress && curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, $progress);
+		
+		$this->follow && curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->follow);
 		
 		$_ret = curl_exec($ch);
 		$meta = curl_getinfo($ch);
