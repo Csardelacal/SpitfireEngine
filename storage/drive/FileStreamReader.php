@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\drive;
 
+use spitfire\exceptions\FilePermissionsException;
+use spitfire\io\stream\StreamInterface;
 use spitfire\io\stream\StreamReaderInterface;
 
 /* 
@@ -29,17 +31,56 @@ use spitfire\io\stream\StreamReaderInterface;
 class FileStreamReader implements StreamReaderInterface
 {
 	
+	/**
+	 * The file handle used to stream from the drive to the application. If the 
+	 * application was unable to open the stream reading it will yield a 
+	 * file permissions exception.
+	 *
+	 * @var resource|bool
+	 */
 	private $fh;
 	
+	/*
+	 * Instance a new FileStreamReader. This allows the application to read chunks
+	 * of a file to memory and process them in batch.
+	 */
 	public function __construct($path) {
 		$this->fh = fopen($path, 'r');
 	}
 	
+	/**
+	 * Reads up to a given amount of bytes from the file. Please note that if the
+	 * file has been completely read or it's length is shorter than the amount provided,
+	 * it will return the entire remaining file.
+	 * 
+	 * The standard amount to be read is 8MB.
+	 * 
+	 * @throws FilePermissionsException
+	 * @return string
+	 */
 	public function read($length = null) {
+		
+		if ($this->fh === false) {
+			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
+		}
+		
 		return fread($this->fh, $length?: 4 * 1024 * 1024);
 	}
-
-	public function seek($position): \spitfire\io\stream\StreamInterface {
+	
+	/**
+	 * Moves the file read pointer to the given address. The offset is given in
+	 * bytes from the start of the file.
+	 * 
+	 * @param int $position
+	 * @return StreamInterface
+	 * @throws FilePermissionsException
+	 */
+	public function seek($position): StreamInterface {
+		
+		if ($this->fh === false) {
+			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
+		}
+		
 		fseek($this->fh, $position);
 		return $this;
 	}

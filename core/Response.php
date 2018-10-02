@@ -1,5 +1,8 @@
 <?php namespace spitfire\core;
 
+use spitfire\io\stream\StreamSourceInterface;
+use spitfire\storage\objectStorage\FileInterface;
+
 /**
  * Any HTTP response is built off a set of headers and a body that contains the
  * message being delivered. This class represents an HTTP response that can be
@@ -32,20 +35,9 @@ class Response
 	 * data in the response body as long as it can be encoded properly with the
 	 * defined encoding.
 	 *
-	 * @var string|Context
+	 * @var string|Context|FileInterface|StreamSourceInterface
 	 */
 	private $body;
-	
-	/**
-	 * The return state of a request allows the application to quickly define 
-	 * special redirections if the application reached a certain request state.
-	 * 
-	 * This way, if the application finished successfully it can send the user
-	 * while showing him an error page in case there was one.
-	 *
-	 * @var string|null
-	 */
-	private $returnState = null;
 	
 	/**
 	 * Instantiates a new Response element. This element allows you application to
@@ -99,8 +91,8 @@ class Response
 	 * Changes the headers object. This allows your application to quickly change
 	 * all headers and replace everything the way you want it.
 	 * 
-	 * @param \spitfire\core\Headers $headers
-	 * @return \spitfire\core\Response
+	 * @param Headers $headers
+	 * @return Response
 	 */
 	public function setHeaders(Headers $headers) {
 		$this->headers = $headers;
@@ -113,34 +105,10 @@ class Response
 	 * will be used to render it's view.
 	 * 
 	 * @param string|Context $body
-	 * @return \spitfire\core\Response
+	 * @return Response
 	 */
 	public function setBody($body) {
 		$this->body = $body;
-		return $this;
-	}
-	
-	/**
-	 * Defines a return state. The return state is just a string that provides 
-	 * the application with a quick way of returning a redirection in certain 
-	 * cases.
-	 * 
-	 * For example, if you application has a login form you can set a "success"
-	 * return state when the user has properly logged in and redirect the user
-	 * to the homepage.
-	 * 
-	 * In this case if a "onsuccess" _GET parameter was set (and it is a valid
-	 * URL) the application will redirect the user to this URL instead of the
-	 * homepage.
-	 * 
-	 * It just removes the need for an additional check before redirecting or 
-	 * display a result message.
-	 * 
-	 * @param string $state
-	 * @return \spitfire\core\Response
-	 */
-	public function setReturnState($state) {
-		$this->returnState = $state;
 		return $this;
 	}
 	
@@ -155,12 +123,12 @@ class Response
 		
 		$this->headers->send();
 		
-		if ($body instanceof \spitfire\io\stream\StreamSourceInterface) {
+		if ($body instanceof StreamSourceInterface) {
 			$reader = $body->getStreamReader();
 			while($s = $reader->read()) { echo $s; }
 		}
 		
-		elseif ($body instanceof \spitfire\storage\objectStorage\FileInterface) {
+		elseif ($body instanceof FileInterface) {
 			echo $body->read();
 		}
 		

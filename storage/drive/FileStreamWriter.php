@@ -29,6 +29,13 @@ use spitfire\io\stream\StreamReaderInterface;
 class FileStreamWriter implements \spitfire\io\stream\StreamWriterInterface
 {
 	
+	/**
+	 * The file handle used to stream from the drive to the application. If the 
+	 * application was unable to open the stream reading it will yield a 
+	 * file permissions exception.
+	 *
+	 * @var resource|bool
+	 */
 	private $fh;
 	
 	public function __construct($path) {
@@ -37,11 +44,21 @@ class FileStreamWriter implements \spitfire\io\stream\StreamWriterInterface
 	
 
 	public function seek($position): \spitfire\io\stream\StreamInterface {
+		
+		if ($this->fh === false) {
+			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
+		}
+		
 		fseek($this->fh, $position);
 		return $this;
 	}
 
 	public function write($string) {
+		
+		if ($this->fh === false) {
+			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
+		}
+		
 		return fwrite($this->fh, $string);
 	}
 
