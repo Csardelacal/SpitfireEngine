@@ -151,22 +151,22 @@ class Response
 	 * the headers.
 	 */
 	public function send() {
+		$body = $this->getBody();
 		
-		#Check for a special return state
-		$returnURL = filter_input(INPUT_GET, 'on' . $this->returnState);
-		
-		if ($returnURL && substr($returnURL, 0, 1) === '/') {
-			$this->getHeaders()->redirect($returnURL);
-		}
-		
-		if (in_array($this->getHeaders()->get('Status'), Array('301 Permanently moved', '302 Found'))) {
-			$this->setBody('Redirecting...');
-		}
-		
-		ob_start();
-		echo $this->getBody();
 		$this->headers->send();
-		ob_flush();
+		
+		if ($body instanceof \spitfire\io\stream\StreamSourceInterface) {
+			$reader = $body->getStreamReader();
+			while($s = $reader->read()) { echo $s; }
+		}
+		
+		elseif ($body instanceof \spitfire\storage\objectStorage\FileInterface) {
+			echo $body->read();
+		}
+		
+		else {
+			echo $body;
+		}
 	}
 	
 }

@@ -117,7 +117,7 @@ class View extends MVC
 				$output = $this->layout->content($output)->render($this->data);
 			}
 			
-			echo $output;
+			return $output;
 		}
 		catch (FileNotFoundException$e) {
 			#Consider that a missing template file that should be rendered is an error
