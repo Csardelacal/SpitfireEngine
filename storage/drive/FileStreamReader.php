@@ -36,7 +36,7 @@ class FileStreamReader implements StreamReaderInterface
 	 * application was unable to open the stream reading it will yield a 
 	 * file permissions exception.
 	 *
-	 * @var resource|bool
+	 * @var resource|false
 	 */
 	private $fh;
 	

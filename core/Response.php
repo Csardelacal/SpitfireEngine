@@ -80,7 +80,7 @@ class Response
 	 * In case you're using Spitfire's Context object to manage the context the
 	 * response will get the view it contains and render that before returning it.
 	 * 
-	 * @return string
+	 * @return string|StreamSourceInterface|FileInterface
 	 */
 	public function getBody() {
 		if ($this->body instanceof Context) {return $this->body->view->render();}
