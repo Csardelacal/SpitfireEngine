@@ -96,6 +96,10 @@ class File implements FileInterface, StreamSourceInterface, \spitfire\io\stream\
 	}
 
 	public function basename(): string {
+		return pathinfo($this->getPath(), PATHINFO_BASENAME);
+	}
+
+	public function filename(): string {
 		return pathinfo($this->getPath(), PATHINFO_FILENAME);
 	}
 
