@@ -45,7 +45,7 @@ class MediaDispatcher
 			return $copy;
 		}
 		
-		throw new \spitfire\exceptions\PrivateException('No manipulator found', 1805301140);
+		throw new \spitfire\exceptions\PrivateException(sprintf('No manipulator found for %s(%s)', $object->uri(), $object->mime()), 1805301140);
 	}
 	
 }

@@ -65,7 +65,7 @@ class Response
 		$parsed = json_decode($this->body);
 		
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			throw new PrivateException('Error while parsing JSON data: ' . json_last_error_msg(), 1805311215);
+			throw new PrivateException('Error while parsing JSON data: ' . json_last_error_msg() . $this->html(), 1805311215);
 		}
 		
 		return $parsed;

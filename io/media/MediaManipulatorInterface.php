@@ -57,4 +57,6 @@ interface MediaManipulatorInterface
 	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH) : MediaManipulatorInterface;
 	
 	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface;
+	
+	public function poster(): MediaManipulatorInterface;
 }

@@ -50,7 +50,7 @@ class Upload
 	
 	public function __construct($meta) {
 		$this->meta      = $meta;
-		$this->uploadDir = 'app://bin/usr/uploads';
+		$this->uploadDir = \spitfire\core\Environment::get('uploads.directory')?: 'app://bin/usr/uploads';
 	}
 	
 	public function isOk() {

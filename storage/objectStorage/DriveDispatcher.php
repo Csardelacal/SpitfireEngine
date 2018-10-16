@@ -72,6 +72,10 @@ class DriveDispatcher
 		
 		list($scheme, $path) = $pieces;
 		
+		if(!isset($this->drives[$scheme])) {
+			throw new PrivateException('Scheme cannot be handled', 1805301529);
+		}
+		
 		$mount  = $this->drives[$scheme];
 		
 		/*

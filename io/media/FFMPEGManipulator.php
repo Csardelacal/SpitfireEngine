@@ -95,6 +95,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		switch ($mime) {
 			case 'image/gif':
 			case 'video/mp4':
+			case 'video/quicktime':
 				return true;
 			default:
 				return false;
@@ -103,6 +104,16 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 
 	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
 		return $this;
+	}
+
+	public function poster(): MediaManipulatorInterface {
+		$tmpi = '/tmp/' . rand();
+		$tmpo = '/tmp/' . rand() . '.png';
+		
+		file_put_contents($tmpi, $this->src->read());
+		exec(sprintf('ffmpeg -i %s -ss 00:00:00 -vframes 1 %s 2>&1', $tmpi, $tmpo));
+		
+		return media()->load(storage()->get('file:/' . $tmpo));
 	}
 
 }

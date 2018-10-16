@@ -111,4 +111,8 @@ class ImagickManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
+	public function poster(): MediaManipulatorInterface {
+		return $this;
+	}
+
 }

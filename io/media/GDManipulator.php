@@ -186,5 +186,8 @@ class GDManipulator implements MediaManipulatorInterface
 		}
 	}
 
+	public function poster(): MediaManipulatorInterface {
+		return $this;
+	}
 
 }
