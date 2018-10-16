@@ -37,6 +37,8 @@ class Request
 	
 	private $follow = true;
 	
+	private $stream = false;
+	
 	public function __construct($url) {
 		$this->url = URLReflection::fromURL($url);
 	}
@@ -75,10 +77,21 @@ class Request
 		return $this;
 	}
 	
+	public function stream($callable) {
+		$this->stream = function ($ign, $d)  use ($callable) { return (int)$callable($d); };
+		return $this;
+	}
+	
 	public function send($progress = null) {
 		$ch = curl_init((string)$this->url);
 		
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		if ($this->stream) {
+			curl_setopt($ch, CURLOPT_WRITEFUNCTION, $this->stream);
+		}
+		else {
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		}
+		
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 		
 		if (!empty($this->body)) {

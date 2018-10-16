@@ -1,4 +1,4 @@
-<?php namespace spitfire\storage\objectStorage;
+<?php namespace spitfire\io\stream;
 
 /* 
  * The MIT License
@@ -24,19 +24,8 @@
  * THE SOFTWARE.
  */
 
-interface FileInterface extends NodeInterface
+interface StreamReaderInterface extends StreamInterface
 {
 	
-	public function write(string$data) : bool;
-	
-	public function read() : string;
-	
-	public function mime() : string;
-	
-	public function basename() : string;
-	
-	public function filename() : string;
-	
-	public function move(DirectoryInterface$to, string$name) : FileInterface;
-	
+	function read($length = null);
 }

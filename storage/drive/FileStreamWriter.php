@@ -1,4 +1,6 @@
-<?php namespace spitfire\storage\objectStorage;
+<?php namespace spitfire\storage\drive;
+
+use spitfire\io\stream\StreamReaderInterface;
 
 /* 
  * The MIT License
@@ -24,19 +26,40 @@
  * THE SOFTWARE.
  */
 
-interface FileInterface extends NodeInterface
+class FileStreamWriter implements \spitfire\io\stream\StreamWriterInterface
 {
 	
-	public function write(string$data) : bool;
+	/**
+	 * The file handle used to stream from the drive to the application. If the 
+	 * application was unable to open the stream reading it will yield a 
+	 * file permissions exception.
+	 *
+	 * @var resource|false
+	 */
+	private $fh;
 	
-	public function read() : string;
+	public function __construct($path) {
+		$this->fh = fopen($path, 'w+');
+	}
 	
-	public function mime() : string;
-	
-	public function basename() : string;
-	
-	public function filename() : string;
-	
-	public function move(DirectoryInterface$to, string$name) : FileInterface;
-	
+
+	public function seek($position): \spitfire\io\stream\StreamInterface {
+		
+		if ($this->fh === false) {
+			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
+		}
+		
+		fseek($this->fh, $position);
+		return $this;
+	}
+
+	public function write($string) {
+		
+		if ($this->fh === false) {
+			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
+		}
+		
+		return fwrite($this->fh, $string);
+	}
+
 }

@@ -1,8 +1,10 @@
 <?php namespace spitfire\storage\drive;
 
+use spitfire\io\stream\StreamSourceInterface;
 use spitfire\storage\objectStorage\DirectoryInterface;
 use spitfire\storage\objectStorage\FileInterface;
 use spitfire\storage\objectStorage\NodeInterface;
+use function mime;
 
 /* 
  * The MIT License
@@ -28,7 +30,7 @@ use spitfire\storage\objectStorage\NodeInterface;
  * THE SOFTWARE.
  */
 
-class File implements FileInterface
+class File implements FileInterface, StreamSourceInterface, \spitfire\io\stream\StreamTargetInterface
 {
 	
 	private $parent;
@@ -94,7 +96,19 @@ class File implements FileInterface
 	}
 
 	public function basename(): string {
+		return pathinfo($this->getPath(), PATHINFO_BASENAME);
+	}
+
+	public function filename(): string {
 		return pathinfo($this->getPath(), PATHINFO_FILENAME);
+	}
+
+	public function getStreamReader(): \spitfire\io\stream\StreamReaderInterface {
+		return new FileStreamReader($this->getPath());
+	}
+
+	public function getStreamWriter() : \spitfire\io\stream\StreamWriterInterface {
+		return new FileStreamWriter($this->getPath());
 	}
 
 }
