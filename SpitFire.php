@@ -10,12 +10,12 @@ use spitfire\exceptions\PrivateException;
 use Strings;
 
 if (!defined('APP_DIRECTORY')){
-	define ('APP_DIRECTORY',         BASEDIR . '/bin/apps/',        true);
-	define ('CONFIG_DIRECTORY',      BASEDIR . '/bin/settings/',    true);
-	define ('CONTROLLERS_DIRECTORY', BASEDIR . '/bin/controllers/', true);
-	define ('ASSET_DIRECTORY',       BASEDIR . '/assets/',          true);
-	define ('TEMPLATES_DIRECTORY',   BASEDIR . '/bin/templates/',   true);
-	define ('SESSION_SAVE_PATH',     BASEDIR . '/bin/usr/sessions/',true);
+	define ('APP_DIRECTORY',         BASEDIR . '/bin/apps/');
+	define ('CONFIG_DIRECTORY',      BASEDIR . '/bin/settings/');
+	define ('CONTROLLERS_DIRECTORY', BASEDIR . '/bin/controllers/');
+	define ('ASSET_DIRECTORY',       BASEDIR . '/assets/');
+	define ('TEMPLATES_DIRECTORY',   BASEDIR . '/bin/templates/');
+	define ('SESSION_SAVE_PATH',     BASEDIR . '/bin/usr/sessions/');
 }
 
 /**
