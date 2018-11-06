@@ -165,6 +165,9 @@ class GDManipulator implements MediaManipulatorInterface
 			case 'png':
 			default:
 				imagepng($this->img, $this->tmp, $this->compression);
+				
+				try { \spitfire\io\image\PNGQuant::compress($this->tmp, $this->tmp); }
+				catch (\Exception$e) { /*If PNGQuant is not installed, we do nothing*/ }
 		}
 		
 		$location->write(file_get_contents($this->tmp));
