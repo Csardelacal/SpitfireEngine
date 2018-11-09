@@ -116,7 +116,7 @@ class ReferenceAdapter extends BaseAdapter
 		 * that it is stored.
 		 */
 		if ($this->query instanceof Model) { 
-			$this->query->store(); 
+			//$this->query->store(); 
 		}
 		
 		#Now we can safely say that the data stored on the remote and local sets 

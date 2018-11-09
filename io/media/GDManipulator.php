@@ -86,7 +86,7 @@ class GDManipulator implements MediaManipulatorInterface
 		$this->meta = getimagesize($this->tmp);
 
 		if (!function_exists('imagecreatefrompng')) {
-			throw new PrivateException("GD is not installed.", 1805301100);
+			throw new \spitfire\exceptions\PrivateException("GD is not installed.", 1805301100);
 		}
 		
 		switch($this->meta[2]) {
@@ -160,6 +160,7 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		switch (pathinfo($location->uri(), PATHINFO_EXTENSION)) {
 			case 'jpg':
+			case 'jpeg':
 				imagejpeg($this->img, $this->tmp, $this->compression * 10);
 				break;
 			case 'png':

@@ -79,10 +79,12 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 	public function store(\spitfire\storage\objectStorage\FileInterface $location): \spitfire\storage\objectStorage\FileInterface {
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.mp4';
-		
+				
 		file_put_contents($tmpi, $this->src->read());
-		exec(sprintf('ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -vf "%s" %s 2>&1', $tmpi, implode(',', $this->operations), $tmpo));
+		exec(sprintf('ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -r ntsc -crf 26 -vf "%s" %s 2>&1', $tmpi, implode(',', $this->operations), $tmpo));
 		
+		console()->info('Filesize is ' . new \spitfire\io\Filesize(filesize($tmpo)))->ln();
+
 		$location->write(file_get_contents($tmpo));
 		
 		unlink($tmpi);
