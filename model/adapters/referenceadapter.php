@@ -4,7 +4,6 @@ use spitfire\exceptions\PrivateException;
 use spitfire\Model;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\Query;
-use spitfire\storage\database\Restriction;
 
 class ReferenceAdapter extends BaseAdapter
 {
@@ -43,7 +42,7 @@ class ReferenceAdapter extends BaseAdapter
 		 * TODO: This should stop being an issue once the resultset object has been
 		 * moved out of the query.
 		 */
-		$this->remote = $this->query === null? null : clone $this->query;
+		$this->remote = $this->query;
 	}
 	
 	public function dbGetData() {
@@ -58,15 +57,11 @@ class ReferenceAdapter extends BaseAdapter
 				$_return[$p->getName()] = $modeldata[$p->getReferencedField()->getName()];
 			}
 		} elseif ($this->query instanceof Query) {
-			$restrictions = $this->query->getRestrictions();
-			foreach ($restrictions as $r) {
-				/* @var $r Restriction */
-				foreach ($physical as $p) {
-					if ($r instanceof Restriction && $r->getField()->getField() === $p->getReferencedField()) {
-						$_return[$p->getName()] = $r->getValue();
-					}
-				}
-			}
+			/*
+			 * In this case, the value of the field was never changed, and therefore
+			 * there's no need to rewrite the data.
+			 */
+			return [];
 		} elseif ($this->query === null) {
 			foreach ($physical as $p) {
 				$_return[$p->getName()] = null;
@@ -96,13 +91,24 @@ class ReferenceAdapter extends BaseAdapter
 	}
 	
 	public function isSynced() {
+		if ($this->query instanceof Query) {
+			/*
+			 * If the value of the adapter was never changed, then it's safe to assume
+			 * that it's still in sync. Please note that spitfire assumes that the 
+			 * database will cascade changes if the primary key of a record is changed.
+			 * 
+			 * NOTE: The primary key of a record should NEVER change.
+			 */
+			return true;
+		}
+		
 		$this->remote = $ma = $this->remote instanceof Query? $this->remote->fetch() : $this->remote;
 		$this->query  = $mb = $this->query  instanceof Query? $this->query->fetch()  : $this->query;
 		
 		$pka = $ma? $ma->getPrimaryData() : null;
 		$pkb = $mb? $mb->getPrimaryData() : null;
 		
-		return $pka == $pkb;
+		return $pka === $pkb;
 	}
 	
 	
@@ -111,13 +117,6 @@ class ReferenceAdapter extends BaseAdapter
 	 * committing, rolling back will return the current value.
 	 */
 	public function commit() {
-		/**
-		 * If the "parent" was also edited or newly created, we should enforce 
-		 * that it is stored.
-		 */
-		if ($this->query instanceof Model) { 
-			//$this->query->store(); 
-		}
 		
 		#Now we can safely say that the data stored on the remote and local sets 
 		#is equal. Therefore we can replace the old remote value.
@@ -130,6 +129,10 @@ class ReferenceAdapter extends BaseAdapter
 	 */
 	public function rollback() {
 		$this->query = $this->remote;
+	}
+	
+	public function getDependencies() {
+		return collect($this->query instanceof Query? [] : [$this->query]);
 	}
 }
 

@@ -87,11 +87,30 @@ abstract class Model implements Serializable
 	 * @throws PrivateException
 	 */
 	public function store() {
-		#Check if onbeforesave is there and use it.
-		if (method_exists($this, 'onbeforesave')) {
-			$this->onbeforesave();
+		$dependencies = $this->getDependencies();
+		
+		$processed = collect([$this]);
+		
+		while ($d = $dependencies->shift()) {
+			if (!$processed->contains($d)) {
+				$processed->push($d);
+				$dependencies->add($d->getDependencies());
+			}
 		}
 		
+		#Check if onbeforesave is there and use it.
+		$processed->each(function ($e) {
+			if (method_exists($e, 'onbeforesave')) {
+				$e->onbeforesave();
+			}
+		});
+		
+		$processed->each(function ($e) {
+			$e->write();
+		});
+	}
+	
+	public function write() {
 		#Decide whether to insert or update depending on the Model
 		if ($this->new) { $this->insert(); }
 		else            { $this->update(); }
@@ -101,6 +120,20 @@ abstract class Model implements Serializable
 		foreach($this->data as $value) {
 			$value->commit();
 		}
+	}
+	
+	public function getDependencies() {
+		
+		$dependencies = collect($this->data)->filter(function ($e) {
+			return $e instanceof model\adapters\ReferenceAdapter || $e instanceof model\adapters\ChildrenAdapter;
+		})
+		->each(function ($e) {
+			return $e->getDependencies();
+		})
+		->filter()
+		->flatten();
+		
+		return $dependencies;
 	}
 
 

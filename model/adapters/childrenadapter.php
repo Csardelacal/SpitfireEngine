@@ -45,7 +45,15 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	public function toArray() {
 		if ($this->children !== null) { return $this->children; }
-		$this->children = $this->getQuery()->fetchAll()->toArray();
+		
+		/*
+		 * Inform the children that the parent being worked on is this
+		 */
+		$this->children = $this->getQuery()->fetchAll()->each(function ($c) {
+			$c->{$this->field->getReferencedField()->getName()} = $this->parent;
+			return $c;
+		})->toArray();
+		
 		return $this->children;
 	}
 
@@ -96,22 +104,31 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		if ($this->children === null) $this->toArray();
 		unset($this->children[$offset]);
 	}
-
+	
+	/**
+	 * 
+	 * @todo If the element list has changed, the database should sever the connections
+	 *  between the elements and their children.
+	 * @return type
+	 */
 	public function commit() {
-		#f the query hasn't been fetched then the data has not been modified for sure
+		return;
+	}
+
+	public function dbGetData() {
+		
+		#If the query hasn't been fetched then the data has not been modified for sure
 		if ($this->children === null) {
-			return;
+			return [];
 		}
+		
 		//@todo: Change for definitive.
 		$role  = $this->getField()->getRole();
 		
 		foreach($this->children as $child) {
 			$child->{$role} = $this->getModel();
-			$child->store();
 		}
-	}
-
-	public function dbGetData() {
+		
 		return Array();
 	}
 	
@@ -177,5 +194,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	public function __toString() {
 		return "Array()";
 	}
-
+	
+	public function getDependencies() {
+		return collect($this->children === null? [] : $this->children);
+	}
 }

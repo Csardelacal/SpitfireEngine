@@ -1,5 +1,6 @@
 <?php namespace tests\spitfire\storage\database\drivers\mysqlpdo;
 
+use ChildrenField;
 use IntegerField;
 use PHPUnit\Framework\TestCase;
 use Reference;
@@ -79,6 +80,29 @@ class TableTest extends TestCase
 		$e2 = $this->db->table($schema2)->newRecord();
 		
 		$e2->a = $e1;
+		$e2->store();
+		
+		$this->assertNotEmpty($e1->_id);
+		$this->assertNotEmpty($e2->a->_id);
+	}
+	
+	/**
+	 * 
+	 * @depends tests\spitfire\storage\database\drivers\mysqlpdo\TableTest::testCreate
+	 */
+	public function testStoreDoubleReference($o) {
+		
+		$schema1 = new Schema('test\storage\database\Table\Double\Create1');
+		$schema2 = new Schema('test\storage\database\Table\Double\Create2');
+		
+		$schema1->b = new ChildrenField('test\storage\database\Table\Double\Create2', 'a');
+		$schema2->a = new Reference('test\storage\database\Table\Double\Create1');
+		
+		$e1 = $this->db->table($schema1)->newRecord();
+		$e2 = $this->db->table($schema2)->newRecord();
+		
+		$e2->a = $e1;
+		$e1->b[] = $e2;
 		$e2->store();
 		
 		$this->assertNotEmpty($e1->_id);
