@@ -47,6 +47,7 @@ class Response
 	
 	public function expect($code) {
 		if ($code !== $this->status) {
+			var_dump($this->body);
 			throw new BadStatusCodeException('Bad status code, ' . $this->status . ': ' . $this->body, 1805311227);
 		}
 		

@@ -121,18 +121,39 @@ class Response
 	public function send() {
 		$body = $this->getBody();
 		
-		$this->headers->send();
 		
 		if ($body instanceof StreamSourceInterface) {
-			$reader = $body->getStreamReader();
-			while($s = $reader->read()) { echo $s; }
+			
+			if (Request::get()->isRange()) {
+				list($start, $end) = Request::get()->getRange();
+				$file = $body->getStreamReader();
+				
+				try { $reader = new \spitfire\io\stream\StreamSegment($file, $start, $end? : min($file->length() - 1, $start + 1.3 * 1024 * 1024)); }
+				catch (\spitfire\exceptions\PrivateException$e) { throw new \spitfire\exceptions\PublicException('Invalid range' . $e->getCode(), 416);}
+				
+				$out = $reader->read();
+				$length = strlen($out);
+				
+				$this->headers->status(206);
+				$this->headers->set('Content-Range', 'bytes '. strval($start) . '-' . ($start + $length) . '/' . $file->length());
+				$this->headers->set('Content-Length', $length);
+				$this->headers->send();
+				
+				echo $out;
+			} else {
+				$this->headers->send();
+				$reader = $body->getStreamReader();
+				while($s = $reader->read()) { echo $s; }
+			}
 		}
 		
 		elseif ($body instanceof FileInterface) {
+			$this->headers->send();
 			echo $body->read();
 		}
 		
 		else {
+			$this->headers->send();
 			echo $body;
 		}
 	}

@@ -40,11 +40,14 @@ class FileStreamReader implements StreamReaderInterface
 	 */
 	private $fh;
 	
+	private $path;
+	
 	/*
 	 * Instance a new FileStreamReader. This allows the application to read chunks
 	 * of a file to memory and process them in batch.
 	 */
 	public function __construct($path) {
+		$this->path = $path;
 		$this->fh = fopen($path, 'r');
 	}
 	
@@ -83,6 +86,10 @@ class FileStreamReader implements StreamReaderInterface
 		
 		fseek($this->fh, $position);
 		return $this;
+	}
+	
+	public function length(): int {
+		return filesize($this->path);
 	}
 
 }
