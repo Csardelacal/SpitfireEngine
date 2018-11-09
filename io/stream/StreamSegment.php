@@ -24,12 +24,63 @@
  * THE SOFTWARE.
  */
 
-interface StreamReaderInterface extends StreamInterface
+class StreamSegment implements StreamReaderInterface
 {
 	
-	function read($length = null);
+	private $src;
 	
-	function seek($position) : StreamInterface;
+	private $start;
 	
-	function length() : int;
+	private $end;
+	
+	private $cursor;
+	
+	public function __construct(StreamReaderInterface$src, $start, $end = null) {
+		$this->src = $src;
+		$this->start = $this->cursor = $start;
+		$this->end = $end;
+		
+		if ($this->start >= $this->end) {
+			throw new \spitfire\exceptions\OutOfBoundsException('Start of stream segment is out of bounds', 1811081804);
+		}
+		
+		$this->src->seek($this->start);
+	}
+	
+	public function length(): int {
+		if ($this->end) {
+			return $this->end - $this->start;
+		}
+		else {
+			return $this->src->length() - 1 - $this->start;
+		}
+	}
+
+	public function read($length = null) {
+		
+		if ($this->end) {
+			if ($this->cursor >= $this->end) { 
+				return; 
+			}
+			
+			$read = substr($this->src->read($length), 0, $this->end - $this->cursor);
+			$this->cursor += ($length && isset($read[$length - 1]))? $length : strlen($read);
+			return $read;
+		}
+		
+		else {
+			$read = $this->src->read($l);
+			
+			return substr($read, 0, $this->length() - 1 - $this->cursor);
+		}
+		
+		
+	}
+
+	public function seek($position): StreamInterface {
+		$this->src->seek($position + $this->start);
+		
+		return $this;
+	}
+
 }

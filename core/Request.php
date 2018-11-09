@@ -186,6 +186,29 @@ class Request
 	public function isPost() {
 		return $this->method === 'POST';
 	}
+	
+	public function isRange() {
+		return isset($_SERVER['HTTP_RANGE']);
+	}
+	
+	public function getRange() {
+		$sent = $_SERVER['HTTP_RANGE'];
+		
+		if (!\Strings::startsWith($sent, 'bytes=')) {
+			throw new \spitfire\exceptions\PublicException('Malformed range sent', 416);
+		}
+		
+		if (strstr($sent, ',')) {
+			throw new \spitfire\exceptions\PublicException('Spitfire does not accept multiple ranges', 416);
+		}
+		
+		$pieces = explode('-', substr($_SERVER['HTTP_RANGE'], 6));
+		
+		return [
+			array_shift($pieces),
+			array_shift($pieces)?: null
+		];
+	}
 
 	public function setCookie($cookie) {
 		$this->cookie = $cookie;

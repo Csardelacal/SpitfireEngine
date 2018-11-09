@@ -12,6 +12,7 @@ class Headers
 	
 	private $states = Array(
 		 200 => '200 OK',
+		 206 => '206 Partial Content',
 		 301 => '301 Moved Permanently',
 		 302 => '302 Found',
 		 400 => '400 Invalid request',
@@ -19,6 +20,7 @@ class Headers
 		 403 => '403 Forbidden',
 		 404 => '404 Not Found',
 		 410 => '410 Gone',
+		 416 => '416 Range not satisfiable',
 		 500 => '500 Server Error'
 	);
 	
