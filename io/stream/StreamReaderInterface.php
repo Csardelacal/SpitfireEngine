@@ -29,7 +29,5 @@ interface StreamReaderInterface extends StreamInterface
 	
 	function read($length = null);
 	
-	function seek($position) : StreamInterface;
-	
 	function length() : int;
 }

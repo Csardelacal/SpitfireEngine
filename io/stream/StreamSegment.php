@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class StreamSegment implements StreamReaderInterface
+class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 {
 	
 	private $src;
@@ -44,6 +44,10 @@ class StreamSegment implements StreamReaderInterface
 			throw new \spitfire\exceptions\OutOfBoundsException('Start of stream segment is out of bounds', 1811081804);
 		}
 		
+		if (!$this->src instanceof SeekableStreamInterface) {
+			throw new \InvalidArgumentException('Segments only work on streams that allow seeking', 1811101243);
+		}
+		
 		$this->src->seek($this->start);
 	}
 	
@@ -59,19 +63,24 @@ class StreamSegment implements StreamReaderInterface
 	public function read($length = null) {
 		
 		if ($this->end) {
-			if ($this->cursor >= $this->end) { 
-				return; 
+			$max = $this->end - $this->src->tell();
+			
+			if ($max <= 0) {
+				return '';
 			}
 			
-			$read = substr($this->src->read($length), 0, $this->end - $this->cursor);
-			$this->cursor += ($length && isset($read[$length - 1]))? $length : strlen($read);
-			return $read;
+			$read = $this->src->read($length);
+			
+			if (isset($read[$max])) {
+				return substr($read, 0, $max);
+			}
+			else {
+				return $read;
+			}
 		}
 		
 		else {
-			$read = $this->src->read($l);
-			
-			return substr($read, 0, $this->length() - 1 - $this->cursor);
+			return $this->src->read($length);
 		}
 		
 		
@@ -81,6 +90,10 @@ class StreamSegment implements StreamReaderInterface
 		$this->src->seek($position + $this->start);
 		
 		return $this;
+	}
+
+	public function tell(): int {
+		return $this->src->tell() - $this->start;
 	}
 
 }
