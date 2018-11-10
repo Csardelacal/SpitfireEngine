@@ -96,8 +96,21 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	public function offsetSet($offset, $value) {
 		if ($this->children === null) { $this->toArray(); }
 		
+		$previous = isset($this->children[$offset])? $this->children[$offset] : null;
+		
 		if ($offset === null) { $this->children[] = $value; }
 		else                  { $this->children[$offset] = $value; }
+		
+		#Commit the changes to the database.
+		$role  = $this->getField()->getRole();
+		
+		$value->{$role} = $this->getModel();
+		$value->store();
+		
+		if ($previous) {
+			$previous->{$role} = null;
+			$previous->store();
+		}
 	}
 
 	public function offsetUnset($offset) {
@@ -116,19 +129,6 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	}
 
 	public function dbGetData() {
-		
-		#If the query hasn't been fetched then the data has not been modified for sure
-		if ($this->children === null) {
-			return [];
-		}
-		
-		//@todo: Change for definitive.
-		$role  = $this->getField()->getRole();
-		
-		foreach($this->children as $child) {
-			$child->{$role} = $this->getModel();
-		}
-		
 		return Array();
 	}
 	
@@ -171,6 +171,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * will do nothing.
 	 * 
 	 * @param \spitfire\model\adapters\ManyToManyAdapter|Model[] $data
+	 * @todo Fix to allow for user input
 	 * @throws \spitfire\exceptions\PrivateException
 	 */
 	public function usrSetData($data) {
