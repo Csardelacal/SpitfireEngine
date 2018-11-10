@@ -13,6 +13,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @var \spitfire\model\ManyToManyField
 	 */
 	private $field;
+	
+	private $original;
 	private $parent;
 	private $children;
 	
@@ -20,6 +22,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$this->field  = $field;
 		$this->parent = $model;
 		$this->children = $data;
+		$this->original = $data;
 	}
 	
 	/**
@@ -49,7 +52,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		/*
 		 * Inform the children that the parent being worked on is this
 		 */
-		$this->children = $this->getQuery()->fetchAll()->each(function ($c) {
+		$this->children = $this->original = $this->getQuery()->fetchAll()->each(function ($c) {
 			$c->{$this->field->getReferencedField()->getName()} = $this->parent;
 			return $c;
 		})->toArray();
@@ -104,12 +107,12 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		#Commit the changes to the database.
 		$role  = $this->getField()->getRole();
 		
+		#We set the value but do not yet commit it, this will happen whenever the 
+		#parent model is written.
 		$value->{$role} = $this->getModel();
-		$value->store();
 		
 		if ($previous) {
 			$previous->{$role} = null;
-			$previous->store();
 		}
 	}
 
@@ -179,12 +182,28 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 			return;
 		}
 		
+		foreach ($this->children as $child) {
+			$role  = $this->getField()->getRole();
+
+			#We set the value but do not yet commit it, this will happen whenever the 
+			#parent model is written.
+			$child->{$role} = null;
+		}
+		
 		if ($data instanceof ManyToManyAdapter) {
 			$this->children = $data->toArray();
 		} elseif (is_array($data)) {
 			$this->children = $data;
 		} else {
 			throw new \spitfire\exceptions\PrivateException('Invalid data. Requires adapter or array');
+		}
+		
+		foreach ($this->children as $child) {
+			$role  = $this->getField()->getRole();
+
+			#We set the value but do not yet commit it, this will happen whenever the 
+			#parent model is written.
+			$child->{$role} = $this->getModel();
 		}
 	}
 
@@ -197,6 +216,6 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	}
 	
 	public function getDependencies() {
-		return collect($this->children === null? [] : $this->children);
+		return collect($this->children === null? [] : array_merge($this->children, $this->original));
 	}
 }

@@ -87,30 +87,51 @@ abstract class Model implements Serializable
 	 * @throws PrivateException
 	 */
 	public function store() {
-		#Check if onbeforesave is there and use it.
-		if (method_exists($this, 'onbeforesave')) {
-			$this->onbeforesave();
+		$dependencies = $this->getDependencies();
+		
+		$processed = collect([$this]);
+		
+		while ($d = $dependencies->shift()) {
+			if (!$processed->contains($d)) {
+				$processed->push($d);
+				$dependencies->add($d->getDependencies());
+			}
 		}
 		
+		#Check if onbeforesave is there and use it.
+		$processed->each(function ($e) {
+			if (method_exists($e, 'onbeforesave')) {
+				$e->onbeforesave();
+			}
+		});
+		
+		$processed->each(function ($e) {
+			$e->write();
+		});
+	}
+	
+	public function write() {
 		#Decide whether to insert or update depending on the Model
-		if ($this->new) { $this->insert(); }
-		else            { $this->update(); }
+		if ($this->new) { 
+			#Get the autoincrement field
+			$id = $this->table->getCollection()->insert($this);
+			$ai = $this->table->getAutoIncrement();
+			$ad = $this->data[$ai->getName()];
+			
+			#If the autoincrement field is empty set the new DB given id
+			if ($ai && $ad->dbGetData()) {
+				$ad->dbSetData(Array($ai->getName() => $id));
+			}
+		}
+		else { 
+			$this->table->getCollection()->update($this);
+		}
 		
 		$this->new = false;
 		
 		foreach($this->data as $value) {
 			$value->commit();
 		}
-	}
-
-
-	/**
-	 * Returns the fields that compound the primary key of this record.
-	 * 
-	 * @return storage\database\IndexInterface
-	 */
-	public function getUniqueFields() {
-		return $this->table->getPrimaryKey();
 	}
         
 	/**
@@ -121,7 +142,7 @@ abstract class Model implements Serializable
 	 * @return array
 	 */
 	public function getPrimaryData() {
-		$primaryFields = $this->getUniqueFields()->getFields();
+		$primaryFields = $this->table->getPrimaryKey()->getFields();
 		$ret = Array();
 	    
 		foreach ($primaryFields as $field) {
@@ -130,33 +151,6 @@ abstract class Model implements Serializable
 	    }
 	    
 	    return $ret;
-	}
-	
-	/**
-	 * Creates a list of restrictions that identify this record inside it's
-	 * database table.
-	 * 
-	 * @todo Fix, still works the old way.
-	 * @deprecated since version 0.1
-	 * @return Restriction[]
-	 */
-	public function getUniqueRestrictions() {
-		$primaries    = $this->table->getPrimaryKey();
-		/** @var $query Query */
-		$query        = $this->table->getQuery();
-		$restrictions = Array();
-		$values       = Array();
-		
-		foreach($primaries as $primary) {
-			$values[] = $this->data[$primary->getLogicalField()->getName()]->dbGetData();
-		}
-		
-		foreach ($values as $primary => $value) {	
-			$r = $query->restrictionInstance($query->queryFieldInstance($this->getTable()->getField($primary)), $value, '=');
-			$restrictions[] = $r;
-		}
-		
-		return $restrictions;
 	}
 	
 	public function getQuery() {
@@ -235,32 +229,6 @@ abstract class Model implements Serializable
 		$this->table->getCollection()->delete($this);
 	}
 	
-	public function insert() {
-		#Insert the record by calling the driver.
-		$id = $this->table->getCollection()->insert($this);
-		#Get the autoincrement field
-		$ai = $this->table->getAutoIncrement();
-		
-		if ($ai) {
-			$payload = array_filter($this->data[$ai->getName()]->dbGetData());
-		}
-		
-		#If the autoincrement field is empty set the new DB given id
-		if ($ai && empty($payload) ) {
-			$this->data[$ai->getName()]->dbSetData(Array($ai->getName() => $id));
-		}
-		
-		return $id;
-	}
-	
-	public function update() {
-		$this->table->getCollection()->update($this);
-	}
-	
-	public function restrictionInstance($query, Field$field, $value, $operator = null) {
-		return $this->table->getDb()->getObjectFactory()->restrictionInstance($query, $field, $value, $operator);
-	}
-	
 	/**
 	 * Increments a value on high read/write environments. Using update can
 	 * cause data to be corrupted. Increment requires the data to be in sync
@@ -304,6 +272,18 @@ abstract class Model implements Serializable
 			#Set the data into the adapter and let it work it's magic.
 			$this->data[$field->getName()]->dbSetData($current);
 		}
+	}
+	
+	public function getDependencies() {
+		
+		$dependencies = collect($this->data)
+			->each(function ($e) {
+				return $e->getDependencies();
+			})
+			->filter()
+			->flatten();
+		
+		return $dependencies;
 	}
 
 }
