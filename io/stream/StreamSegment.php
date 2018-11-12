@@ -35,17 +35,13 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 	
 	private $cursor;
 	
-	public function __construct(StreamReaderInterface$src, $start, $end = null) {
+	public function __construct(SeekableStreamInterface$src, $start, $end = null) {
 		$this->src = $src;
 		$this->start = $this->cursor = $start;
 		$this->end = $end;
 		
 		if ($this->start >= $this->end) {
 			throw new \spitfire\exceptions\OutOfBoundsException('Start of stream segment is out of bounds', 1811081804);
-		}
-		
-		if (!$this->src instanceof SeekableStreamInterface) {
-			throw new \InvalidArgumentException('Segments only work on streams that allow seeking', 1811101243);
 		}
 		
 		$this->src->seek($this->start);
