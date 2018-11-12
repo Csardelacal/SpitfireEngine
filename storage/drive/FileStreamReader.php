@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\drive;
 
 use spitfire\exceptions\FilePermissionsException;
+use spitfire\io\stream\SeekableStreamInterface;
 use spitfire\io\stream\StreamInterface;
 use spitfire\io\stream\StreamReaderInterface;
 
@@ -28,7 +29,7 @@ use spitfire\io\stream\StreamReaderInterface;
  * THE SOFTWARE.
  */
 
-class FileStreamReader implements StreamReaderInterface
+class FileStreamReader implements StreamReaderInterface, SeekableStreamInterface
 {
 	
 	/**
@@ -88,8 +89,14 @@ class FileStreamReader implements StreamReaderInterface
 		return $this;
 	}
 	
+	
+	public function tell(): int {
+		return ftell($this->fh);
+	}
+	
 	public function length(): int {
 		return filesize($this->path);
 	}
+
 
 }
