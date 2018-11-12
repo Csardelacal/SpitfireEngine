@@ -13,6 +13,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @var \spitfire\model\ManyToManyField
 	 */
 	private $field;
+	
+	private $original;
 	private $parent;
 	private $children;
 	
@@ -20,6 +22,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		$this->field  = $field;
 		$this->parent = $model;
 		$this->children = $data;
+		$this->original = $data;
 	}
 	
 	/**
@@ -45,7 +48,15 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	public function toArray() {
 		if ($this->children !== null) { return $this->children; }
-		$this->children = $this->getQuery()->fetchAll()->toArray();
+		
+		/*
+		 * Inform the children that the parent being worked on is this
+		 */
+		$this->children = $this->original = $this->getQuery()->fetchAll()->each(function ($c) {
+			$c->{$this->field->getReferencedField()->getName()} = $this->parent;
+			return $c;
+		})->toArray();
+		
 		return $this->children;
 	}
 
@@ -88,27 +99,36 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	public function offsetSet($offset, $value) {
 		if ($this->children === null) { $this->toArray(); }
 		
+		$previous = isset($this->children[$offset])? $this->children[$offset] : null;
+		
 		if ($offset === null) { $this->children[] = $value; }
 		else                  { $this->children[$offset] = $value; }
+		
+		#Commit the changes to the database.
+		$role  = $this->getField()->getRole();
+		
+		#We set the value but do not yet commit it, this will happen whenever the 
+		#parent model is written.
+		$value->{$role} = $this->getModel();
+		
+		if ($previous) {
+			$previous->{$role} = null;
+		}
 	}
 
 	public function offsetUnset($offset) {
 		if ($this->children === null) $this->toArray();
 		unset($this->children[$offset]);
 	}
-
+	
+	/**
+	 * 
+	 * @todo If the element list has changed, the database should sever the connections
+	 *  between the elements and their children.
+	 * @return type
+	 */
 	public function commit() {
-		#f the query hasn't been fetched then the data has not been modified for sure
-		if ($this->children === null) {
-			return;
-		}
-		//@todo: Change for definitive.
-		$role  = $this->getField()->getRole();
-		
-		foreach($this->children as $child) {
-			$child->{$role} = $this->getModel();
-			$child->store();
-		}
+		return;
 	}
 
 	public function dbGetData() {
@@ -154,11 +174,20 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * will do nothing.
 	 * 
 	 * @param \spitfire\model\adapters\ManyToManyAdapter|Model[] $data
+	 * @todo Fix to allow for user input
 	 * @throws \spitfire\exceptions\PrivateException
 	 */
 	public function usrSetData($data) {
 		if ($data === $this) {
 			return;
+		}
+		
+		foreach ($this->children as $child) {
+			$role  = $this->getField()->getRole();
+
+			#We set the value but do not yet commit it, this will happen whenever the 
+			#parent model is written.
+			$child->{$role} = null;
 		}
 		
 		if ($data instanceof ManyToManyAdapter) {
@@ -167,6 +196,14 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 			$this->children = $data;
 		} else {
 			throw new \spitfire\exceptions\PrivateException('Invalid data. Requires adapter or array');
+		}
+		
+		foreach ($this->children as $child) {
+			$role  = $this->getField()->getRole();
+
+			#We set the value but do not yet commit it, this will happen whenever the 
+			#parent model is written.
+			$child->{$role} = $this->getModel();
 		}
 	}
 
@@ -177,5 +214,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	public function __toString() {
 		return "Array()";
 	}
-
+	
+	public function getDependencies() {
+		return collect($this->children === null? [] : array_merge($this->children, $this->original));
+	}
 }

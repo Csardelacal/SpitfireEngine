@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class StreamSegment implements StreamReaderInterface
+class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 {
 	
 	private $src;
@@ -35,7 +35,7 @@ class StreamSegment implements StreamReaderInterface
 	
 	private $cursor;
 	
-	public function __construct(StreamReaderInterface$src, $start, $end = null) {
+	public function __construct(SeekableStreamInterface$src, $start, $end = null) {
 		$this->src = $src;
 		$this->start = $this->cursor = $start;
 		$this->end = $end;
@@ -59,19 +59,24 @@ class StreamSegment implements StreamReaderInterface
 	public function read($length = null) {
 		
 		if ($this->end) {
-			if ($this->cursor >= $this->end) { 
-				return; 
+			$max = $this->end - $this->src->tell();
+			
+			if ($max <= 0) {
+				return '';
 			}
 			
-			$read = substr($this->src->read($length), 0, $this->end - $this->cursor);
-			$this->cursor += ($length && isset($read[$length - 1]))? $length : strlen($read);
-			return $read;
+			$read = $this->src->read($length);
+			
+			if (isset($read[$max])) {
+				return substr($read, 0, $max);
+			}
+			else {
+				return $read;
+			}
 		}
 		
 		else {
-			$read = $this->src->read($l);
-			
-			return substr($read, 0, $this->length() - 1 - $this->cursor);
+			return $this->src->read($length);
 		}
 		
 		
@@ -81,6 +86,10 @@ class StreamSegment implements StreamReaderInterface
 		$this->src->seek($position + $this->start);
 		
 		return $this;
+	}
+
+	public function tell(): int {
+		return $this->src->tell() - $this->start;
 	}
 
 }

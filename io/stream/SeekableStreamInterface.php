@@ -24,7 +24,16 @@
  * THE SOFTWARE.
  */
 
-interface StreamInterface
+interface SeekableStreamInterface extends StreamInterface
 {
+	
+	function seek($position) : StreamInterface;
+	
+	/**
+	 * Returns the current position of the pointer.
+	 * 
+	 * @return int
+	 */
+	function tell() : int;
 	
 }

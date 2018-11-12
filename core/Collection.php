@@ -111,7 +111,7 @@ class Collection implements ArrayAccess, CollectionInterface
 	}
 	
 	public function contains($e) {
-		return array_search($e, $this->items);
+		return array_search($e, $this->items, true);
 	}
 	
 	/**
