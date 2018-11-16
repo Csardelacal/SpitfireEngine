@@ -1,5 +1,7 @@
 <?php namespace spitfire\io\stream;
 
+use spitfire\exceptions\OutOfBoundsException;
+
 /* 
  * The MIT License
  *
@@ -24,29 +26,64 @@
  * THE SOFTWARE.
  */
 
+/**
+ * The stream segment class allows an application to restrict access to a stream
+ * to a specific segment of it.
+ * 
+ * This class comes in handy when doing HTTP range requests where the sender 
+ * determines a segment of a file that it wishes to receive.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 {
 	
+	/**
+	 *
+	 * @var StreamReaderInterface
+	 */
 	private $src;
 	
+	/**
+	 * Determines the first index of the stream that should be returned when
+	 * reading from this segment.
+	 *
+	 * @var int 
+	 */
 	private $start;
 	
+	/**
+	 * The last index to be read when the application is trying to read the source
+	 * stream.
+	 *
+	 * @var int|null
+	 */
 	private $end;
 	
-	private $cursor;
-	
+	/**
+	 * 
+	 * @param SeekableStreamInterface $src
+	 * @param int $start
+	 * @param int $end
+	 * @throws OutOfBoundsException
+	 */
 	public function __construct(SeekableStreamInterface$src, $start, $end = null) {
 		$this->src = $src;
-		$this->start = $this->cursor = $start;
+		$this->start = $start;
 		$this->end = $end;
 		
 		if ($this->start >= $this->end) {
-			throw new \spitfire\exceptions\OutOfBoundsException('Start of stream segment is out of bounds', 1811081804);
+			throw new OutOfBoundsException('Start of stream segment is out of bounds', 1811081804);
 		}
 		
 		$this->src->seek($this->start);
 	}
 	
+	/**
+	 * 
+	 * @todo check if this method is not indeed bugged
+	 * @return int
+	 */
 	public function length(): int {
 		if ($this->end) {
 			return $this->end - $this->start;
@@ -55,7 +92,12 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 			return $this->src->length() - 1 - $this->start;
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @param int $length
+	 * @return string
+	 */
 	public function read($length = null) {
 		
 		if ($this->end) {
@@ -81,13 +123,22 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 		
 		
 	}
-
+	
+	/**
+	 * 
+	 * @param int $position
+	 * @return \spitfire\io\stream\StreamInterface
+	 */
 	public function seek($position): StreamInterface {
 		$this->src->seek($position + $this->start);
 		
 		return $this;
 	}
-
+	
+	/**
+	 * 
+	 * @return int
+	 */
 	public function tell(): int {
 		return $this->src->tell() - $this->start;
 	}
