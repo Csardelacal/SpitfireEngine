@@ -72,7 +72,7 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 		$this->start = $start;
 		$this->end = $end;
 		
-		if ($this->start >= $this->end) {
+		if ($this->end && $this->start >= $this->end) {
 			throw new OutOfBoundsException('Start of stream segment is out of bounds', 1811081804);
 		}
 		
@@ -89,7 +89,7 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 			return $this->end - $this->start;
 		}
 		else {
-			return $this->src->length() - 1 - $this->start;
+			return $this->src->length() - $this->start;
 		}
 	}
 	
