@@ -116,10 +116,10 @@ abstract class Model implements Serializable
 			#Get the autoincrement field
 			$id = $this->table->getCollection()->insert($this);
 			$ai = $this->table->getAutoIncrement();
-			$ad = $this->data[$ai->getName()];
+			$ad = $ai? $this->data[$ai->getName()] : null;
 			
 			#If the autoincrement field is empty set the new DB given id
-			if ($ai && $ad->dbGetData()) {
+			if ($ai && !reset($ad->dbGetData())) {
 				$ad->dbSetData(Array($ai->getName() => $id));
 			}
 		}
