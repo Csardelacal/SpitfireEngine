@@ -78,11 +78,11 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 
 	public function downscale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
 		if ($side === self::WIDTH) {
-			$w = sprintf('min(%s,iw)', $target);
+			$w = sprintf("'min(%s,iw)'", $target);
 			$h = -2;
 		}
 		else {
-			$h = sprintf('min(%s,ih)', $target);
+			$h = sprintf("'min(%s,ih)'", $target);
 			$w = -2;
 		}
 		
