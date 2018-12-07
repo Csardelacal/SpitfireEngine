@@ -76,6 +76,20 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
+	public function downscale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
+		if ($side === self::WIDTH) {
+			$w = sprintf('min(%s,iw)', $target);
+			$h = -2;
+		}
+		else {
+			$h = sprintf('min(%s,ih)', $target);
+			$w = -2;
+		}
+		
+		$this->operations['scale'] = "scale={$w}:{$h}";
+		return $this;
+	}
+
 	public function store(\spitfire\storage\objectStorage\FileInterface $location): \spitfire\storage\objectStorage\FileInterface {
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.mp4';
