@@ -120,7 +120,7 @@ abstract class Model implements Serializable
 			
 			#If the autoincrement field is empty set the new DB given id
 			if ($ai && !reset($ad)) {
-				$ad->dbSetData(Array($ai->getName() => $id));
+				$this->data[$ai->getName()]->dbSetData(Array($ai->getName() => $id));
 			}
 		}
 		else { 
