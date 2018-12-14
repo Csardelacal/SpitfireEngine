@@ -40,9 +40,9 @@ class StreamSegmentTest extends TestCase
 		$segment = new \spitfire\io\stream\StreamSegment($this->file->getStreamReader(), 6, 8);
 		$read = $segment->read();
 		
-		$this->assertEquals(2, strlen($read));
-		$this->assertEquals(2, $segment->length());
-		$this->assertEquals('wo', $read);
+		$this->assertEquals(3, strlen($read));
+		$this->assertEquals(3, $segment->length());
+		$this->assertEquals('wor', $read);
 	}
 	
 	public function testSegment2() {

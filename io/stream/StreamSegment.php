@@ -86,7 +86,7 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 	 */
 	public function length(): int {
 		if ($this->end) {
-			return $this->end - $this->start;
+			return $this->end - $this->start + 1;
 		}
 		else {
 			return $this->src->length() - $this->start;
@@ -101,7 +101,7 @@ class StreamSegment implements StreamReaderInterface, SeekableStreamInterface
 	public function read($length = null) {
 		
 		if ($this->end) {
-			$max = $this->end - $this->src->tell();
+			$max = $this->end - $this->src->tell() + 1;
 			
 			if ($max <= 0) {
 				return '';
