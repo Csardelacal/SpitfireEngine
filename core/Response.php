@@ -135,7 +135,7 @@ class Response
 				$length = strlen($out);
 				
 				$this->headers->status(206);
-				$this->headers->set('Content-Range', 'bytes '. strval($start) . '-' . ($start + $length) . '/' . $file->length());
+				$this->headers->set('Content-Range', 'bytes '. strval($start) . '-' . ($start + $length - 1) . '/' . $file->length());
 				$this->headers->set('Content-Length', $length);
 				$this->headers->send();
 				
