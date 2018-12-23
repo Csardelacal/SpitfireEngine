@@ -252,5 +252,10 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 			throw new \spitfire\exceptions\PrivateException('Invalid data. Requires adapter or array');
 		}
 	}
+	
+	public function getDependencies() {
+		//TODO: Needs to allow for versioning like children adapter does
+		return collect($this->children === null? [] : array_merge($this->children));
+	}
 
 }

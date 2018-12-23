@@ -103,7 +103,7 @@ abstract class DB
 		}
 		
 		#Check if the table can be found in the table cache
-		return $this->tables->get(strtolower($tablename));
+		return $this->tables->get($tablename);
 	}
 	
 	/**

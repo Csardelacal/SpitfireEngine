@@ -90,7 +90,7 @@ class TablePool
 			throw new InvalidArgumentException('Table is required'); 
 		}
 		
-		return $this->cache->set($key, $value);
+		return $this->cache->set(strtolower($key), $value);
 	}
 	
 	/**

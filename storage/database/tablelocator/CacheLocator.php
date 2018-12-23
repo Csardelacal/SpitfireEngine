@@ -65,7 +65,7 @@ class CacheLocator implements TableLocatorInterface
 	 * @return Table|false
 	 */
 	public function locate(string $tablename) {
-		return $this->cache->get($tablename);
+		return $this->cache->get(strtolower($tablename));
 	}
 
 }
