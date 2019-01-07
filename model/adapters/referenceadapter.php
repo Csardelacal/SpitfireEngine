@@ -14,6 +14,7 @@ class ReferenceAdapter extends BaseAdapter
 	 */
 	private $remote;
 	
+	private $raw;
 	
 	/**
 	 *
@@ -32,6 +33,7 @@ class ReferenceAdapter extends BaseAdapter
 		}
 		
 		$this->query  = $query;
+		$this->raw = $data;
 		
 		/*
 		 * We clone this in order to prevent the query from generating race 
@@ -58,7 +60,7 @@ class ReferenceAdapter extends BaseAdapter
 			}
 		} 
 		elseif ($this->query instanceof Query) {
-			return [];
+			return $this->raw;
 		} 
 		elseif ($this->query === null) {
 			foreach ($physical as $p) {
