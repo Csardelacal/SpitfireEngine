@@ -132,4 +132,13 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return media()->load(storage()->get('file:/' . $tmpo));
 	}
 
+	public function dimensions() {
+		$tmpi = '/tmp/' . rand();
+		
+		file_put_contents($tmpi, $this->src->read());
+		$ret = exec(sprintf('ffprobe -v error -show_entries stream=width,height -of csv=p=0:s=x %s', $tmpi));
+		
+		return explode('x', $ret);
+	}
+
 }

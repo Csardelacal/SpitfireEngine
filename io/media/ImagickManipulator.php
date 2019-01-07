@@ -114,5 +114,9 @@ class ImagickManipulator implements MediaManipulatorInterface
 	public function poster(): MediaManipulatorInterface {
 		return $this;
 	}
+	
+	public function dimensions() {
+		return $this->img->getimagegeometry();
+	}
 
 }

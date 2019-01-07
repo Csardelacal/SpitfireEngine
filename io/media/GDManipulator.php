@@ -194,4 +194,8 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
+	public function dimensions() {
+		return Array($this->meta[0], $this->meta[1]);
+	}
+
 }

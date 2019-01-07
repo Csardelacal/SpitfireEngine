@@ -59,4 +59,6 @@ interface MediaManipulatorInterface
 	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface;
 	
 	public function poster(): MediaManipulatorInterface;
+	
+	public function dimensions();
 }

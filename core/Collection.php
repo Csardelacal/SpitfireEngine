@@ -247,6 +247,10 @@ class Collection implements ArrayAccess, CollectionInterface
 		return $this;
 	}
 	
+	public function reverse() {
+		return new Collection(array_reverse($this->items));
+	}
+	
 	public function current() {
 		return current($this->items);
 	}
