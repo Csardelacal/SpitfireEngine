@@ -25,12 +25,12 @@ class XSSToken implements RenderableFieldHidden
 		$session = Session::getInstance();
 		
 		if (false == $xss_token = $session->get('_XSS_')) {
-			$xss_token = base64_encode(function_exists('random_bytes')? random_bytes(50) : rand());
+			$xss_token = str_replace(['/', '='], [''], base64_encode(function_exists('random_bytes')? random_bytes(50) : rand()));
 			$session->set('_XSS_', $xss_token);
 		}
 		
 		$expires = time() + $this->timeout;
-		$salt    = base64_encode(random_bytes(20));
+		$salt    = str_replace(['/', '='], [''], base64_encode(random_bytes(20)));
 		$hash    = hash('sha512', implode('.', [$expires, $salt, $xss_token]));
 		
 		return implode(':', [$expires, $salt, $hash]);
