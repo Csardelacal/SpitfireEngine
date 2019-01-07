@@ -183,7 +183,11 @@ class URL
 			throw new PrivateException("No context for URL generation"); 
 		}
 		
-		return new URL($ctx->app, $ctx->app->getControllerURI($ctx->controller), $ctx->action, $ctx->object, $ctx->extension, $_GET);
+		$object = array_map(function($e) {
+			return $e instanceof \spitfire\Model? implode(':', $e->getPrimaryData()) : $e;
+		}, $ctx->object);
+		
+		return new URL($ctx->app, $ctx->app->getControllerURI($ctx->controller), $ctx->action, $object, $ctx->extension, $_GET);
 	}
 	
 	public static function canonical() {
