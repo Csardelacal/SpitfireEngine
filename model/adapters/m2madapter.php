@@ -184,13 +184,14 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 		
 		if ($this->children === null) { return; }
 		
-		$this->getBridgeRecordsQuery()->delete();
+		$value = $this->children;
+		
+		$this->getBridgeRecordsQuery()->all()->each(function ($e) { $e->delete(); });
 
 		//@todo: Change for definitive.
-		$value = $this->toArray();
 		foreach($value as $child) {
 			$insert = new BridgeAdapter($this->field, $this->parent, $child);
-			$insert->makeRecord()->store();
+			$insert->makeRecord()->write();
 		}
 	}
 
@@ -212,7 +213,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * Returns the parent model for this adapter. This allows any application to 
 	 * trace what adapter this adapter belongs to.
 	 * 
-	 * @return \Model
+	 * @return \spitfire\Model
 	 */
 	public function getModel() {
 		return $this->parent;
@@ -255,7 +256,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	public function getDependencies() {
 		//TODO: Needs to allow for versioning like children adapter does
-		return collect($this->children === null? [] : array_merge($this->children));
+		return collect();
 	}
 
 }

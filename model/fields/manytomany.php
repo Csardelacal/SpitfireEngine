@@ -43,6 +43,8 @@ class ManyToManyField extends ChildrenField
 
 			$model->{$src}->setPrimary(true);
 			$model->{$targetalias}->setPrimary(true);
+			
+			$model->index($model->{$src}, $model->{$targetalias})->setPrimary(true);
 
 			#Register the table
 			$this->getModel()->getTable()->getDb()->table($model);
