@@ -112,6 +112,10 @@ class GDManipulator implements MediaManipulatorInterface
 		//TODO: Implement
 	}
 	
+	public function at($x, $y) {
+		return imagecolorat($this->img, $x, $y);
+	}
+	
 	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
 		
 		
