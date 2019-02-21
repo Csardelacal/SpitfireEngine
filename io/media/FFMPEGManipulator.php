@@ -140,5 +140,15 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		
 		return explode('x', $ret);
 	}
+	
+	public function hasAudio() {
+		$tmpi = '/tmp/' . rand();
+		$output = [];
+		
+		file_put_contents($tmpi, $this->src->read());
+		$ret = exec(sprintf('ffprobe -loglevel error -show_entries stream=codec_type -of csv=p=0 %s', $tmpi), $output);
+		
+		return false !== array_search('audio', $ret);
+	}
 
 }
