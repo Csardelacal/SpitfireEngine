@@ -74,7 +74,7 @@ class Relation extends \spitfire\storage\database\Relation
 		foreach ($pk as $k => $v) {$restrictions[] = "$k = $v";}
 		
 		$stt = sprintf('UPDATE %s SET `%s` = `%s` + %s WHERE %s',
-			$table, 
+			$table->getLayout(), 
 			$key,
 			$key,
 			$db->quote($diff),
