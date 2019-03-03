@@ -168,8 +168,8 @@ class Collection implements ArrayAccess, CollectionInterface
 	public function sort($callback = null) {
 		$copy = $this->items;
 		
-		if (!$callback) { sort($this->items); }
-		else            { usort($this->items, $callback); }
+		if (!$callback) { sort($copy); }
+		else            { usort($copy, $callback); }
 		
 		return new Collection($copy);
 	}
