@@ -185,8 +185,8 @@ abstract class App
 			$action     = $path->getAction();
 			$object     = $path->getObject();
 			
-			if ($controller === (array)core\Environment::get('default_controller') && empty($object) && !$explicit) { $controller = Array(); }
-			if ($action     ===        core\Environment::get('default_action')     && empty($object) && !$explicit) { $action     = ''; }
+			if ($action     ===        core\Environment::get('default_action')     && empty($object) && !$explicit)                   { $action     = ''; }
+			if ($controller === (array)core\Environment::get('default_controller') && empty($object) && empty($action) && !$explicit) { $controller = Array(); }
 			
 			return '/' . trim(implode('/', array_filter(array_merge([$app], (array)$controller, [$action], $object))), '/');
 		}));
