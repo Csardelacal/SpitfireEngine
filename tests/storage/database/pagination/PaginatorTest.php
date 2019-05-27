@@ -45,7 +45,7 @@ class PaginatorTest extends TestCase
 		}
 	}
 	
-	public function tearDown() {
+	public function tearDown() : void {
 		$this->db->destroy();
 	}
 	

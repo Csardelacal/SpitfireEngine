@@ -54,7 +54,7 @@ class StreamSegmentTest extends TestCase
 		$this->assertEquals('world!', $read);
 	}
 	
-	public function tearDown() {
+	public function tearDown() : void {
 		$this->file->delete();
 	}
 	

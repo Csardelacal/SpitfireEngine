@@ -113,7 +113,7 @@ class DriveTest extends TestCase
 		$this->assertEquals(DirectoryInterface::CONTAINS_NONX, storage('tests://')->contains('nada.file'));
 	}
 	
-	public function tearDown() {
+	public function tearDown() : void {
 		parent::tearDown();
 		
 		$this->storage->unregister('tests://');

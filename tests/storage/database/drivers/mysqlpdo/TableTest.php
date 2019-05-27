@@ -44,7 +44,7 @@ class TableTest extends TestCase
 		}
 	}
 	
-	public function tearDown() {
+	public function tearDown() : void {
 		$this->db->destroy();
 	}
 	
