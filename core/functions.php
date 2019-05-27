@@ -32,7 +32,7 @@ function spitfire() {
 		return $sf; 
 	} else {
 		$sf = php_sapi_name() === 'cli'? new SpitFireCLI() : new SpitFire();
-		$sf->prepare();
+		$sf->enable();
 		return $sf;
 	}
 }
@@ -256,7 +256,7 @@ function url() {
 	$object     = Array();
 
 	#Get the object
-	while(!empty($params) && (!is_array(reset($params)) || (!$controller && $app->hasController(reset($params))))) {
+	while(!empty($params) && (!is_array(reset($params)) || (!$controller && $app->getControllerLocator()->hasController(reset($params))))) {
 		if     (!$controller) { $controller = array_shift($params); }
 		elseif (!$action)     { $action     = array_shift($params); }
 		else                  { $object[]   = array_shift($params); }
@@ -341,4 +341,13 @@ function request($url) {
 function mime($file) {
 	if (function_exists('mime_content_type')) { return mime_content_type($file); }
 	else { return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0]; }
+}
+
+function debug() {
+	static $instance = null;
+	return $instance? $instance : $instance = php_sapi_name() === 'cli'? new \spitfire\exceptions\ExceptionHandlerCLI() : new \spitfire\exceptions\ExceptionHandler();
+}
+
+function basedir() {
+	return BASEDIR;
 }

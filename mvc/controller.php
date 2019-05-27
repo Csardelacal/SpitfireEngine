@@ -27,7 +27,7 @@ abstract class Controller extends MVC
 	 * @throws publicException If there is no inhertiable controller found
 	 */
 	public function __call($name, $arguments) {
-		$controller = $this->app->getControllerURI($this);
+		$controller = $this->app->getControllerLocator()->getControllerURI($this);
 		$action = $name;
 		$object = $arguments;
 		

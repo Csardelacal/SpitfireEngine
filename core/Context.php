@@ -101,7 +101,7 @@ class Context implements ContextInterface
 		$context->middleware = new MiddlewareStack($context);
 		
 		$context->app        = spitfire()->getApp($context->request->getPath()->getApp());
-		$context->controller = $context->app->getController($context->request->getPath()->getController(), $context);
+		$context->controller = $context->app->getControllerLocator()->getController($context->request->getPath()->getController(), $context);
 		$context->action     = $context->request->getPath()->getAction();
 		$context->object     = $context->request->getPath()->getObject();
 		

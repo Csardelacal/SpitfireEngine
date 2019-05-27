@@ -24,7 +24,7 @@ class TableTest extends TestCase
 	private $table;
 	private $schema;
 	
-	public function setUp() {
+	public function setUp() : void {
 		//Just in case Mr. Bergmann decides to add code to the setUp
 		parent::setUp();
 		

@@ -73,4 +73,4 @@ require_once SPITFIRE_BASEDIR . '/autoload_core_files.php';
 
 #Create the exceptionhandler that will capture errors and try to present useful
 #information to the user.
-#new spitfire\exceptions\ExceptionHandler();
+debug(); //Initialize the exception handler

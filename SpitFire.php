@@ -5,16 +5,13 @@ use spitfire\core\Context;
 use spitfire\core\Environment;
 use spitfire\core\Request;
 use spitfire\core\Response;
-use spitfire\exceptions\ExceptionHandler;
 use spitfire\exceptions\PrivateException;
 use Strings;
 
 if (!defined('APP_DIRECTORY')){
 	define ('APP_DIRECTORY',         BASEDIR . '/bin/apps/');
 	define ('CONFIG_DIRECTORY',      BASEDIR . '/bin/settings/');
-	define ('CONTROLLERS_DIRECTORY', BASEDIR . '/bin/controllers/');
 	define ('ASSET_DIRECTORY',       BASEDIR . '/assets/');
-	define ('TEMPLATES_DIRECTORY',   BASEDIR . '/bin/templates/');
 	define ('SESSION_SAVE_PATH',     BASEDIR . '/bin/usr/sessions/');
 }
 
@@ -29,39 +26,16 @@ class SpitFire extends App
 	
 	static  $started = false;
 	
-	private $cwd;
 	private $request;
-	private $debug;
 	private $apps = Array();
 	
 	public function __construct() {
 		#Check if SF is running
 		if (self::$started) { throw new PrivateException('Spitfire is already running'); }
 		
-		#Set the current working directory
-		$this->cwd = rtrim(dirname(dirname(__FILE__)), '\/');
-		
-		#Import the exception handler for logging
-		$this->debug = php_sapi_name() === 'cli'? new exceptions\ExceptionHandlerCLI() : new ExceptionHandler();
-		
 		#Call parent
-		parent::__construct('bin/', null);
-
+		parent::__construct('bin/', null, null);
 		self::$started = true;
-	}
-	
-	public function prepare() {
-
-		#Try to include the user's evironment & routes
-		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'environments.php');
-		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'routes.php');
-		
-		#Define the current timezone
-		date_default_timezone_set(Environment::get('timezone'));
-                
-		#Set the display errors directive to the value of debug
-		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
-		
 	}
 
 	public function fire() {
@@ -144,17 +118,36 @@ class SpitFire extends App
 		return $base_url;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190527
+	 * @see debug
+	 * @param type $msg
+	 * @return type
+	 */
 	public function log($msg) {
-		if ($this->debug) $this->debug->log ($msg);
+		debug()->log($msg);
 		return $msg;
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190527
+	 * @see debug
+	 * @param type $msg
+	 * @return type
+	 */
 	public function getMessages() {
-		return $this->debug->getMessages();
+		return debug()->getMessages();
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190527
+	 * @return type
+	 */
 	public function getCWD() {
-		return $this->cwd;
+		return basedir();
 	}
 
 	/**
@@ -170,19 +163,17 @@ class SpitFire extends App
 		return ASSET_DIRECTORY;
 	}
 
-
-	/**
-	 * Returns the directory the templates are located in. This function should be 
-	 * avoided in favor of the TEMPLATE_DIRECTORY constant.
-	 * 
-	 * @deprecated since version 0.1-dev 20150423
-	 */
-	public function getTemplateDirectory() {
-		return TEMPLATES_DIRECTORY;
-	}
-
 	public function enable() {
-		return null;
+
+		#Try to include the user's evironment & routes
+		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'environments.php');
+		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'routes.php');
+		
+		#Define the current timezone
+		date_default_timezone_set(Environment::get('timezone'));
+                
+		#Set the display errors directive to the value of debug
+		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
 	}
 	
 	/**
@@ -192,10 +183,6 @@ class SpitFire extends App
 	 */
 	public function getRequest() {
 		return $this->request;
-	}
-
-	public function getNameSpace() {
-		return '';
 	}
 
 }

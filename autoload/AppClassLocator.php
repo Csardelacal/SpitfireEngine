@@ -19,7 +19,7 @@ class AppClassLocator extends ClassLocator
 		if (Strings::endsWith($class, 'App')) {
 			$classURI = explode('\\', substr($class, 0, 0 - strlen('app')));
 			$filename = 'main';
-			$dir = spitfire()->getBaseDir() . 'apps/' . implode(DIRECTORY_SEPARATOR, $classURI);
+			$dir = spitfire()->getMapping()->getBaseDir() . 'apps/' . implode(DIRECTORY_SEPARATOR, $classURI);
 			return $this->findFile($dir, $filename);
 		}
 		return false;

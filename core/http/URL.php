@@ -187,7 +187,7 @@ class URL
 			return $e instanceof \spitfire\Model? implode(':', $e->getPrimaryData()) : $e;
 		}, $ctx->object);
 		
-		return new URL($ctx->app, $ctx->app->getControllerURI($ctx->controller), $ctx->action, $object, $ctx->extension, $_GET);
+		return new URL($ctx->app, $ctx->app->getControllerLocator()->getControllerURI($ctx->controller), $ctx->action, $object, $ctx->extension, $_GET);
 	}
 	
 	public static function canonical() {

@@ -38,7 +38,7 @@ class DriveTest extends TestCase
 	private $storage;
 	private $string = 'Hello world';
 	
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 		
 		$this->storage = storage();

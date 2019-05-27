@@ -2,21 +2,19 @@
 
 use Controller;
 use ReflectionClass;
-use spitfire\ClassInfo;
-use spitfire\core\Context;
+use spitfire\core\app\ControllerLocator;
+use spitfire\core\app\NamespaceMapping;
 use spitfire\core\Environment;
 use spitfire\core\Path;
 use spitfire\core\router\Parameters;
 use spitfire\core\router\reverser\ClosureReverser;
 use spitfire\core\router\Router;
-use spitfire\exceptions\PrivateException;
-use spitfire\exceptions\PublicException;
 use spitfire\mvc\View;
 
 /**
  * Spitfire Application Class. This class is the base of every other 'app', an 
  * app is a wrapper of controllers (this allows to plug them into other SF sites)
- * that defines a set of rules to avoid collissions with the rest of the apps.
+ * that defines a set of rules to avoid collisions with the rest of the apps.
  * 
  * Every app resides inside of a namespace, this externally defined variable
  * defines what calls Spitfire redirects to the app.
@@ -33,11 +31,21 @@ abstract class App
 	 * 
 	 * In the specific case of Spitfire this folder also contains the 'child apps'
 	 * that can be added to it.
-	 *
+	 * 
+	 * @deprecated since version 0.1-dev 20190527
 	 * @var string
 	 */
 	private $basedir;
+	
+	/**
+	 *
+	 * @deprecated since version 0.1-dev 20190527
+	 * @var type 
+	 */
 	private $URISpace;
+	
+	private $mapping;
+	private $controllerLocator;
 	
 	/**
 	 * Creates a new App. Receives the directory where this app resides in
@@ -45,111 +53,41 @@ abstract class App
 	 * 
 	 * @param string $basedir The root directory of this app
 	 * @param string $URISpace The URI namespace it 'owns'
+	 * @param string $namespace The URI namespace it 'owns'
 	 */
-	public function __construct($basedir, $URISpace) {
+	public function __construct($basedir, $URISpace, $namespace = false) {
 		$this->basedir  = $basedir;
 		$this->URISpace = $URISpace;
+		$reflection = new ReflectionClass($this);
+		$this->mapping = new NamespaceMapping($basedir, $URISpace, $namespace !== false? $namespace : $reflection->getNamespaceName());
+		$this->controllerLocator = new ControllerLocator($this->mapping);
 	}
 	
+	public function getMapping() {
+		return $this->mapping;
+	}
+	
+	public function getControllerLocator() {
+		return $this->controllerLocator;
+	}
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190527
+	 * @return type
+	 */
 	public function getBaseDir() {
 		return $this->basedir;
 	}
 	
-	public function getURISpace() {
-		return $this->URISpace;
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171129
-	 * @param type $contenttype
-	 * @return type
-	 */
-	public function getDirectory($contenttype) {
-		switch($contenttype) {
-			case ClassInfo::TYPE_CONTROLLER:
-				return $this->getBaseDir() . 'controllers/';
-			case ClassInfo::TYPE_MODEL:
-				return $this->getBaseDir() . 'models/';
-			case ClassInfo::TYPE_VIEW:
-				return $this->getBaseDir() . 'views/';
-			case ClassInfo::TYPE_LOCALE:
-				return $this->getBaseDir() . 'locales/';
-			case ClassInfo::TYPE_BEAN:
-				return $this->getBaseDir() . 'beans/';
-			case ClassInfo::TYPE_COMPONENT:
-				return $this->getBaseDir() . 'components/';
-			case ClassInfo::TYPE_STDCLASS:
-				return $this->getBaseDir() . 'classes/';
-			case ClassInfo::TYPE_APP:
-				return $this->getBaseDir() . 'apps/';
-		}
-	}
-
-	/**
-	 * Checks if the current application has a controller with the name specified
-	 * by the single argument this receives. In case a controller is found and
-	 * it is not abstract the app will return the fully qualified class name of 
-	 * the Controller.
-	 *
-	 * It should not be necessary to check the return value with the === operator
-	 * as the return value on success should never be matched otherwise.
-	 *
-	 * @param  string $name The name of the controller being searched
-	 * @return string|boolean The name of the class that has the controller
-	 */
-	public function hasController($name) {
-		$name = (array)$name;
-		$c    = $this->getNameSpace() . implode('\\', $name) . 'Controller';
-		if (!class_exists($c)) { return false; }
-
-		$reflection = new ReflectionClass($c);
-		if ($reflection->isAbstract()) { return false; }
-			
-		return $c;
-	}
-	
-	/**
-	 * Creates a new Controller inside the context of the request. Please note 
-	 * that this may throw an Exception due to the controller not being found.
-	 * 
-	 * @param string $controller
-	 * @param Context $intent
-	 * @return Controller
-	 * @throws PublicException
-	 */
-	public function getController($controller, Context$intent) {
-		#Get the controllers class name. If it doesn't exist it'll be false
-		$c = $this->hasController($controller);
-		
-		#If no controller was found, we can throw an exception letting the user know
-		if ($c === false) { throw new PublicException("Page not found", 404, new PrivateException("Controller {$controller[0]} not found", 0) ); }
-		
-		#Otherwise we will instantiate the class and return it
-		return new $c($intent);
-	}
-	
-	public function getControllerURI($controller) {
-		return explode('\\', substr(get_class($controller), strlen($this->getNameSpace()), 0-strlen('Controller')));
-	}
-	
 	public function getView(Controller$controller) {
 		
-		$name = implode('\\', $this->getControllerURI($controller));
+		$name = implode('\\', $this->controllerLocator->getControllerURI($controller));
 		
 		$c = $this->getNameSpace() . $name . 'View';
 		if (!class_exists($c)) { $c = View::class; }
 		
 		return new $c($controller->context);
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20180524
-	 * @return type
-	 */
-	public function getControllerDirectory() {
-		return $this->getBaseDir() . 'controllers/';
 	}
 	
 	/**
@@ -177,17 +115,24 @@ abstract class App
 			$action     = $path->getAction();
 			$object     = $path->getObject();
 			
-			if ($action     ===        core\Environment::get('default_action')     && empty($object) && !$explicit)                   { $action     = ''; }
-			if ($controller === (array)core\Environment::get('default_controller') && empty($object) && empty($action) && !$explicit) { $controller = Array(); }
+			if ($action     ===        Environment::get('default_action')     && empty($object) && !$explicit)                   { $action     = ''; }
+			if ($controller === (array)Environment::get('default_controller') && empty($object) && empty($action) && !$explicit) { $controller = Array(); }
 			
 			return '/' . trim(implode('/', array_filter(array_merge([$app], (array)$controller, [$action], $object))), '/');
 		}));
 	}
 	
 	abstract public function enable();
-	abstract public function getNameSpace();
 	abstract public function getAssetsDirectory();
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190527
+	 * @return type
+	 */
+	public function getNameSpace() {
+		return $this->mapping->getNameSpace();
+	}
 
 	/**
 	 * Returns the directory the templates are located in. This function should be 

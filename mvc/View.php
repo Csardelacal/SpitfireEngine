@@ -30,7 +30,7 @@ class View extends MVC
 		
 		#Get the variables needed for the creation of a template
 		$basedir    = $this->app->getTemplateDirectory();
-		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $this->app->getControllerURI($this->controller)));
+		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $this->app->getControllerLocator()->getControllerURI($this->controller)));
 		$action     = $this->action;
 		$extension  = $this->extension === 'php'? '' : '.' . $this->extension;
 		

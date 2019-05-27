@@ -7,10 +7,6 @@ use spitfire\autoload\AutoLoad;
 AutoLoad::registerClass('Controller',                                           SPITFIRE_BASEDIR.'/mvc/controller.php');
 
 AutoLoad::registerClass('Time',                                                 SPITFIRE_BASEDIR.'/time.php');
-AutoLoad::registerClass('Image',                                                SPITFIRE_BASEDIR.'/image.php');
-
-#Database related imports
-AutoLoad::registerClass('Pagination',                                           SPITFIRE_BASEDIR.'/db/pagination.php');
 
 AutoLoad::registerClass('Schema',                                               SPITFIRE_BASEDIR.'/model/model.php');
 AutoLoad::registerClass('spitfire\model\Field',                                 SPITFIRE_BASEDIR.'/model/field.php');
@@ -75,5 +71,3 @@ AutoLoad::registerClass('Pluggable',                                            
 AutoLoad::registerClass('URL',                                                  SPITFIRE_BASEDIR.'/url.php');
 AutoLoad::registerClass('AbsoluteURL',                                          SPITFIRE_BASEDIR.'/AbsoluteURL.php');
 AutoLoad::registerClass('spitfire\Context',                                     SPITFIRE_BASEDIR.'/core/context.php');
-
-AutoLoad::registerClass('Email',                                                SPITFIRE_BASEDIR.'/mail.php');

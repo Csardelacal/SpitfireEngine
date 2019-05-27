@@ -39,7 +39,7 @@ class ComplexQueryTest extends TestCase
 	private $table3;
 	private $schema3;
 	
-	public function setUp() {
+	public function setUp() : void {
 		//Just in case Mr. Bergmann decides to add code to the setUp
 		parent::setUp();
 		

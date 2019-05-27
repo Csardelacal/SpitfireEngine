@@ -1,11 +1,9 @@
-<?php namespace tests\spitfire\io\stream;
-
-use PHPUnit\Framework\TestCase;
+<?php namespace spitfire\core\app;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,36 +24,45 @@ use PHPUnit\Framework\TestCase;
  * THE SOFTWARE.
  */
 
-class StreamSegmentTest extends TestCase
+class NamespaceMapping
 {
 	
-	private $file;
+	/**
+	 * The basedir is the root directory of an application. For spitfire this is 
+	 * usually the /bin directory. This directory contains all the app specific
+	 * data. Including controllers, views and models.
+	 * 
+	 * In the specific case of Spitfire this folder also contains the 'child apps'
+	 * that can be added to it.
+	 *
+	 * @var string
+	 */
+	private $basedir;
+	private $URISpace;
+	private $namespace;
 	
-	public function setUp() : void {
-		$this->file = storage()->dir('file://' . sys_get_temp_dir())->make('php' . uniqid());
-		$this->file->write('Hello world!');
+	/**
+	 * Creates a new App. Receives the directory where this app resides in
+	 * and the URI namespace it uses.
+	 * 
+	 * @param string $basedir The root directory of this app
+	 * @param string $URISpace The URI namespace it 'owns'
+	 */
+	public function __construct($basedir, $URISpace, $namespace) {
+		$this->basedir  = $basedir;
+		$this->URISpace = $URISpace;
+		$this->namespace = $namespace;
 	}
 	
-	public function testSegment() {
-		$segment = new \spitfire\io\stream\StreamSegment($this->file->getStreamReader(), 6, 8);
-		$read = $segment->read();
-		
-		$this->assertEquals(3, strlen($read));
-		$this->assertEquals(3, $segment->length());
-		$this->assertEquals('wor', $read);
+	public function getBaseDir() {
+		return $this->basedir;
 	}
 	
-	public function testSegment2() {
-		$segment = new \spitfire\io\stream\StreamSegment($this->file->getStreamReader(), 6);
-		$read = $segment->read();
-		
-		$this->assertEquals(6, strlen($read));
-		$this->assertEquals(6, $segment->length());
-		$this->assertEquals('world!', $read);
+	public function getURISpace() {
+		return $this->URISpace;
 	}
 	
-	public function tearDown() {
-		$this->file->delete();
+	public function getNameSpace() {
+		return $this->namespace;
 	}
-	
 }
