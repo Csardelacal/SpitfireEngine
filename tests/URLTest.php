@@ -9,7 +9,7 @@ class URLTest extends TestCase
 	
 	private $setup = false;
 	
-	public function setUp() {
+	public function setUp() : void {
 		\spitfire\core\Environment::get()->set('base_url', '/');
 		
 		if (!$this->setup) {
