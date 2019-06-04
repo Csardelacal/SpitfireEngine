@@ -1,8 +1,12 @@
 <?php namespace tests\storage\database;
 
-use PHPUnit\Framework\TestCase;
 use IntegerField;
+use PHPUnit\Framework\TestCase;
+use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
+use spitfire\model\Index;
+use spitfire\storage\database\Schema;
+use function db;
 
 class SchemaTest extends TestCase
 {
@@ -11,7 +15,7 @@ class SchemaTest extends TestCase
 	 * Ensures that a schema, when created, has the default _id field.
 	 */
 	public function testCreate() {
-		$schema = new \spitfire\storage\database\Schema('test');
+		$schema = new Schema('test');
 		
 		#Test if ID exists and is a Integer
 		$this->assertInstanceOf(Field::class, $schema->_id);
@@ -21,18 +25,16 @@ class SchemaTest extends TestCase
 		$this->assertEquals('test', $schema->getName());
 	}
 	
-	/**
-	 * 
-	 * @expectedException \spitfire\exceptions\PrivateException
-	 */
 	public function testReadingAnUnexistingField() {
-		$schema = new \spitfire\storage\database\Schema('test');
+		$schema = new Schema('test');
+		
+		$this->expectException(PrivateException::class);
 		$schema->test;
 	}
 	
 	public function testPrimary() {
-		$schema = new \spitfire\storage\database\Schema('test');
-		$this->assertContainsOnlyInstancesOf(\spitfire\model\Field::class, $schema->getPrimary()->getFields()->toArray());
+		$schema = new Schema('test');
+		$this->assertContainsOnlyInstancesOf(Field::class, $schema->getPrimary()->getFields()->toArray());
 	}
 	
 	/**
@@ -44,7 +46,7 @@ class SchemaTest extends TestCase
 	 * @covers \spitfire\storage\database\Schema::getTableName
 	 */
 	public function testComplexTableName() {
-		$schema = new \spitfire\storage\database\Schema('test\test');
+		$schema = new Schema('test\test');
 		$this->assertEquals('test\test', $schema->getName(), 'The schema name should be the class name without Model suffix.');
 		$this->assertEquals('test-test', $schema->getTableName(), 'The table name should have replaced hyphens.');
 	}
@@ -54,8 +56,8 @@ class SchemaTest extends TestCase
 	 * copying them from one Schema to another.
 	 */
 	public function testSetFields() {
-		$a = new \spitfire\storage\database\Schema('test');
-		$b = new \spitfire\storage\database\Schema('test');
+		$a = new Schema('test');
+		$b = new Schema('test');
 		
 		$b->a = new IntegerField();
 		$a->setFields($b->getFields());
@@ -73,20 +75,21 @@ class SchemaTest extends TestCase
 	 * 
 	 */
 	public function testUnsettingField() {
-		$a = new \spitfire\storage\database\Schema('test');
+		$a = new Schema('test');
 		unset($a->_id);
 		
 		$this->assertEquals(null, isset($a->_id));
 		$this->assertEquals(0, $a->getIndexes()->count());
 	}
 	
-	/**
-	 * 
-	 * @expectedException \spitfire\exceptions\PrivateException
-	 */
 	public function testUnsettingFieldTwice() {
-		$a = new \spitfire\storage\database\Schema('test');
+		$a = new Schema('test');
+		
+		#The first time it should run perfectly fine
 		unset($a->_id);
+		
+		#The second time unsetting should fail.
+		$this->expectException(PrivateException::class);
 		unset($a->_id);
 	}
 	
@@ -98,14 +101,14 @@ class SchemaTest extends TestCase
 	 * schemas or when using different PKs than the default _id
 	 */
 	public function testGettingField() {
-		$a = new \spitfire\storage\database\Schema('test');
+		$a = new Schema('test');
 		
 		$this->assertEquals(null, $a->getField('b'), 'There is no field "B" it should fail');
 		$this->assertInstanceOf(Field::class, $a->getField('_id'), 'The id field should be present');
 	}
 	
 	public function testMakePhysicalFields() {
-		$schema = new \spitfire\storage\database\Schema('test');
+		$schema = new Schema('test');
 		$table  = db()->table($schema);
 		
 		$this->assertEquals(1, count($table->getLayout()->getFields()));
@@ -119,7 +122,7 @@ class SchemaTest extends TestCase
 		/*
 		 * Prepare a test schema with a bunch of fields.
 		 */
-		$schema = new \spitfire\storage\database\Schema('test');
+		$schema = new Schema('test');
 		$schema->a = new \IntegerField();
 		$schema->b = new \IntegerField();
 		
@@ -132,7 +135,7 @@ class SchemaTest extends TestCase
 		 * Run assertions to ensure that the index was properly created and 
 		 * every component works as expected.
 		 */
-		$this->assertInstanceOf(\spitfire\model\Index::class, $index);
+		$this->assertInstanceOf(Index::class, $index);
 		$this->assertEquals(2, $schema->getIndexes()->count());
 		$this->assertEquals(true, $index->isUnique());
 		

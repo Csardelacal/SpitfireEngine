@@ -41,15 +41,14 @@ class ParserTest extends TestCase
 		
 	}
 	
-	/**
-	 * 
-	 * @expectedException \spitfire\exceptions\PrivateException
-	 */
 	public function testParseInvalidRule() {
 		
 		$string = 'GET#data(notactually[a rule])';
 		
 		$p = new Parser();
+		
+		#Since the code cannot parse the string, it should fail.
+		$this->expectException(\spitfire\exceptions\PrivateException::class);
 		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
 			
 		
@@ -58,13 +57,14 @@ class ParserTest extends TestCase
 	/**
 	 * 
 	 * @covers \spitfire\validation\parser\preprocessor\Preprocessor::prepare
-	 * @expectedException \spitfire\exceptions\PrivateException
 	 */
 	public function testMalformedExpression() {
 		
 		$string = 'GET#data(string';
 		
 		$p = new Parser();
+		
+		$this->expectException(\spitfire\exceptions\PrivateException::class);
 		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
 			
 	}
@@ -72,13 +72,13 @@ class ParserTest extends TestCase
 	/**
 	 * 
 	 * @covers \spitfire\validation\parser\GroupComponent::tokenize()
-	 * @expectedException \spitfire\exceptions\PrivateException
 	 */
 	public function testMalformedExpression2() {
 		
 		$string = 'GET#data(string) POST#test(number)';
 		
 		$p = new Parser();
+		$this->expectException(\spitfire\exceptions\PrivateException::class);
 		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
 		
 	}

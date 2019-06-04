@@ -1,7 +1,8 @@
 <?php namespace tests\spitfire\core;
 
-use spitfire\core\Headers;
+use BadMethodCallException;
 use PHPUnit\Framework\TestCase;
+use spitfire\core\Headers;
 
 class HeadersTest extends TestCase
 {
@@ -36,10 +37,11 @@ class HeadersTest extends TestCase
 	}
 	
 	/**
-	 * @expectedException \BadMethodCallException
 	 */
 	public function testInvalidStatus() {
 		$t = new Headers();
+		
+		$this->expectException(BadMethodCallException::class);
 		$t->status('22');
 	}
 	

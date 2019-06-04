@@ -2,6 +2,7 @@
 
 use IntegerField;
 use PHPUnit\Framework\TestCase;
+use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as Field2;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\Field;
@@ -48,20 +49,18 @@ class TableTest extends TestCase
 		$this->assertInstanceOf(Field::class, $this->table->getLayout()->getField($this->table->getLayout()->getField('field2')));
 	}
 	
-	/**
-	 * @expectedException spitfire\exceptions\PrivateException
-	 */
 	public function testGetUnexistingFieldByName() {
+		
+		$this->expectException(PrivateException::class);
 		$this->table->getLayout()->getField('unexistingfield');
 	}
 	
-	/**
-	 * @expectedException spitfire\exceptions\PrivateException
-	 */
 	public function testGetUnexistingFieldByObject() {
 		$schema = new Schema('test\storage\database\Table\notreal');
 		$this->db->table($schema);
 		$schema->field = new IntegerField();
+		
+		$this->expectException(PrivateException::class);
 		$this->table->getLayout()->getField(new MysqlField($schema->field, 'notexisting'));
 	}
 

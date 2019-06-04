@@ -99,11 +99,12 @@ class DriveTest extends TestCase
 	/**
 	 * 
 	 * @depends testReadFile
-	 * @expectedException spitfire\exceptions\PrivateException
 	 * @param File $file
 	 */
 	public function testDeleteFile(File$file) {
 		$file->delete();
+		
+		$this->expectException(\spitfire\exceptions\PrivateException::class);
 		$file->up()->open('test.txt');
 	}
 	

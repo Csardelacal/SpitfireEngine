@@ -55,20 +55,22 @@ class CollectionTest extends TestCase
 	/**
 	 * 
 	 * @covers \spitfire\core\Collection::avg
-	 * @expectedException BadMethodCallException
 	 */
 	public function testAverage2() {
 		$collection = new Collection([]);
+		
+		$this->expectException(BadMethodCallException::class);
 		$collection->avg();
 	}
 	
 	/**
 	 * 
 	 * @covers \spitfire\core\Collection::avg
-	 * @expectedException BadMethodCallException
 	 */
 	public function testAverage3() {
 		$collection = new Collection(['a', 'b', 'c']);
+		
+		$this->expectException(BadMethodCallException::class);
 		$collection->avg();
 	}
 	
