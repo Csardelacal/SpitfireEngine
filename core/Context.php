@@ -1,7 +1,6 @@
 <?php namespace spitfire\core;
 
 use Controller;
-use publicException;
 use spitfire\App;
 use spitfire\cache\MemcachedAdapter;
 use spitfire\core\annotations\ActionReflector;
@@ -9,6 +8,7 @@ use spitfire\core\annotations\AnnotationParser;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\PublicException;
 use spitfire\InputSanitizer;
 use spitfire\io\session\Session;
 use spitfire\mvc\middleware\MiddlewareStack;
@@ -129,7 +129,7 @@ class Context implements ContextInterface
 		#Check if the controller can handle the request
 		$request = Array($this->controller, $this->action);
 		if (is_callable($request)) { $_return = call_user_func_array($request, $this->object); }
-		else { throw new publicException('Page not found', 404, new PrivateException('Action not found', 0)); }
+		else { throw new PublicException('Page not found', 404, new PrivateException('Action not found', 0)); }
 		
 		$this->middleware->after();
 		

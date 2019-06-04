@@ -57,7 +57,7 @@ class FilterValidationRule implements ValidationRule
 	 * @return ValidationError|boolean A validation error or boolean on success
 	 */
 	public function test($value) {
-		if ($value === null) {
+		if (empty($value)) {
 			return false;
 		}
 		

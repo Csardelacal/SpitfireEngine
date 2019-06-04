@@ -1,5 +1,10 @@
 <?php namespace spitfire\core\app;
 
+use spitfire\core\Context;
+use ReflectionClass;
+use spitfire\exceptions\PublicException;
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *

@@ -67,6 +67,10 @@ abstract class App
 		return $this->mapping;
 	}
 	
+	/**
+	 * 
+	 * @return ControllerLocator
+	 */
 	public function getControllerLocator() {
 		return $this->controllerLocator;
 	}
