@@ -31,7 +31,7 @@ class TargetTest extends TestCase
 	
 	private $plugins;
 	
-	public function setUp() {
+	public function setUp() : void {
 		$this->plugins = new \spitfire\core\event\Target();
 		$this->plugins->test->after()->do(function ($e) { return $e + 1; });
 		$this->plugins->test->n1->before()->do(function ($e) { return $e + 1; });
