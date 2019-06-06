@@ -34,9 +34,9 @@
 abstract class Pluggable
 {
 	
-	private $before;
+	protected $before;
 	
-	private $after;
+	protected $after;
 	
 	public function before() {
 		if (!$this->before) {

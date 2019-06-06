@@ -56,21 +56,15 @@ class ReferenceWriteTest extends TestCase
 			$this->db->create();
 			
 			$this->schema = new Schema('test');
-			$this->schema2 = new Schema('test2');
 
 			$this->schema->field1 = new IntegerField(true);
-			$this->schema->field2 = new Reference('test2');
-
-			$this->schema2->field1 = new IntegerField(true);
-			$this->schema2->field2 = new Reference('test');
-		
-
-			$this->table = new Table($this->db, $this->schema);
-			$this->table2 = new Table($this->db, $this->schema2);
-			$this->table->getLayout()->create();
-			$this->table2->getLayout()->create();
+			$this->schema->field2 = new Reference($this->schema);
+			
+			$this->db->table($this->schema);
 		}
 		catch (PrivateException$e) {
+			echo $e->getMessage();
+			echo $e->getTraceAsString();
 			$this->markTestSkipped('MySQL PDO driver is not available.');
 		}
 	}
@@ -81,30 +75,22 @@ class ReferenceWriteTest extends TestCase
 	
 	public function testWrite() {
 		
-		$r1 = $this->db->table('test')->newRecord();
-		$r2 = $this->db->table('test2')->newRecord();
-		
-		$r1->store();
-		$r1->field2 = $r2;
-		$r2->field2 = $r1;
+		$r1 = $this->db->table($this->schema)->newRecord();
+		$r1->field2 = $r1;
 		
 		$this->expectException(PrivateException::class);
-		$r2->store();
+		$r1->store();
 	}
 	
 	public function testWrite2() {
 		
 		$r1 = $this->db->table('test')->newRecord();
-		$r2 = $this->db->table('test2')->newRecord();
 		
 		$r1->store();
-		$r2->store();
-		$r1->field2 = $r2;
-		$r2->field2 = $r1;
+		$r1->field2 = $r1;
 		
 		$r1->store();
-		$r2->store();
 		
-		$this->assertEquals($r2->field2->_id, $r1->_id);
+		$this->assertEquals($r1->field2->_id, $r1->_id);
 	}
 }
