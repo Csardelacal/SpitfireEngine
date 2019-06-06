@@ -91,7 +91,24 @@ abstract class Model implements Serializable
 		
 		$processed = collect([$this]);
 		
+		/*
+		 * Walk through the dependencies
+		 */
 		while ($d = $dependencies->shift()) {
+			
+			/*
+			 * This is a safe guard that prevents the system from storing a model that
+			 * includes a reference to itself (and is new), since we cannot pass the
+			 * reference to the database until the object has been stored.
+			 * 
+			 * Maybe we could replace this with a createID method, that creates an 
+			 * empty record first and writes the data immediately afterwards, using
+			 * the appropriate ID for it.
+			 */
+			if ($d === $this && $this->new) {
+				throw new PrivateException('Cannot create new self referencing model, please store the model first, create reference, and store again.', 1906061708);
+			}
+			
 			if (!$processed->contains($d)) {
 				$processed->push($d);
 				$dependencies->add($d->getDependencies());
