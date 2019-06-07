@@ -322,7 +322,7 @@ function storage($uri = null) {
 	if (!$dispatcher) {
 		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
 		$dispatcher->register(new \spitfire\storage\drive\MountPoint('file://', '/'));
-		$dispatcher->register(new \spitfire\storage\drive\MountPoint('app://', spitfire()->getCWD()));
+		$dispatcher->register(new \spitfire\storage\drive\MountPoint('app://', basedir()));
 		$dispatcher->register(new \spitfire\storage\drive\MountPoint('temp://', sys_get_temp_dir()));
 	}
 	

@@ -24,25 +24,7 @@ use spitfire\mvc\View;
  */
 abstract class App
 {
-	/**
-	 * The basedir is the root directory of an application. For spitfire this is 
-	 * usually the /bin directory. This directory contains all the app specific
-	 * data. Including controllers, views and models.
-	 * 
-	 * In the specific case of Spitfire this folder also contains the 'child apps'
-	 * that can be added to it.
-	 * 
-	 * @deprecated since version 0.1-dev 20190527
-	 * @var string
-	 */
-	private $basedir;
 	
-	/**
-	 *
-	 * @deprecated since version 0.1-dev 20190527
-	 * @var type 
-	 */
-	private $URISpace;
 	
 	private $mapping;
 	private $controllerLocator;
@@ -56,8 +38,6 @@ abstract class App
 	 * @param string $namespace The URI namespace it 'owns'
 	 */
 	public function __construct($basedir, $URISpace, $namespace = false) {
-		$this->basedir  = $basedir;
-		$this->URISpace = $URISpace;
 		$reflection = new ReflectionClass($this);
 		$this->mapping = new NamespaceMapping($basedir, $URISpace, $namespace !== false? $namespace : $reflection->getNamespaceName());
 		$this->controllerLocator = new ControllerLocator($this->mapping);
@@ -78,17 +58,17 @@ abstract class App
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20190527
-	 * @return type
+	 * @return string
 	 */
 	public function getBaseDir() {
-		return $this->basedir;
+		return $this->mapping->getBaseDir();
 	}
 	
 	public function getView(Controller$controller) {
 		
 		$name = implode('\\', $this->controllerLocator->getControllerURI($controller));
 		
-		$c = $this->getNameSpace() . $name . 'View';
+		$c = $this->mapping->getNameSpace() . $name . 'View';
 		if (!class_exists($c)) { $c = View::class; }
 		
 		return new $c($controller->context);
@@ -100,15 +80,15 @@ abstract class App
 	 * your app. If you'd rather have custom rules - feel free to override these.
 	 */
 	public function createRoutes() {
-		$ns       = $this->URISpace? '/' . $this->URISpace : '';
-		$uriSpace = $this->URISpace;
+		$us = $this->mapping->getURISpace();
+		$ns = $us? '/' . $us : '';
 		
 		#The default route just returns a path based on app/controller/action/object
 		#If your application does not wish this to happen, please override createRoutes
 		#with your custome code.
-		$default = Router::getInstance()->request($ns, function (Parameters$params, Parameters$server, $extension) use ($uriSpace) {
+		$default = Router::getInstance()->request($ns, function (Parameters$params, Parameters$server, $extension) use ($us) {
 			$args = $params->getUnparsed();
-			return new Path($uriSpace, array_shift($args), array_shift($args), $args, $extension);
+			return new Path($us, array_shift($args), array_shift($args), $args, $extension);
 		});
 		
 		#The reverser for the default route is rather simple again. 
@@ -145,7 +125,7 @@ abstract class App
 	 * @deprecated since version 0.1-dev 20150423
 	 */
 	public function getTemplateDirectory() {
-		return $this->getBaseDir() . 'templates/';
+		return $this->mapping->getBaseDir() . 'templates/';
 	}
 	
 }

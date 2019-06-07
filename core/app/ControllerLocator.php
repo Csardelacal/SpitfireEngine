@@ -51,7 +51,7 @@ class ControllerLocator
 	 * It should not be necessary to check the return value with the === operator
 	 * as the return value on success should never be matched otherwise.
 	 *
-	 * @param  string $name The name of the controller being searched
+	 * @param  string[] $name The name of the controller being searched
 	 * @return string|boolean The name of the class that has the controller
 	 */
 	public function hasController($name) {
@@ -68,7 +68,7 @@ class ControllerLocator
 	 * Creates a new Controller inside the context of the request. Please note 
 	 * that this may throw an Exception due to the controller not being found.
 	 * 
-	 * @param string $controller
+	 * @param string[] $controller
 	 * @param Context $intent
 	 * @return Controller
 	 * @throws PublicException

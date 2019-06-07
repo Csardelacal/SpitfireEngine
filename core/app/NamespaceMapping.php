@@ -46,7 +46,8 @@ class NamespaceMapping
 	 * and the URI namespace it uses.
 	 * 
 	 * @param string $basedir The root directory of this app
-	 * @param string $URISpace The URI namespace it 'owns'
+	 * @param string $URISpace The URI name-space it 'owns'
+	 * @param string $namespace The class name-space it 'owns'
 	 */
 	public function __construct($basedir, $URISpace, $namespace) {
 		$this->basedir  = $basedir;
@@ -54,15 +55,27 @@ class NamespaceMapping
 		$this->namespace = $namespace;
 	}
 	
-	public function getBaseDir() {
+	/**
+	 * 
+	 * @return string
+	 */
+	public function getBaseDir() : string {
 		return $this->basedir;
 	}
 	
+	/**
+	 * 
+	 * @return string|null
+	 */
 	public function getURISpace() {
 		return $this->URISpace;
 	}
 	
-	public function getNameSpace() {
+	/**
+	 * 
+	 * @return string
+	 */
+	public function getNameSpace() : string {
 		return $this->namespace;
 	}
 }

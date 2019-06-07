@@ -122,8 +122,8 @@ class SpitFire extends App
 	 * 
 	 * @deprecated since version 0.1-dev 20190527
 	 * @see debug
-	 * @param type $msg
-	 * @return type
+	 * @param string $msg
+	 * @return string
 	 */
 	public function log($msg) {
 		debug()->log($msg);
@@ -135,7 +135,7 @@ class SpitFire extends App
 	 * @deprecated since version 0.1-dev 20190527
 	 * @see debug
 	 * @param type $msg
-	 * @return type
+	 * @return string[]
 	 */
 	public function getMessages() {
 		return debug()->getMessages();
