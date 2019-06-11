@@ -31,10 +31,8 @@ class CollectionTest extends TestCase
 		$this->assertEquals(true, $c4->containsOnly(Collection::class));
 		$this->assertEquals(false, $c4->containsOnly('array'));
 		
-		$this->assertEquals(true, $c5->containsOnly('float'));
 		$this->assertEquals(true, $c5->containsOnly('number'));
 		
-		$this->assertEquals(false, $c6->containsOnly('float'));
 		$this->assertEquals(true, $c6->containsOnly('number'));
 		
 		$this->assertEquals(true, $c7->containsOnly('string'));
