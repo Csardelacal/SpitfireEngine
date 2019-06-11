@@ -19,7 +19,7 @@ use spitfire\core\router\Pattern;
 	  * The namespace of the app being used. This allows spitfire to locate the 
 	  * application for the namespace and correctly handle it.
 	  * 
-	  * @var string|null 
+	  * @var string|null|Pattern 
 	  */
 	 private $app;
 	 

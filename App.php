@@ -112,7 +112,7 @@ abstract class App
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20190527
-	 * @return type
+	 * @return string
 	 */
 	public function getNameSpace() {
 		return $this->mapping->getNameSpace();
