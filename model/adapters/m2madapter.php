@@ -191,7 +191,7 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 		//@todo: Change for definitive.
 		foreach($value as $child) {
 			$insert = new BridgeAdapter($this->field, $this->parent, $child);
-			$insert->makeRecord()->write();
+			$insert->makeRecord()->store();
 		}
 	}
 

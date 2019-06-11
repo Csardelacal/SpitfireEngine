@@ -102,11 +102,8 @@ class LexerTest extends TestCase
 		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number)';
 		$res = $lex->tokenize($string);
 		
-		var_dump($res);
-		die();
-		
-		$this->assertEquals(7, count($res));
-		$this->assertEquals('myval', $res[2]);
+		$this->assertEquals(22, count($res));
+		$this->assertEquals('input', $res[2]);
 		
 	}
 	

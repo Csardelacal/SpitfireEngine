@@ -163,9 +163,5 @@ abstract class BaseAdapter implements AdapterInterface
 	public function validate() {
 		return $this->field->validate($this->data);
 	}
-	
-	public function getDependencies() {
-		return [];
-	}
 
 }

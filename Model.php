@@ -87,46 +87,35 @@ abstract class Model implements Serializable
 	 * @throws PrivateException
 	 */
 	public function store() {
-		$dependencies = $this->getDependencies();
+		$this->onbeforesave();
 		
-		$processed = collect([$this]);
-		
-		/*
-		 * Walk through the dependencies
-		 */
-		while ($d = $dependencies->shift()) {
+		#Decide whether to insert or update depending on the Model
+		if ($this->new) { 
+			#Get the autoincrement field
+			$id = $this->table->getCollection()->insert($this);
+			$ai = $this->table->getAutoIncrement();
+			$ad = $ai? $this->data[$ai->getName()]->dbGetData() : null;
 			
-			/*
-			 * This is a safe guard that prevents the system from storing a model that
-			 * includes a reference to itself (and is new), since we cannot pass the
-			 * reference to the database until the object has been stored.
-			 * 
-			 * Maybe we could replace this with a createID method, that creates an 
-			 * empty record first and writes the data immediately afterwards, using
-			 * the appropriate ID for it.
-			 */
-			if ($d === $this && $this->new) {
-				throw new PrivateException('Cannot create new self referencing model, please store the model first, create reference, and store again.', 1906061708);
-			}
-			
-			if (!$processed->contains($d)) {
-				$processed->push($d);
-				$dependencies->add($d->getDependencies());
+			#If the autoincrement field is empty set the new DB given id
+			if ($ai && !reset($ad)) {
+				$this->data[$ai->getName()]->dbSetData(Array($ai->getName() => $id));
 			}
 		}
+		else { 
+			$this->table->getCollection()->update($this);
+		}
 		
-		#Check if onbeforesave is there and use it.
-		$processed->each(function ($e) {
-			if (method_exists($e, 'onbeforesave')) {
-				$e->onbeforesave();
-			}
-		});
+		$this->new = false;
 		
-		$processed->each(function ($e) {
-			$e->write();
-		});
+		foreach($this->data as $value) {
+			$value->commit();
+		}
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190611
+	 */
 	public function write() {
 		#Decide whether to insert or update depending on the Model
 		if ($this->new) { 
@@ -291,6 +280,11 @@ abstract class Model implements Serializable
 		}
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190611
+	 * @return core\Collection
+	 */
 	public function getDependencies() {
 		
 		$dependencies = collect($this->data)
@@ -302,5 +296,16 @@ abstract class Model implements Serializable
 		
 		return $dependencies;
 	}
+	
+	public function isNew() {
+		return $this->new;
+	}
+	
+	/**
+	 * Allows the model to perform small tasks before it is written to the database.
+	 * 
+	 * @return void This method does not return
+	 */
+	public function onbeforesave() {}
 
 }
