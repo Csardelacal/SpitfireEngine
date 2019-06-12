@@ -70,7 +70,7 @@ class Lexer
 				$r = $module->in($buf);
 				
 				/*
-				 * In case the module was unable to extract anything, we will skipp 
+				 * In case the module was unable to extract anything, we will skip 
 				 * to the next module.
 				 */
 				if (!$r) { continue;  }
@@ -78,7 +78,7 @@ class Lexer
 				/*
 				 * Commit t.
 				 */
-				$ret[] = $t;
+				$ret[] = is_numeric($t)? (new Literal('"', '"'))->setBody($t): $t;
 				$t = '';
 
 				$ret[] = $r;
@@ -98,7 +98,7 @@ class Lexer
 			$ret[] = $t;
 		}
 		
-		return array_values(array_filter($ret, function ($e) { return $e !== ' ' && $e !== ''; }));
+		return array_values(array_filter($ret, function ($e) { return !$e instanceof WhiteSpace && !empty($e); }));
 	}
 	
 }

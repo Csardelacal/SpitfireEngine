@@ -129,7 +129,6 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 */
 	public function commit() {
 		collect($this->children)->each(function ($e) {
-			echo 'Committing child', PHP_EOL;
 			$e->store();
 		});
 	}

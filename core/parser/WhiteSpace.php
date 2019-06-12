@@ -32,11 +32,11 @@ class WhiteSpace extends StaticToken
 		return ' ';
 	}
 
-	public function in(StringBuffer $buffer): ?string {
+	public function in(StringBuffer $buffer): ?StaticToken {
 		
 		if ($buffer->peek(1) == ' ') {
 			$buffer->fastforward();
-			return ' ';
+			return $this;
 		}
 		
 		return null;

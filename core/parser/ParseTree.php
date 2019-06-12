@@ -24,34 +24,45 @@
  * THE SOFTWARE.
  */
 
-class ReservedWord extends StaticToken
+class ParseTree
 {
 	
-	private $literal;
+	private $block;
+	private $leafs = [];
 	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
+	public function __construct($block, $nodes) {
+		$this->block = $block;
+		$this->leafs = $nodes;
 	}
 	
-	public function getBody() : string {
-		return $this->literal;
+	public function getBlock() {
+		return $this->block;
 	}
-
-	public function in(StringBuffer $buffer): ?StaticToken {
-		
-		if ($buffer->peek(strlen($this->literal)) != $this->literal) {
-			return null;
-		}
-		
-		$next = $buffer->peek(strlen($this->literal), 1);
-		
-		if (ctype_alnum($next)) {
-			return null;
-		}
-		
-		$buffer->fastforward(strlen($this->literal) + 1);
+	
+	public function getLeafs() {
+		return $this->leafs;
+	}
+	
+	public function setBlock($block) {
+		$this->block = $block;
 		return $this;
 	}
-
+	
+	public function setLeafs($nodes) {
+		$this->leafs = $nodes;
+		return $this;
+	}
+	
+	public function stringify($offset = 0) {
+		$leafs = collect($this->leafs);
+		
+		return str_repeat(' ', $offset) . sprintf('branch(%s - %s)%s%s', count($this->leafs), $this->block->name, PHP_EOL, $leafs->each(function ($e) use ($offset) { 
+			return $e instanceof ParseTree? $e->stringify($offset + 4) : str_repeat(' ', $offset + 4) . $e;
+		})->join(PHP_EOL));
+	}
+	
+	public function __toString() {
+		return $this->stringify();
+	}
+	
 }

@@ -28,5 +28,9 @@ abstract class StaticToken
 {
 	
 	abstract public function getBody() : string;
-	abstract public function in(StringBuffer$buffer) : ?string;
+	abstract public function in(StringBuffer$buffer) : ?StaticToken;
+	
+	public function __toString() {
+		return $this->getBody();
+	}
 }

@@ -24,34 +24,21 @@
  * THE SOFTWARE.
  */
 
-class ReservedWord extends StaticToken
+class Identifier
 {
 	
-	private $literal;
+	private $name;
 	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
-	}
-	
-	public function getBody() : string {
-		return $this->literal;
+	public function __construct($name = null) {
+		$this->name = $name;
 	}
 
-	public function in(StringBuffer $buffer): ?StaticToken {
-		
-		if ($buffer->peek(strlen($this->literal)) != $this->literal) {
-			return null;
-		}
-		
-		$next = $buffer->peek(strlen($this->literal), 1);
-		
-		if (ctype_alnum($next)) {
-			return null;
-		}
-		
-		$buffer->fastforward(strlen($this->literal) + 1);
-		return $this;
+	public function getName() {
+		return $this->name;
+	}
+	
+	public function __toString() {
+		return strval($this->name);
 	}
 
 }

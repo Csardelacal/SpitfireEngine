@@ -24,34 +24,46 @@
  * THE SOFTWARE.
  */
 
-class ReservedWord extends StaticToken
+class Either
 {
 	
-	private $literal;
+	private $blocks;
 	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
+	/**
+	 * 
+	 */
+	public function __construct($a) {
+		$this->blocks = collect($a)->each(function ($e) { 
+			$block = new Block();
+			$block->matchesArray($e);
+			return $block;
+		} );	
 	}
 	
-	public function getBody() : string {
-		return $this->literal;
+	
+	public function test($tokens) {
+		$blocks = clone($this->blocks);
+		
+		foreach ($blocks as $block) {
+			$res = $block->test($tokens);
+			
+			if ($res) { 
+				return $res; 
+			}
+		}
+		
+		return false;
 	}
-
-	public function in(StringBuffer $buffer): ?StaticToken {
-		
-		if ($buffer->peek(strlen($this->literal)) != $this->literal) {
-			return null;
+	
+	public function name($str) {
+		foreach ($this->blocks as $i => $block) {
+			$block->name = $str . $i;
 		}
-		
-		$next = $buffer->peek(strlen($this->literal), 1);
-		
-		if (ctype_alnum($next)) {
-			return null;
-		}
-		
-		$buffer->fastforward(strlen($this->literal) + 1);
 		return $this;
 	}
-
+	
+	public function __toString() {
+		return sprintf('either(%s)', $this->blocks->join(' OR '));
+	}
+	
 }

@@ -43,8 +43,15 @@ class Symbol extends StaticToken
 		return $this->literal;
 	}
 
-	public function in(StringBuffer $buffer): ?string {
-		return $buffer->peek(1) === $this->literal? $buffer->read() : null;
+	public function in(StringBuffer $buffer): ?StaticToken {
+		
+		if ($buffer->peek(1) === $this->literal) {
+			$buffer->read();
+			return $this;
+		}
+		else {
+			return null;
+		}
 	}
 
 }

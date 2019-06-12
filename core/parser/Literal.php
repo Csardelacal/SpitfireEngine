@@ -32,6 +32,8 @@ class Literal extends StaticToken
 	
 	private $close;
 	
+	private $body = null;
+	
 	
 	public function __construct($open, $close) {
 		$this->open = $open;
@@ -46,31 +48,40 @@ class Literal extends StaticToken
 		return $this->close;
 	}
 
-	public function getBody(): string {
-		return $this->open;
+	public function setBody($body): Literal {
+		$this->body = $body;
+		return $this;
 	}
 
-	public function in(StringBuffer $buffer): ?string {
+	public function getBody(): string {
+		return $this->body;
+	}
+
+	public function in(StringBuffer $buffer): ?StaticToken {
 		/**
 		 * Check if the opening is present
 		 */
 		if ($buffer->peek(strlen($this->open)) !== $this->open) {
-			return false;
+			return null;
 		}
 		
 		$pos  = $buffer->seek();
-		$_ret = $buffer->read();
+		$_ret = '';
 		$esc  = false;
 		
+		/*
+		 * Skip the first character. We know it's the opening character
+		 */
+		$buffer->read();
 		
-		while($next = $buffer->read()) {
+		while(false !== $next = $buffer->read()) {
 			
 			/*
 			 * Obviously, if the next character is a closing character, and the character
 			 * has not been escaped, we return the result.
 			 */
 			if ($next == $this->close && !$esc) {
-				return $_ret . $next;
+				return clone($this)->setBody($_ret);
 			}
 			
 			/*

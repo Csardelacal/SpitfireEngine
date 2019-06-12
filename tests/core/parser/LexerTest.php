@@ -47,7 +47,8 @@ class LexerTest extends TestCase
 		$res = $lex->tokenize('hello("crazy world", 1)');
 		
 		$this->assertEquals(6, count($res));
-		$this->assertEquals('"crazy world"', $res[2]);
+		$this->assertInstanceOf(Literal::class, $res[2]);
+		$this->assertEquals('crazy world', $res[2]->getBody());
 		
 	}
 	
@@ -94,15 +95,15 @@ class LexerTest extends TestCase
 		$bop = new Symbol('[');
 		$bcl = new Symbol(']');
 		$com = new Symbol(',');
-		$com = new Symbol('.');
+		$dot = new Symbol('.');
 		$whs = new WhiteSpace();
 		
-		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $whs, $bop, $bcl);
+		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl);
 		
 		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number)';
 		$res = $lex->tokenize($string);
 		
-		$this->assertEquals(22, count($res));
+		$this->assertEquals(24, count($res));
 		$this->assertEquals('input', $res[2]);
 		
 	}
