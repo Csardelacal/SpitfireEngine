@@ -75,7 +75,7 @@ class NamespaceMapping
 	 * 
 	 * @return string
 	 */
-	public function getNameSpace() : string {
+	public function getNameSpace() :? string {
 		return $this->namespace;
 	}
 }
