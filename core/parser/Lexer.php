@@ -1,5 +1,11 @@
 <?php namespace spitfire\core\parser;
 
+use spitfire\core\parser\lexemes\EndOfFile;
+use spitfire\core\parser\lexemes\WhiteSpace;
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\exceptions\PrivateException;
+use function collect;
+
 /* 
  * The MIT License
  *
@@ -27,12 +33,12 @@
 class Lexer
 {
 	
-	private $tokens;
+	private $modules;
 	
 	public function __construct() {
-		$this->tokens = collect(func_get_args());
+		$this->modules = collect(func_get_args());
 		
-		if (!$this->tokens->containsOnly(StaticToken::class)) {
+		if (!$this->modules->containsOnly(ScannerModuleInterface::class)) {
 			throw new PrivateException('Lexer error. Tried to provide invalid arguments', 1906100944);
 		}
 	}
@@ -40,17 +46,6 @@ class Lexer
 	public function tokenize($str) {
 		$buf = new StringBuffer($str);
 		$ret = [];
-		
-		/*
-		 * T is the part of the lexer that allows for user specified tokens, for
-		 * example, the string "function test(t) {}" contains the reserved word function,
-		 * and a bunch of symbols, but the strings "test" and "t" are used by the
-		 * user to customize their behavior.
-		 * 
-		 * They become relevant later, when the parser actually starts working with
-		 * the tokens.
-		 */
-		$t   = '';
 		
 		/*
 		 * Main loop. If the lexer has not yet finished looping over the string, then
@@ -63,7 +58,7 @@ class Lexer
 			 * the programmer to define Reserved Words, Symbols and parsers for literals,
 			 * allowing the programmer to fine tune the way the syntax should look.
 			 */
-			foreach ($this->tokens as $module) {
+			foreach ($this->modules as $module) {
 				/*
 				 * Check if the module can start tokenizing the string.
 				 */
@@ -75,12 +70,6 @@ class Lexer
 				 */
 				if (!$r) { continue;  }
 				
-				/*
-				 * Commit t.
-				 */
-				$ret[] = is_numeric($t)? (new Literal('"', '"'))->setBody($t): $t;
-				$t = '';
-
 				$ret[] = $r;
 				
 				/*
@@ -91,12 +80,10 @@ class Lexer
 				continue 2;
 			}
 			
-			$t.= $buf->read();
+			throw new PrivateException(sprintf('Unexpected character "%s" at offset %d', $buf->peek(), $buf->seek()), 190617);
 		}
 		
-		if (!empty($t)) {
-			$ret[] = $t;
-		}
+		$ret[] = new EndOfFile();
 		
 		return array_values(array_filter($ret, function ($e) { return !$e instanceof WhiteSpace && !empty($e); }));
 	}

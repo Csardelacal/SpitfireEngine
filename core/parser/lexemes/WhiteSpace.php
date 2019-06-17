@@ -1,4 +1,5 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\lexemes;
+
 
 /* 
  * The MIT License
@@ -24,13 +25,11 @@
  * THE SOFTWARE.
  */
 
-abstract class StaticToken
+class WhiteSpace implements LexemeInterface
 {
 	
-	abstract public function getBody() : string;
-	abstract public function in(StringBuffer$buffer) : ?StaticToken;
-	
-	public function __toString() {
-		return $this->getBody();
+	public function getBody(): string {
+		return '';
 	}
+
 }

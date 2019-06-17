@@ -1,11 +1,14 @@
 <?php namespace tests\spitfire\core\parser;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\core\parser\lexemes\Literal;
+use spitfire\core\parser\lexemes\ReservedWord;
+use spitfire\core\parser\lexemes\Symbol;
 use spitfire\core\parser\Lexer;
-use spitfire\core\parser\Literal;
-use spitfire\core\parser\ReservedWord;
-use spitfire\core\parser\Symbol;
-use spitfire\core\parser\WhiteSpace;
+use spitfire\core\parser\scanner\IdentifierScanner;
+use spitfire\core\parser\scanner\IntegerLiteralScanner;
+use spitfire\core\parser\scanner\LiteralScanner;
+use spitfire\core\parser\scanner\WhiteSpaceScanner;
 
 /* 
  * The MIT License
@@ -37,74 +40,81 @@ class LexerTest extends TestCase
 	public function testBasicLexer() {
 		$and = new ReservedWord('AND');
 		$or  = new ReservedWord('OR');
-		$lit = new Literal('"', '"');
+		$lit = new LiteralScanner('"', '"');
 		$pop = new Symbol('(');
 		$pcl = new Symbol(')');
 		$com = new Symbol(',');
-		$whs = new WhiteSpace();
+		$whs = new WhiteSpaceScanner();
+		$ids = new IdentifierScanner();
+		$nms = new IntegerLiteralScanner();
 		
-		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $whs);
+		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $whs, $ids, $nms);
 		$res = $lex->tokenize('hello("crazy world", 1)');
 		
-		$this->assertEquals(6, count($res));
+		$this->assertEquals(7, count($res));
 		$this->assertInstanceOf(Literal::class, $res[2]);
 		$this->assertEquals('crazy world', $res[2]->getBody());
 		
 	}
 	
 	public function testBasicLexer2() {
-		$lit = new Literal('"', '"');
+		$lit = new LiteralScanner('"', '"');
 		$pls = new Symbol('+');
 		$mns = new Symbol('-');
 		$eqs = new Symbol('=');
 		$mul = new Symbol('*');
 		$div = new Symbol('/');
-		$whs = new WhiteSpace();
+		$whs = new WhiteSpaceScanner();
+		$nms = new IntegerLiteralScanner();
 		
-		$lex = new Lexer($lit, $pls, $mns, $eqs, $mul, $div, $whs);
+		$lex = new Lexer($lit, $pls, $mns, $eqs, $mul, $div, $whs, $nms);
 		$res = $lex->tokenize('3+1*5/6');
 		
-		$this->assertEquals(7, count($res));
-		$this->assertEquals('1', $res[2]);
+		$this->assertEquals(8, count($res));
+		$this->assertEquals('1', $res[2]->getBody());
 		
 	}
 	
 	public function testBasicLexer3() {
-		$lit = new Literal('"', '"');
+		$lit = new LiteralScanner('"', '"');
 		$pls = new Symbol('+');
 		$mns = new Symbol('-');
 		$eqs = new Symbol('=');
 		$mul = new Symbol('*');
 		$div = new Symbol('/');
-		$whs = new WhiteSpace();
+		$whs = new WhiteSpaceScanner();
+		$ids = new IdentifierScanner();
+		$nms = new IntegerLiteralScanner();
 		
-		$lex = new Lexer($lit, $pls, $mns, $eqs, $mul, $div, $whs);
+		$lex = new Lexer($lit, $pls, $mns, $eqs, $mul, $div, $whs, $ids, $nms);
 		$res = $lex->tokenize('3 + myval * 5 / 6');
 		
-		$this->assertEquals(7, count($res));
-		$this->assertEquals('myval', $res[2]);
+		$this->assertEquals(8, count($res));
+		$this->assertEquals('myval', $res[2]->getBody());
 		
 	}
 	
 	public function testBasicLexer4() {
 		$and = new ReservedWord('AND');
 		$or  = new ReservedWord('OR');
-		$lit = new Literal('"', '"');
+		$lit = new LiteralScanner('"', '"');
 		$pop = new Symbol('(');
 		$pcl = new Symbol(')');
 		$bop = new Symbol('[');
 		$bcl = new Symbol(']');
 		$com = new Symbol(',');
 		$dot = new Symbol('.');
-		$whs = new WhiteSpace();
+		$whs = new WhiteSpaceScanner();
+		$ids = new IdentifierScanner();
+		$nms = new IntegerLiteralScanner();
 		
-		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl);
+		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl, $ids, $nms);
 		
 		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number)';
 		$res = $lex->tokenize($string);
 		
-		$this->assertEquals(24, count($res));
-		$this->assertEquals('input', $res[2]);
+		$this->assertEquals(25, count($res));
+		$this->assertEquals('input', $res[2]->getBody());
 		
 	}
 	

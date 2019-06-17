@@ -6,10 +6,10 @@ use spitfire\core\parser\Identifier;
 use spitfire\core\parser\Lexer;
 use spitfire\core\parser\Literal;
 use spitfire\core\parser\Parser;
-use spitfire\core\parser\ReservedWord;
+use spitfire\core\parser\lexemes\ReservedWord;
 use spitfire\core\parser\StringLiteral;
 use spitfire\core\parser\Symbol;
-use spitfire\core\parser\WhiteSpace;
+use spitfire\core\parser\WhiteSpaceScanner;
 
 /* 
  * The MIT License
@@ -46,7 +46,7 @@ class ParserTest extends TestCase
 		$mns = new Symbol('-');
 		$mul = new Symbol('*');
 		$div = new Symbol('/');
-		$whs = new WhiteSpace();
+		$whs = new WhiteSpaceScanner();
 		
 		$operand = new Block();
 		$operation = new Block();
@@ -81,7 +81,7 @@ class ParserTest extends TestCase
 		$bcl = new Symbol(']');
 		$com = new Symbol(',');
 		$dot = new Symbol('.');
-		$whs = new WhiteSpace();
+		$whs = new WhiteSpaceScanner();
 		
 		$statement = new Block();
 		$expression = new Block();

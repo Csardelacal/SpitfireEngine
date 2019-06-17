@@ -76,7 +76,7 @@ class Block
 				$found[] = array_shift($tokens);
 			}
 			
-			if ($rule instanceof StaticToken) {
+			if ($rule instanceof LexemeInterface) {
 				if ($rule === reset($tokens)) { $found[] = array_shift($tokens); }
 				else { return false; }
 			}

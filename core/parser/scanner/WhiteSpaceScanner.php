@@ -1,4 +1,9 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\scanner;
+
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\lexemes\WhiteSpace;
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
@@ -24,34 +29,17 @@
  * THE SOFTWARE.
  */
 
-/**
- * The main difference between symbols and reserved words, is that the tokenizer
- * will search for symbols as breaking characters, while reserved words will be
- * only matched if they are properly delimited.
- */
-class Symbol extends StaticToken
+class WhiteSpaceScanner implements ScannerModuleInterface
 {
-	
-	private $literal;
-	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
-	}
-	
-	public function getBody() : string {
-		return $this->literal;
-	}
 
-	public function in(StringBuffer $buffer): ?StaticToken {
+	public function in(StringBuffer $buffer): ?LexemeInterface {
 		
-		if ($buffer->peek(1) === $this->literal) {
-			$buffer->read();
-			return $this;
+		if ($buffer->peek(1) == ' ') {
+			$buffer->fastforward();
+			return new WhiteSpace();
 		}
-		else {
-			return null;
-		}
+		
+		return null;
 	}
 
 }

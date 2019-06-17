@@ -1,4 +1,7 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\scanner;
+
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
@@ -24,34 +27,8 @@
  * THE SOFTWARE.
  */
 
-class ReservedWord extends StaticToken
+interface ScannerModuleInterface
 {
 	
-	private $literal;
-	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
-	}
-	
-	public function getBody() : string {
-		return $this->literal;
-	}
-
-	public function in(StringBuffer $buffer): ?StaticToken {
-		
-		if ($buffer->peek(strlen($this->literal)) != $this->literal) {
-			return null;
-		}
-		
-		$next = $buffer->peek(strlen($this->literal), 1);
-		
-		if (ctype_alnum($next)) {
-			return null;
-		}
-		
-		$buffer->fastforward(strlen($this->literal) + 1);
-		return $this;
-	}
-
+	function in(StringBuffer$buffer) : ?LexemeInterface;
 }

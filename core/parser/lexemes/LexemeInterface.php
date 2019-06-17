@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\lexemes;
 
 /* 
  * The MIT License
@@ -24,21 +24,8 @@
  * THE SOFTWARE.
  */
 
-class Identifier
+interface LexemeInterface
 {
 	
-	private $name;
-	
-	public function __construct($name = null) {
-		$this->name = $name;
-	}
-
-	public function getName() {
-		return $this->name;
-	}
-	
-	public function __toString() {
-		return strval($this->name);
-	}
-
+	function getBody() : string;
 }

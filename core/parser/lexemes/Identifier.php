@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\lexemes;
 
 /* 
  * The MIT License
@@ -24,22 +24,25 @@
  * THE SOFTWARE.
  */
 
-class WhiteSpace extends StaticToken
+class Identifier implements LexemeInterface
 {
 	
+	private $name;
 	
-	public function getBody() : string {
-		return ' ';
+	public function __construct($name = null) {
+		$this->name = $name;
 	}
 
-	public function in(StringBuffer $buffer): ?StaticToken {
-		
-		if ($buffer->peek(1) == ' ') {
-			$buffer->fastforward();
-			return $this;
-		}
-		
-		return null;
+	public function getName() {
+		return $this->name;
+	}
+
+	public function getBody(): string {
+		return $this->name;
+	}
+	
+	public function __toString() {
+		return strval($this->name);
 	}
 
 }

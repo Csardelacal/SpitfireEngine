@@ -1,4 +1,9 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\scanner;
+
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\lexemes\Literal;
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
@@ -25,39 +30,20 @@
  */
 
 
-class Literal extends StaticToken
+class LiteralScanner implements ScannerModuleInterface
 {
 	
 	private $open;
 	
 	private $close;
 	
-	private $body = null;
-	
 	
 	public function __construct($open, $close) {
 		$this->open = $open;
 		$this->close = $close;
 	}
-	
-	public function getOpen() {
-		return $this->open;
-	}
 
-	public function getClose() {
-		return $this->close;
-	}
-
-	public function setBody($body): Literal {
-		$this->body = $body;
-		return $this;
-	}
-
-	public function getBody(): string {
-		return $this->body;
-	}
-
-	public function in(StringBuffer $buffer): ?StaticToken {
+	public function in(StringBuffer $buffer): ?LexemeInterface {
 		/**
 		 * Check if the opening is present
 		 */
@@ -81,7 +67,7 @@ class Literal extends StaticToken
 			 * has not been escaped, we return the result.
 			 */
 			if ($next == $this->close && !$esc) {
-				return clone($this)->setBody($_ret);
+				return new Literal($_ret);
 			}
 			
 			/*
