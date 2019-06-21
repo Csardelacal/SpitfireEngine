@@ -57,7 +57,7 @@ class AutoLoad
 	
 	/**
 	 * 
-	 * @param \spitfire\autoload\ClassLocator $locator
+	 * @param ClassLocator $locator
 	 */
 	public function registerLocator($locator) {
 		$this->locators[] = $locator;
@@ -74,7 +74,7 @@ class AutoLoad
 	 * Spitfire) to find classes it needs. Use ClassLocators to add functionality
 	 * to the autoload.
 	 * 
-	 * @return \spitfire\AutoLoad
+	 * @return AutoLoad
 	 */
 	public static function getInstance() {
 		return self::$instance;

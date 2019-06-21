@@ -1,10 +1,11 @@
-<?php namespace spitfire\cache;
+<?php namespace spitfire\cache; //TODO: Introduce query interface that other vendors can implement
 
+
+use Closure;
+use Memcached;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
-use spitfire\storage\database\Query; //TODO: Introduce query interface that other vendors can implement
-use Memcached;
-use Closure;
+use spitfire\storage\database\Query;
 
 /**
  * Memcached interface. This allows to retrieve cached data easily and increases
@@ -95,7 +96,7 @@ class MemcachedAdapter implements CacheInterface
 		
 		#Add the array of servers we want to use
 		foreach ($memcached_servers as $server) {
-			$this->connection->addServer($server, $this->environment->read('memcached_port'));
+			$this->connection->addServer($server, $this->environment->read('memcached_port')?: 11211);
 		}
 		
 		#Return the connection.
@@ -132,7 +133,7 @@ class MemcachedAdapter implements CacheInterface
 	 * result, if you require caching use object access.
 	 * 
 	 * @param string        $key
-	 * @param \Closure|null $fallback
+	 * @param \Closure|null|Query $fallback
 	 * @return boolean
 	 */
 	public function get($key, $fallback = null) {
@@ -175,12 +176,15 @@ class MemcachedAdapter implements CacheInterface
 	 * 
 	 * @param string $key
 	 * @param int $amt
-	 * @return boolean True on success
+	 * @return int|false Returns an int on success, false on failure.
 	 */
 	public function increment($key, $amt = 1) {
+		
 		if ($this->connection) {
 			return $this->connection->increment($key, $amt);
 		}
+		
+		return false;
 	}
 	
 	/**

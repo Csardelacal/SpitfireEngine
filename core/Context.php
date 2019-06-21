@@ -1,9 +1,9 @@
 <?php namespace spitfire\core;
 
 use Controller;
+use ReflectionMethod;
 use spitfire\App;
 use spitfire\cache\MemcachedAdapter;
-use spitfire\core\annotations\ActionReflector;
 use spitfire\core\annotations\AnnotationParser;
 use spitfire\core\Request;
 use spitfire\core\Response;
@@ -108,7 +108,7 @@ class Context implements ContextInterface
 		$context->view        = $context->app->getView($context->controller);
 		
 		try {
-			$reflector            = new \ReflectionMethod($context->controller, $context->action);
+			$reflector            = new ReflectionMethod($context->controller, $context->action);
 			$annotationParser     = new AnnotationParser();
 			$context->annotations = $annotationParser->parse($reflector->getDocComment());
 		} catch(\Exception$e) {
