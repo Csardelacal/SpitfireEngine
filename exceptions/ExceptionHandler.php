@@ -64,6 +64,9 @@ class ExceptionHandler {
 			if ( $e instanceof PublicException) {
 				$response->getHeaders()->status($e->getCode());
 			}
+			else {
+				$response->getHeaders()->status(500);
+			}
 			
 			$response->setBody($template->render(!Environment::get('debug_mode')? [
 				'code'    => $e instanceof PublicException? $e->getCode() : 500,
