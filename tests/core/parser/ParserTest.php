@@ -1,15 +1,21 @@
 <?php namespace tests\spitfire\core\parser;
 
 use PHPUnit\Framework\TestCase;
-use spitfire\core\parser\Block;
 use spitfire\core\parser\Identifier;
+use spitfire\core\parser\lexemes\ReservedWord;
+use spitfire\core\parser\lexemes\Symbol;
 use spitfire\core\parser\Lexer;
 use spitfire\core\parser\Literal;
-use spitfire\core\parser\Parser;
-use spitfire\core\parser\lexemes\ReservedWord;
+use spitfire\core\parser\parser\Block;
+use spitfire\core\parser\parser\IdentifierTerminal;
+use spitfire\core\parser\parser\LiteralTerminal;
+use spitfire\core\parser\parser\Parser;
+use spitfire\core\parser\parser\SymbolTerminal;
+use spitfire\core\parser\scanner\IdentifierScanner;
+use spitfire\core\parser\scanner\IntegerLiteralScanner;
+use spitfire\core\parser\scanner\LiteralScanner;
+use spitfire\core\parser\scanner\WhiteSpaceScanner;
 use spitfire\core\parser\StringLiteral;
-use spitfire\core\parser\Symbol;
-use spitfire\core\parser\WhiteSpaceScanner;
 
 /* 
  * The MIT License
@@ -40,38 +46,59 @@ class ParserTest extends TestCase
 	
 	
 	
-	public function retestBasicParser() {
-		$lit = new Literal('"', '"');
+	public function testBasicParser() {
+		$lit = new LiteralScanner('"', '"');
 		$pls = new Symbol('+');
 		$mns = new Symbol('-');
 		$mul = new Symbol('*');
 		$div = new Symbol('/');
+		$not = new Symbol('!');
+		$pop = new Symbol('(');
+		$pcl = new Symbol(')');
 		$whs = new WhiteSpaceScanner();
+		$ids = new IdentifierScanner();
+		$int = new IntegerLiteralScanner();
 		
-		$operand = new Block();
-		$operation = new Block();
-		$operator = new Block();
-		$variable = new Block();
+		$expression     = new Block();
+		$addition       = new Block();
+		$multiplication = new Block();
+		$unary          = new Block();
+		$primary        = new Block();
 		
-		$operation->matches($variable, $operator, $operand);
-		$operand->matches(Block::either([$operation], [$variable])->name('operand.either.'));
-		$operator->matches(Block::either([$div], [$pls], [$mul], [$mns])->name('operator.either.'));
-		$variable->matches(Block::either([new StringLiteral()], [new Identifier()])->name('variable.either.'));
+		$expression->matches($addition);
+		$addition->matches($multiplication, Block::optional(Block::multiple(Block::either([$pls], [$mns]), $multiplication)));
 		
-		$operand->name = 'operand';
-		$operator->name = 'operator';
-		$operation->name = 'operation';
-		$variable->name = 'variable';
+		$multiplication->matches(
+			$unary, 
+			Block::optional(Block::multiple(Block::either([new SymbolTerminal($mul)], [new SymbolTerminal($div)]), $unary))->name('multiplication.optional.')
+		);
 		
-		$lex = new Lexer($lit, $pls, $mns, $mul, $div, $whs);
-		$parser = new Parser($operation);
+		$unary->matches(
+			Block::either([new SymbolTerminal($not), $primary], [$primary])->name('unary.either')
+		);
 		
-		echo implode(',', $parser->parse($lex->tokenize('3 * myval + 5 / 6')));
+		$primary->matches(Block::either(
+			[new IdentifierTerminal()], 
+			[new LiteralTerminal()], 
+			[new SymbolTerminal($pop), $expression, new SymbolTerminal($pcl)]
+			)->name('primary.either')
+		);
 		
+		$expression->name = 'expression';
+		$addition->name = 'addition';
+		$multiplication->name = 'multiplication';
+		$unary->name = 'unary';
+		$primary->name = 'primary';
+		
+		$lex = new Lexer($lit, $pls, $mns, $mul, $div, $whs, $ids, $int, $not, $pop, $pcl);
+		$parser = new Parser($expression);
+		
+		echo implode(',', $parser->parse($lex->tokenize('3 * myval + 5 / (6 - 2)')));
+		die();
 		
 	}
 	
-	public function testBasicParser2() {
+	public function retestBasicParser2() {
 		$and = new ReservedWord('AND');
 		$or  = new ReservedWord('OR');
 		$lit = new Literal('"', '"');

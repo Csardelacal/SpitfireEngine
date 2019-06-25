@@ -42,7 +42,7 @@ class Identifier implements LexemeInterface
 	}
 	
 	public function __toString() {
-		return strval($this->name);
+		return sprintf('val(%s)', strval($this->name));
 	}
 
 }

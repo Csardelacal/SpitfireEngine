@@ -1,4 +1,8 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\parser;
+
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\lexemes\Literal;
 
 /* 
  * The MIT License
@@ -41,8 +45,10 @@ class Block
 	
 	public function test($tokens) {
 		
-		$orig  = $tokens;
 		$found = [];
+		sleep(1);
+		echo 'Descending into ' , $this->name, PHP_EOL;
+		ob_flush();
 		
 		/*
 		 * Loop over the matches and see if we can extract anything of value
@@ -56,7 +62,7 @@ class Block
 					$tokens = $t;
 				}
 				
-			} #Eithers are single children
+			} 
 			
 			/*
 			 * If another block is the child, we will first descend into it. If it
@@ -66,7 +72,7 @@ class Block
 			 * On the other hand, if the block did match, then we will put it's result
 			 * into found, and continue parsing.
 			 */
-			if ($rule instanceof Block || $rule instanceof Either) {
+			if ($rule instanceof Block || $rule instanceof Either || $rule instanceof Multiple) {
 				
 				$r = $rule->test($tokens);
 				
@@ -81,13 +87,8 @@ class Block
 				else { return false; }
 			}
 			
-			if ($rule instanceof Identifier) {
-				if (is_string(reset($tokens))) { $found[] = new Identifier(array_shift($tokens)); }
-				else { return false; }
-			}
-			
-			if ($rule instanceof StringLiteral) {
-				if (reset($tokens) instanceof Literal) { $found[] = new StringLiteral(array_shift($tokens)->getBody()); }
+			if ($rule instanceof TerminalInterface) {
+				if ($rule->test(reset($tokens))) { $found[] = $rule->get(array_shift($tokens)); }
 				else { return false; }
 			}
 		}
@@ -109,5 +110,10 @@ class Block
 	public static function optional() {
 		$args = func_get_args();
 		return new Optional($args);
+	}
+	
+	public static function multiple() {
+		$args = func_get_args();
+		return new Multiple($args);
 	}
 }

@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\parser;
 
 /* 
  * The MIT License

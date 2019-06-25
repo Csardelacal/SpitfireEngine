@@ -1,7 +1,4 @@
-<?php namespace spitfire\core\parser\lexemes;
-
-use spitfire\core\parser\scanner\ScannerModuleInterface;
-use spitfire\core\parser\StringBuffer;
+<?php namespace spitfire\core\parser\parser;
 
 /* 
  * The MIT License
@@ -27,38 +24,45 @@ use spitfire\core\parser\StringBuffer;
  * THE SOFTWARE.
  */
 
-/**
- * The main difference between symbols and reserved words, is that the tokenizer
- * will search for symbols as breaking characters, while reserved words will be
- * only matched if they are properly delimited.
- */
-class Symbol implements LexemeInterface, ScannerModuleInterface
+class ParseTree
 {
 	
-	private $literal;
+	private $block;
+	private $leafs = [];
 	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
+	public function __construct($block, $nodes) {
+		$this->block = $block;
+		$this->leafs = $nodes;
 	}
 	
-	public function getBody() : string {
-		return $this->literal;
+	public function getBlock() {
+		return $this->block;
 	}
-
-	public function in(StringBuffer $buffer): ?LexemeInterface {
+	
+	public function getLeafs() {
+		return $this->leafs;
+	}
+	
+	public function setBlock($block) {
+		$this->block = $block;
+		return $this;
+	}
+	
+	public function setLeafs($nodes) {
+		$this->leafs = $nodes;
+		return $this;
+	}
+	
+	public function stringify($offset = 0) {
+		$leafs = collect($this->leafs);
 		
-		if ($buffer->peek(1) === $this->literal) {
-			$buffer->read();
-			return $this;
-		}
-		else {
-			return null;
-		}
+		return str_repeat(' ', $offset) . sprintf('branch(%s - %s)%s%s', count($this->leafs), $this->block->name, PHP_EOL, $leafs->each(function ($e) use ($offset) { 
+			return $e instanceof ParseTree? $e->stringify($offset + 4) : str_repeat(' ', $offset + 4) . $e;
+		})->join(PHP_EOL));
 	}
 	
 	public function __toString() {
-		return sprintf('sym(%s)', strval($this->literal));
+		return $this->stringify();
 	}
-
+	
 }

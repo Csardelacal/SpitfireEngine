@@ -31,5 +31,9 @@ class EndOfFile implements LexemeInterface
 	public function getBody(): string {
 		return '';
 	}
+	
+	public function __toString() {
+		return 'EOF';;
+	}
 
 }

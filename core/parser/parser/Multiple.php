@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\parser;
+<?php namespace spitfire\core\parser\parser;
 
 /* 
  * The MIT License
@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-class Optional
+class Multiple
 {
 	
 	private $block;
@@ -39,14 +39,27 @@ class Optional
 	
 	
 	public function test($tokens) {
-		$res = $this->block->test($tokens);
-		if ($res) { return $res; }
+		$_ret = [];
+		echo 'Testing multiple', PHP_EOL;
 		
-		return false;
+		while ($res = $this->block->test($tokens)) {
+			$_ret[] = array_shift($res);
+			$tokens = $res;
+		} 
+		
+		if (empty($_ret)) {
+			echo 'Failed multiple', PHP_EOL;
+		}
+		else {
+			echo 'Found ', count($_ret), PHP_EOL;
+		}
+		
+		//array_merge([new ParseTree($this, $found)], $tokens)
+		return !empty($_ret)? array_merge([new ParseTree($this->block, $_ret)], $tokens) : false;
 	}
 	
 	public function __toString() {
-		return $this->block . '?';
+		return $this->block . '+';
 	}
 	
 }

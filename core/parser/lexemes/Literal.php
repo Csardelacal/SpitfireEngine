@@ -38,5 +38,9 @@ class Literal implements LexemeInterface
 	public function getBody(): string {
 		return $this->body;
 	}
+	
+	public function __toString() {
+		return '###' . $this->body . '###';
+	}
 
 }

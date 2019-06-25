@@ -1,7 +1,4 @@
-<?php namespace spitfire\core\parser\lexemes;
-
-use spitfire\core\parser\scanner\ScannerModuleInterface;
-use spitfire\core\parser\StringBuffer;
+<?php namespace spitfire\core\parser\parser;
 
 /* 
  * The MIT License
@@ -27,38 +24,37 @@ use spitfire\core\parser\StringBuffer;
  * THE SOFTWARE.
  */
 
-/**
- * The main difference between symbols and reserved words, is that the tokenizer
- * will search for symbols as breaking characters, while reserved words will be
- * only matched if they are properly delimited.
- */
-class Symbol implements LexemeInterface, ScannerModuleInterface
+class Optional
 {
 	
-	private $literal;
+	private $block;
+	private $name = 'undefined';
 	
-	
-	public function __construct($literal) {
-		$this->literal = $literal;
+	/**
+	 * 
+	 */
+	public function __construct($a) {
+		$this->block = new Block();	
+		$this->block->matchesArray($a);
 	}
 	
-	public function getBody() : string {
-		return $this->literal;
+	
+	public function test($tokens) {
+		echo 'Testing optional', PHP_EOL;
+		$res = $this->block->test($tokens);
+		if ($res) { return $res; }
+		echo 'Failed ', $this->name, PHP_EOL;
+		return false;
 	}
-
-	public function in(StringBuffer $buffer): ?LexemeInterface {
-		
-		if ($buffer->peek(1) === $this->literal) {
-			$buffer->read();
-			return $this;
-		}
-		else {
-			return null;
-		}
+	
+	public function name($str) {
+		$this->block->name = $str . '0';
+		$this->name = $str;
+		return $this;
 	}
 	
 	public function __toString() {
-		return sprintf('sym(%s)', strval($this->literal));
+		return $this->block . '?';
 	}
-
+	
 }
