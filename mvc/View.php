@@ -91,8 +91,21 @@ class View extends MVC
 	}
 
 	public function element($file) {
-		$filename = $this->app->getTemplateDirectory() . 'elements/' . $file . '.php';
-		if (!file_exists($filename)) throw new PrivateException('Element ' . $file . ' missing');
+		$candidates = [
+			$this->app->getTemplateDirectory() . 'elements/' . $file,
+			$this->app->getTemplateDirectory() . 'elements/' . $file . '.php'
+		];
+		
+		$filename = null;
+		
+		foreach ($candidates as $candidate) {
+			if (file_exists($candidate)) { $filename = $candidate; }
+		}
+		
+		if (!$filename) {
+			throw new PrivateException('Element ' . $file . ' missing');
+		}
+		
 		return new ViewElement($filename, $this->data);
 	}
 	

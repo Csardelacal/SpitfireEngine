@@ -153,6 +153,9 @@ class GDManipulator implements MediaManipulatorInterface
 		imagecopyresampled($img, $this->img, 0, 0, 0, 0, $width, $height, $this->meta[0], $this->meta[1]);
 		$this->img = $img;
 		
+		$this->meta[0] = $width;
+		$this->meta[1] = $height;
+		
 		return $this;
 	}
 
