@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\parser;
 
 /* 
  * The MIT License
@@ -24,34 +24,45 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class ParseTree
 {
 	
-	protected $before;
+	private $block;
+	private $leafs = [];
 	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function __construct($block, $nodes) {
+		$this->block = $block;
+		$this->leafs = $nodes;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
+	public function getBlock() {
+		return $this->block;
+	}
+	
+	public function getLeafs() {
+		return $this->leafs;
+	}
+	
+	public function setBlock($block) {
+		$this->block = $block;
+		return $this;
+	}
+	
+	public function setLeafs($nodes) {
+		$this->leafs = $nodes;
+		return $this;
+	}
+	
+	public function stringify($offset = 0) {
+		$leafs = collect($this->leafs);
 		
-		return $this->after;
+		return str_repeat(' ', $offset) . sprintf('branch(%s - %s)%s%s', count($this->leafs), $this->block->name, PHP_EOL, $leafs->each(function ($e) use ($offset) { 
+			return $e instanceof ParseTree? $e->stringify($offset + 4) : str_repeat(' ', $offset + 4) . $e;
+		})->join(PHP_EOL));
+	}
+	
+	public function __toString() {
+		return $this->stringify();
 	}
 	
 }

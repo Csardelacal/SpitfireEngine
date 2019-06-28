@@ -1,4 +1,7 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\parser;
+
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\Literal;
 
 /* 
  * The MIT License
@@ -24,34 +27,22 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class IdentifierTerminal implements TerminalInterface
 {
 	
-	protected $before;
-	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function get($token) {
+		echo 'Getting identifier ', $token->getBody(), PHP_EOL;
+		return $token;
+	}
+
+	public function test($token) {
+		echo 'Testing identifier ', $token->getBody(), PHP_EOL;
+		echo $token instanceof Identifier? 'true' : 'false';
+		return $token instanceof Identifier;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
-		
-		return $this->after;
+	public function __toString() {
+		return 'Identifier';
 	}
-	
+
 }

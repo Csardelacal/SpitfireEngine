@@ -80,6 +80,7 @@ class TableTest extends TestCase
 		$e2 = $this->db->table($schema2)->newRecord();
 		
 		$e2->a = $e1;
+		$e1->store();
 		$e2->store();
 		
 		$this->assertNotEmpty($e1->_id);
@@ -103,7 +104,7 @@ class TableTest extends TestCase
 		
 		$e2->a = $e1;
 		$e1->b[] = $e2;
-		$e2->store();
+		$e1->store();
 		
 		$this->assertNotEmpty($e1->_id);
 		$this->assertNotEmpty($e2->a->_id);

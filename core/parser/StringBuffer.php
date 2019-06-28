@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser;
 
 /* 
  * The MIT License
@@ -24,34 +24,57 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class StringBuffer
 {
 	
-	protected $before;
+	private $pointer = 0;
+	private $string;
 	
-	protected $after;
 	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function __construct($string) {
+		$this->string = $string;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
+	public function seek($pos = null) {
+		$old = $this->pointer;
+		if ($pos !== null) { $this->pointer = $pos; }
+		return $old;
+	}
+	
+	public function fastforward($amt = 1) {
+		$this->pointer+= $amt;
+	}
+	
+	public function peek($amt = 1, $offset = 0) {
+		return substr($this->string, $this->pointer + $offset, $amt);
+	}
+	
+	public function read($amt = 1) {
+		$ret = substr($this->string, $this->pointer, $amt);
+		$this->pointer += $amt;
+		return $ret;
+	}
+	
+	public function readUntil($char) {
+		$old = $this->pointer;
+		$cur = $this->pointer;
+		
+		while(isset($this->string[$this->pointer]) && $this->string[$this->pointer] != $char) {
+			$this->pointer++;
 		}
 		
-		return $this->after;
+		
+		$ret = substr($this->string, $old, $cur - $old);
+		$this->pointer = $cur;
+		return $ret;
+	}
+	
+	public function slack() {
+		return new StringBuffer(substr($this->string, $this->pointer));
+	}
+	
+	public function hasMore() {
+		return isset($this->string[$this->pointer ]);
 	}
 	
 }

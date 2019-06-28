@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\app;
+<?php namespace spitfire\core\parser\parser;
 
 /* 
  * The MIT License
@@ -24,58 +24,42 @@
  * THE SOFTWARE.
  */
 
-class NamespaceMapping
+class Multiple
 {
 	
-	/**
-	 * The basedir is the root directory of an application. For spitfire this is 
-	 * usually the /bin directory. This directory contains all the app specific
-	 * data. Including controllers, views and models.
-	 * 
-	 * In the specific case of Spitfire this folder also contains the 'child apps'
-	 * that can be added to it.
-	 *
-	 * @var string
-	 */
-	private $basedir;
-	private $URISpace;
-	private $namespace;
-	
-	/**
-	 * Creates a new App. Receives the directory where this app resides in
-	 * and the URI namespace it uses.
-	 * 
-	 * @param string $basedir The root directory of this app
-	 * @param string $URISpace The URI name-space it 'owns'
-	 * @param string $namespace The class name-space it 'owns'
-	 */
-	public function __construct($basedir, $URISpace, $namespace) {
-		$this->basedir  = $basedir;
-		$this->URISpace = $URISpace;
-		$this->namespace = $namespace;
-	}
+	private $block;
 	
 	/**
 	 * 
-	 * @return string
 	 */
-	public function getBaseDir() : string {
-		return $this->basedir;
+	public function __construct($a) {
+		$this->block = new Block();	
+		$this->block->matchesArray($a);
 	}
 	
-	/**
-	 * 
-	 * @return string|null
-	 */
-	public function getURISpace() {
-		return $this->URISpace;
+	
+	public function test($tokens) {
+		$_ret = [];
+		echo 'Testing multiple', PHP_EOL;
+		
+		while ($res = $this->block->test($tokens)) {
+			$_ret[] = array_shift($res);
+			$tokens = $res;
+		} 
+		
+		if (empty($_ret)) {
+			echo 'Failed multiple', PHP_EOL;
+		}
+		else {
+			echo 'Found ', count($_ret), PHP_EOL;
+		}
+		
+		//array_merge([new ParseTree($this, $found)], $tokens)
+		return !empty($_ret)? array_merge([new ParseTree($this->block, $_ret)], $tokens) : false;
 	}
 	
-	/**
-	 * 
-	 * @return string|null
-	 */
-	public function getNameSpace() {
-		return $this->namespace;
+	public function __toString() {
+		return $this->block . '+';
 	}
+	
 }

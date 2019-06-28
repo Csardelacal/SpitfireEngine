@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\scanner;
 
 /* 
  * The MIT License
@@ -24,34 +24,27 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class IdentifierScanner implements ScannerModuleInterface
 {
 	
-	protected $before;
-	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
+
+	public function in(\spitfire\core\parser\StringBuffer $buffer): ?\spitfire\core\parser\lexemes\LexemeInterface {
+		
+		$next = $buffer->peek();
+		
+		/*
+		 * If the first character is indeed a character, we will continue
+		 */
+		if (!preg_match('/[a-zA-Z]/i', $next)) { return null; }
+		
+		$matched = $buffer->read();
+		
+		while (preg_match('/[A-Za-z_0-9]/', $buffer->peek())) {
+			$matched.= $buffer->read();
 		}
 		
-		return $this->before;
-	}
-	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
+		return new \spitfire\core\parser\lexemes\Identifier($matched);
 		
-		return $this->after;
 	}
-	
+
 }

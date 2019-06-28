@@ -308,7 +308,7 @@ class Schema
 
 		#Find an index that may contain the field and remove it too
 		$this->indexes = $this->indexes->filter(function ($e) use ($f) {
-			return $e->contains($f);
+			return !$e->contains($f);
 		});
 	}
 	

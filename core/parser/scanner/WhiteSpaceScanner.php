@@ -1,4 +1,9 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\scanner;
+
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\lexemes\WhiteSpace;
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
@@ -24,34 +29,17 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class WhiteSpaceScanner implements ScannerModuleInterface
 {
-	
-	protected $before;
-	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
+
+	public function in(StringBuffer $buffer): ?LexemeInterface {
+		
+		if ($buffer->peek(1) == ' ') {
+			$buffer->fastforward();
+			return new WhiteSpace();
 		}
 		
-		return $this->before;
+		return null;
 	}
-	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
-		
-		return $this->after;
-	}
-	
+
 }

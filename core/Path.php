@@ -19,7 +19,7 @@ use spitfire\core\router\Pattern;
 	  * The namespace of the app being used. This allows spitfire to locate the 
 	  * application for the namespace and correctly handle it.
 	  * 
-	  * @var string 
+	  * @var string|null|Pattern 
 	  */
 	 private $app;
 	 
@@ -93,7 +93,7 @@ use spitfire\core\router\Pattern;
 	  * Returns the namespace of the app chosen to handle the request. This allows
 	  * your application to quickly generate links pointing to the current app.
 	  * 
-	  * @return string
+	  * @return string|null|Pattern
 	  */
 	 public function getApp() {
 		 return $this->app;

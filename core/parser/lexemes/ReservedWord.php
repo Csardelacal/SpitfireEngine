@@ -1,4 +1,7 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\lexemes;
+
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
@@ -24,34 +27,34 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class ReservedWord implements LexemeInterface, ScannerModuleInterface
 {
 	
-	protected $before;
+	private $literal;
 	
-	protected $after;
 	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function __construct($literal) {
+		$this->literal = $literal;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
+	public function getBody() : string {
+		return $this->literal;
+	}
+
+	public function in(StringBuffer $buffer): ?LexemeInterface {
+		
+		if ($buffer->peek(strlen($this->literal)) != $this->literal) {
+			return null;
 		}
 		
-		return $this->after;
+		$next = $buffer->peek(strlen($this->literal), 1);
+		
+		if (ctype_alnum($next)) {
+			return null;
+		}
+		
+		$buffer->fastforward(strlen($this->literal) + 1);
+		return $this;
 	}
-	
+
 }

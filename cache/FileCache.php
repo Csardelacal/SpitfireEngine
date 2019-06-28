@@ -48,7 +48,7 @@ abstract class FileCache
 	 * object having problems locating the file if the environment changes during 
 	 * runtime.
 	 *
-	 * @var string
+	 * @var \spitfire\storage\objectStorage\DirectoryInterface
 	 */
 	private $cache_dir;
 	
@@ -57,7 +57,7 @@ abstract class FileCache
 	 * code as it will no require to concat the directory and filename
 	 * every time.
 	 *
-	 * @var string
+	 * @var \spitfire\storage\objectStorage\FileInterface
 	 */
 	private $path;
 	
@@ -83,32 +83,31 @@ abstract class FileCache
 	 * takes longer to generate / read from network / read from the DB. By doing
 	 * so you reduce server load.
 	 * 
+	 * This method performs the initial checks to make sure everything is ready 
+	 * for use. It starts checking if the cache directory is writable and then 
+	 * will try to read the content's of the cache file.
+	 * 
 	 * @param string $filename
 	 * @throws FilePermissionsException
 	 */
 	public function __construct($filename) {
 		$this->filename  = $filename;
-		$this->cache_dir = Environment::get('cachefile.directory');
-		$this->path      = spitfire()->getCWD() . '/' . rtrim($this->cache_dir, '/') . '/' . ltrim($this->filename, '/');
+		$this->cache_dir = storage()->dir(Environment::get('cachefile.directory')? : 'app://bin/usr/cache/');
 		
-		$this->initialize();
-	}
-	
-	/**
-	 * This method performs the initial checks to make sure everything is ready 
-	 * for use. It starts checking if the cache directory is writable and then 
-	 * will try to read the content's of the cache file.
-	 * 
-	 * @throws filePermissionsException
-	 */
-	public function initialize() {
-		if (!file_exists($this->cache_dir) && !mkdir($this->cache_dir, 0777, true) && !is_writable($this->cache_dir)) {
-			throw  new FilePermissionsException("Cache directory is not writable");
+		/*
+		 * If the file containing the cached data exists, we read it. This way
+		 * the data can be used by the application.
+		 */
+		if ($this->cache_dir->contains($filename)) {
+			$this->path = $this->cache_dir->open($filename);
+			list($this->expires, $this->cached) = unserialize ($this->path->read());
 		}
-		
-		if (file_exists($this->path)) {
-			list($this->expires, $this->cached) = unserialize (file_get_contents ($this->path));
-		} else {
+		/*
+		 * Otherwise, we hit the miss method, which will cause the application to
+		 * generate the value and write it.
+		 */
+		else {
+			$this->path = $this->cache_dir->make($filename);
 			$this->cached  = $this->onMiss();
 		}
 	}
@@ -155,17 +154,8 @@ abstract class FileCache
 	 */
 	public function writeToDisk() {
 		$envelope = Array($this->expires, $this->cached);
-		$fh = fopen($this->path, 'w+');
-		
-		if ($fh) {
-			if (flock($fh, LOCK_EX)) {
-				fwrite($fh, serialize($envelope));
-				flock($fh, LOCK_UN);
-			}
-			else {
-				throw new PrivateException("Lock could not be acquired for " . $this->path);
-			}
-		}
+		//TODO: This does not support locking
+		$this->path->write(serialize($envelope));
 	}
 
 	/**

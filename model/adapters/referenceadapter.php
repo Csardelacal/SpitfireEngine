@@ -53,6 +53,13 @@ class ReferenceAdapter extends BaseAdapter
 		$_return = Array();
 		
 		if ($this->query instanceof Model) {
+			/*
+			 * If the data has not yet been committed to the database, the system
+			 * should prevent the user from writing the data to the DBMS
+			 */
+			if ($this->query->isNew()) {
+				throw new PrivateException('Dependencies need to be stored first.', 1906110859);
+			}
 			#Get the raw data from the donor model
 			$modeldata = $this->query->getPrimaryData();
 			foreach ($physical as $p) {
@@ -122,10 +129,6 @@ class ReferenceAdapter extends BaseAdapter
 	 */
 	public function rollback() {
 		$this->query = $this->remote;
-	}
-	
-	public function getDependencies() {
-		return collect($this->query instanceof Query || $this->query === null? null : $this->query);
 	}
 }
 

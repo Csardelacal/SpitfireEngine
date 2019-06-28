@@ -1,7 +1,6 @@
 <?php namespace spitfire\autoload;
 
 use Strings;
-use spitfire\ClassInfo;
 
 class AppClassLocator extends ClassLocator
 {
@@ -12,16 +11,17 @@ class AppClassLocator extends ClassLocator
 	 * @param string $class The complete name of the class
 	 */
 	public function getFilenameFor($class) {
-		if ($class === true || $class === false) {
-			return false;
-		}
-
 		if (Strings::endsWith($class, 'App')) {
 			$classURI = explode('\\', substr($class, 0, 0 - strlen('app')));
 			$filename = 'main';
 			$dir = spitfire()->getMapping()->getBaseDir() . 'apps/' . implode(DIRECTORY_SEPARATOR, $classURI);
 			return $this->findFile($dir, $filename);
 		}
+		
+		/*
+		 * If the class was not found to be an app, then we ignore it and 
+		 * continue.
+		 */
 		return false;
 	}
 

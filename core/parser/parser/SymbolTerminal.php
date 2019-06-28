@@ -1,4 +1,6 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\parser;
+
+use spitfire\core\parser\lexemes\Symbol;
 
 /* 
  * The MIT License
@@ -24,34 +26,29 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class SymbolTerminal implements TerminalInterface
 {
 	
-	protected $before;
+	private $symbol;
 	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function __construct($symbol) {
+		$this->symbol = $symbol;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
-		
-		return $this->after;
+	public function get($token) {
+		return $token;
+	}
+
+	public function test($token) {
+		echo 'Testing ', $token->getBody();
+		echo ' against ', $this->symbol->getBody(), PHP_EOL;
+		echo 'Rsult; ', $token instanceof Symbol && $this->symbol === $token? 'success' : 'fail', PHP_EOL;
+		ob_flush();
+		return $token instanceof Symbol && $this->symbol === $token;
 	}
 	
+	public function __toString() {
+		return 'Symbol';
+	}
+
 }

@@ -1,4 +1,4 @@
-<?php namespace spitfire\core;
+<?php namespace spitfire\core\collection;
 
 use Iterator;
 use spitfire\exceptions\core\UndefinedCollectionException;

@@ -128,7 +128,9 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @return type
 	 */
 	public function commit() {
-		return;
+		collect($this->children)->each(function ($e) {
+			$e->store();
+		});
 	}
 
 	public function dbGetData() {
@@ -213,9 +215,5 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	public function __toString() {
 		return "Array()";
-	}
-	
-	public function getDependencies() {
-		return collect($this->children === null? [] : array_merge($this->children, $this->original));
 	}
 }

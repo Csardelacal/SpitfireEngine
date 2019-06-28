@@ -1,4 +1,5 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\lexemes;
+
 
 /* 
  * The MIT License
@@ -24,34 +25,15 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+class EndOfFile implements LexemeInterface
 {
 	
-	protected $before;
-	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function getBody(): string {
+		return '';
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
-		
-		return $this->after;
+	public function __toString() {
+		return 'EOF';;
 	}
-	
+
 }

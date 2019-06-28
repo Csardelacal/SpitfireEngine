@@ -1,9 +1,15 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\scanner;
+
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\lexemes\Literal;
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
  *
- * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +30,39 @@
  * THE SOFTWARE.
  */
 
-/**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
- */
-abstract class Pluggable
+
+class IntegerLiteralScanner implements ScannerModuleInterface
 {
 	
-	protected $before;
 	
-	protected $after;
+	private $body = null;
 	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
+
+	public function setBody($body): Literal {
+		$this->body = $body;
+		return $this;
+	}
+
+	public function getBody(): string {
+		return $this->body;
+	}
+
+	public function in(StringBuffer $buffer): ?LexemeInterface {
+		
+		$next = $buffer->peek();
+		$matched = '';
+		
+		/*
+		 * If the first character is indeed a character, we will continue
+		 */
+		if (!preg_match('/[0-9\.]/i', $next)) { return null; }
+		
+		while (preg_match('/[0-9\.]/', $buffer->peek())) {
+			$matched.= $buffer->read();
 		}
 		
-		return $this->before;
-	}
-	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
+		return new Literal($matched);
 		
-		return $this->after;
 	}
-	
+
 }

@@ -1,4 +1,7 @@
-<?php namespace spitfire\core\event;
+<?php namespace spitfire\core\parser\lexemes;
+
+use spitfire\core\parser\scanner\ScannerModuleInterface;
+use spitfire\core\parser\StringBuffer;
 
 /* 
  * The MIT License
@@ -25,33 +28,37 @@
  */
 
 /**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
- * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
+ * The main difference between symbols and reserved words, is that the tokenizer
+ * will search for symbols as breaking characters, while reserved words will be
+ * only matched if they are properly delimited.
  */
-abstract class Pluggable
+class Symbol implements LexemeInterface, ScannerModuleInterface
 {
 	
-	protected $before;
+	private $literal;
 	
-	protected $after;
 	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	public function __construct($literal) {
+		$this->literal = $literal;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
+	public function getBody() : string {
+		return $this->literal;
+	}
+
+	public function in(StringBuffer $buffer): ?LexemeInterface {
 		
-		return $this->after;
+		if ($buffer->peek(1) === $this->literal) {
+			$buffer->read();
+			return $this;
+		}
+		else {
+			return null;
+		}
 	}
 	
+	public function __toString() {
+		return sprintf('sym(%s)', strval($this->literal));
+	}
+
 }
