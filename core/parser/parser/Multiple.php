@@ -54,8 +54,7 @@ class Multiple
 			echo 'Found ', count($_ret), PHP_EOL;
 		}
 		
-		//array_merge([new ParseTree($this, $found)], $tokens)
-		return !empty($_ret)? array_merge([new ParseTree($this->block, $_ret)], $tokens) : false;
+		return !empty($_ret)? array_merge([new ParseTree($this, $_ret)], $tokens) : false;
 	}
 	
 	public function __toString() {

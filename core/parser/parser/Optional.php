@@ -36,6 +36,7 @@ class Optional
 	public function __construct($a) {
 		$this->block = new Block();	
 		$this->block->matchesArray($a);
+		$this->block->name = 'Optional';
 	}
 	
 	

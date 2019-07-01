@@ -46,7 +46,7 @@ class ParserTest extends TestCase
 	
 	
 	
-	public function testBasicParser() {
+	public function retestBasicParser() {
 		$lit = new LiteralScanner('"', '"');
 		$pls = new Symbol('+');
 		$mns = new Symbol('-');
@@ -93,15 +93,17 @@ class ParserTest extends TestCase
 		$lex = new Lexer($lit, $pls, $mns, $mul, $div, $whs, $ids, $int, $not, $pop, $pcl);
 		$parser = new Parser($expression);
 		
-		echo implode(',', $parser->parse($lex->tokenize('3 * myval + 5 / (6 - 2)')));
-		die();
+		$res = $parser->parse($lex->tokenize('3 * myval + 5 / (6 - 2)'));
 		
+		$this->assertEquals(true, is_array($res));
+		$this->assertArrayHasKey(1, $res);
+		$this->assertArrayNotHasKey(2, $res);
 	}
 	
-	public function retestBasicParser2() {
+	public function testBasicParser2() {
 		$and = new ReservedWord('AND');
 		$or  = new ReservedWord('OR');
-		$lit = new Literal('"', '"');
+		$lit = new LiteralScanner('"', '"');
 		$pop = new Symbol('(');
 		$pcl = new Symbol(')');
 		$bop = new Symbol('[');
@@ -109,6 +111,8 @@ class ParserTest extends TestCase
 		$com = new Symbol(',');
 		$dot = new Symbol('.');
 		$whs = new WhiteSpaceScanner();
+		$ids = new IdentifierScanner();
+		$int = new IntegerLiteralScanner();
 		
 		$statement = new Block();
 		$expression = new Block();
@@ -133,21 +137,22 @@ class ParserTest extends TestCase
 		
 		
 		
-		$statement->matches(Block::either([$binaryand], [$binaryor],  [$expression])->name('statement.either'));
-		$binaryand->matches($expression, $and, $statement);
-		$binaryor->matches($expression, $or, $statement);
+		$statement->matches($binaryor);
+		$binaryor->matches($binaryand, Block::optional(Block::multiple($or, $binaryand)));
+		$binaryand->matches($expression, Block::optional(Block::multiple($and, $expression)));
+		
 		$expression->matches(Block::either([$rule], [$pop, $statement, $pcl])->name('expression.either.'));
 		$rule->matches($fnname, $pop, $arguments, $pcl);
-		$fnname->matches(new Identifier(), $dot, new Identifier());
-		$arguments->matches(new Identifier(), Block::optional($options), Block::optional($arguments));
+		$fnname->matches(new IdentifierTerminal(), $dot, new IdentifierTerminal());
+		$arguments->matches(new IdentifierTerminal(), Block::optional($options), Block::optional($arguments));
 		
-		$options->matches($bop, new StringLiteral(), Block::optional($additional), $bcl);
-		$additional->matches($com, new StringLiteral(), Block::optional($additional));
-		
-		
+		$options->matches($bop, new LiteralTerminal(), Block::optional($additional), $bcl);
+		$additional->matches($com, new LiteralTerminal(), Block::optional($additional));
 		
 		
-		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl);
+		
+		
+		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl, $ids, $int);
 		
 		
 		$string = '(GET.input(string length[10, 24] not["detail"]) OR POST.other(positive number)) AND POST.test(file) OR t.s(something) AND t.i(s else["else"])';
@@ -156,8 +161,8 @@ class ParserTest extends TestCase
 		$res = $parser->parse($lex->tokenize($string));
 		
 		$this->assertEquals(true, is_array($res));
-		$this->assertArrayHasKey(0, $res);
-		$this->assertArrayNotHasKey(1, $res);
+		$this->assertArrayHasKey(1, $res);
+		$this->assertArrayNotHasKey(2, $res);
 		
 	}/**/
 	

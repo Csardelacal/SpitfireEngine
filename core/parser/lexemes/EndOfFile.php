@@ -25,15 +25,37 @@
  * THE SOFTWARE.
  */
 
+/**
+ * The end of file is a really simple lexeme, it basically indicates that the 
+ * scanner had no more content to read, appending this lexeme so the parser can
+ * actually expect the end of file after it parsed the output from the lexer.
+ * 
+ * This follows a recommendation from the booking craftinginterpreters.com that
+ * pointed out that it would then be far easier to build the parser tree.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class EndOfFile implements LexemeInterface
 {
 	
+	/**
+	 * Obviouly, the end of a file is an empty string - it has no content, and it's
+	 * presence indicates that the scanner is done.
+	 * 
+	 * @return string
+	 */
 	public function getBody(): string {
 		return '';
 	}
 	
+	/**
+	 * Sometimes it's very interesting to print the output from the lexer (specially
+	 * when debugging)
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
-		return 'EOF';;
+		return '__EOF__';
 	}
 
 }
