@@ -112,7 +112,7 @@ abstract class BaseAdapter implements AdapterInterface
 	 * @return boolean
 	 */
 	public function isSynced() {
-		return $this->data == $this->src;
+		return $this->data === $this->src;
 	}
 	
 	/**
