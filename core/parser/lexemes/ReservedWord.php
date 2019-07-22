@@ -56,5 +56,9 @@ class ReservedWord implements LexemeInterface, ScannerModuleInterface
 		$buffer->fastforward(strlen($this->literal) + 1);
 		return $this;
 	}
+	
+	public function __toString() {
+		return $this->literal;
+	}
 
 }

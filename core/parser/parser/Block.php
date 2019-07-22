@@ -99,7 +99,7 @@ class Block
 	}
 	
 	public function __toString() {
-		return implode(',', $this->matches);
+		return $this->name;
 	}
 	
 	public static function either() {

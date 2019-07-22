@@ -56,7 +56,7 @@ class ParseTree
 	public function stringify($offset = 0) {
 		$leafs = collect($this->leafs);
 		
-		return str_repeat(' ', $offset) . sprintf('branch(%s - %s)%s%s', count($this->leafs), $this->block->name, PHP_EOL, $leafs->each(function ($e) use ($offset) { 
+		return str_repeat(' ', $offset) . sprintf('branch(%s - %s - %s)%s%s', count($this->leafs), $this->block->name, get_class($this->block), PHP_EOL, $leafs->each(function ($e) use ($offset) { 
 			return $e instanceof ParseTree? $e->stringify($offset + 4) : str_repeat(' ', $offset + 4) . $e;
 		})->join(PHP_EOL));
 	}
