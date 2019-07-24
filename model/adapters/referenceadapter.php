@@ -23,6 +23,12 @@ class ReferenceAdapter extends BaseAdapter
 	private $query;
 	
 	public function dbSetData($data) {
+		if ($data === null) {
+			$this->query = null;
+			$this->raw = null;
+			return;
+		}
+		
 		$table = $this->getField()->getTarget()->getTable();
 		$query = $table->getDb()->table($table->getModel()->getName())->getAll();
 		$physical = $this->getField()->getPhysical();
