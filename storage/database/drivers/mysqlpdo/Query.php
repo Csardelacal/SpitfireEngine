@@ -20,6 +20,7 @@ class Query extends SQLQuery
 		$plan       = $this->makeExecutionPlan();
 		$last       = array_shift($plan);
 		$joins      = Array();
+		$retModel   = empty($fields);
 		
 		foreach ($plan as $q) {
 			$joins[] = sprintf('LEFT JOIN %s ON (%s)', $q->getQueryTable()->definition(), implode(' AND ', $q->getRestrictions()));
@@ -29,32 +30,24 @@ class Query extends SQLQuery
 		$fromstt      = 'FROM';
 		$tablename    = $last->getQueryTable()->definition();
 		$wherestt     = 'WHERE';
-		/** @link http://www.spitfirephp.com/wiki/index.php/Database/subqueries Information about the filter*/
 		$restrictions = $last->getRestrictions();
 		$orderstt     = 'ORDER BY';
 		$order        = $this->getOrder();
 		$groupbystt   = 'GROUP BY';
-		$groupby      = $this->groupby;
+		$groupby      = $this->aggregate;
 		$limitstt     = 'LIMIT';
 		$limit        = $offset . ', ' . $max;
 		
 		if ($fields === null) {
 			$fields = $last->getQueryTable()->getFields();
-			
-			/*
-			 * If there is subqueries we default to grouping data in a way that will
-			 * give us unique records and the amount of times they appear instead
-			 * of repeating them.
-			 * 
-			 * Example: The users followed by users I follow. Even though I cannot
-			 * follow a user twice, two different users I follow can again follow
-			 * the same user. A regular join would produce a dataset where the user
-			 * is included twice, by adding the grouping mechanism we're excluding
-			 * that behavior.
-			 */
-			if (!empty($plan)) { 
-				$groupby  = $fields; 
-				$fields[] = 'COUNT(*) AS __META__count';
+		}
+		else {
+			$fields = collect($fields)->each(function ($e) { return $e instanceof \spitfire\storage\database\AggregateFunction? sprintf('%s(%s) AS %s', $e->getOperation(), $e->getField(), $e->getAlias()) : $e; })->toArray();
+		}
+		
+		if (!empty($this->calculated)) {
+			foreach ($this->calculated as $calculated) {
+				$fields[] = sprintf('%s(%s) AS %s', $calculated->getOperation(), $calculated->getField(), $calculated->getAlias());
 			}
 		}
 		
@@ -78,7 +71,8 @@ class Query extends SQLQuery
 			$order    = '';
 		}
 		else {
-			$order = "{$order['field']} {$order['mode']}";
+			$field = $order['field'] instanceof \spitfire\storage\database\AggregateFunction? $order['field']->getAlias() : $order['field'];
+			$order = "{$field} {$order['mode']}";
 		}
 		
 		if (empty($groupby)) {

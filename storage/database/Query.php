@@ -39,7 +39,20 @@ abstract class Query extends RestrictionGroup
 	 * @var string
 	 */
 	protected $order;
-	protected $groupby = null;
+	
+	/**
+	 * This contains an array of aggregation functions that are executed with the 
+	 * query to provide metadata on the query.
+	 * 
+	 * @var AggregateFunction[]
+	 */
+	protected $calculated;
+	
+	/**
+	 *
+	 * @var Aggregate[]
+	 */
+	protected $aggregate = null;
 
 	/** @param Table $table */
 	public function __construct($table) {
@@ -167,9 +180,16 @@ abstract class Query extends RestrictionGroup
 	
 	//@TODO: Add a decent way to sorting fields that doesn't resort to this awful thing.
 	public function setOrder ($field, $mode) {
-		try {
+		
+		if ($field instanceof AggregateFunction || $field instanceof Field) {
+			$this->order['field'] = $field;
+		}
+		
+		elseif (is_string($field)) {
 			$this->order['field'] = $this->table->getTable()->getLayout()->getField($field);
-		} catch (Exception $ex) {
+		} 
+		
+		else {
 			$physical = $this->table->getTable()->getModel()->getField($field)->getPhysical();
 			$this->order['field'] = reset($physical);
 		}
@@ -323,11 +343,15 @@ abstract class Query extends RestrictionGroup
 	 * @return Query Description
 	 */
 	public function aggregateBy($column) {
-		if (is_array($column))   { $this->groupby = $column; }
-		elseif($column === null) { $this->groupby = null; }
-		else                     { $this->groupby = Array($column); }
+		if (is_array($column))   { $this->aggregate = $column; }
+		elseif($column === null) { $this->aggregate = null; }
+		else                     { $this->aggregate = Array($column); }
 		
 		return $this;
+	}
+	
+	public function addCalculatedValue (AggregateFunction$fn) {
+		$this->calculated[] = $fn;
 	}
 	
 	

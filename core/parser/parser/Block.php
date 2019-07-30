@@ -46,7 +46,7 @@ class Block
 	public function test($tokens) {
 		
 		$found = [];
-		sleep(1);
+		//sleep(1);
 		echo 'Descending into ' , $this->name, PHP_EOL;
 		ob_flush();
 		
