@@ -24,38 +24,20 @@
  * THE SOFTWARE.
  */
 
-class Optional
+class Optional extends Block
 {
 	
-	private $block;
-	private $name = 'undefined';
-	
-	/**
-	 * 
-	 */
-	public function __construct($a) {
-		$this->block = new Block();	
-		$this->block->matchesArray($a);
-		$this->block->name = 'Optional';
-	}
 	
 	
 	public function test($tokens) {
-		echo 'Testing optional', PHP_EOL;
-		$res = $this->block->test($tokens);
+		$res = parent::test($tokens);
 		if ($res) { return $res; }
-		echo 'Failed ', $this->name, PHP_EOL;
+		
 		return false;
 	}
 	
-	public function name($str) {
-		$this->block->name = $str . '0';
-		$this->name = $str;
-		return $this;
-	}
-	
 	public function __toString() {
-		return $this->block . '?';
+		return 'optional';
 	}
 	
 }

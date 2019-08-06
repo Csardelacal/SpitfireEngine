@@ -1,6 +1,4 @@
-<?php namespace spitfire\core\parser\parser;
-
-use spitfire\core\parser\lexemes\Symbol;
+<?php namespace spitfire\core\parser\printer;
 
 /* 
  * The MIT License
@@ -26,33 +24,39 @@ use spitfire\core\parser\lexemes\Symbol;
  * THE SOFTWARE.
  */
 
-class SymbolTerminal implements TerminalInterface
+class Printer
 {
 	
-	private $symbol;
-	
-	public function __construct($symbol) {
-		$this->symbol = $symbol;
+	public function print(\spitfire\core\parser\parser\Block$block) {
+		$context = new Context();
+		$this->descend($block, $context);
 	}
 	
-	public function get($token) {
-		return $token;
-	}
-
-	public function test($token) {
-		echo 'Testing ', $token->getBody();
-		echo ' against ', $this->symbol->getBody(), PHP_EOL;
-		echo 'Rsult; ', $token instanceof Symbol && $this->symbol === $token? 'success' : 'fail', PHP_EOL;
-		ob_flush();
-		return $token instanceof Symbol && $this->symbol === $token;
+	private function descend($block, Context$context, $level = 0) {
+		
+		$context = clone $context;
+		$context->add($block);
+		
+		if (is_string($block)) {
+			echo sprintf('%s *string*%s%s', str_repeat('  ', $level), $block, PHP_EOL);
+			return;
+		}
+		
+		if ($block instanceof \spitfire\core\parser\lexemes\LexemeInterface) {
+			echo sprintf('%s %s%s', str_repeat('  ', $level), $block, PHP_EOL);
+			return;
+		}
+		
+		echo str_repeat('  ', $level) . $block . PHP_EOL;
+		
+		foreach ($block->children() as $e) {
+			if ($context->contains($e)) {
+				echo sprintf('%s **recursion %s**%s', str_repeat('  ', $level + 1), $block, PHP_EOL);
+			}
+			else {
+				$this->descend($e, $context, $level + 1);
+			}
+		}
 	}
 	
-	public function children() {
-		return [];
-	}
-	
-	public function __toString() {
-		return 'Symbol';
-	}
-
 }

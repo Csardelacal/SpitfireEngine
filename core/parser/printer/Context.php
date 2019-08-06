@@ -1,6 +1,4 @@
-<?php namespace spitfire\core\parser\parser;
-
-use spitfire\core\parser\lexemes\Symbol;
+<?php namespace spitfire\core\parser\printer;
 
 /* 
  * The MIT License
@@ -26,33 +24,29 @@ use spitfire\core\parser\lexemes\Symbol;
  * THE SOFTWARE.
  */
 
-class SymbolTerminal implements TerminalInterface
+/**
+ * Provides context so the system does not print recursive statements.
+ */
+class Context 
 {
 	
-	private $symbol;
+	private $scanned;
 	
-	public function __construct($symbol) {
-		$this->symbol = $symbol;
-	}
-	
-	public function get($token) {
-		return $token;
-	}
-
-	public function test($token) {
-		echo 'Testing ', $token->getBody();
-		echo ' against ', $this->symbol->getBody(), PHP_EOL;
-		echo 'Rsult; ', $token instanceof Symbol && $this->symbol === $token? 'success' : 'fail', PHP_EOL;
-		ob_flush();
-		return $token instanceof Symbol && $this->symbol === $token;
+	public function __construct() {
+		$this->scanned = collect();
 	}
 	
-	public function children() {
-		return [];
+	public function add($e) {
+		$this->scanned->push($e);
 	}
 	
-	public function __toString() {
-		return 'Symbol';
+	public function contains($e) {
+		return $this->scanned->contains($e);
 	}
-
+	
+	public function __clone() {
+		$this->scanned = clone $this->scanned;
+	}
+	
+	
 }

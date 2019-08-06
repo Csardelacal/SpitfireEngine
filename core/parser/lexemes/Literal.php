@@ -24,7 +24,10 @@
  * THE SOFTWARE.
  */
 
-
+/*
+ * A literal contains a predefined string. This means that the user provided the
+ * application with predefined data.
+ */
 class Literal implements LexemeInterface
 {
 	

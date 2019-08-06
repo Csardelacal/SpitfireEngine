@@ -62,8 +62,12 @@ class Either
 		return $this;
 	}
 	
+	public function children() {
+		return $this->blocks;
+	}
+	
 	public function __toString() {
-		return sprintf('either(%s)', $this->blocks->join(' OR '));
+		return sprintf('either:');
 	}
 	
 }

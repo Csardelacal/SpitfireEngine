@@ -24,6 +24,10 @@
  * THE SOFTWARE.
  */
 
+/**
+ * Every expression that a scanner reads, results in a series of lexemes that can
+ * later be analyzed by the parser.
+ */
 interface LexemeInterface
 {
 	

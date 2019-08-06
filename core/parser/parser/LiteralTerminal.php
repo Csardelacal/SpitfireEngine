@@ -1,6 +1,5 @@
 <?php namespace spitfire\core\parser\parser;
 
-use spitfire\core\parser\lexemes\Identifier;
 use spitfire\core\parser\lexemes\Literal;
 
 /* 
@@ -35,10 +34,11 @@ class LiteralTerminal implements TerminalInterface
 	}
 
 	public function test($token) {
-		echo 'Testing literal ', $token->getBody(), PHP_EOL;
-		echo get_class($token), PHP_EOL;
-		echo $token instanceof Literal? 'true' : 'false';
 		return $token instanceof Literal;
+	}
+	
+	public function children() {
+		return [];
 	}
 	
 	public function __toString() {

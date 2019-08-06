@@ -1,7 +1,6 @@
 <?php namespace spitfire\core\parser\parser;
 
 use spitfire\core\parser\lexemes\Identifier;
-use spitfire\core\parser\lexemes\Literal;
 
 /* 
  * The MIT License
@@ -31,14 +30,15 @@ class IdentifierTerminal implements TerminalInterface
 {
 	
 	public function get($token) {
-		echo 'Getting identifier ', $token->getBody(), PHP_EOL;
 		return $token;
 	}
 
 	public function test($token) {
-		echo 'Testing identifier ', $token->getBody(), PHP_EOL;
-		echo $token instanceof Identifier? 'true' : 'false';
 		return $token instanceof Identifier;
+	}
+	
+	public function children() {
+		return [];
 	}
 	
 	public function __toString() {

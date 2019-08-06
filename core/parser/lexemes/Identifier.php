@@ -24,6 +24,12 @@
  * THE SOFTWARE.
  */
 
+/**
+ * An identifier is a lexeme that identifies a user defined variable or function
+ * name.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class Identifier implements LexemeInterface
 {
 	

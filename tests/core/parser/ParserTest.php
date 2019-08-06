@@ -46,7 +46,7 @@ class ParserTest extends TestCase
 	
 	
 	
-	public function retestBasicParser() {
+	public function testBasicParser() {
 		$lit = new LiteralScanner('"', '"');
 		$pls = new Symbol('+');
 		$mns = new Symbol('-');
@@ -70,7 +70,7 @@ class ParserTest extends TestCase
 		
 		$multiplication->matches(
 			$unary, 
-			Block::optional(Block::multiple(Block::either([new SymbolTerminal($mul)], [new SymbolTerminal($div)]), $unary))->name('multiplication.optional.')
+			Block::optional(Block::multiple(Block::either([new SymbolTerminal($mul)], [new SymbolTerminal($div)]), $unary))
 		);
 		
 		$unary->matches(
@@ -109,6 +109,7 @@ class ParserTest extends TestCase
 		$bop = new Symbol('[');
 		$bcl = new Symbol(']');
 		$com = new Symbol(',');
+		$ran = new Symbol('>');
 		$dot = new Symbol('.');
 		$whs = new WhiteSpaceScanner();
 		$ids = new IdentifierScanner();
@@ -141,7 +142,7 @@ class ParserTest extends TestCase
 		$binaryor->matches($binaryand, Block::optional(Block::multiple($or, $binaryand)));
 		$binaryand->matches($expression, Block::optional(Block::multiple($and, $expression)));
 		
-		$expression->matches(Block::either([$rule], [$pop, $statement, $pcl])->name('expression.either.'));
+		$expression->matches(Block::either([$rule], [$pop, $statement, $pcl]));
 		$rule->matches($fnname, $pop, $arguments, $pcl);
 		$fnname->matches(new IdentifierTerminal(), $dot, new IdentifierTerminal());
 		$arguments->matches(new IdentifierTerminal(), Block::optional($options), Block::optional($arguments));
@@ -152,11 +153,14 @@ class ParserTest extends TestCase
 		
 		
 		
-		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl, $ids, $int);
+		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl, $ids, $int, $ran);
 		
 		
 		$string = '(GET.input(string length[10, 24] not["detail"]) OR POST.other(positive number)) AND POST.test(file) OR t.s(something) AND t.i(s else["else"])';
 		$parser = new Parser($statement);
+		
+		$printer = new \spitfire\core\parser\printer\Printer();
+		$printer->print($statement);
 		
 		$res = $parser->parse($lex->tokenize($string));
 		

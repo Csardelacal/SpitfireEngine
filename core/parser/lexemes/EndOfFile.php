@@ -39,7 +39,7 @@ class EndOfFile implements LexemeInterface
 {
 	
 	/**
-	 * Obviouly, the end of a file is an empty string - it has no content, and it's
+	 * Obviously, the end of a file is an empty string - it has no content, and it's
 	 * presence indicates that the scanner is done.
 	 * 
 	 * @return string

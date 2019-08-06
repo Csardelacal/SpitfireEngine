@@ -24,41 +24,22 @@
  * THE SOFTWARE.
  */
 
-class Multiple
+class Multiple extends Block
 {
-	
-	private $block;
-	
-	/**
-	 * 
-	 */
-	public function __construct($a) {
-		$this->block = new Block();	
-		$this->block->matchesArray($a);
-	}
-	
 	
 	public function test($tokens) {
 		$_ret = [];
-		echo 'Testing multiple', PHP_EOL;
 		
-		while ($res = $this->block->test($tokens)) {
+		while ($res = parent::test($tokens)) {
 			$_ret[] = array_shift($res);
 			$tokens = $res;
 		} 
-		
-		if (empty($_ret)) {
-			echo 'Failed multiple', PHP_EOL;
-		}
-		else {
-			echo 'Found ', count($_ret), PHP_EOL;
-		}
 		
 		return !empty($_ret)? array_merge([new ParseTree($this, $_ret)], $tokens) : false;
 	}
 	
 	public function __toString() {
-		return $this->block . '+';
+		return parent::__toString() . '+';
 	}
 	
 }

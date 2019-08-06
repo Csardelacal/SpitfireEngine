@@ -27,6 +27,9 @@ use spitfire\core\parser\StringBuffer;
  * THE SOFTWARE.
  */
 
+/**
+ * As opposed to a symbol, the reserved word expects to be separated by white-space.
+ */
 class ReservedWord implements LexemeInterface, ScannerModuleInterface
 {
 	
