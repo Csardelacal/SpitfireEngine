@@ -40,7 +40,9 @@ class Driver extends DB
 	protected function connect() {
 		$settings = $this->getSettings();
 		
-		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $settings->getSchema(), 'host' => $settings->getServer(), 'charset' => $this->getEncoder()->getInnerEncoding()]), '', ';');
+		$encoding = ['utf8' => 'utf8mb4'][$this->getEncoder()->getInnerEncoding()];
+		
+		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $settings->getSchema(), 'host' => $settings->getServer(), 'charset' => $encoding]), '', ';');
 		$user = $settings->getUser();
 		$pass = $settings->getPassword();
 

@@ -38,6 +38,8 @@ class CompositeWorker implements WorkerInterface
 	 */
 	public function make(RestrictionGroup$parent, $field, $operator, $value) {
 		
+		if (!is_string($field)) { return false; }
+		
 		/*
 		 * Find the appropriate field for the maker to assemble a restriction. If 
 		 * this returns an empty value, then this maker can't assemble a restriction
