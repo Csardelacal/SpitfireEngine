@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\database\restrictionmaker;
 
-use ChildrenField;
-use spitfire\storage\database\Query;
+use Reference;
+use spitfire\Model;
 use spitfire\storage\database\RestrictionGroup;
 
 /* 
@@ -28,7 +28,7 @@ use spitfire\storage\database\RestrictionGroup;
  * THE SOFTWARE.
  */
 
-class CompositeWorker implements WorkerInterface
+class ReferenceWorker implements WorkerInterface
 {
 	
 	/**
@@ -36,29 +36,39 @@ class CompositeWorker implements WorkerInterface
 	 * @param RestrictionGroup  $parent
 	 * @param string $field
 	 * @param string $operator
-	 * @param mixed  $value
+	 * @param Model  $value
 	 */
 	public function make(RestrictionGroup$parent, $field, $operator, $value) {
-		
-		if (!is_string($field) && !$field instanceof ChildrenField) { return false; }
-		if (!$value instanceof Query) { return false; }
+		if (!($value instanceof Model)) { return false; }
+		if (is_string($field)) { $field = $parent->getQuery()->getTable()->getSchema()->getField($field); }
 		
 		/*
-		 * Find the appropriate field for the maker to assemble a restriction. If 
-		 * this returns an empty value, then this maker can't assemble a restriction
+		 * If no field was found, then we do not need to continue either. Since it 
+		 * implies that the worker is not gonna work here either.
 		 */
-		$logical = $parent->getQuery()->getTable()->getSchema()->getField($field);
-		$of      = $parent->getQuery()->getTable()->getDb()->getObjectFactory();
-
+		if (!$field instanceof Reference) { return false; }
+		
 		/*
-		 * If the field is null or the value is null, then this maker is not a match
-		 * for the behavior needed.
+		 * Prepare the resources we need to assemble the appropriate restriction 
+		 * group to create the "sub-restrictions"
 		 */
-		if ($logical === null || $value === null) { 
-			return false; 
+		$of       = $parent->getQuery()->getTable()->getDb()->getObjectFactory();
+		$physical = $field->getPhysical();
+		$restr    = $of->restrictionGroupInstance($parent, RestrictionGroup::TYPE_AND);
+		$primary  = $value->getPrimaryData();
+		
+		/*
+		 * Create the appropriate restrictions for this.
+		 */
+		foreach ($physical as $f) {
+			$restr->add([
+				$of->restrictionInstance($restr, $of->queryFieldInstance($parent->getQuery()->getQueryTable(), $f), 
+				$primary[$f->getReferencedField()->getName()], 
+				$operator
+			)]);
 		}
-
-		return $of->restrictionCompositeInstance($parent, $logical, $value, $operator);
+		
+		return $restr;
 	}
 
 }

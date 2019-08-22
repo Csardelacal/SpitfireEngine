@@ -44,6 +44,7 @@ class RestrictionMaker
 	 */
 	public function __construct() {
 		$this->workers[] = new SimpleRestrictionWorker();
+		$this->workers[] = new ReferenceWorker();
 		$this->workers[] = new ValueNulledWorker();
 		$this->workers[] = new CompositeWorker();
 		$this->workers[] = new FieldNulledWorker();

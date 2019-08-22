@@ -51,6 +51,8 @@ class ComplexQueryTest extends TestCase
 
 			$this->schema->field1 = new IntegerField(true);
 			$this->schema->field2 = new StringField(255);
+			unset($this->schema->_id);
+			$this->schema->index($this->schema->field1, $this->schema->field2)->setPrimary(true);
 
 			$this->table = new Table($this->db, $this->schema);
 			$this->table->getLayout()->create();
@@ -85,6 +87,20 @@ class ComplexQueryTest extends TestCase
 	public function testQuery() {
 		$q1 = $this->table->get('field1', 1);
 		$q2 = $this->table2->get('refer', $q1);
+		$q3 = $this->table3->get('refer', $q2);
+		
+		$this->assertInstanceOf(\spitfire\core\Collection::class, $q3->fetchAll());
+		$this->assertEquals(0, $q3->count());
+	}
+	
+	public function testModel() {
+		$r1 = $this->table->newRecord();
+		$r1->field1 = 1;
+		$r1->field2 = 'Hello';
+		$r1->store();
+		
+		$q1 = $this->table->get('field1', 1)->first();
+		$q2 = $this->table2->get('refer', $q1)->first();
 		$q3 = $this->table3->get('refer', $q2);
 		
 		$this->assertInstanceOf(\spitfire\core\Collection::class, $q3->fetchAll());
