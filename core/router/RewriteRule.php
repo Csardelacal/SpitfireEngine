@@ -52,11 +52,12 @@ abstract class RewriteRule
 	 * on the METHOD used to issue the request the server is receiving. Spitfire
 	 * accepts any of the standard GET, POST, PUT or DELETE methods.
 	 */
-	const METHOD_GET    = 0x01;
-	const METHOD_POST   = 0x02;
-	const METHOD_PUT    = 0x04;
-	const METHOD_DELETE = 0x08;
-	const METHOD_HEAD   = 0x10;
+	const METHOD_GET     = 0x01;
+	const METHOD_POST    = 0x02;
+	const METHOD_PUT     = 0x04;
+	const METHOD_DELETE  = 0x08;
+	const METHOD_HEAD    = 0x10;
+	const METHOD_OPTIONS = 0x20;
 	
 	/**
 	 * This var holds a reference to a route server (an object containing a pattern
@@ -105,11 +106,12 @@ abstract class RewriteRule
 	public function testMethod($method) {
 		if (!is_numeric($method)) {
 			switch ($method){
-				case 'GET' :   $method = self::METHOD_GET; break;
-				case 'POST':   $method = self::METHOD_POST; break;
-				case 'HEAD':   $method = self::METHOD_HEAD; break;
-				case 'PUT' :   $method = self::METHOD_PUT; break;
-				case 'DELETE': $method = self::METHOD_DELETE; break;
+				case 'GET' :    $method = self::METHOD_GET; break;
+				case 'POST':    $method = self::METHOD_POST; break;
+				case 'HEAD':    $method = self::METHOD_HEAD; break;
+				case 'PUT' :    $method = self::METHOD_PUT; break;
+				case 'DELETE':  $method = self::METHOD_DELETE; break;
+				case 'OPTIONS': $method = self::METHOD_OPTIONS; break;
 			}
 		}
 		return $this->method & $method;
