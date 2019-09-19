@@ -1,35 +1,58 @@
 <?php namespace spitfire\model\adapters;
 
-use ChildrenField;
-use spitfire\Model;
-use Iterator;
 use ArrayAccess;
+use ChildrenField;
+use Iterator;
+use spitfire\exceptions\PrivateException;
+use spitfire\Model;
+use spitfire\storage\database\Query;
+use function collect;
 
+/**
+ * Children refers to all models that refer to another (parent) model. This allows
+ * to manage Relational databases like they're documents.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 {
 	/**
 	 * The field the parent uses to refer to this element.
 	 *
-	 * @var \spitfire\model\ManyToManyField
+	 * @var ChildrenField
 	 */
 	private $field;
 	
-	private $original;
+	/**
+	 * The model that this one refers to. Since, one Model can have several referring
+	 * to it but a model can only refer to one other, we call this model parent.
+	 *
+	 * @var Model
+	 */
 	private $parent;
+	
+	/**
+	 * The models that refer to the parent model. This can be either an array of 
+	 * models or null, depending on whether the adapter has been populated during
+	 * runtime.
+	 *
+	 * @var Model[]|null
+	 */
 	private $children;
+	
+	private $discarded = [];
 	
 	public function __construct(ChildrenField$field, Model$model, $data = null) {
 		$this->field  = $field;
 		$this->parent = $model;
 		$this->children = $data;
-		$this->original = $data;
 	}
 	
 	/**
 	 * Returns the query that would be used to retrieve the elements for this 
 	 * adapter. This can be used to add restrictions and query the related records
 	 * 
-	 * @return \spitfire\storage\database\Query
+	 * @return Query
 	 */
 	public function getQuery() {
 		
@@ -40,6 +63,11 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		
 	}
 	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev 20190919
+	 * @return Model
+	 */
 	public function pluck() {
 		if ($this->children !== null) { return reset($this->children); }
 		
@@ -51,8 +79,15 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		
 		/*
 		 * Inform the children that the parent being worked on is this
+		 * 
+		 * NOTE: This needs to be re-evaluated, it is potentially dangerous to mess
+		 * with the state of the children programatically. These children will always
+		 * be in a manipulated state and require writing to be back in sync.
+		 * 
+		 * Potentially, using the dbSetData() method on the children is less invasive
+		 * and may lead to better results.
 		 */
-		$this->children = $this->original = $this->getQuery()->fetchAll()->each(function ($c) {
+		$this->children = $this->getQuery()->fetchAll()->each(function ($c) {
 			$c->{$this->field->getReferencedField()->getName()} = $this->parent;
 			return $c;
 		})->toArray();
@@ -61,43 +96,43 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	}
 
 	public function current() {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return current($this->children);
 	}
 
 	public function key() {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return key($this->children);
 	}
 
 	public function next() {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return next($this->children);
 	}
 
 	public function rewind() {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return reset($this->children);
 	}
 
 	public function valid() {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return !!current($this->children);
 	}
 
 	public function offsetExists($offset) {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return isset($this->children[$offset]);
 		
 	}
 
 	public function offsetGet($offset) {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		return $this->children[$offset];
 	}
 
 	public function offsetSet($offset, $value) {
-		if ($this->children === null) { $this->toArray(); }
+		$this->children !== null? $this->children : $this->toArray();
 		
 		$previous = isset($this->children[$offset])? $this->children[$offset] : null;
 		
@@ -113,21 +148,25 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		
 		if ($previous) {
 			$previous->{$role} = null;
+			$this->discarded[] = $previous;
 		}
 	}
 
 	public function offsetUnset($offset) {
-		if ($this->children === null) $this->toArray();
+		$this->children !== null? $this->children : $this->toArray();
 		unset($this->children[$offset]);
 	}
 	
 	/**
 	 * 
-	 * @todo If the element list has changed, the database should sever the connections
-	 *  between the elements and their children.
+	 * 
 	 * @return type
 	 */
 	public function commit() {
+		collect($this->discarded)->each(function ($e) {
+			$e->store();
+		});
+		
 		collect($this->children)->each(function ($e) {
 			$e->store();
 		});
@@ -175,9 +214,9 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * is reading the adapter and expecting himself to save it back this function
 	 * will do nothing.
 	 * 
-	 * @param \spitfire\model\adapters\ManyToManyAdapter|Model[] $data
+	 * @param ManyToManyAdapter|Model[] $data
 	 * @todo Fix to allow for user input
-	 * @throws \spitfire\exceptions\PrivateException
+	 * @throws PrivateException
 	 */
 	public function usrSetData($data) {
 		if ($data === $this) {
@@ -197,7 +236,7 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		} elseif (is_array($data)) {
 			$this->children = $data;
 		} else {
-			throw new \spitfire\exceptions\PrivateException('Invalid data. Requires adapter or array');
+			throw new PrivateException('Invalid data. Requires adapter or array');
 		}
 		
 		foreach ($this->children as $child) {
