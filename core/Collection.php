@@ -11,6 +11,15 @@ use spitfire\exceptions\OutOfBoundsException;
 class Collection extends DefinedCollection
 {
 	
+	/**
+	 * Flattens the collection. A collection may contain Collections and arrays of
+	 * it's own. Flatten will return a single collection with all the items in it's
+	 * first level.
+	 * 
+	 * This may destroy it's key relations.
+	 * 
+	 * @return Collection
+	 */
 	public function flatten() {
 		$_ret  = new self();
 		
@@ -113,6 +122,21 @@ class Collection extends DefinedCollection
 		}, $this->toArray()));
 	}
 	
+	/**
+	 * This method applies a given callback to all the elements inside the collection.
+	 * It then returns a nested collection with the elements grouped by their return
+	 * value.
+	 * 
+	 * Example:
+	 * A collection containing strings ['a', 'b', 'c', 'dd', 'ee'] and a callback
+	 * like strlen() will produce the following:
+	 * 
+	 * <code>$c->groupBy(function ($e) { return strlen($e); });</code>
+	 * [ 1 => ['a', 'b', 'c'], 2 => ['dd', 'ee'] ]
+	 * 
+	 * @param Closure|callable $callable
+	 * @return Collection
+	 */
 	public function groupBy($callable) {
 		$groups = new self();
 		

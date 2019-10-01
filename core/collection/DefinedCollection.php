@@ -41,6 +41,13 @@ use spitfire\exceptions\PrivateException;
  */
 class DefinedCollection implements ArrayAccess, CollectionInterface
 {
+	
+	/**
+	 * The array that this object wraps around. Most of the collection's methods
+	 * are just convenience methods to make array operations more manageable.
+	 *
+	 * @var mixed[]
+	 */
 	private $items;
 	
 	/**
@@ -98,10 +105,23 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return empty($this->items);
 	}
 	
+	/**
+	 * Returns true if the index passed is defined within the collection. Unlike
+	 * contains, this checks whether the key is defined.
+	 * 
+	 * @param string|int $idx
+	 * @return bool
+	 */
 	public function has($idx) {
-		return isset($this->items[$idx]);
+		return array_key_exists($idx, $this->items);
 	}
 	
+	/**
+	 * Indicates whether an element is contained within this collection. 
+	 * 
+	 * @param mixed $e
+	 * @return bool
+	 */
 	public function contains($e) {
 		return array_search($e, $this->items, true) !== false;
 	}
@@ -133,11 +153,24 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return count($this->items);
 	}
 	
+	/**
+	 * Adds an item to the list of items. This function then returns the element
+	 * pushed. If you need method chaining, consider <code>$collection->add([$element])</code>
+	 * 
+	 * @param mixed $element
+	 * @return mixed The element pushed
+	 */
 	public function push($element) {
 		$this->items[] = $element;
 		return $element;
 	}
 	
+	/**
+	 * Adds the elements from the array / collection provided to the current one.
+	 * 
+	 * @param mixed[] $elements
+	 * @return DefinedCollection
+	 */
 	public function add($elements) {
 		if ($elements instanceof Collection) { $elements = $elements->toArray(); }
 		
@@ -145,6 +178,13 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return $this;
 	}
 	
+	/**
+	 * Finds an item provided inside the collection and removes it from the collection.
+	 * 
+	 * @param mixed $element
+	 * @return DefinedCollection
+	 * @throws OutOfRangeException
+	 */
 	public function remove($element) {
 		$i = array_search($element, $this->items, true);
 		if ($i === false) { throw new OutOfRangeException('Not found', 1804292224); }
@@ -153,27 +193,70 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return $this;
 	}
 	
+	/**
+	 * Empties the collection. The collection can afterwards be used normally. This 
+	 * method can be overriden by other collection types that store metadata about
+	 * this collection.
+	 * 
+	 * @return DefinedCollection
+	 */
 	public function reset() {
 		$this->items = [];
 		return $this;
 	}
 	
+	/**
+	 * Returns the current element from the collection. This is used to provide
+	 * the Iterator capabilities to the collection.
+	 * 
+	 * @return mixed
+	 */
 	public function current() {
 		return current($this->items);
 	}
 	
+	/**
+	 * Returns the current key the collection is sitting at. Provides Iterator.
+	 * 
+	 * @return mixed
+	 */
 	public function key() {
 		return key($this->items);
 	}
 	
+	/**
+	 * Advances the array pointer and returns the next element from the collection.
+	 * Provides iterator.
+	 * 
+	 * @return mixed
+	 */
 	public function next() {
 		return next($this->items);
 	}
 	
+	/**
+	 * Indicates whether the offset provided exists. Is virtually identical to has(),
+	 * but a bit more verbose and required for ArrayAccess.
+	 * 
+	 * @param string|int $offset
+	 * @return boolean
+	 */
 	public function offsetExists($offset) {
 		return array_key_exists($offset, $this->items);
 	}
 	
+	/**
+	 * Returns the item from the collection with the given index. Unlike a regular
+	 * array, a collection will throw an exception when requesting a index that 
+	 * doesn't exist.
+	 * 
+	 * This ensures that the application doesn't enter an undefined state, but instead
+	 * crashes early.
+	 * 
+	 * @param string|int $offset
+	 * @return mixed
+	 * @throws OutOfRangeException
+	 */
 	public function offsetGet($offset) {
 		if (!array_key_exists($offset, $this->items)) {
 			throw new OutOfRangeException('Undefined index: ' . $offset, 1703221322);
@@ -182,23 +265,53 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return $this->items[$offset];
 	}
 	
+	/**
+	 * Defines a certain index within the collection.
+	 * 
+	 * @param string|int $offset
+	 * @param mixed $value
+	 */
 	public function offsetSet($offset, $value) {
 		$this->items[$offset] = $value;
 	}
 	
+	/**
+	 * Removes the element with the given index from the collection.
+	 * 
+	 * @param int|string $offset
+	 */
 	public function offsetUnset($offset) {
 		unset($this->items[$offset]);
 	}
 	
+	/**
+	 * Resets the internal array pointer of the collection. This method returns 
+	 * the first element from the array.
+	 * 
+	 * @return mixed
+	 */
 	public function rewind() {
 		return reset($this->items);
 	}
 	
+	/**
+	 * Returns the last item of the collection. This moves the pointer to the 
+	 * last item.
+	 * 
+	 * @return mixed
+	 * @throws PrivateException
+	 */
 	public function last() {
 		if (!isset($this->items)) { throw new PrivateException('Collection error', 1709042046); }
 		return end($this->items);
 	}
-
+	
+	/**
+	 * Shifts the first element off the array. This removes the first element and 
+	 * returns it.
+	 * 
+	 * @return mixed
+	 */
 	public function shift() {
 		return array_shift($this->items);
 	}
@@ -227,7 +340,14 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return $this->items;
 	}
 	
+	/**
+	 * This is functionally identical to has(), but provides compatibility with 
+	 * the magic PHP method for isset()
+	 * 
+	 * @param type $name
+	 * @return type
+	 */
 	public function __isset($name) {
-		return isset($this->items[$name]);
+		return array_key_exists($this->items[$name]);
 	}
 }
