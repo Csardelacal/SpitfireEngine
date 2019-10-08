@@ -136,8 +136,8 @@ class ReferenceAdapter extends BaseAdapter
 			return true;
 		}
 		
-		$pka = $this->remote? $this->remote->getPrimaryData() : null;
-		$pkb = $this->local? $this->local->getPrimaryData() : null;
+		$pka = $this->remote instanceof Model? $this->remote->getPrimaryData() : null;
+		$pkb = $this->local instanceof Model? $this->local->getPrimaryData() : null;
 		
 		return $pka == $pkb;
 	}
