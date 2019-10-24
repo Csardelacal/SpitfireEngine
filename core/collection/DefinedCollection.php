@@ -348,6 +348,6 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 	 * @return type
 	 */
 	public function __isset($name) {
-		return array_key_exists($this->items[$name]);
+		return array_key_exists($name, $this->items);
 	}
 }
