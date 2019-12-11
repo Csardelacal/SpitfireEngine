@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\event;
 
+use Closure;
+
 /* 
  * The MIT License
  *
@@ -25,33 +27,58 @@
  */
 
 /**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
+ * The listener represents the leaf of a target tree, but generates a binary Listener
+ * tree below it.
  * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-abstract class Pluggable
+class Publisher extends Tree
 {
 	
-	protected $before;
+	/**
+	 * 
+	 *
+	 * @var Closure[] 
+	 */
+	private $body = [];
 	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Listener();
-		}
-		
-		return $this->before;
+	/**
+	 * 
+	 * @param Closure $callable
+	 * @return $this
+	 */
+	public function subscribe(Closure$callable) {
+		$this->body[] = $callable;
+		return $this;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Listener();
-		}
-		
-		return $this->after;
+	public function remove(Closure$callable) {
+		unset($this->body[array_search($callable, $this->body, true)]);
+		return true;
 	}
 	
+	public function _body($parameter) {
+		$arg = $parameter;
+		
+		foreach ($this->body as $callable) {
+			$arg = $callable($arg)?: $arg;
+		}
+		
+		return $arg;
+	}
+	
+	/**
+	 * Run is the main function of the pluggable object, when invoked, it will first
+	 * execute all the registered before objects, then the body, and finally, the
+	 * after code.
+	 * 
+	 * @param mixed $parameter
+	 */
+	public function update($parameter) {
+		$parameter = $this->before? $this->before->update($parameter) : $parameter;
+		
+		$parameter = $this->_body($parameter)?: $parameter;
+		
+		return $this->after? $this->after->update($parameter) : $parameter;
+	}
 }

@@ -1,7 +1,5 @@
 <?php namespace spitfire\core\event;
 
-use Closure;
-
 /* 
  * The MIT License
  *
@@ -26,59 +24,44 @@ use Closure;
  * THE SOFTWARE.
  */
 
-/**
- * The listener represents the leaf of a target tree, but generates a binary Listener
- * tree below it.
- * 
- * @author César de la Cal Bretschneider <cesar@magic3w.com>
- */
-class Listener extends Pluggable
+class RecipeLoader
 {
 	
-	/**
-	 * 
-	 *
-	 * @var Closure[] 
-	 */
-	private $body = [];
+	private static $loaded = false;
 	
 	/**
+	 * Loads all the recipes that the system needs to ensure that the events get 
+	 * dispatched. Events get only loaded whenever the event() function is actually
+	 * called, which should make the footprint of the event system negligible when
+	 * it is not being used.
 	 * 
-	 * @param Closure $callable
-	 * @return $this
+	 * Core components must not invoke the event() function or call this method.
+	 * 
+	 * @todo This should implement a caching mechanism so the directory does not need to
+	 *       be scanned with every request that uses it
+	 * @return void
 	 */
-	public function do(Closure$callable) {
-		$this->body[] = $callable;
-		return $this;
-	}
-	
-	public function remove(Closure$callable) {
-		unset($this->body[array_search($callable, $this->body, true)]);
-		return true;
-	}
-	
-	public function _body($parameter) {
-		$arg = $parameter;
+	public static function import() {
+		/*
+		 * Obviously, if the listeners have been appropriately loaded, we can stop
+		 * them from being imported again.
+		 */
+		if (self::$loaded) { return; }
 		
-		foreach ($this->body as $callable) {
-			$arg = $callable($arg)?: $arg;
+		/*
+		 * Find all the PHP files in the recipes folder. These are loaded to allow
+		 * them to register with the application.
+		 */
+		$recipes = glob(basedir() . '/bin/recipes/*.php');
+		
+		/*
+		 * Loop over the recipes, and include them all.
+		 */
+		foreach ($recipes as $recipe) {
+			include $recipe;
 		}
 		
-		return $arg;
+		self::$loaded = true;
 	}
 	
-	/**
-	 * Run is the main function of the pluggable object, when invoked, it will first
-	 * execute all the registered before objects, then the body, and finally, the
-	 * after code.
-	 * 
-	 * @param mixed $parameter
-	 */
-	public function run($parameter) {
-		$parameter = $this->before? $this->before->run($parameter) : $parameter;
-		
-		$parameter = $this->_body($parameter)?: $parameter;
-		
-		return $this->after? $this->after->run($parameter) : $parameter;
-	}
 }

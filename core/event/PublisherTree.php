@@ -34,13 +34,13 @@
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class Target extends Pluggable
+class PublisherTree extends Tree
 {
 	
 	/**
 	 * The nested targets within this instance.
 	 *
-	 * @var Target[]
+	 * @var PublisherTree[]
 	 */
 	private $children = [];
 	
@@ -58,7 +58,7 @@ class Target extends Pluggable
 	 * not bubble though, the feature just makes it easier to understand.
 	 * 
 	 * @param string $name
-	 * @return Target
+	 * @return PublisherTree
 	 */
 	public function __get($name) {
 		
@@ -66,7 +66,7 @@ class Target extends Pluggable
 			return $this->children[$name];
 		} 
 		else {
-			return $this->children[$name] = new Target();
+			return $this->children[$name] = new PublisherTree();
 		}
 	}
 	
@@ -98,8 +98,8 @@ class Target extends Pluggable
 	 * @return mixed
 	 */
 	public function do($operation, $object) {
-		$before = $this->before()->run($object);
-		return $this->after()->run($operation($before)?: $before);
+		$before = $this->before()->update($object);
+		return $this->after()->update($operation($before)?: $before);
 	}
 
 }

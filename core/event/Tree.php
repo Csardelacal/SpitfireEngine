@@ -1,6 +1,4 @@
-<?php namespace tests\spitfire\core\event;
-
-use PHPUnit\Framework\TestCase;
+<?php namespace spitfire\core\event;
 
 /* 
  * The MIT License
@@ -26,25 +24,34 @@ use PHPUnit\Framework\TestCase;
  * THE SOFTWARE.
  */
 
-class TargetTest extends TestCase
+/**
+ * Pluggable is the base class to both listeners and targets, since both have
+ * dependencies and dependents that need to be executed.
+ * 
+ * Dependencies and dependents are called before and after respectively to make
+ * it easier to understand which code is executed first.
+ */
+abstract class Tree
 {
 	
-	private $plugins;
+	protected $before;
 	
-	public function setUp() : void {
-		$this->plugins = new \spitfire\core\event\Target();
-		$this->plugins->test->after()->do(function ($e) { return $e + 1; });
-		$this->plugins->test->n1->before()->do(function ($e) { return $e + 1; });
+	protected $after;
+	
+	public function before() {
+		if (!$this->before) {
+			$this->before = new Publisher();
+		}
 		
-		parent::setUp();
+		return $this->before;
 	}
 	
-	public function testTarget() {
-		$r = $this->plugins->test->do(function ($e) { $this->assertEquals(1, $e); }, 1);
-		$this->assertEquals(2, $r);
+	public function after() {
+		if (!$this->after) {
+			$this->after = new Publisher();
+		}
 		
-		$r = $this->plugins->test->n1->do(function ($e) { $this->assertEquals(2, $e); }, 1);
-		$this->assertEquals(2, $r);
+		return $this->after;
 	}
 	
 }

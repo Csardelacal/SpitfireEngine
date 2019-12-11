@@ -4,15 +4,25 @@ use spitfire\App;
 use spitfire\core\Collection;
 use spitfire\core\ContextInterface;
 use spitfire\core\Environment;
+use spitfire\core\event\PublisherTree;
 use spitfire\core\http\URL;
+use spitfire\exceptions\ExceptionHandler;
+use spitfire\exceptions\ExceptionHandlerCLI;
 use spitfire\io\cli\Console;
+use spitfire\io\curl\Request;
+use spitfire\io\media\FFMPEGManipulator;
+use spitfire\io\media\GDManipulator;
+use spitfire\io\media\ImagickManipulator;
+use spitfire\io\media\MediaDispatcher;
 use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
 use spitfire\SpitFire;
 use spitfire\SpitFireCLI;
-use spitfire\storage\database\DB;
 use spitfire\storage\database\Settings;
+use spitfire\storage\drive\MountPoint;
+use spitfire\storage\objectStorage\DriveDispatcher;
+use spitfire\storage\objectStorage\NodeInterface;
 use spitfire\validation\ValidationException;
 use spitfire\validation\Validator;
 use spitfire\validation\ValidatorInterface;
@@ -23,7 +33,7 @@ use spitfire\validation\ValidatorInterface;
  * to make it easier to read and maintain the code being created.
  * 
  * @staticvar type $sf
- * @return \spitfire\SpitFire
+ * @return SpitFire
  */
 function spitfire() {
 	static $sf = null;
@@ -295,15 +305,15 @@ function media() {
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
-		$dispatcher = new \spitfire\io\media\MediaDispatcher();
-		$dispatcher->register('image/png', new \spitfire\io\media\GDManipulator());
-		$dispatcher->register('image/jpg', new \spitfire\io\media\GDManipulator());
-		$dispatcher->register('image/psd', new \spitfire\io\media\ImagickManipulator());
-		$dispatcher->register('image/gif', new \spitfire\io\media\FFMPEGManipulator());
-		$dispatcher->register('video/mp4', new \spitfire\io\media\FFMPEGManipulator());
-		$dispatcher->register('video/quicktime', new \spitfire\io\media\FFMPEGManipulator());
-		$dispatcher->register('image/jpeg', new \spitfire\io\media\GDManipulator());
-		$dispatcher->register('image/vnd.adobe.photoshop', new \spitfire\io\media\ImagickManipulator());
+		$dispatcher = new MediaDispatcher();
+		$dispatcher->register('image/png', new GDManipulator());
+		$dispatcher->register('image/jpg', new GDManipulator());
+		$dispatcher->register('image/psd', new ImagickManipulator());
+		$dispatcher->register('image/gif', new FFMPEGManipulator());
+		$dispatcher->register('video/mp4', new FFMPEGManipulator());
+		$dispatcher->register('video/quicktime', new FFMPEGManipulator());
+		$dispatcher->register('image/jpeg', new GDManipulator());
+		$dispatcher->register('image/vnd.adobe.photoshop', new ImagickManipulator());
 	}
 	
 	return $dispatcher;
@@ -313,17 +323,17 @@ function media() {
  * 
  * @staticvar type $dispatcher
  * @param type $uri
- * @return \spitfire\storage\objectStorage\DriveDispatcher|spitfire\storage\objectStorage\NodeInterface
+ * @return DriveDispatcher|NodeInterface
  */
 function storage($uri = null) {
 	
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
-		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
-		$dispatcher->register(new \spitfire\storage\drive\MountPoint('file://', '/'));
-		$dispatcher->register(new \spitfire\storage\drive\MountPoint('app://', basedir()));
-		$dispatcher->register(new \spitfire\storage\drive\MountPoint('temp://', sys_get_temp_dir()));
+		$dispatcher = new DriveDispatcher();
+		$dispatcher->register(new MountPoint('file://', '/'));
+		$dispatcher->register(new MountPoint('app://', basedir()));
+		$dispatcher->register(new MountPoint('temp://', sys_get_temp_dir()));
 	}
 	
 	if ($uri) {
@@ -335,7 +345,7 @@ function storage($uri = null) {
 }
 
 function request($url) {
-	return new \spitfire\io\curl\Request($url);
+	return new Request($url);
 }
 
 function mime($file) {
@@ -345,7 +355,26 @@ function mime($file) {
 
 function debug() {
 	static $instance = null;
-	return $instance? $instance : $instance = php_sapi_name() === 'cli'? new \spitfire\exceptions\ExceptionHandlerCLI() : new \spitfire\exceptions\ExceptionHandler();
+	return $instance? $instance : $instance = php_sapi_name() === 'cli'? new ExceptionHandlerCLI() : new ExceptionHandler();
+}
+
+/**
+ * Allows the application to manage a central event dispatching system, instead 
+ * of relying on every component to build a custom one. If your component doesn't
+ * wish to share it's hooks and plugins please @see Target
+ * 
+ * @staticvar Target $plugins
+ * @return PublisherTree
+ */
+function event() {
+	static $plugins = null;
+	
+	if ($plugins === null) {
+		$plugins = new PublisherTree();
+		\spitfire\core\event\RecipeLoader::import();
+	}
+	
+	return $plugins;
 }
 
 function basedir() {
