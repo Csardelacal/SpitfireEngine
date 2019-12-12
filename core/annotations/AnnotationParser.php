@@ -62,7 +62,7 @@ class AnnotationParser
 			}
 			elseif (!empty($clean)) {
 				$last = array_pop($clean);
-				$last.= empty($trimmed)? PHP_EOL : $trimmed;
+				$last.= empty($trimmed)? '' : PHP_EOL . $trimmed;
 				array_push($clean, $last);
 			}
 		});
