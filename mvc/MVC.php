@@ -1,7 +1,6 @@
 <?php namespace spitfire\mvc;
 
 use Controller;
-use Pluggable;
 use spitfire\App;
 use spitfire\core\Context;
 use spitfire\core\ContextInterface;
@@ -26,7 +25,7 @@ use spitfire\core\Response;
  * @author César de la Cal <cesar@magic3w.com>
  * 
  */
-class MVC extends Pluggable
+class MVC
 {
 	/**
 	 * The context this element belongs to.
