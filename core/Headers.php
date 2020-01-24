@@ -2,8 +2,17 @@
 
 use spitfire\core\Environment;
 
+/**
+ * The headers file allows an application to manipulate the headers of the response
+ * before sending them to the client.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class Headers
 {
+	
+	private $status = 200;
+	
 	private $headers = Array(
 	    'Content-type' => 'text/html;charset=utf-8',
 	    'x-Powered-By' => 'Spitfire',
@@ -12,16 +21,26 @@ class Headers
 	
 	private $states = Array(
 		 200 => '200 OK',
+		 201 => '201 Created',
+		 202 => '202 Accepted',
+		 204 => '204 No content',
 		 206 => '206 Partial Content',
 		 301 => '301 Moved Permanently',
 		 302 => '302 Found',
+		 304 => '304 Not modified',
 		 400 => '400 Invalid request',
 		 401 => '401 Unauthorized',
 		 403 => '403 Forbidden',
 		 404 => '404 Not Found',
+		 418 => '418 Im a teapot',
+		 419 => '419 Page expired',
+		 429 => '429 Too many requests',
+		 451 => '451 Unavailable for legal reasons',
 		 410 => '410 Gone',
 		 416 => '416 Range not satisfiable',
-		 500 => '500 Server Error'
+		 500 => '500 Server Error',
+		 501 => '501 Not implemented',
+		 503 => '503 Service Unavailable'
 	);
 	
 	public function set ($header, $value) {
@@ -32,15 +51,18 @@ class Headers
 		return $this->headers[$header];
 	}
 	
+	/**
+	 * Send the headers to the client. Once the headers have been sent, the application
+	 * can no longer manipulate the headers. This method must be called before any
+	 * output is sent to the browser.
+	 * 
+	 * Usually Spitfire will buffer all the output, so this should usually not be
+	 * an issue.
+	 */
 	public function send () {
+		http_response_code((int)$this->status);
+		
 		foreach ($this->headers as $header => $value) {
-			
-			#Special condition for status headers
-			if (strtolower($header) == 'status') {
-				http_response_code((int)$value);
-				continue;
-			}
-			
 			header("$header: $value");
 		}
 	}
@@ -80,14 +102,14 @@ class Headers
 		if (!is_numeric($code)) { throw new \BadMethodCallException('Invalid argument. Requires a number', 1509031352); }
 		if (!isset($this->states[$code])) { throw new \BadMethodCallException('Invalid status code', 1509031353); }
 		
-		$this->set('Status', $code);
+		$this->status = $code;
 	}
 	
 	public function redirect($location, $status = 302) {
+		$this->status($status);
 		$this->set('Location', $location);
 		$this->set('Expires', date("r", time()));
 		$this->set('Cache-Control', 'no-cache, must-revalidate');
-		$this->set('Status', $status);
 	}
 	
 }
