@@ -381,6 +381,21 @@ function event(\spitfire\core\event\Event$event = null) {
 	return $dispatcher;
 }
 
+/**
+ * 
+ * @staticvar \spitfire\io\lock\FileLockFactory $handler
+ * @param \spitfire\io\lock\FileLockFactory $set
+ * @return \spitfire\io\lock\FileLockFactory
+ */
+function lock($set = null) {
+	static $handler;
+	
+	if ($set) { $handler = $set; }
+	if (!$handler) { $handler = new \spitfire\io\lock\FileLockFactory(dirname(dirname(__FILE__)) . '/bin/usr/lock'); }
+	
+	return $handler;
+}
+
 function basedir() {
 	return BASEDIR;
 }
