@@ -1,11 +1,11 @@
 <?php namespace spitfire\core\event;
 
-use Closure;
+use spitfire\core\collection\DefinedCollection;
 
 /* 
  * The MIT License
  *
- * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,58 +27,23 @@ use Closure;
  */
 
 /**
- * The listener represents the leaf of a target tree, but generates a binary Listener
- * tree below it.
+ * A listener is a very simple class that contains an event name and an action.
+ * If an event with a matching event name comes by, the action will be invoked 
+ * and the event will be passed.
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class Publisher extends Tree
+class Listener extends DefinedCollection
 {
 	
-	/**
-	 * 
-	 *
-	 * @var Closure[] 
-	 */
-	private $body = [];
-	
-	/**
-	 * 
-	 * @param Closure $callable
-	 * @return $this
-	 */
-	public function subscribe(Closure$callable) {
-		$this->body[] = $callable;
-		return $this;
+	public function do($smthg) {
+		parent::push($smthg);
 	}
 	
-	public function remove(Closure$callable) {
-		unset($this->body[array_search($callable, $this->body, true)]);
-		return true;
+	public function handle(Event$event) {
+		$this->each(function ($call) use ($event) {
+			$call($event);
+		});
 	}
 	
-	public function _body($parameter) {
-		$arg = $parameter;
-		
-		foreach ($this->body as $callable) {
-			$arg = $callable($arg)?: $arg;
-		}
-		
-		return $arg;
-	}
-	
-	/**
-	 * Run is the main function of the pluggable object, when invoked, it will first
-	 * execute all the registered before objects, then the body, and finally, the
-	 * after code.
-	 * 
-	 * @param mixed $parameter
-	 */
-	public function update($parameter) {
-		$parameter = $this->before? $this->before->update($parameter) : $parameter;
-		
-		$parameter = $this->_body($parameter)?: $parameter;
-		
-		return $this->after? $this->after->update($parameter) : $parameter;
-	}
 }

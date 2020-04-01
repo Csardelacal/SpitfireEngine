@@ -26,17 +26,6 @@ class HeadersTest extends TestCase
 	}
 	
 	/**
-	 * Test whether the state shorthand function rewrites the states properly. If
-	 * it does, the app should be returning 200 OK as status when you pass 200 to
-	 * it.
-	 */
-	public function testStatus() {
-		$t = new Headers();
-		$t->status('200');
-		$this->assertEquals('200', $t->get('Status'));
-	}
-	
-	/**
 	 */
 	public function testInvalidStatus() {
 		$t = new Headers();

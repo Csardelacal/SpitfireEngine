@@ -1,6 +1,9 @@
 <?php namespace tests\spitfire\core\event;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\core\event\Event;
+use spitfire\core\event\EventDispatcher;
+use function collect;
 
 /* 
  * The MIT License
@@ -32,19 +35,28 @@ class PublisherTest extends TestCase
 	private $plugins;
 	
 	public function setUp() : void {
-		$this->plugins = new \spitfire\core\event\PublisherTree();
-		$this->plugins->test->after()->subscribe(function ($e) { return $e + 1; });
-		$this->plugins->test->n1->before()->subscribe(function ($e) { return $e + 1; });
+		$this->plugins = new EventDispatcher();
+		
+		$this->plugins->on('test')->do(function (Event$e) { 
+			return $e->getBody()->push(1);
+		});
+		
+		$this->plugins->on('test.n1.before')->do(function (Event$e) { 
+			return $e->getBody()->push(1);
+		});
 		
 		parent::setUp();
 	}
 	
 	public function testTarget() {
-		$r = $this->plugins->test->do(function ($e) { $this->assertEquals(1, $e); }, 1);
-		$this->assertEquals(2, $r);
+		$payload = collect();
 		
-		$r = $this->plugins->test->n1->do(function ($e) { $this->assertEquals(2, $e); }, 1);
-		$this->assertEquals(2, $r);
+		$this->plugins->dispatch(new Event('test', $payload));
+		$this->assertEquals(1, $payload->count());
+		
+		$this->plugins->dispatch(new Event('test.n1.before', $payload));
+		$this->assertEquals(2, $payload->count());
+		
 	}
 	
 }

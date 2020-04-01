@@ -3,7 +3,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,33 +25,28 @@
  */
 
 /**
- * Pluggable is the base class to both listeners and targets, since both have
- * dependencies and dependents that need to be executed.
+ * En event wraps a event name and a payload. The payload contains additional 
+ * information about the event.
  * 
- * Dependencies and dependents are called before and after respectively to make
- * it easier to understand which code is executed first.
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-abstract class Tree
+class Event
 {
 	
-	protected $before;
+	private $action;
+	private $body;
 	
-	protected $after;
-	
-	public function before() {
-		if (!$this->before) {
-			$this->before = new Publisher();
-		}
-		
-		return $this->before;
+	public function __construct($action, $body) {
+		$this->action = $action;
+		$this->body = $body;
 	}
 	
-	public function after() {
-		if (!$this->after) {
-			$this->after = new Publisher();
-		}
-		
-		return $this->after;
+	public function getAction() {
+		return $this->action;
 	}
-	
+
+	public function getBody() {
+		return $this->body;
+	}
+
 }

@@ -363,18 +363,22 @@ function debug() {
  * of relying on every component to build a custom one. If your component doesn't
  * wish to share it's hooks and plugins please @see Target
  * 
- * @staticvar Target $plugins
- * @return PublisherTree
+ * @staticvar \spitfire\core\event\EventDispatcher $dispatcher
+ * @return \spitfire\core\event\EventDispatcher
  */
-function event() {
-	static $plugins = null;
+function event(\spitfire\core\event\Event$event = null) {
+	static $dispatcher = null;
 	
-	if ($plugins === null) {
-		$plugins = new PublisherTree();
+	if ($dispatcher === null) {
+		$dispatcher = new \spitfire\core\event\EventDispatcher();
 		\spitfire\core\event\RecipeLoader::import();
 	}
 	
-	return $plugins;
+	if ($event !== null) {
+		$dispatcher->dispatch($event);
+	}
+	
+	return $dispatcher;
 }
 
 function basedir() {
