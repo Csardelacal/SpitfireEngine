@@ -35,59 +35,66 @@ class ExceptionHandler {
 	}
 	
 	/**
+	 * Catches and presents an error page for an exception, gracefully reacting to 
+	 * an error.
 	 * 
-	 * @param \Throwable|\Exception $e
+	 * @param \Throwable $e
 	 */
-	public function exceptionHandle ($e) {
-		if (!$e instanceof Exception && !$e instanceof Throwable) {
-			throw new BadMethodCallException('Requires throwable type to work.', 1608011002);
-		}
+	public function exceptionHandle (Throwable$e) {
 		
-		if (!$e instanceof PublicException) {
-			trigger_error(sprintf('Exception caught: %s (%s:%s). Trace: %s', $e->getMessage(), $e->getFile(), $e->getCode(), $e->getTraceAsString()), E_USER_WARNING);
-		}
-		
-		try {
-			while(ob_get_clean()); //The content generated till now is not valid. DESTROY. DESTROY!
+		while(ob_get_clean()); //The content generated till now is not valid. DESTROY. DESTROY!
 
-			$response  = new Response(null);
-			$basedir   = spitfire()->getCWD();
-			$extension = Request::get()->getPath()->getFormat()? '.' . Request::get()->getPath()->getFormat() : '';
-			
-			$template = new Template([
-				 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
-				 "{$basedir}/bin/error_pages/default{$extension}.php",
-				 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
-				 "{$basedir}/bin/error_pages/default.php"
+		$response  = new Response(null);
+		$basedir   = spitfire()->getCWD();
+		$extension = Request::get()->getPath()->getFormat()? '.' . Request::get()->getPath()->getFormat() : '';
+
+		$reflection = new \ReflectionClass(get_class($e));
+		$candidates = collect();
+
+		while ($reflection) {
+			$fqn = str_replace('\\', '/', $reflection->getName());
+
+			$candidates->add([
+				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}{$extension}.php",
+				"{$basedir}/bin/error_pages/{$fqn}/default{$extension}.php",
+				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}.php",
+				"{$basedir}/bin/error_pages/{$fqn}/default.php"
 			]);
-			
-			if ( $e instanceof PublicException) {
-				$response->getHeaders()->status($e->getCode());
-			}
-			else {
-				$response->getHeaders()->status(500);
-			}
-			
-			$response->setBody($template->render(!Environment::get('debug_mode')? [
-				'code'    => $e instanceof PublicException? $e->getCode() : 500,
-				'message' => $e instanceof PublicException? $e->getMessage() : 'Server error'
-			] : [
-				'code'      => $e instanceof PublicException? $e->getCode() : 500,
-				'message'   => $e->getMessage(),
-				'exception' => $e
-			]));
-			
-			$response->send();
 
-		} catch (Exception $e) { //Whatever happens, it won't leave this function
-			echo '<!--'.$e->getMessage() . $e->getTraceAsString().'-->';
-			ob_get_level() && ob_flush();
-			die();
+			$reflection = $reflection->getParentClass();
 		}
+
+		$candidates->add([
+			 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
+			 "{$basedir}/bin/error_pages/default{$extension}.php",
+			 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
+			 "{$basedir}/bin/error_pages/default.php"
+		]);
+
+		$template = new Template($candidates->toArray());
+
+		try { $response->getHeaders()->status($e->getCode()); }
+		catch(\Exception$ex) { $response->getHeaders()->status(500); }
+		
+		$response->setBody($template->render([
+			'code'      => $e->getCode(),
+			'message'   => $e->getMessage(),
+			'exception' => $e
+		]));
+		
+		/*
+		 * Send the rendered error page to the end user.
+		 */
+		$response->send();
+
 	}
 	
 	public function shutdownHook () {
 		$last_error = error_get_last();
+		
+		if (!$last_error) {
+			return null;
+		}
 		
 		switch($last_error['type']){
 			case E_ERROR:

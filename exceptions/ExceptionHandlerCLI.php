@@ -48,6 +48,10 @@ class ExceptionHandlerCLI
 	public function shutdownHook () {
 		$last_error = error_get_last();
 		
+		if (!$last_error) {
+			return null;
+		}
+		
 		switch($last_error['type']){
 			case E_ERROR:
 			case E_CORE_ERROR:
