@@ -95,6 +95,16 @@ class GDManipulator implements MediaManipulatorInterface
 				imagealphablending($this->img, false);
 				imagesavealpha($this->img, true);
 				break;
+			/*
+			 * If the image is a webp file, we use GD to manipulate it just like we 
+			 * would handle any other image type. Since WEBP supports transparency,
+			 * we will tell GD to handle transparency.
+			 */
+			case IMAGETYPE_WEBP:
+				$this->img = imagecreatefromwebp($this->tmp);
+				imagealphablending($this->img, false);
+				imagesavealpha($this->img, true);
+				break;
 			case IMAGETYPE_JPEG:  
 				$this->img = imagecreatefromjpeg($this->tmp);
 				break;
@@ -170,6 +180,18 @@ class GDManipulator implements MediaManipulatorInterface
 			case 'jpeg':
 				imagejpeg($this->img, $this->tmp, $this->compression * 10);
 				break;
+			/*
+			 * Allows the system to manipulate webp files, an upcoming format pioneered
+			 * by Google that allows to reduce the overhead of images being transferred
+			 * significantly by reducing file size.
+			 * 
+			 * The format supports transparency.
+			 * 
+			 * Read more on: https://developers.google.com/speed/webp
+			 */
+			case 'webp':
+				imagewebp($this->img, $this->tmp, $this->compression * 10);
+				break;
 			case 'png':
 			default:
 				imagepng($this->img, $this->tmp, $this->compression);
@@ -191,6 +213,7 @@ class GDManipulator implements MediaManipulatorInterface
 			case 'image/jpg':
 			case 'image/png':
 			case 'image/gif':
+			case 'image/webp':
 				return true;
 			default: 
 				return false;

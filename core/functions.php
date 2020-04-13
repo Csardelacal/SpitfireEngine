@@ -339,6 +339,7 @@ function media() {
 		$dispatcher = new MediaDispatcher();
 		$dispatcher->register('image/png', new GDManipulator());
 		$dispatcher->register('image/jpg', new GDManipulator());
+		$dispatcher->register('image/webp', new GDManipulator());
 		$dispatcher->register('image/psd', new ImagickManipulator());
 		$dispatcher->register('image/gif', new FFMPEGManipulator());
 		$dispatcher->register('video/mp4', new FFMPEGManipulator());
