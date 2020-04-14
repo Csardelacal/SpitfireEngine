@@ -1,9 +1,11 @@
-<?php namespace spitfire\validation\parser\preprocessor;
+<?php namespace spitfire\core\parser\parser;
+
+use spitfire\core\parser\lexemes\Symbol;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,41 +26,29 @@
  * THE SOFTWARE.
  */
 
-
-class Module
+class ReservedWordTerminal implements TerminalInterface
 {
 	
-	private $open;
+	private $symbol;
 	
-	private $close;
-	
-	private $escape;
-	
-	private $callback;
-	
-	
-	public function __construct($open, $close, $escape, $callback) {
-		$this->open = $open;
-		$this->close = $close;
-		$this->escape = $escape;
-		$this->callback = $callback;
+	public function __construct($symbol) {
+		$this->symbol = $symbol;
 	}
 	
-	public function isEscaped() {
-		return $this->escape;
-	}
-	
-	public function getOpen() {
-		return $this->open;
+	public function get($token) {
+		return $token;
 	}
 
-	public function getClose() {
-		return $this->close;
+	public function test($token) {
+		return $token instanceof \spitfire\core\parser\lexemes\ReservedWord && $this->symbol === $token;
 	}
 	
-	public function process($elements) {
-		$cb = $this->callback;
-		return $cb($elements);
+	public function children() {
+		return [];
 	}
 	
+	public function __toString() {
+		return 'Reserved Word';
+	}
+
 }

@@ -1,8 +1,18 @@
 <?php namespace spitfire\validation\parser;
 
 use Closure;
+use spitfire\core\parser\lexemes\ReservedWord;
+use spitfire\core\parser\lexemes\Symbol;
+use spitfire\core\parser\Lexer;
+use spitfire\core\parser\parser\Block;
+use spitfire\core\parser\parser\IdentifierTerminal;
+use spitfire\core\parser\parser\LiteralTerminal;
+use spitfire\core\parser\parser\Parser as ParserCore;
+use spitfire\core\parser\scanner\IdentifierScanner;
+use spitfire\core\parser\scanner\IntegerLiteralScanner;
+use spitfire\core\parser\scanner\LiteralScanner;
+use spitfire\core\parser\scanner\WhiteSpaceScanner;
 use spitfire\exceptions\PrivateException;
-use spitfire\validation\parser\preprocessor\Preprocessor;
 use spitfire\validation\rules\EmptyValidationRule;
 use spitfire\validation\rules\FilterValidationRule;
 use spitfire\validation\rules\InValidationRule;
@@ -12,9 +22,9 @@ use spitfire\validation\rules\PositiveNumberValidationRule;
 use spitfire\validation\rules\TypeNumberValidationRule;
 use spitfire\validation\rules\TypeStringValidationRule;
 use spitfire\validation\ValidationRule;
-use spitfire\validation\ValidatorGroup;
 use spitfire\validation\ValidatorInterface;
 use function __;
+use function collect;
 
 /* 
  * The MIT License
@@ -51,23 +61,6 @@ use function __;
 class Parser
 {
 	
-	/**
-	 * The preprocessor basically is in charge of splicing the expression by delimited
-	 * blocks (like parenthesis or brackets) and group the items that are on the 
-	 * same level.
-	 *
-	 * @var Preprocessor
-	 */
-	private $preprocessor;
-	
-	/**
-	 * The logic processors break the expression apart whenever a logic operator
-	 * is found (like AND or OR) and create validators that allow the application
-	 * to verify the data received.
-	 *
-	 * @var LogicProcessor[]
-	 */
-	private $logic = [];
 	
 	/**
 	 * Contains a list of callable items that allow your application to instance 
@@ -82,10 +75,6 @@ class Parser
 	 * quickly provide the application with validation for input.
 	 */
 	public function __construct() {
-		
-		$this->preprocessor = new Preprocessor();
-		$this->logic[] = new LogicProcessor(ValidatorGroup::TYPE_OR);
-		$this->logic[] = new LogicProcessor(ValidatorGroup::TYPE_AND);
 		
 		#Create the default rules
 		$this->rules['string'] = function() { return new TypeStringValidationRule('Accepts only strings'); };
@@ -107,13 +96,205 @@ class Parser
 	 * @return ValidatorInterface
 	 */
 	public function parse($string) {
-		$result = $this->preprocessor->prepare($string)->tokenize();
 		
-		foreach ($this->logic as $l) {
-			$l->run($result);
+		/*
+		 * Defines all the special characters, identifiers, literals and reserved 
+		 * words that the parser is expected to support.
+		 */
+		$and = new ReservedWord('AND');
+		$or  = new ReservedWord('OR');
+		$lit = new LiteralScanner('"', '"');
+		$pop = new Symbol('(');
+		$pcl = new Symbol(')');
+		$bop = new Symbol('[');
+		$bcl = new Symbol(']');
+		$com = new Symbol(',');
+		$ran = new Symbol('>');
+		$dot = new Symbol('.');
+		$hb  = new Symbol('#');
+		$whs = new WhiteSpaceScanner();
+		$ids = new IdentifierScanner();
+		$int = new IntegerLiteralScanner();
+		
+		/*
+		 * Initializes the blocks. Blocks allow the application to combine a series
+		 * of identifiers and reserved words into a grammar.
+		 */
+		$statement = new Block();
+		$expression = new Block();
+		$binaryand = new Block();
+		$binaryor  = new Block();
+		$rule      = new Block();
+		$fnname    = new Block();
+		$arguments = new Block();
+		$options   = new Block();
+		
+		
+		$statement->matches($binaryor);
+		$binaryor->matches($binaryand, Block::optional(Block::multiple($or, $binaryand)));
+		$binaryand->matches($expression, Block::optional(Block::multiple($and, $expression)));
+		
+		$expression->matches(Block::either([$rule], [$pop, $statement, $pcl]));
+		$rule->matches($fnname, $pop, $arguments, $pcl);
+		$fnname->matches(new IdentifierTerminal(), Block::either([$dot], [$hb]), new IdentifierTerminal());
+		$arguments->matches(Block::multiple(new IdentifierTerminal(), Block::optional($options)));
+		$options->matches($bop, new LiteralTerminal(), Block::optional(Block::multiple($com, new LiteralTerminal())), $bcl);
+		
+		/*
+		 * Creates the lexer. The lexer will receive a character buffer and determine
+		 * which characters are part of which identifier, reserved word, symbol, etc.
+		 */
+		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $hb, $whs, $bop, $bcl, $ids, $int, $ran);
+		$parser = new ParserCore($statement);
+		
+		/*
+		 * At it's core, a validation expression is a statement, a statement contains
+		 * only one (and only one) binary OR expression that it resolves.
+		 * 
+		 * While this may seem counter-intuitive, it allows the system to create complex
+		 * grammar trees with this being the recurring theme.
+		 */
+		$statement->does(function ($leaf, $scope) {
+			$leafs = $leaf->getLeafs();
+			return $leafs[0]->resolve($scope);
+		});
+		
+		/*
+		 * Define the binary OR operation. This allows a validator to define rules
+		 * like POST.a(required) OR GET.a(required) which will then cause the system
+		 * to accept either.
+		 */
+		$binaryor->does(function ($leaf, $scope) {
+			$leafs = $leaf->getLeafs();
+			$result = $leafs[0]->resolve($scope);
+			
+			if (!$leafs[1]) { return $result; }
+			
+			foreach ($leafs[1][0] as $op) {
+				$r = $op[1]->resolve($scope);
+				$result = empty($r)? [] : array_merge($result, $r);
+			}
+			
+			return $result;
+		});
+		
+		/*
+		 * The body of a binary AND operator. The application can then define
+		 * requirements like POST.a(string) AND POST.b(number required)
+		 */
+		$binaryand->does(function ($leaf, $scope) {
+			$leafs = $leaf->getLeafs();
+			$result = $leafs[0]->resolve($scope);
+			
+			if (!$leafs[1]) { return $result; }
+			
+			foreach ($leafs[1][0] as $op) {
+				$r = $op[1]->resolve($scope);
+				$result = empty($r)? $result : array_merge($result, $r);
+			}
+			
+			return $result;
+		});
+		
+		/*
+		 * An expression is either a single rule, or a statement wrapped in parentheses.
+		 * This allows the system to build more complex rules like 
+		 * POST a(required) AND (POST.b(string) OR POST.c(number))
+		 */
+		$expression->does(function ($leaf, $scope) {
+			$leafs = $leaf->getLeafs()[0];
+			if (count($leafs) == 1) {
+				return $leafs[0]->resolve($scope);
+			}
+			
+			if (count($leafs) == 3) {
+				return $leafs[1]->resolve($scope);
+			}
+			
+			throw new Exception('Impossible condition reached');
+		});
+		
+		/*
+		 * A rule is a combination of a variable identifier and a set of
+		 * validation rules like POST.a(number required)
+		 */
+		$rule->does(function ($leaf, $scope) {
+			$leafs = $leaf->getLeafs();
+			$fn = $leafs[0]->resolve($scope);
+			$args = $leafs[2]->resolve($scope);
+			
+			$payload = $scope->get($fn[0])[$fn[1]]?? null;
+			$pass = [];
+			
+			foreach ($args as /*@var $arg ValidationRule*/$arg) {
+				$tested = $arg->test($payload);
+				$pass[] = $tested === false || $tested === true || $tested === null? null : $tested;
+			}
+			
+			return array_filter($pass);
+		});
+		
+		/*
+		 * The function name is a bit misleading name for this, because it actually
+		 * represents the item to be validated. Like POST.a
+		 */
+		$fnname->does(function ($leaf, $scope) {
+			$leafs = $leaf->getLeafs();
+			return [$leafs[0]->getBody(), $leafs[2]->getBody()];
+		});
+		
+		/*
+		 * The arguments are the actual functions to be applied to the argument.
+		 * Since in a validator, the system will usually apply multiple functions 
+		 * to a single value, it makes sense to invert it.
+		 * 
+		 * It would be rather nonsensical to write something like required(POST.a) AND number(POST.a)
+		 * rather than POST.a(number required)
+		 */
+		$arguments->does(function ($leaf, $scope) {
+			$_ret = collect($leaf->getLeafs()[0])->each(function ($e) use ($scope) {
+				list($argument, $options) = $e;
+				
+				if (!isset($this->rules[$argument->getBody()])) { throw new PrivateException('Invalid validation rule'); }
+				
+				$params = $options? collect($options)->each(function ($e) use ($scope) { return $e->resolve($scope); })->toArray() : [[]];
+				return call_user_func_array($this->rules[$argument->getBody()], $params[0]);
+			})->toArray();
+			
+			return $_ret;
+		});
+		
+		/*
+		 * The arguments provide a series of modifiers to the functions. For  example
+		 * POST.a(string length[5, 30]) allows you to define a validator that will
+		 * test whether a is a string and between 5 and 30 characters long.
+		 */
+		$options->does(function ($leaf, $scope) {
+			$raw = $leaf->getLeafs();
+			
+			$clean = [$raw[1]->getBody()];
+			$modifiers = $raw[2];
+			
+			if (!empty($modifiers)) {
+				foreach ($modifiers[0] as $modifier) {
+					$clean[] = $modifier[1]->getBody();
+				}
+			}
+			
+			return $clean;
+		});
+		
+		$res = $parser->parse($lex->tokenize($string));
+		
+		/*
+		 * If the parser was unable to read anything from the expression, we rather
+		 * fail and inform the user that the parsing went south.
+		 */
+		if (empty($res)) {
+			throw new PrivateException('Parser could not read the expression', 2004102105);
 		}
 		
-		return $result->make($this);
+		return $res;
 	}
 	
 	/**
@@ -126,66 +307,4 @@ class Parser
 		$this->rules[$name] = $callable;
 	}
 	
-	/**
-	 * Makes a set of rules from the data parsed by the preprocessor. Please note
-	 * that the system will assign any options parsed to the previous rule.
-	 * 
-	 * @param Options $from
-	 * @return ValidationRule[]
-	 * @throws PrivateException
-	 */
-	public function makeRules($from) {
-		#Never forget to initialize variables! :D
-		$_ret = [];
-		
-		/*
-		 * Loop over the data parsed.
-		 */
-		for($i = 0; $i < count($from); $i++) {
-			
-			/*
-			 * Get the name of the rule to be used. This will later be used to test
-			 * whether the system has the rule available.
-			 */
-			$rule = $from[$i]->getContent();
-			
-			/*
-			 * If the item next to the current one is a Options instance, we will
-			 * combine the two options AND skip the next item. Otherwise, we just 
-			 * set options to empty.
-			 * 
-			 * I personally dislike how this works, it's a bit hacky to skip the 
-			 * next item by incrementing the counter, but it does work...
-			 */
-			if (isset($from[$i + 1]) && $from[$i+1] instanceof Options) {
-				$options = $from[$i+1];
-				$i++;
-			}
-			else {
-				$options = null;
-			}
-			
-			$_ret[] = $this->getRule($rule, $options);
-		}
-
-		return array_filter($_ret);
-	}
-	
-	public function getRule($rule, $options) {
-		
-		/*
-		 * Check if the rule being used does indeed exist. Otherwise the program
-		 * cannot continue.
-		 * 
-		 * While this may be a nuissance, it ensures that the system does not 
-		 * skip any rule the user defined. I'd rather have it fail if the validator
-		 * was not found than skipping the rule and letting data through unvalidated.
-		 */
-		if (!isset($this->rules[$rule])) { throw new PrivateException('Invalid rule: ' . $rule, 1805171527); }
-		
-		/*
-		 * Create the rule and add it to the stack of rules ot be executed.
-		 */
-		return call_user_func_array($this->rules[$rule], $options? $options->getItems() : []);
-	}
 }

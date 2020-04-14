@@ -24,6 +24,10 @@
  * THE SOFTWARE.
  */
 
+/**
+ * A terminal represents a parser entity (token) that cannot be descended into,
+ * it basically provides a stop to recursion in an abstract syntax tree.
+ */
 interface TerminalInterface
 {
 	

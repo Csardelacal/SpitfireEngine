@@ -24,16 +24,42 @@
  * THE SOFTWARE.
  */
 
+/**
+ * The optional shallow-block allows the application to define a segment of the 
+ * buffer that may be present but may also not be. A typical example for this 
+ * would be the type modifiers for PHP functions where:
+ * 
+ * reserved(function) identifier symbol(() optional(modifier(type)) modifier(variablename) optional(multiple(...)) symbol())
+ * 
+ * We could use these blocks to identify that the type may, or may not, be present
+ * in your expression.
+ */
 class Optional extends Block
 {
 	
-	
-	
+	/**
+	 * Test whether the buffer contains the block this inherits from, unlike a 
+	 * regular block, an empty result will not lead to the parser failing, but the
+	 * block being skipped and it's result set to null.
+	 * 
+	 * @param type $tokens
+	 * @return boolean
+	 */
 	public function test($tokens) {
 		$res = parent::test($tokens);
-		if ($res) { return $res; }
 		
-		return false;
+		/*
+		 * This is a shallow-block, meaning that the leafs are passed as an array 
+		 * to the parent instead of a parse tree.
+		 */
+		if ($res) {
+			return $res->getLeafs(); 
+		}
+		
+		/*
+		 * Unlike a regular block, this result will be null.
+		 */
+		return null;
 	}
 	
 	public function __toString() {

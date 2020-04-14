@@ -1,9 +1,11 @@
-<?php namespace spitfire\validation\parser;
+<?php namespace tests\spitfire\core\parser\scanner;
+
+use PHPUnit\Framework\TestCase;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +26,26 @@
  * THE SOFTWARE.
  */
 
-class Token
+class WhiteSpacescannerTest extends TestCase
 {
 	
-	private $content;
-	
-	public function __construct($content) {
-		$this->content = is_array($content)? reset($content) : trim($content);
+	public function testBasic() {
+		$buffer = new \spitfire\core\parser\StringBuffer(' ');
+		$scanner = new \spitfire\core\parser\scanner\WhiteSpaceScanner();
+		$this->assertInstanceOf(\spitfire\core\parser\lexemes\WhiteSpace::class, $scanner->in($buffer));
 	}
 	
-	public function getContent() {
-		return $this->content;
+	public function testLineFeed() {
+		$buffer = new \spitfire\core\parser\StringBuffer("\n");
+		$scanner = new \spitfire\core\parser\scanner\WhiteSpaceScanner();
+		$this->assertInstanceOf(\spitfire\core\parser\lexemes\WhiteSpace::class, $scanner->in($buffer));
 	}
 	
-	public function __toString() {
-		return sprintf('token<%s>', $this->content);
+	public function testNoWhitespace() {
+		$buffer = new \spitfire\core\parser\StringBuffer('hello world');
+		$scanner = new \spitfire\core\parser\scanner\WhiteSpaceScanner();
+		$this->assertEquals(null, $scanner->in($buffer));
 	}
+	
 	
 }

@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\parser\parser;
 
+use spitfire\core\parser\TokenBuffer;
+
 /* 
  * The MIT License
  *
@@ -24,18 +26,34 @@
  * THE SOFTWARE.
  */
 
+/**
+ * A multiple block allows an application to consume multiple blocks in a greedy
+ * fashion, it can be used to construct statements like or statements, where an
+ * expression is followed by multiple combinations of pipes and expressions.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class Multiple extends Block
 {
 	
-	public function test($tokens) {
+	/**
+	 * The multiple block will return a "shallow" array of the results of multiple
+	 * iterations of the same Block being executed on a token buffer.
+	 * 
+	 * Basically, this block will consume from the buffer until the block it wraps
+	 * can no longer match.
+	 * 
+	 * @param TokenBuffer $tokens
+	 * @return mixed
+	 */
+	public function test(TokenBuffer$tokens) {
 		$_ret = [];
 		
 		while ($res = parent::test($tokens)) {
-			$_ret[] = array_shift($res);
-			$tokens = $res;
+			$_ret[] = is_array($res)? $res : $res->getLeafs();
 		} 
 		
-		return !empty($_ret)? array_merge([new ParseTree($this, $_ret)], $tokens) : false;
+		return !empty($_ret)? $_ret : false;
 	}
 	
 	public function __toString() {

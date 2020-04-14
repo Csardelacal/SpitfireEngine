@@ -40,10 +40,6 @@ class SymbolTerminal implements TerminalInterface
 	}
 
 	public function test($token) {
-		echo 'Testing ', $token->getBody();
-		echo ' against ', $this->symbol->getBody(), PHP_EOL;
-		echo 'Rsult; ', $token instanceof Symbol && $this->symbol === $token? 'success' : 'fail', PHP_EOL;
-		ob_flush();
 		return $token instanceof Symbol && $this->symbol === $token;
 	}
 	

@@ -63,9 +63,7 @@ class ReferenceWriteTest extends TestCase
 			$this->db->table($this->schema);
 		}
 		catch (PrivateException$e) {
-			echo $e->getMessage();
-			echo $e->getTraceAsString();
-			$this->markTestSkipped('MySQL PDO driver is not available.');
+			$this->markTestSkipped('MySQL PDO driver is not available: ' . $e->getMessage());
 		}
 	}
 	

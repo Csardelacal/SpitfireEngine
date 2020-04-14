@@ -1,15 +1,9 @@
-<?php namespace spitfire\core\parser\scanner;
-
-use spitfire\core\parser\lexemes\LexemeInterface;
-use spitfire\core\parser\lexemes\Literal;
-use spitfire\core\parser\scanner\ScannerModuleInterface;
-use spitfire\core\parser\StringBuffer;
-use spitfire\exceptions\PrivateException;
+<?php namespace spitfire\core\parser;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,43 +24,35 @@ use spitfire\exceptions\PrivateException;
  * THE SOFTWARE.
  */
 
-
-class IntegerLiteralScanner implements ScannerModuleInterface
+class Scope 
 {
 	
+	private $prototype = null;
+	private $vars = [];
 	
-	private $body = null;
+	public function __construct($prototype = null) {
+		$this->prototype = $prototype;
+	}
 	
-
-	public function setBody($body): Literal {
-		$this->body = $body;
-		return $this;
+	public function set($var, $to) {
+		$this->vars[$var] = $to;
 	}
-
-	public function getBody(): string {
-		return $this->body;
-	}
-
-	public function in(StringBuffer $buffer): ?LexemeInterface {
+	
+	public function get($var) {
 		
-		$next = $buffer->peek();
-		$matched = '';
-		
-		/*
-		 * If the first character is indeed a character, we will continue
-		 */
-		if (!preg_match('/[0-9\.]/i', $next)) { return null; }
-		
-		while (preg_match('/[0-9\.]/', $buffer->peek())) {
-			$matched.= $buffer->read();
+		if (array_key_exists($var, $this->vars)) {
+			return $this->vars[$var];
 		}
 		
-		if (preg_match('/[\p{L}]/i', $buffer->peek())) { 
-			throw new PrivateException('Parse error', 2002251955);
+		elseif ($this->prototype) {
+			return $this->prototype->get($var);
 		}
 		
-		return new Literal($matched);
+		else {
+			trigger_error('Undefined variable ' . $var, E_USER_NOTICE);
+			return null;
+		}
 		
 	}
-
+	
 }

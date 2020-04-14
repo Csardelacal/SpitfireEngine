@@ -26,7 +26,13 @@
 
 /**
  * An identifier is a lexeme that identifies a user defined variable or function
- * name.
+ * name. In this context, anything that is not white-space, and matches a standard
+ * function / variable naming expression will be used.
+ * 
+ * Please note that the system requires all identifiers to have valid names. In 
+ * case your application contains identifiers like fully qualified names (\my\ClassName)
+ * you will be required to construct this by indicating to the system that a class
+ * identifier can be constructed by adding multiple identifiers together.
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
@@ -35,18 +41,31 @@ class Identifier implements LexemeInterface
 	
 	private $name;
 	
+	/**
+	 * Creates the identifier.
+	 * 
+	 * @param string $name
+	 */
 	public function __construct($name = null) {
 		$this->name = $name;
 	}
-
-	public function getName() {
-		return $this->name;
-	}
-
+	
+	/**
+	 * Returns the content of the identifier. This will be the name of the variable
+	 * / function / class / whatever inside your language.
+	 * 
+	 * @return string
+	 */
 	public function getBody(): string {
 		return $this->name;
 	}
 	
+	/**
+	 * In the event of printing out the Identifier, we're printing it as a representation
+	 * that will make sense within the other output of the lexer.
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
 		return sprintf('val(%s)', strval($this->name));
 	}

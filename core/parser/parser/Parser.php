@@ -1,5 +1,8 @@
 <?php namespace spitfire\core\parser\parser;
 
+use spitfire\core\parser\TokenBuffer;
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *
@@ -27,6 +30,10 @@
 class Parser
 {
 	
+	/**
+	 *
+	 * @var Block
+	 */
 	private $root;
 	
 	public function __construct($root) {
@@ -35,7 +42,12 @@ class Parser
 	
 	public function parse($tokens) {
 		
-		return $this->root->test($tokens);
+		$buffer = new TokenBuffer($tokens);
+		$res = $this->root->test($buffer);
+		
+		if ($buffer->peek(1) !== null) { throw new PrivateException('Extraneous data at the end of buffer'); }
+		
+		return $res;
 		
 	}
 	

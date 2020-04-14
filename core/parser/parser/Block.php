@@ -1,6 +1,7 @@
 <?php namespace spitfire\core\parser\parser;
 
 use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\TokenBuffer;
 
 /* 
  * The MIT License
@@ -30,6 +31,8 @@ class Block
 {
 	private $matches = [];
 	
+	private $operation;
+	
 	public $name = 'undefined';
 	
 	public function matches() {
@@ -41,7 +44,7 @@ class Block
 		$this->matches = $a;
 	}
 	
-	public function test($tokens) {
+	public function test(TokenBuffer$tokens) {
 		
 		$found = [];
 		
@@ -50,14 +53,6 @@ class Block
 		 */
 		foreach ($this->matches as $rule) {
 			
-			if ($rule instanceof Optional) { 
-				$t = $rule->test($tokens); 
-				if ($t) { 
-					$found[] = array_shift($t);
-					$tokens = $t;
-				}
-				
-			} 
 			
 			/*
 			 * If another block is the child, we will first descend into it. If it
@@ -67,34 +62,42 @@ class Block
 			 * On the other hand, if the block did match, then we will put it's result
 			 * into found, and continue parsing.
 			 */
-			elseif ($rule instanceof Block || $rule instanceof Either || $rule instanceof Multiple) {
+			if ($rule instanceof Block || $rule instanceof Either || $rule instanceof Multiple || $rule instanceof Optional) {
 				
 				$r = $rule->test($tokens);
 				
-				if ($r) { $tokens = $r; }
-				else { return false; }
+				if ($r === false) { return false; }
+				else { $found[] = $r; }
 				
-				$found[] = array_shift($tokens);
 			}
 			
 			elseif ($rule instanceof LexemeInterface) {
-				if ($rule === reset($tokens)) { $found[] = array_shift($tokens); }
+				if ($rule === $tokens->peek()) { $found[] = $tokens->read(); }
 				else { return false; }
 			}
 			
 			elseif ($rule instanceof TerminalInterface) {
-				if ($rule->test(reset($tokens))) { $found[] = $rule->get(array_shift($tokens)); }
+				if ($rule->test($tokens->peek())) { $found[] = $rule->get($tokens->read()); }
 				else { return false; }
 			}
 		}
 		
 		
-		$r = array_merge([new ParseTree($this, $found)], $tokens);
+		$r = new ParseTree($this, $found);
 		return $r;
 	}
 	
 	public function children() {
 		return $this->matches;
+	}
+	
+	public function does($fn) {
+		$this->operation = $fn;
+		return $this;
+	}
+	
+	public function operate($leaf, $scope) {
+		return ($this->operation)($leaf, $scope);
 	}
 	
 	public function __toString() {

@@ -1,5 +1,9 @@
 <?php namespace spitfire\core\parser;
 
+use BadMethodCallException;
+use spitfire\core\parser\StringBuffer;
+use spitfire\exceptions\OutOfBoundsException;
+
 /* 
  * The MIT License
  *
@@ -24,20 +28,53 @@
  * THE SOFTWARE.
  */
 
+/**
+ * The string buffer is intended to make it easy for applications to manipulate
+ * the contents of a string. Spitfire uses this to navigate and lex a string that
+ * it's tokenizing.
+ * 
+ * The advantage of a dedicated buffer compared to direct operations on the is that
+ * we do not have to edit the string while reading it. When using strings and
+ * just consuming them, the system will have to allocate new memory for every
+ * operation.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class StringBuffer
 {
 	
+	/**
+	 * Indicates where on the string the application has sseked to. By default this
+	 * will be the first index (0) of the string.
+	 */
 	private $pointer = 0;
+	
+	/**
+	 * The string the application is operating on. This string is immutable, this
+	 * allows the application to take advantage of the reduced amount of memory
+	 * copy operations.
+	 */
 	private $string;
 	
 	
-	public function __construct($string) {
+	public function __construct(string$string) {
 		$this->string = $string;
 	}
 	
-	public function seek($pos = null) {
+	/**
+	 * Moves the pointer to the indicated position. If no argument is given, the 
+	 * application will return the current pointer position.
+	 * 
+	 * @param int $pos
+	 * @return int The old pointer position.
+	 */
+	public function seek(int$pos = null) {
 		$old = $this->pointer;
+		
 		if ($pos !== null) { $this->pointer = $pos; }
+		if ($pos < 0) { throw new BadMethodCallException('Seek cannot be negative', 2002191830); }
+		if (!isset($this->string[$pos])) { throw new BadMethodCallException('Seeked beyond the end of the string', 2002191834); }
+		
 		return $old;
 	}
 	
@@ -55,14 +92,42 @@ class StringBuffer
 		return $ret;
 	}
 	
-	public function readUntil($char) {
+	/**
+	 * 
+	 * 
+	 * @param string $char (single character)
+	 * @param string $escape (single character)
+	 * @return string
+	 * @throws OutOfBoundsException
+	 */
+	public function readUntil($char, $escape = null) {
 		$old = $this->pointer;
 		$cur = $this->pointer;
 		
-		while(isset($this->string[$this->pointer]) && $this->string[$this->pointer] != $char) {
-			$this->pointer++;
+		while(true) {
+			/*
+			 * The application is not allowed to read past the end. But this is not
+			 * considered normal behavior
+			 */
+			if (!isset($this->string[$cur])) { 
+				throw new OutOfBoundsException('Reached past the end'); 
+			} 
+			
+			if ($escape && $escape == $this->string[$cur]) {
+				$cur+= 2;
+				continue;
+			}
+			
+			/*
+			 * If the current element is the character we're looking for AND not prefixed
+			 * by our escape character
+			 */
+			if ($this->string[$cur] == $char) { 
+				break; 
+			}
+			
+			$cur++;
 		}
-		
 		
 		$ret = substr($this->string, $old, $cur - $old);
 		$this->pointer = $cur;

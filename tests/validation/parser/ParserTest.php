@@ -33,23 +33,59 @@ class ParserTest extends TestCase
 	
 	public function testParseLiteral() {
 		
+		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number) AND POST.something(required) AND GET.another(required email)';
+		
+		$p = new Parser();
+		$scope = new \spitfire\core\parser\Scope();
+		$scope->set('GET', ['input' => 'test', 'another' => 'test@test.com']);
+		$scope->set('POST', ['other' => 34, 'something' => '123']);
+		
+		$this->assertEquals(true, empty($p->parse($string)->resolve($scope)));
+			
+		
+	}
+	
+	public function testParseLegacyLiteral() {
+		
 		$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required email)';
 		
 		$p = new Parser();
-		$this->assertEquals(true, $p->parse($string)->setValue(['GET' => ['input' => 'test', 'another' => 'test@test.com'], 'POST' => ['other' => 34, 'something' => '123']])->isOk());
+		$scope = new \spitfire\core\parser\Scope();
+		$scope->set('GET', ['input' => 'test', 'another' => 'test@test.com']);
+		$scope->set('POST', ['other' => 34, 'something' => '123']);
+		
+		$this->assertEquals(true, empty($p->parse($string)->resolve($scope)));
 			
+		
+	}
+	
+	public function testValidExpressionWithInvalidData() {
+		
+		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number)';
+		
+		$p = new Parser();
+		$scope = new \spitfire\core\parser\Scope();
+		$scope->set('GET', ['input' => 'test']);
+		$scope->set('POST', ['other' => -34]);
+		
+		$result = $p->parse($string)->resolve($scope);
+		$this->assertEquals(false, empty($result));
+		$this->assertInstanceOf(\spitfire\validation\ValidationError::class, $result[0]);
 		
 	}
 	
 	public function testParseInvalidRule() {
 		
-		$string = 'GET#data(notactually[a rule])';
+		$string = 'GET#data(notactually["any", "rule"])';
 		
 		$p = new Parser();
 		
 		#Since the code cannot parse the string, it should fail.
+		$pl = $p->parse($string);
 		$this->expectException(\spitfire\exceptions\PrivateException::class);
-		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
+		$this->assertInstanceOf(\spitfire\core\parser\parser\ParseTree::class, $pl);
+		
+		$pl->resolve(new \spitfire\core\parser\Scope());
 			
 		
 	}
@@ -65,7 +101,7 @@ class ParserTest extends TestCase
 		$p = new Parser();
 		
 		$this->expectException(\spitfire\exceptions\PrivateException::class);
-		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
+		$p->parse($string);
 			
 	}
 	
@@ -78,8 +114,9 @@ class ParserTest extends TestCase
 		$string = 'GET#data(string) POST#test(number)';
 		
 		$p = new Parser();
+		
 		$this->expectException(\spitfire\exceptions\PrivateException::class);
-		$p->parse($string)->setValue(['GET' => [], 'POST' => []]);
+		$p->parse($string);
 		
 	}
 }

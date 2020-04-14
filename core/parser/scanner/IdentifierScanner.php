@@ -1,5 +1,9 @@
 <?php namespace spitfire\core\parser\scanner;
 
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\LexemeInterface;
+use spitfire\core\parser\StringBuffer;
+
 /* 
  * The MIT License
  *
@@ -24,11 +28,28 @@
  * THE SOFTWARE.
  */
 
+/**
+ * The identifier scanner allows applications to search for variable, function or
+ * class names within source code. The common restriction to these is that they
+ * must begin with a letter and be followed by either more letters, numbers or
+ * underscores.
+ * 
+ * While this potentially limits the functionality of our parser, it also greatly
+ * increases the speed with which we can create expression parsers which is ultimately
+ * the goal for this tool.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class IdentifierScanner implements ScannerModuleInterface
 {
 	
-
-	public function in(\spitfire\core\parser\StringBuffer $buffer): ?\spitfire\core\parser\lexemes\LexemeInterface {
+	/**
+	 * Reads from a string buffer, the string buffer is modified when being consumed.
+	 * 
+	 * @param StringBuffer $buffer
+	 * @return LexemeInterface|null
+	 */
+	public function in(StringBuffer $buffer): ?LexemeInterface {
 		
 		$next = $buffer->peek();
 		
@@ -43,7 +64,7 @@ class IdentifierScanner implements ScannerModuleInterface
 			$matched.= $buffer->read();
 		}
 		
-		return new \spitfire\core\parser\lexemes\Identifier($matched);
+		return new Identifier($matched);
 		
 	}
 

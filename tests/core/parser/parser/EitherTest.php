@@ -1,9 +1,11 @@
-<?php namespace spitfire\validation\parser;
+<?php namespace tests\spitfire\core\parser\parser;
+
+use PHPUnit\Framework\TestCase;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,44 +26,31 @@
  * THE SOFTWARE.
  */
 
-class ExpressionValidator extends \spitfire\validation\Validator
+class EitherTest extends TestCase
 {
-	private $src = 'GET';
 	
-	private $parameter;
-	
-	private $caption;
-	
-	public function __construct($parameter) {
-		$p = explode('#', $parameter);
+	public function testBasic() {
 		
-		if     (isset($p[2])) { list($this->src, $this->parameter, $this->caption) = $p; }
-		elseif (isset($p[1])) { list($this->src, $this->parameter) = $p; }
-		else              { $this->parameter = $p[0]; }
+		$hello = new \spitfire\core\parser\lexemes\ReservedWord('hello');
+		$world = new \spitfire\core\parser\lexemes\ReservedWord('world');
+		
+		$buffer1 = new \spitfire\core\parser\TokenBuffer([ $hello ]);
+		$buffer2 = new \spitfire\core\parser\TokenBuffer([ $world ]);
+		$buffer3 = new \spitfire\core\parser\TokenBuffer([ $hello, $world ]);
+		
+		$block = new \spitfire\core\parser\parser\Either([
+			[ new \spitfire\core\parser\parser\ReservedWordTerminal($hello)],
+			[ new \spitfire\core\parser\parser\ReservedWordTerminal($world)]
+		]);
+		
+		$r1 = $block->test($buffer1);
+		$r2 = $block->test($buffer2);
+		$r3 = $block->test($buffer3);
+		
+		$this->assertInstanceOf(\spitfire\core\parser\lexemes\ReservedWord::class, $r1[0]);
+		$this->assertInstanceOf(\spitfire\core\parser\lexemes\ReservedWord::class, $r2[0]);
+		$this->assertInstanceOf(\spitfire\core\parser\lexemes\ReservedWord::class, $r3[0]);
 		
 	}
 	
-	public function setValue($value) {
-		if (!isset($value[$this->src]) || !isset($value[$this->src][$this->parameter])) { 
-			parent::setValue(null);
-		}
-		else {
-			parent::setValue($value[$this->src][$this->parameter]);
-		}
-		
-		return $this;
-	}
-	
-	public function getMessages() {
-		$msgs = parent::getMessages();
-		
-		foreach ($msgs as $msg) {
-			if ($msg instanceof \spitfire\validation\ValidationError) {
-				$msg->setMessage(ucfirst($this->caption?: $this->parameter) . ': ' . $msg->getMessage());
-			}
-		}
-		
-		return $msgs;
-	}
-
 }

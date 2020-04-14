@@ -1,9 +1,18 @@
-<?php namespace spitfire\validation\parser\preprocessor;
+<?php namespace tests\spitfire\core\parser\parser;
+
+use PHPUnit\Framework\TestCase;
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\Literal;
+use spitfire\core\parser\lexemes\ReservedWord;
+use spitfire\core\parser\parser\Block;
+use spitfire\core\parser\parser\IdentifierTerminal;
+use spitfire\core\parser\parser\ParseTree;
+use spitfire\core\parser\TokenBuffer;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +33,22 @@
  * THE SOFTWARE.
  */
 
-class Result
+class IdentifierTerminalTest extends TestCase
 {
 	
-	private $module;
-	
-	private $parent;
-	
-	private $elements = [];
-	
-	public function __construct($module, $parent) {
-		$this->module = $module;
-		$this->parent = $parent;
+	public function testParsing() {
+		$buff1 = new TokenBuffer([new Identifier('test')]);
+		$buff2 = new TokenBuffer([new ReservedWord('test')]);
+		$buff3 = new TokenBuffer([new Literal('test')]);
+		
+		$terminal = new IdentifierTerminal();
+		
+		$block = new Block();
+		$block->matches($terminal);
+		
+		$this->assertInstanceOf(ParseTree::class, $block->test($buff1));
+		$this->assertEquals(false, $block->test($buff2));
+		$this->assertEquals(false, $block->test($buff3));
 	}
 	
-	public function append($element) {
-		$this->elements[] = $element;
-	}
-	
-	public function getModule() {
-		return $this->module;
-	}
-	
-	public function getParent() {
-		return $this->parent;
-	}
-	
-	public function end() {
-		return $this->module->process($this->elements);
-	}
-
-	public function getElements() {
-		return $this->elements;
-	}
-
 }

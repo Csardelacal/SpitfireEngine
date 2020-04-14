@@ -1,15 +1,9 @@
-<?php namespace spitfire\core\parser\scanner;
-
-use spitfire\core\parser\lexemes\LexemeInterface;
-use spitfire\core\parser\lexemes\Literal;
-use spitfire\core\parser\scanner\ScannerModuleInterface;
-use spitfire\core\parser\StringBuffer;
-use spitfire\exceptions\PrivateException;
+<?php namespace spitfire\core\parser;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,43 +24,46 @@ use spitfire\exceptions\PrivateException;
  * THE SOFTWARE.
  */
 
-
-class IntegerLiteralScanner implements ScannerModuleInterface
+class TokenBuffer
 {
 	
+	private $tokens;
+	private $cursor;
 	
-	private $body = null;
+	public function __construct($tokens) {
+		$this->tokens = $tokens;
+		$this->cursor = 0;
+	}
 	
-
-	public function setBody($body): Literal {
-		$this->body = $body;
+	public function fastforward($amt = 1) {
+		$this->cursor+= $amt;
 		return $this;
 	}
-
-	public function getBody(): string {
-		return $this->body;
+	
+	public function seek($pos = null) {
+		$old = $this->cursor;
+		if ($pos !== null) { $this->cursor = $pos; }
+		return $old;
 	}
-
-	public function in(StringBuffer $buffer): ?LexemeInterface {
+	
+	
+	public function peek($offset = 0) {
 		
-		$next = $buffer->peek();
-		$matched = '';
-		
-		/*
-		 * If the first character is indeed a character, we will continue
-		 */
-		if (!preg_match('/[0-9\.]/i', $next)) { return null; }
-		
-		while (preg_match('/[0-9\.]/', $buffer->peek())) {
-			$matched.= $buffer->read();
+		if (!array_key_exists($this->cursor + $offset, $this->tokens)) {
+			return null;
 		}
 		
-		if (preg_match('/[\p{L}]/i', $buffer->peek())) { 
-			throw new PrivateException('Parse error', 2002251955);
+		return $this->tokens[$this->cursor + $offset];
+	}
+	
+	public function read() {
+		
+		if (!array_key_exists($this->cursor, $this->tokens)) {
+			return null;
 		}
 		
-		return new Literal($matched);
-		
+		$_ret = $this->tokens[$this->cursor];
+		$this->cursor++;
+		return $_ret;
 	}
-
 }

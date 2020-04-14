@@ -1,12 +1,17 @@
 <?php namespace tests\spitfire\core\parser;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\Literal as Literal2;
 use spitfire\core\parser\lexemes\ReservedWord;
 use spitfire\core\parser\lexemes\Symbol;
 use spitfire\core\parser\Lexer;
+use spitfire\core\parser\Literal;
 use spitfire\core\parser\parser\Block;
 use spitfire\core\parser\parser\IdentifierTerminal;
 use spitfire\core\parser\parser\LiteralTerminal;
+use spitfire\core\parser\parser\Parser;
 use spitfire\core\parser\parser\ParseTree;
 use spitfire\core\parser\printer\Printer;
 use spitfire\core\parser\scanner\IdentifierScanner;
@@ -14,9 +19,9 @@ use spitfire\core\parser\scanner\IntegerLiteralScanner;
 use spitfire\core\parser\scanner\LiteralScanner;
 use spitfire\core\parser\scanner\WhiteSpaceScanner;
 use spitfire\core\parser\Scope;
-use spitfire\core\parser\parser\Parser;
-
-use Exception;
+use spitfire\exceptions\PrivateException;
+use function collect;
+use function console;
 
 /* 
  * The MIT License
@@ -42,7 +47,7 @@ use Exception;
  * THE SOFTWARE.
  */
 
-class ParserTest extends TestCase
+class Parser3Test extends TestCase
 {
 	
 	
@@ -86,9 +91,8 @@ class ParserTest extends TestCase
 		$lex = new Lexer($and, $or, $lit, $pop, $pcl, $com, $dot, $whs, $bop, $bcl, $ids, $int, $ran);
 		
 		
-		$string = '(GET.input(string length[10, 24] not["detail"]) OR POST.other(positive number)) AND POST.test(file) OR t.s(something) AND t.i(s else["else"])';
+		$string = 'GET.input(string length[5, 24] not["detail"]) OR POST.other(positive number)';
 		$parser = new Parser($statement);
-		
 		
 		$statement->does(function ($leaf, $scope) {
 			$leafs = $leaf->getLeafs();
@@ -167,13 +171,13 @@ class ParserTest extends TestCase
 				'length' => function ($args = []) { return function ($payload) use ($args) { return strlen($payload) > $args[0] && strlen($payload) < $args[1] ; }; }
 			];
 			
-			return collect($leaf->getLeafs()[0])->each(function ($e) use ($fns, $scope) {
+			$_ret = collect($leaf->getLeafs()[0])->each(function ($e) use ($fns, $scope) {
 				list($argument, $options) = $e;
-				
 				$params = $options? collect($options)->each(function ($e) use ($scope) { return $e->resolve($scope); })->toArray() : [[]];
 				return $fns[$argument->getBody()]($params[0]);
-				
 			})->toArray();
+			
+			return $_ret;
 		});
 		
 		$options->does(function ($leaf, $scope) {
@@ -181,6 +185,8 @@ class ParserTest extends TestCase
 			
 			$clean = [$raw[1]->getBody()];
 			$modifiers = $raw[2];
+			
+			//$options->matches($bop, new LiteralTerminal(), Block::optional(Block::multiple($com, new LiteralTerminal())), $bcl);
 			
 			if (!empty($modifiers)) {
 				foreach ($modifiers[0] as $modifier) {
@@ -202,10 +208,19 @@ class ParserTest extends TestCase
 		 */
 		$scope = new Scope();
 		$scope->set('GET', ['input' => 'testtesttest']);
-		$scope->set('POST', []);
-		$scope->set('t', ['s' => 'something']);
+		$scope->set('POST', ['other' => -35]);
 		
-		$res->resolve($scope);
+		$scope2 = new Scope();
+		$scope2->set('GET', ['input' => 'detail']);
+		$scope2->set('POST', ['other' => -35]);
+		
+		$scope3 = new Scope();
+		$scope3->set('GET', ['input' => 'detail']);
+		$scope3->set('POST', ['other' => 35]);
+		
+		$this->assertEquals(true, $res->resolve($scope));
+		$this->assertEquals(false, $res->resolve($scope2));
+		$this->assertEquals(true, $res->resolve($scope3));
 	}/**/
 	
 }

@@ -52,51 +52,34 @@ class LiteralScanner implements ScannerModuleInterface
 		}
 		
 		$pos  = $buffer->seek();
-		$_ret = '';
-		$esc  = false;
 		
-		/*
-		 * Skip the first character. We know it's the opening character
-		 */
-		$buffer->read();
-		
-		while(false !== $next = $buffer->read()) {
+		try {
+			/*
+			 * Read the first character from thee sequence, we already know that it's 
+			 * the appropriate character
+			 */
+			$buffer->read();
+			$_ret = new Literal(stripslashes($buffer->readUntil($this->close, '\\')));
 			
 			/*
-			 * Obviously, if the next character is a closing character, and the character
-			 * has not been escaped, we return the result.
+			 * The buffer doesn't consume the closing character when reading up to the 
+			 * indicated character. We need to fetch it from the buffer
 			 */
-			if ($next == $this->close && !$esc) {
-				return new Literal($_ret);
-			}
+			$buffer->read();
+			return $_ret;
+		} 
+		catch (\spitfire\exceptions\OutOfBoundsException$ex) {
+			/*
+			 * Place the buffer back to it's original position
+			 */
+			$buffer->seek($pos);
 			
 			/*
-			 * If the next character is an escape character, we remember it for the 
-			 * next run - obviously, if it's an escaped escape character, we don't
+			 * If the buffer is empty and we did not receive a return, then the string
+			 * is invalid.
 			 */
-			if ($next == '\\' && !$esc) {
-				$esc = true;
-			}
-			elseif ($next == '\\') {
-				$esc = false;
-				$_ret.= $next;
-			}
-			else {
-				$_ret.= ($esc? '\\' : '') . $next;
-				$esc = false;
-			}
+			return null;
 		}
-		
-		/*
-		 * Place the buffer back to it's original position
-		 */
-		$buffer->seek($pos);
-		
-		/*
-		 * If the buffer is empty and we did not receive a return, then the string
-		 * is invalid.
-		 */
-		return null;
 		
 	}
 

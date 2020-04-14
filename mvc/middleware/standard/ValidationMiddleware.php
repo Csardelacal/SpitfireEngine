@@ -52,18 +52,21 @@ class ValidationMiddleware implements MiddlewareInterface
 				$expression = substr($expression, 2);
 				$throw      = false;
 			}
+		
+			/*
+			 * Create a context with the variables that we want to have within the 
+			 * expression's scope.
+			 */
+			$scope = new Scope();
+			$scope->set('GET', $_GET);
+			$scope->set('POST', $_POST);
+			$scope->set('ARGV', $context instanceof ContextCLI? $context->parameters : $context->object);
+		
+			$result = $parser->parse($expression)->resolve($scope);
 			
-			$data = [
-				'GET'  => $_GET->getRaw(), 
-				'POST' => $_POST, 
-				'OBJ'  => $context instanceof ContextCLI? $context->parameters : $context->object
-			];
-			
-			$validator = $parser->parse($expression)->setValue($data);
-			
-			if (!$validator->isOk()) {
+			if (!$result) {
 				if ($throw) { throw new PublicException('Validation failed', 400); }
-				$context->validation->add($validator->getMessages());
+				$context->validation->add('$validator->getMessages()');
 			}
 		}
 	}

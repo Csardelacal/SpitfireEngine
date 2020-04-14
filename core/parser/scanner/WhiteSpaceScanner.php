@@ -33,8 +33,9 @@ class WhiteSpaceScanner implements ScannerModuleInterface
 {
 
 	public function in(StringBuffer $buffer): ?LexemeInterface {
+		$match = [' ', PHP_EOL, "\r", "\t"];
 		
-		if ($buffer->peek(1) == ' ') {
+		if (in_array($buffer->peek(1), $match)) {
 			$buffer->fastforward();
 			return new WhiteSpace();
 		}

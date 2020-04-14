@@ -1,9 +1,18 @@
-<?php namespace spitfire\validation\parser;
+<?php namespace tests\spitfire\core\parser\parser;
+
+use PHPUnit\Framework\TestCase;
+use spitfire\core\parser\lexemes\Identifier;
+use spitfire\core\parser\lexemes\Literal;
+use spitfire\core\parser\lexemes\ReservedWord;
+use spitfire\core\parser\parser\Block;
+use spitfire\core\parser\parser\LiteralTerminal;
+use spitfire\core\parser\parser\ParseTree;
+use spitfire\core\parser\TokenBuffer;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +33,26 @@
  * THE SOFTWARE.
  */
 
-/**
- * Within a parser, the options are the parameters provided to a validator's
- * parameters. Making them, kind of, second level parameters.
- * 
- * For example, when a validator is defined as a GET#input(string length[10]),
- * the options provided are that the string must be, at least, 10 characters
- * long.
- * 
- * @author César de la Cal Bretschneider <cesar@magic3w.com>
- */
-class Options
+class LiteralTerminalTest extends TestCase
 {
 	
-	private $items;
-	
-	public function __construct($items) {
-		$this->items = collect($items)
-			->each(function ($e) { return $e instanceof Token? $e->getContent() : preg_split('/\,|\s/', $e); })
-			->flatten()
-			->filter();
+	public function testParsing() {
+		$buff1 = new TokenBuffer([new Identifier('test')]);
+		$buff2 = new TokenBuffer([new ReservedWord('test')]);
+		$buff3 = new TokenBuffer([new Literal('test')]);
+		
+		$terminal = new LiteralTerminal();
+		
+		$block = new Block();
+		$block->matches($terminal);
+		
+		$res3 = $block->test($buff3);
+		
+		$this->assertEquals(false, $block->test($buff1));
+		$this->assertEquals(false, $block->test($buff2));
+		$this->assertInstanceOf(ParseTree::class, $res3);
+		
+		$this->assertEquals('test', $res3->getLeafs()[0]->getBody());
 	}
 	
-	public function getItems() {
-		return $this->items->toArray();
-	}
-	
-	public function __toString() {
-		return sprintf('[%s]', $this->items->join(', '));
-	}
-
 }
