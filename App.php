@@ -43,6 +43,10 @@ abstract class App
 		$this->controllerLocator = new ControllerLocator($this->mapping);
 	}
 	
+	/**
+	 * 
+	 * @return NamespaceMapping
+	 */
 	public function getMapping() {
 		return $this->mapping;
 	}
@@ -107,7 +111,20 @@ abstract class App
 	}
 	
 	abstract public function enable();
-	abstract public function getAssetsDirectory();
+	
+	/**
+	 * Allows spitfire to list all the assets for this app during installation.
+	 * 
+	 * My second choice would have been giving the application control over where
+	 * the assets are to be located. But since the app later will have no control
+	 * over the fetching of the assets, it makes sense that Spitfire builds the
+	 * assets from a list.
+	 * 
+	 * @return \spitfire\core\app\AppAssetsInterface
+	 */
+	public function assets() : core\app\AppAssetsInterface {
+		return new core\app\RecursiveAppAssetLocator($this->mapping->getBaseDir() . '/assets');
+	}
 	
 	/**
 	 * 
@@ -115,6 +132,7 @@ abstract class App
 	 * @return string
 	 */
 	public function getNameSpace() {
+		trigger_error('Deprecated getNameSpace was invoked', E_USER_DEPRECATED);
 		return $this->mapping->getNameSpace();
 	}
 

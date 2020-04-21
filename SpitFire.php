@@ -93,10 +93,13 @@ class SpitFire extends App
 	}
 	
 	public function findAppForClass($name) {
-		if (empty($this->apps)) return $this;
+		if (empty($this->apps)) {
+			return $this;
+		}
 		
+		/*@var $app \spitfire\App*/
 		foreach($this->apps as $app) {
-			if (Strings::startsWith($name, $app->getNameSpace())) {
+			if (Strings::startsWith($name, $app->getMapping()->getNameSpace())) {
 				return $app;
 			}
 		}
@@ -148,19 +151,6 @@ class SpitFire extends App
 	 */
 	public function getCWD() {
 		return basedir();
-	}
-
-	/**
-	 * Returns the directory the assets are located in. This function should be 
-	 * avoided in favor of the ASSET_DIRECTORY constant.
-	 * 
-	 * Please note that the fact that this function provides a bit more flexibility
-	 * than a constant would also allow users to create erratic patterns.
-	 * 
-	 * @deprecated since version 0.1-dev 20150423
-	 */
-	public function getAssetsDirectory() {
-		return ASSET_DIRECTORY;
 	}
 
 	public function enable() {

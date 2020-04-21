@@ -111,7 +111,7 @@ use spitfire\core\router\Pattern;
 		 #If the App is actually an App and the user didn't read the doc, we will
 		 #forgive him.
 		 if ($app instanceof App) {
-			 $app = $app->getNameSpace();
+			 $app = $app->getMapping()->getNameSpace();
 		 }
 		 $this->app = $app;
 		 return $this;

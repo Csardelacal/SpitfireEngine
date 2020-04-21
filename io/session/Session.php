@@ -56,7 +56,7 @@ class Session
 	public function set($key, $value, $app = null) {
 		if ($app === null) {$app = current_context()->app;}
 		/* @var $app App */
-		$namespace = ($app->getNameSpace())? $app->getNameSpace() : '*';
+		$namespace = ($app->getMapping()->getNameSpace())? $app->getMapping()->getNameSpace() : '*';
 
 		if (!self::sessionId()) { $this->start(); }
 		$_SESSION[$namespace][$key] = $value;
@@ -65,7 +65,8 @@ class Session
 
 	public function get($key, $app = null) {
 		if ($app === null) {$app = current_context()->app;}
-		$namespace = $app && $app->getNameSpace()? $app->getNameSpace() : '*';
+		/* @var $app App */
+		$namespace = $app && $app->getMapping()->getNameSpace()? $app->getMapping()->getNameSpace() : '*';
 
 		if (!isset($_COOKIE[session_name()])) { return null; }
 		if (!self::sessionId()) { $this->start(); }
