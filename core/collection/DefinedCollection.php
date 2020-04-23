@@ -316,6 +316,11 @@ class DefinedCollection implements ArrayAccess, CollectionInterface
 		return array_shift($this->items);
 	}
 	
+	public function slice($start, $size = false) {
+		if ($size) { return new Collection(array_slice($this->items, $start, $size)); }
+		else       { return new Collection(array_slice($this->items, $start)); }
+	}
+	
 	/**
 	 * Indicates whether the current element in the Iterator is valid. To achieve
 	 * this we use the key() function in PHP which will return the key the array
