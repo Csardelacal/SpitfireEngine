@@ -4,7 +4,6 @@ use spitfire\App;
 use spitfire\core\Collection;
 use spitfire\core\ContextInterface;
 use spitfire\core\Environment;
-use spitfire\core\event\PublisherTree;
 use spitfire\core\http\URL;
 use spitfire\exceptions\ExceptionHandler;
 use spitfire\exceptions\ExceptionHandlerCLI;
@@ -33,7 +32,7 @@ use spitfire\validation\ValidatorInterface;
  * to make it easier to read and maintain the code being created.
  * 
  * @staticvar type $sf
- * @return SpitFire
+ * @return \spitfire\SpitFire
  */
 function spitfire() {
 	static $sf = null;
@@ -398,4 +397,22 @@ function lock($set = null) {
 
 function basedir() {
 	return BASEDIR;
+}
+
+function asset($name, $app = null) {
+	if ($app === null) { $app = current_context()->app; }
+	
+	$path = pathinfo($name, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . pathinfo($name, PATHINFO_FILENAME);
+	$extension = pathinfo($name, PATHINFO_EXTENSION);
+	
+	$preprocessor = Environment::get('assets.preprocessors.' . $extension);
+	if ($preprocessor) { $extension = (new $preprocessor())->extension(); }
+	
+	return '/' . implode('/', array_filter([ 
+			trim(SpitFire::baseUrl(), '/'),
+			trim(Environment::get('assets.directory.deploy'), '/'),
+			trim($app->getMapping()->getURISpace()?? '', '/'),
+			trim($path . '.' . $extension, '/')
+		])
+	);
 }

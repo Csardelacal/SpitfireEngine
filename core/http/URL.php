@@ -160,16 +160,27 @@ class URL
 	/**
 	 * @param string   $asset_name
 	 * @param SpitFire $app
-	 *
+	 * 
+	 * @todo The idea of apps needs to be revisited for this to work properly. I'm
+	 * currently partial to the idea of making applications within spitfire provide
+	 * their custom mechanism to create asset URLs. At this point, Apps are not working
+	 * properly, so the mechanism is secondary.
+	 * 
+	 * @deprecated since version 0.1-20200428
 	 * @return string
 	 */
 	public static function asset($asset_name, $app = null) {
+		/*
+		 * Determine where the asset directory is placed.
+		 */
+		$dir = rtrim(\spitfire\core\Environment::get('assets.directory.deploy')? : '/assets/src', '/') . '/';
+		
 		#If there is no app defined we can use the default directory
 		#Otherwise use the App specific directory
-		$fpath = (!isset($app) ? ASSET_DIRECTORY : '/assets/').$asset_name;
-		$modifiedAt = filemtime($fpath);
-		$fpath .= "?$modifiedAt";
-		return SpitFire::baseUrl() . '/assets/' . $asset_name;
+		$path = $dir . $asset_name;
+		$modified = filemtime($path);
+		
+		return SpitFire::baseUrl() . $path . '?' . $modified;
 	}
 	
 	public static function make($url) {

@@ -174,5 +174,9 @@ class SpitFire extends App
 	public function getRequest() {
 		return $this->request;
 	}
+	
+	public function assets() : core\app\AppAssetsInterface {
+		return new core\app\RecursiveAppAssetLocator($this->getCWD() . '/assets/src/');
+	}
 
 }

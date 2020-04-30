@@ -1,9 +1,11 @@
-<?php namespace spitfire\io\cli\arguments;
+<?php namespace spitfire\utils;
+
+use spitfire\mvc\Director;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +26,34 @@
  * THE SOFTWARE.
  */
 
-class CLIParameters
+class DatabaseDirector extends Director
 {
 	
-	private $params;
-	
-	public function __construct($params) {
-		$this->params = $params;
-	}
-	
-	public function redirect($from, $to) {
+	public function init() {
 		
-		if (isset($this->params[$from]) && !isset($this->params[$to])) {
-			$this->params[$to] = $this->params[$from];
-			unset($this->params[$from]);
-		}
-		elseif (isset($this->params[$from]) && !isset($this->params[$to])) {
-			throw new PrivateException('Redirection collission', 1805291301);
-		}
-	}
-	
-	public function get($name) {
-		return isset($this->params[$name])? $this->params[$name] : false;
-	}
-	
-	public function defined($name) {
-		return array_key_exists($name, $this->params);
+		$db = db();
+		$dir = basedir() . '/bin/models/';
+		
+		$walk = function ($dir, $namespace) use (&$walk, $db) {
+			/*
+			 * 
+			 */
+			$scripts = glob($dir . '*.php');
+			
+			foreach ($scripts as $file) {
+				console()->info($file)->ln();
+				$table = $db->table($namespace . '\\' . explode('.', basename($file))[0]);
+				console()->success($table)->ln();
+			}
+			
+			$folders = glob($dir . '*', GLOB_ONLYDIR);
+			
+			foreach ($folders as $folder) {
+				$walk($dir . basename($folder) . '/', $namespace . '\\' . basename($folder));
+			}
+		};
+		
+		$walk($dir, '');
 	}
 	
 }

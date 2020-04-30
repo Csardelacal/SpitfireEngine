@@ -31,4 +31,4 @@ include './bootstrap.php';
 ini_set('memory_limit', '4G');/**/
 
 /* Call the selected controller with the selected method. */
-spitfire()->fire();
+exit(spitfire()->fire());

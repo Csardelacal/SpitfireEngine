@@ -62,7 +62,7 @@ class ContextCLI implements ContextInterface
 		$context->middleware = new MiddlewareStack($context);
 		
 		if (!class_exists($director)) {
-			throw new PublicException('Invalid director');
+			throw new PublicException('Invalid director : ' . $director);
 		}
 		
 		$name     = $director;

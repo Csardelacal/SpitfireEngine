@@ -46,6 +46,14 @@ class Environment
 		#Directory settings
 		'cachefile.directory'     => 'app://bin/usr/cache/',
 		'uploads.directory'       => 'app://bin/usr/uploads/',
+		'sessions.directory'      => 'app://bin/usr/sessions/',
+		 
+		#Asset preprocessors
+		'assets.preprocessors.scss' => '\spitfire\io\asset\SassPreprocessor',
+		'assets.preprocessors.js'   => '\spitfire\io\asset\JSPreprocessor',
+		'assets.preprocessors.png'  => '\spitfire\io\asset\PNGPreprocessor',
+		'assets.preprocessors.jpg'  => '\spitfire\io\asset\JPEGPreprocessor',
+		'assets.preprocessors.jpeg' => '\spitfire\io\asset\JPEGPreprocessor',
 	    
 		#Timezone settings
 		'timezone'                 => 'Europe/Berlin',
@@ -79,6 +87,10 @@ class Environment
 	public function __construct($env_name) {
 		self::$envs[$env_name] = $this;
 		self::$active_environment = $this;
+	}
+	
+	public function keys() {
+		return array_keys($this->settings);
 	}
 	
 	/**
@@ -116,6 +128,7 @@ class Environment
 	 * active environment.
 	 * 
 	 * @param string $key The key to be returned.
+	 * @return string|Environment
 	 */
 	public static function get($key = null) {
 		#If no key was set we're expecting the system to return the active environment

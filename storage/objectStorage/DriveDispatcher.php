@@ -46,7 +46,7 @@ class DriveDispatcher
 	 * Registers a drive with the dispatcher. Once your drive is registered, you
 	 * can use it normally.
 	 * 
-	 * @param DriveInterface|string $drive
+	 * @param \spitfire\storage\drive\MountPoint|string $drive
 	 */
 	public function unregister($drive) {
 		if ($drive instanceof DriveInterface) {
@@ -134,6 +134,10 @@ class DriveDispatcher
 		
 		throw new PrivateException($location . ' is not a directory', 1808261641);
 		
+	}
+	
+	public function all() {
+		return $this->drives;
 	}
 	
 }

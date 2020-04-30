@@ -1,9 +1,9 @@
-<?php namespace spitfire\io\cli\arguments;
+<?php namespace spitfire\io\asset;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,29 @@
  * THE SOFTWARE.
  */
 
-class CLIParameters
+/**
+ * An asset preprocessor will be invoked whenever Spitfire is constructing 
+ * assets for the application. Asset preprocessors can be added from the environments
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
+interface AssetPreprocessorInterface
 {
 	
-	private $params;
+	/**
+	 * Constructs an asset and writes it to the output file. Spitfire will programmatically
+	 * decide the output file.
+	 * 
+	 * @param string $input
+	 * @param string $output
+	 */
+	public function build($input, $output);
 	
-	public function __construct($params) {
-		$this->params = $params;
-	}
+	/**
+	 * This endpoint allows the asset preprocessor to report itself as unavailable.
+	 * If this happens, the preprocessor will be ignored.
+	 */
+	public function available();
 	
-	public function redirect($from, $to) {
-		
-		if (isset($this->params[$from]) && !isset($this->params[$to])) {
-			$this->params[$to] = $this->params[$from];
-			unset($this->params[$from]);
-		}
-		elseif (isset($this->params[$from]) && !isset($this->params[$to])) {
-			throw new PrivateException('Redirection collission', 1805291301);
-		}
-	}
-	
-	public function get($name) {
-		return isset($this->params[$name])? $this->params[$name] : false;
-	}
-	
-	public function defined($name) {
-		return array_key_exists($name, $this->params);
-	}
-	
+	public function extension($original);
 }

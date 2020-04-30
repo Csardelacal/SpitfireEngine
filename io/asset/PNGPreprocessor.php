@@ -1,9 +1,8 @@
-<?php namespace spitfire\io\cli\arguments;
-
+<?php namespace spitfire\io\asset;
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +23,19 @@
  * THE SOFTWARE.
  */
 
-class CLIParameters
+class PNGPreprocessor implements AssetPreprocessorInterface
 {
 	
-	private $params;
-	
-	public function __construct($params) {
-		$this->params = $params;
+	public function available() {
+		return true;
 	}
-	
-	public function redirect($from, $to) {
-		
-		if (isset($this->params[$from]) && !isset($this->params[$to])) {
-			$this->params[$to] = $this->params[$from];
-			unset($this->params[$from]);
-		}
-		elseif (isset($this->params[$from]) && !isset($this->params[$to])) {
-			throw new PrivateException('Redirection collission', 1805291301);
-		}
+
+	public function build($input, $output) {
+		\spitfire\io\image\PNGQuant::compress($input, $output);
 	}
-	
-	public function get($name) {
-		return isset($this->params[$name])? $this->params[$name] : false;
+
+	public function extension($original) {
+		return 'png';
 	}
-	
-	public function defined($name) {
-		return array_key_exists($name, $this->params);
-	}
-	
+
 }

@@ -1,9 +1,12 @@
-<?php namespace spitfire\io\cli\arguments;
+<?php namespace spitfire\utils;
+
+use spitfire\core\Environment;
+use spitfire\mvc\Director;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +27,48 @@
  * THE SOFTWARE.
  */
 
-class CLIParameters
+class EnvironmentDirector extends Director
 {
 	
-	private $params;
-	
-	public function __construct($params) {
-		$this->params = $params;
-	}
-	
-	public function redirect($from, $to) {
+	public function set($set, $value) {
+		$env = Environment::get();
+		$keys = $env->keys();
 		
-		if (isset($this->params[$from]) && !isset($this->params[$to])) {
-			$this->params[$to] = $this->params[$from];
-			unset($this->params[$from]);
+		echo '<?php', PHP_EOL;
+		echo PHP_EOL;
+		echo '$e = new ' . Environment::class . '("deploy");', PHP_EOL;
+		echo PHP_EOL;
+		
+		foreach ($keys as $key) {
+			if ($key === $set) { $val = $value; }
+			else { $val = $env->get($key); }
+			
+			if (is_array($val)) {
+				$str = implode(', ', array_map(function ($e) { return "'". addslashes($e) . "'"; }, $val));
+				echo sprintf('$e->set(\'%s\', [%s]);', addslashes($key), $str);
+			}
+			else {
+				echo sprintf('$e->set(\'%s\', \'%s\');', addslashes($key), addslashes($val));
+			}
+			
+			echo PHP_EOL;
 		}
-		elseif (isset($this->params[$from]) && !isset($this->params[$to])) {
-			throw new PrivateException('Redirection collission', 1805291301);
+		
+		if (!in_array($set, $keys)) {
+			echo sprintf('$e->set(\'%s\', \'%s\');', addslashes($set), addslashes($value));
+			echo PHP_EOL;
 		}
+		
+		echo PHP_EOL;
+		
 	}
 	
-	public function get($name) {
-		return isset($this->params[$name])? $this->params[$name] : false;
+	public function get($key) {
+		echo Environment::get($key);
 	}
 	
-	public function defined($name) {
-		return array_key_exists($name, $this->params);
+	public function dump() {
+		$env = Environment::get();
+		var_dump($env);
 	}
-	
 }
