@@ -68,18 +68,44 @@ class Strings
 		else                                     return $string;
 	}
 	
-	
+	/**
+	 * 
+	 * @deprecated since version 0.1
+	 * @param type $str
+	 * @return type
+	 */
 	public static function strToHTML($str) {
-		$urlRegex = '#(http|https)://([a-zA-z0-9%&?/.\-_=+;@]+)#';
+		return Strings::urls(Strings::escape($str));
+	}
+	
+	public static function urls($str, $cb = null) {
+		$urlRegex = '#(http|https)://([a-zA-z0-9%&?/.\-_=+;@\#]+)#';
 		
 		#Isolate URL with spaces. We add a space after, and before a URL to prevent bogus
 		$isolated = preg_replace($urlRegex, ' $1://$2 ', $str);
 		
-		return preg_replace_callback($urlRegex, function($e) {
+		return preg_replace_callback($urlRegex, $cb?: function($e) {
 			$url = $e[0];
-			$pretty = (strlen($e[2]) > 27)? substr($e[2], 0, 15) . '...' . substr($e[2], -10): $e[2];
-			return sprintf('<a href="%s">%s</a>', $url, $pretty);
-		}, htmlentities($isolated));
+			return sprintf('<a href="%s">%s</a>', $url, $url);
+		}, $isolated);
+	}
+	
+	public static function quote($str) {
+		return str_replace(['\'', '"'], ['&#039;', '&quot;'], $str);
+	}
+	
+	/**
+	 * This method allows your application to safely print HTML to the output buffer
+	 * without having to worry about potential HTML injections.
+	 * 
+	 * Please note though, that this method does not protect your application from
+	 * executing javascript if the output is used in the wrong location.
+	 * 
+	 * @param type $str
+	 * @return type
+	 */
+	public static function escape($str) {
+		return htmlentities($str, ENT_HTML5);
 	}
 	
 	/**

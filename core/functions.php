@@ -91,6 +91,44 @@ function db(Settings$options = null) {
 	return $driver;
 }
 
+/**
+ * Escapes quotes from HTML. This will replace both ' and " with &#039; and &quot; 
+ * respectively. This does not escape the other HTML entities, for that refer to
+ * _e();
+ * 
+ * Usually you should use this function like _q(_e($str));
+ * 
+ * @param type $str
+ * @return type
+ */
+function _q($str) {
+	return Strings::quote($str);
+}
+
+/**
+ * Escapes the HTML from a string. This function will not escape the quotes, please
+ * refer to the _q wrapper for that.
+ * 
+ * @see _q()
+ * @param string $str
+ * @return string
+ */
+function _e($str) {
+	return Strings::escape($str);
+}
+
+/**
+ * Helper to convert URLs in text to actual links. By default, the application will
+ * translate the URL to a pure HTML link, but you can pass a callable to the system
+ * to change the output.
+ * 
+ * @param string $str
+ * @param Closure|callable $cb
+ * @return string
+ */
+function _u($str, $cb = null) {
+	return Strings::urls($str, $cb);
+}
 
 /**
  * Returns HTML escaped string and if desired it adds ellipsis. If the string is
@@ -102,13 +140,7 @@ function db(Settings$options = null) {
  */
 function __($str, $maxlength = false) {
 	if ($maxlength) { $str = Strings::ellipsis ($str, $maxlength); }
-	
-	if (defined('ENT_HTML5')) 
-		{ $str = htmlspecialchars($str, ENT_HTML5, Environment::get('system_encoding')); }
-	else
-		{ $str = htmlspecialchars($str, ENT_COMPAT, Environment::get('system_encoding')); }
-	
-	return $str;
+	return _u(_e($str));
 }
 
 /**

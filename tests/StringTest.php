@@ -46,4 +46,23 @@ class StringTest extends TestCase
 		$this->assertEquals('someString', Strings::underscores2camel('some_string', false));
 	}
 	
+	/**
+	 * Tests whether the escape method properly removes unsafe HTML
+	 * 
+	 * @covers \Strings::escape
+	 */
+	public function testEscape() {
+		$this->assertEquals('&lt;strong', \Strings::escape('<strong'));
+	}
+	
+	/**
+	 * For HTML tags, we need the system to quote the content too.
+	 * 
+	 * @covers \Strings::quote
+	 */
+	public function testQuote() {
+		$this->assertEquals('&quot;strong', \Strings::quote('"strong'));
+		$this->assertEquals('&#039;strong', \Strings::quote('\'strong'));
+	}
+	
 }
