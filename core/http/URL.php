@@ -1,6 +1,5 @@
 <?php namespace spitfire\core\http;
 
-use ReflectionClass;
 use spitfire\core\Path;
 use spitfire\core\router\Route;
 use spitfire\core\router\Router;

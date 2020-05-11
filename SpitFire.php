@@ -87,6 +87,10 @@ class SpitFire extends App
 		$this->apps[$namespace] = $app;
 	}
 	
+	public function apps() {
+		return $this->apps;
+	}
+	
 	public function appExists($namespace) {
 		if (!is_string($namespace)) { return false; }
 		return isset($this->apps[$namespace]);
@@ -117,6 +121,8 @@ class SpitFire extends App
 	
 	public static function baseUrl(){
 		if (Environment::get('base_url')) { return Environment::get('base_url'); }
+		if (php_sapi_name() === 'cli')    { return '/'; }
+		
 		list($base_url) = explode('/index.php', $_SERVER['PHP_SELF'], 2);
 		return $base_url;
 	}

@@ -41,6 +41,10 @@ class SpitFireCLI extends SpitFire
 		#Import the apps
 		include CONFIG_DIRECTORY . 'apps.php';
 		
+		#Every app now gets the chance to create appropriate routes for it's operation
+		foreach ($this->apps() as $app) { $app->createRoutes(); }
+		$this->createRoutes();
+		
 		#Get the parameters from the command line interface
 		$parser = new Parser();
 		$args   = $parser->read($_SERVER['argv']);
