@@ -61,6 +61,14 @@ abstract class App
 	
 	/**
 	 * 
+	 * @return io\template\TemplateLocatorInterface
+	 */
+	public function getTemplateLocator() : io\template\TemplateLocatorInterface {
+		return new io\template\SpitfireTemplateLocator($this->mapping->getBaseDir());
+	}
+	
+	/**
+	 * 
 	 * @deprecated since version 0.1-dev 20190527
 	 * @return string
 	 */

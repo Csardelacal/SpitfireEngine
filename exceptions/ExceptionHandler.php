@@ -45,33 +45,10 @@ class ExceptionHandler {
 		while(ob_get_clean()); //The content generated till now is not valid. DESTROY. DESTROY!
 
 		$response  = new Response(null);
-		$basedir   = spitfire()->getCWD();
+		$app       = current_context()->app;
 		$extension = Request::get()->getPath()->getFormat()? '.' . Request::get()->getPath()->getFormat() : '';
 
-		$reflection = new \ReflectionClass(get_class($e));
-		$candidates = collect();
-
-		while ($reflection) {
-			$fqn = str_replace('\\', '/', $reflection->getName());
-
-			$candidates->add([
-				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}{$extension}.php",
-				"{$basedir}/bin/error_pages/{$fqn}/default{$extension}.php",
-				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}.php",
-				"{$basedir}/bin/error_pages/{$fqn}/default.php"
-			]);
-
-			$reflection = $reflection->getParentClass();
-		}
-
-		$candidates->add([
-			 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
-			 "{$basedir}/bin/error_pages/default{$extension}.php",
-			 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
-			 "{$basedir}/bin/error_pages/default.php"
-		]);
-
-		$template = new Template($candidates->toArray());
+		$template = new Template($app->getTemplateLocator()->exception(get_class($e), $extension));
 
 		try { $response->getHeaders()->status($e->getCode()); }
 		catch(\Exception$ex) { $response->getHeaders()->status(500); }

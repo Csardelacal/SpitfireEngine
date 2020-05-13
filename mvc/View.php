@@ -29,21 +29,14 @@ class View extends MVC
 		$this->extension = $context->request->getPath()->getFormat();
 		
 		#Get the variables needed for the creation of a template
-		$basedir    = $this->app->getTemplateDirectory();
-		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $this->app->getControllerLocator()->getControllerURI($this->controller)));
+		$locator    = $this->app->getTemplateLocator();
+		$controller = $this->app->getControllerLocator()->getControllerURI($this->controller);
 		$action     = $this->action;
 		$extension  = $this->extension === 'php'? '' : '.' . $this->extension;
 		
 		#Create the templates for the layout and the template
-		$this->template = new Template([
-			"{$basedir}{$controller}/{$action}{$extension}.php",
-			"{$basedir}{$controller}{$extension}.php"
-		]);
-		
-		$this->layout = new Layout([
-			"{$basedir}{$controller}/layout{$extension}.php",
-			"{$basedir}layout{$extension}.php"
-		]);
+		$this->template = new Template($locator->template($controller, $action, $extension));
+		$this->layout = new Layout($locator->layout($controller));
 	}
 	
 	/**
@@ -91,22 +84,8 @@ class View extends MVC
 	}
 
 	public function element($file) {
-		$candidates = [
-			$this->app->getTemplateDirectory() . 'elements/' . $file,
-			$this->app->getTemplateDirectory() . 'elements/' . $file . '.php'
-		];
-		
-		$filename = null;
-		
-		foreach ($candidates as $candidate) {
-			if (file_exists($candidate)) { $filename = $candidate; }
-		}
-		
-		if (!$filename) {
-			throw new PrivateException('Element ' . $file . ' missing');
-		}
-		
-		return new ViewElement($filename, $this->data);
+		$candidates = $this->app->getTemplateLocator()->element($file, 'php');
+		return new ViewElement($candidates, $this->data);
 	}
 	
 	public function setRenderTemplate($set) {
