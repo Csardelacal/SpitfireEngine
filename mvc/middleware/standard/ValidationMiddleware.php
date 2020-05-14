@@ -57,7 +57,7 @@ class ValidationMiddleware implements MiddlewareInterface
 			 * Create a context with the variables that we want to have within the 
 			 * expression's scope.
 			 */
-			$scope = new Scope();
+			$scope = new \spitfire\core\parser\Scope();
 			$scope->set('GET', $_GET);
 			$scope->set('POST', $_POST);
 			$scope->set('ARGV', $context instanceof ContextCLI? $context->parameters : $context->object);

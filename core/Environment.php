@@ -47,7 +47,7 @@ class Environment
 		'cachefile.directory'     => 'app://bin/usr/cache/',
 		'uploads.directory'       => 'app://bin/usr/uploads/',
 		'sessions.directory'      => 'app://bin/usr/sessions/',
-		 
+	    
 		#Asset preprocessors
 		'assets.preprocessors.scss' => '\spitfire\io\asset\SassPreprocessor',
 		'assets.preprocessors.js'   => '\spitfire\io\asset\JSPreprocessor',
@@ -57,7 +57,10 @@ class Environment
 	    
 		#Timezone settings
 		'timezone'                 => 'Europe/Berlin',
-		'datetime.format'          => 'd/m/Y H:i:s'
+		'datetime.format'          => 'd/m/Y H:i:s',
+		
+		'storage.engines.app'      => ['\spitfire\storage\drive\Driver', '@'],
+		'storage.engines.uploads'  => ['\spitfire\storage\drive\Driver', '@bin/usr/uploads']
 		
 	);
 	
@@ -121,6 +124,34 @@ class Environment
 		$low = strtolower($key);
 		if (isset( $this->settings[$low] )) { return $this->settings[$low]; }
 		else { return false; }
+	}
+	
+	/**
+	 * Returns a slice of the environment containing all the records that match
+	 * the namespace given as a parameter.
+	 * 
+	 * For example, Environment::subtree('memcached.') will return all the records
+	 * pertaining to memcached in an associative array.
+	 * 
+	 * This function has to loop over all the entries since, generally speaking,
+	 * environments are not recursive. They just have a simple dictionary with 
+	 * strings. No further arrays.
+	 * 
+	 * @see https://phabricator.magic3w.com/T69 for further notes
+	 */
+	public function subtree($namespace) {
+		$_return = [];
+		
+		foreach ($this->settings as $key => $entry) {
+			# Obviously, if the key is not part of the namespace we just skip it.
+			if (!\Strings::startsWith($key, $namespace)) { continue; }
+			
+			# Otherwise we will trim the key so that only the non-obvious part of
+			# it is left, and add it to the return.
+			$_return[substr($key, strlen($namespace))] = $entry;
+		}
+		
+		return $_return;
 	}
 	
 	/**

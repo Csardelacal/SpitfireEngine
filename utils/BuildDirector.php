@@ -75,7 +75,7 @@ class BuildDirector extends Director
 		$assets = $app->assets();
 		$all = $assets->all();
 
-		$dir = spitfire()->getCWD() . rtrim(\spitfire\core\Environment::get('assets.directory.deploy') . $app->getMapping()->getNameSpace(), '\/') . DIRECTORY_SEPARATOR;
+		$dir = spitfire()->getCWD() . rtrim(\spitfire\core\Environment::get('assets.directory.deploy') . $app->getMapping()->getURISpace(), '\/') . DIRECTORY_SEPARATOR;
 		console()->info('Output directory: ' . $dir)->ln();
 		
 		/**

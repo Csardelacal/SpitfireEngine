@@ -408,6 +408,7 @@ function event(\spitfire\core\event\Event$event = null) {
 	
 	if ($event !== null) {
 		$dispatcher->dispatch($event);
+		return $event;
 	}
 	
 	return $dispatcher;
@@ -432,14 +433,21 @@ function basedir() {
 	return BASEDIR;
 }
 
-function asset($name, $app = null) {
+function asset($name = null, $app = null) {
 	if ($app === null) { $app = current_context()->app; }
+	
+	if ($name === null) { 
+		return '/' . implode('/', array_filter([ 
+			trim(SpitFire::baseUrl(), '/'),
+			trim(Environment::get('assets.directory.deploy'), '/'),
+			trim($app->getMapping()->getURISpace()?? '', '/')]));
+	}
 	
 	$path = pathinfo($name, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . pathinfo($name, PATHINFO_FILENAME);
 	$extension = pathinfo($name, PATHINFO_EXTENSION);
 	
 	$preprocessor = Environment::get('assets.preprocessors.' . $extension);
-	if ($preprocessor) { $extension = (new $preprocessor())->extension(); }
+	if ($preprocessor) { $extension = (new $preprocessor())->extension($extension); }
 	
 	return '/' . implode('/', array_filter([ 
 			trim(SpitFire::baseUrl(), '/'),
