@@ -1,9 +1,9 @@
-<?php namespace spitfire\io\stream;
+<?php namespace spitfire\storage\objectStorage;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,54 @@
  * THE SOFTWARE.
  */
 
-interface StreamWriterInterface extends StreamInterface
+class Blob
 {
 	
-	function write($string);
-	function close();
+	/**
+	 *
+	 * @var DriverInterface
+	 */
+	private $mount;
+	private $key;
+	private $scheme;
+	
+	
+	public function __construct($scheme, $mount, $key) {
+		$this->scheme = $scheme;
+		$this->mount = $mount;
+		$this->key = $key;
+	}
+	
+	public function exists() {
+		return $this->mount->contains($this->key);
+	}
+	
+	public function read() {
+		return $this->mount->read($this->key);
+	}
+	
+	public function write($content) {
+		return $this->mount->write($this->key, $content);
+	}
+	
+	public function delete() {
+		return $this->mount->delete($this->key);
+	}
+	
+	public function uri() {
+		return $this->scheme . '://' . $this->key;
+	}
+	
+	public function mime() {
+		return $this->mount->mime($this->key);
+	}
+	
+	public function stream() {
+		return $this->mount->stream($this->key);
+	}
+	
+	public function isWritable() {
+		return !$this->mount->readonly($this->key);
+	}
+
 }

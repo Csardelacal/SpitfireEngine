@@ -1,6 +1,6 @@
 <?php namespace spitfire\io\media;
 
-use spitfire\storage\objectStorage\FileInterface;
+use spitfire\storage\objectStorage\Blob;
 
 /* 
  * The MIT License
@@ -42,9 +42,9 @@ interface MediaManipulatorInterface
 	
 	public function supports(string$mime) : bool;
 	
-	public function load(FileInterface$blob) : MediaManipulatorInterface;
+	public function load(Blob$blob) : MediaManipulatorInterface;
 	
-	public function store(FileInterface$location) : FileInterface;
+	public function store(Blob$location) : Blob;
 	
 	public function fit($x, $y) : MediaManipulatorInterface;
 	

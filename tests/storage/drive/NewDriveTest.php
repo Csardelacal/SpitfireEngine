@@ -1,4 +1,12 @@
-<?php namespace spitfire\io\stream;
+<?php namespace tests\storage\drive;
+
+use PHPUnit\Framework\TestCase;
+use spitfire\storage\drive\Directory;
+use spitfire\storage\drive\File;
+use spitfire\storage\drive\MountPoint;
+use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\FileInterface;
+use function storage;
 
 /* 
  * The MIT License
@@ -24,9 +32,20 @@
  * THE SOFTWARE.
  */
 
-interface StreamWriterInterface extends StreamInterface
+class NewDriveTest extends TestCase
 {
 	
-	function write($string);
-	function close();
+	private $storage;
+	private $string = 'Hello world';
+	
+	
+	public function testRead() {
+		$this->storage = storage();
+		$blob = $this->storage->retrieve('app://bin/settings/middleware.copy.php');
+		$this->assertNotEmpty($blob->read());
+		$this->assertNotEmpty($blob->uri());
+		$this->assertEquals(strlen($this->string), $blob->stream()->writer()->write($this->string));
+		$blob->stream()->writer()->close();
+		$this->assertEquals(substr($this->string, 0, 5), $blob->stream()->reader()->read(5));
+	}
 }

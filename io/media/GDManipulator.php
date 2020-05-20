@@ -73,7 +73,7 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function load(\spitfire\storage\objectStorage\FileInterface $blob): MediaManipulatorInterface {
+	public function load(\spitfire\storage\objectStorage\Blob $blob): MediaManipulatorInterface {
 		
 		if ($this->tmp) {
 			unlink($this->tmp);
@@ -169,7 +169,7 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function store(\spitfire\storage\objectStorage\FileInterface $location): \spitfire\storage\objectStorage\FileInterface {
+	public function store(\spitfire\storage\objectStorage\Blob $location): \spitfire\storage\objectStorage\Blob {
 		
 		if (!$location->isWritable()) {
 			throw new \spitfire\exceptions\PrivateException('Cannot write to target', 1805301104);

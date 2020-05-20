@@ -32,13 +32,13 @@ class JPEGPreprocessor implements AssetPreprocessorInterface
 
 	public function build($input, $output) {
 		try {
-			storage()->get('file://' . $output)->delete();
+			storage()->retrieve('file://' . $output)->delete();
 		}
 		catch (\spitfire\exceptions\FileNotFoundException$e) {
 			#Do nothing, this should be the normal state
 		}
 		
-		media()->load(storage('file://' . $input))->store(storage()->dir('file://' . pathinfo($output, PATHINFO_DIRNAME))->make(pathinfo($output, PATHINFO_BASENAME)));
+		media()->load(storage()->retrieve('file://' . $input))->store(storage()->retrieve('file://' . pathinfo($output, PATHINFO_DIRNAME) . '/' . pathinfo($output, PATHINFO_BASENAME)));
 	}
 
 	public function extension($original) {

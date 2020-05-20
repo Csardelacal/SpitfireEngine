@@ -1,9 +1,11 @@
-<?php namespace spitfire\io\stream;
+<?php namespace tests\spitfire\core;
+
+use PHPUnit\Framework\TestCase;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2019 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +26,23 @@
  * THE SOFTWARE.
  */
 
-interface StreamWriterInterface extends StreamInterface
+
+class EnvironmentTest extends TestCase
 {
+	private $env;
 	
-	function write($string);
-	function close();
+	public function setUp() : void {
+		$this->env = new \spitfire\core\Environment('test_' . time());
+		$this->env->set('test.123', 'abc');
+		$this->env->set('test.abc', '123');
+		$this->env->set('test.245', 'bcd');
+	}
+	
+	public function testSubTree() {
+		$subtree = $this->env->subtree('test.');
+		$this->assertArrayHasKey('abc', $subtree);
+		$this->assertArrayHasKey('123', $subtree);
+		$this->assertEquals('123', $subtree['abc']);
+	}
+	
 }

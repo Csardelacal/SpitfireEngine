@@ -39,6 +39,7 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	private $filename;
 	
 	public function setUp(): void {
+		storage()->register('file', new \spitfire\storage\drive\Driver('/'));
 		$this->filename = __DIR__ . '/m3w.png';
 	}
 	
@@ -49,11 +50,11 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 * @return type
 	 */
 	public function testOutputWEBP() {
-		$img = media()->load(storage()->get('file://' . $this->filename));
-		$output = storage()->dir('file://' . __DIR__)->make('test.webp');
+		$img = media()->load(storage()->retrieve('file:/' . $this->filename));
+		$output = storage()->retrieve('file:/' . __DIR__ . '/test.webp');
 		
 		$img->store($output);
-		$this->assertEquals(true, file_exists($output->getPath()));
+		$this->assertEquals(true, $output->exists());
 		return $output;
 	}
 	
@@ -69,7 +70,7 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	}
 	
 	public static function tearDownAfterClass() : void {
-		storage()->dir('file://' . __DIR__)->open('test.webp')->delete();
+		storage()->retrieve('file:/' . __DIR__ . '/test.webp')->delete();
 	}
 	
 }

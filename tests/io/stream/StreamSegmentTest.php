@@ -32,12 +32,13 @@ class StreamSegmentTest extends TestCase
 	private $file;
 	
 	public function setUp() : void {
-		$this->file = storage()->dir('file://' . sys_get_temp_dir())->make('php' . uniqid());
+		storage()->register('file', new \spitfire\storage\drive\Driver('/'));
+		$this->file = storage()->retrieve('file://' . sys_get_temp_dir(), 'php' . uniqid());
 		$this->file->write('Hello world!');
 	}
 	
 	public function testSegment() {
-		$segment = new \spitfire\io\stream\StreamSegment($this->file->getStreamReader(), 6, 8);
+		$segment = new \spitfire\io\stream\StreamSegment($this->file->stream()->reader(), 6, 8);
 		$read = $segment->read();
 		
 		$this->assertEquals(3, strlen($read));
@@ -46,7 +47,7 @@ class StreamSegmentTest extends TestCase
 	}
 	
 	public function testSegment2() {
-		$segment = new \spitfire\io\stream\StreamSegment($this->file->getStreamReader(), 6);
+		$segment = new \spitfire\io\stream\StreamSegment($this->file->stream()->reader(), 6);
 		$read = $segment->read();
 		
 		$this->assertEquals(6, strlen($read));

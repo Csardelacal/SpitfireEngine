@@ -38,8 +38,8 @@ class DriveDispatcher
 	 * 
 	 * @param DriveInterface $drive
 	 */
-	public function register(MountPointInterface$drive) {
-		$this->drives[$drive->scheme()] = $drive;
+	public function register($scheme, $drive) {
+		$this->drives[$scheme] = $drive;
 	}
 	
 	/**
@@ -60,6 +60,7 @@ class DriveDispatcher
 	 * Retrieves a file or directory (node) from a given string. By default, URIs
 	 * are extracted by splitting it by forward slashes.
 	 * 
+	 * @deprecated since version 20200520
 	 * @param string $location
 	 * @return \spitfire\storage\objectStorage\Node
 	 */
@@ -73,7 +74,7 @@ class DriveDispatcher
 		list($scheme, $path) = $pieces;
 		
 		if(!isset($this->drives[$scheme])) {
-			throw new PrivateException('Scheme cannot be handled', 1805301529);
+			throw new PrivateException('Scheme ' . $scheme . ' cannot be handled', 1805301529);
 		}
 		
 		$mount  = $this->drives[$scheme];
@@ -97,8 +98,14 @@ class DriveDispatcher
 		return $resource;
 	}
 	
-	public function dir($location) : NodeInterface {
-		$pieces = explode('://', $location, 2);
+	/**
+	 * 
+	 * @param type $location
+	 * @return \spitfire\storage\objectStorage\Blob
+	 * @throws PrivateException
+	 */
+	public function retrieve($location) {
+		$pieces = explode('://', implode('/', func_get_args()), 2);
 		
 		if(!isset($pieces[1])) {
 			throw new PrivateException('Invalid URI provided', 1805301529);
@@ -106,38 +113,37 @@ class DriveDispatcher
 		
 		list($scheme, $path) = $pieces;
 		
+		if(!isset($this->drives[$scheme])) {
+			
+			console()->error($scheme)->ln();
+			var_dump($this->drives);
+			throw new PrivateException('Scheme ' . $scheme . ' cannot be handled', 1805301529);
+		}
+		
 		$mount  = $this->drives[$scheme];
 		
-		/*
-		 * Now that the mount has been located, recurse over the pieces to find
-		 * the resource the user is looking for.
-		 */
-		$pieces = array_filter(explode('/', $path));
-		$resource = $mount;
-		
-		foreach ($pieces as $piece) {
-			
-			if (!$resource instanceof DirectoryInterface) {
-				throw new FileNotFoundException('Trying to recurse into a file', 1808111145);
-			}
-			
-			try {
-				$resource = $resource->open($piece);
-			} catch (\Exception$e) {
-				$resource = $resource->mkdir($piece);
-			}
-		}
-		
-		if ($resource instanceof DirectoryInterface) {
-			return $resource;
-		}
-		
-		throw new PrivateException($location . ' is not a directory', 1808261641);
-		
+		return new Blob($scheme, $mount, $path);
 	}
 	
-	public function all() {
-		return $this->drives;
+	/**
+	 * Initializes the drives from the definitions in the environment. This allows
+	 * applications to receive virtual drives from the environments.
+	 */
+	public function init() {
+		$defs = \spitfire\core\Environment::get()->subtree('storage.engines.');
+		
+		foreach ($defs as $k => $e) {
+			
+			if (!is_array($e)) {
+				$e = explode(':', $e, 2);
+			}
+			
+			$class = $e[0];
+			$settings = $e[1];
+			$i = new $class($settings);
+			
+			$this->register($k, $i);
+		}
 	}
 	
 }

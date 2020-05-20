@@ -1,9 +1,12 @@
-<?php namespace spitfire\io\stream;
+<?php namespace spitfire\storage\objectStorage;
+
+use spitfire\io\stream\StreamReaderInterface;
+use spitfire\io\stream\StreamWriterInterface;
 
 /* 
  * The MIT License
  *
- * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +27,26 @@
  * THE SOFTWARE.
  */
 
-interface StreamWriterInterface extends StreamInterface
+class IOStream
 {
 	
-	function write($string);
-	function close();
+	private $reader;
+	private $writer;
+	
+	public function __construct(StreamReaderInterface$reader, StreamWriterInterface$writer = null) {
+		$this->reader = $reader;
+		$this->writer = $writer;
+	}
+
+	public function reader() : StreamReaderInterface {
+		return $this->reader;
+	}
+
+	public function writer() : StreamWriterInterface {
+		if (!$this->writer) {
+			throw new PrivateException('No writable stream', 2001161650);
+		}
+		
+		return $this->writer;
+	}
 }

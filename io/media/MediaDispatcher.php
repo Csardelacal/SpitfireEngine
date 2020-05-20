@@ -38,7 +38,7 @@ class MediaDispatcher
 		$this->associations[$mime] = $manipulator;
 	}
 	
-	public function load(\spitfire\storage\objectStorage\FileInterface$object) : MediaManipulatorInterface {
+	public function load(\spitfire\storage\objectStorage\Blob$object) : MediaManipulatorInterface {
 		if (isset($this->associations[$object->mime()])) {
 			$copy = clone $this->associations[$object->mime()];
 			$copy->load($object);

@@ -29,6 +29,10 @@ class URLTest extends TestCase
 		}
 	}
 	
+	public function testPrerequisiteBaseURL() {
+		$this->assertEquals('/', \spitfire\SpitFire::baseUrl());
+	}
+	
 	public function testBlankSerializer() {
 		
 		$url = url();

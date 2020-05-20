@@ -357,23 +357,16 @@ function media() {
  * @param type $uri
  * @return DriveDispatcher|NodeInterface
  */
-function storage($uri = null) {
+function storage() {
 	
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
-		$dispatcher = new DriveDispatcher();
-		$dispatcher->register(new MountPoint('file://', '/'));
-		$dispatcher->register(new MountPoint('app://', basedir()));
-		$dispatcher->register(new MountPoint('temp://', sys_get_temp_dir()));
+		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
+		$dispatcher->init();
 	}
 	
-	if ($uri) {
-		return $dispatcher->get($uri);
-	}
-	else {
-		return $dispatcher;
-	}
+	return $dispatcher;
 }
 
 function request($url) {

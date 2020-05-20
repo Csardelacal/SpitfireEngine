@@ -59,8 +59,9 @@ class Environment
 		'timezone'                 => 'Europe/Berlin',
 		'datetime.format'          => 'd/m/Y H:i:s',
 		
-		'storage.engines.app'      => ['\spitfire\storage\drive\Driver', '@'],
-		'storage.engines.uploads'  => ['\spitfire\storage\drive\Driver', '@bin/usr/uploads']
+		'storage.engines.app'      => '\spitfire\storage\drive\Driver:@',
+		'storage.engines.uploads'  => '\spitfire\storage\drive\Driver:@bin/usr/uploads',
+		'storage.engines.file'     => '\spitfire\storage\drive\Driver:/'
 		
 	);
 	
