@@ -105,7 +105,12 @@ class DriveDispatcher
 	 * @throws PrivateException
 	 */
 	public function retrieve($location) {
-		$pieces = explode('://', implode('/', func_get_args()), 2);
+		$args = array_reduce(func_get_args(), function ($c, $e) {
+			if (empty($c)) { return $e; }
+			return rtrim($c, '\/') . DIRECTORY_SEPARATOR . ltrim($e, '\/');
+		}, null);
+		
+		$pieces = explode('://', $args, 2);
 		
 		if(!isset($pieces[1])) {
 			throw new PrivateException('Invalid URI provided', 1805301529);

@@ -4,7 +4,6 @@ use spitfire\exceptions\FilePermissionsException;
 use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\UploadValidationException;
 use spitfire\io\Filesize;
-use spitfire\storage\objectStorage\DirectoryInterface;
 use spitfire\storage\objectStorage\FileInterface;
 use Strings;
 use function storage;
@@ -90,11 +89,14 @@ class Upload
 		#Check if the uploaded file is ok
 		$this->isOk();
 		
-		#Create the directory to write to
-		$dir = storage($this->uploadDir);
+		/*
+		 * Check the directory used for uploads is writable. Please note that since
+		 * SF 2020, the system will not autmatically create an uploads folder unless
+		 * the driver has a functionality to do so.
+		 */
+		$dir = storage()->retrieve($this->uploadDir);
 		
 		#Ensure the directory exists and is writable.
-		if (!$dir instanceof DirectoryInterface) { throw new FilePermissionsException('Upload directory is not a directory', 1808200912); }
 		if (!$dir->isWritable()) { throw new FilePermissionsException('Upload directory is not writable'); }
 		
 		#Assemble the different components of the filename. This will be necessary 
@@ -104,7 +106,7 @@ class Upload
 		$filename = Strings::slug(pathinfo($this->meta['name'], PATHINFO_FILENAME));
 		$extension= pathinfo($this->meta['name'], PATHINFO_EXTENSION);
 		
-		$file = $dir->make($time . '_' . $rand . '_' . $filename . '.' . $extension);
+		$file = storage()->retrieve($this->uploadDir, sprintf('%s_%s_%s.%s', $time, $rand, $filename, $extension));
 		$file->write(file_get_contents($this->meta['tmp_name']));
 		
 		#Move the file and return the path.

@@ -62,6 +62,10 @@ class Blob
 		return $this->scheme . '://' . $this->key;
 	}
 	
+	public function publicURL($ttl = null) {
+		return $this->mount->url($this->key, $ttl);
+	}
+	
 	public function mime() {
 		return $this->mount->mime($this->key);
 	}
