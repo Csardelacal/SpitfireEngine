@@ -62,7 +62,7 @@ class DriveDispatcher
 	 * 
 	 * @deprecated since version 20200520
 	 * @param string $location
-	 * @return \spitfire\storage\objectStorage\Node
+	 * @return \spitfire\storage\objectStorage\Blob
 	 */
 	public function get($location) : NodeInterface {
 		$pieces = explode('://', $location, 2);

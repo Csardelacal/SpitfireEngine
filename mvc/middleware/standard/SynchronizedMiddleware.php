@@ -50,7 +50,7 @@ class SynchronizedMiddleware implements MiddlewareInterface
 	}
 	
 	public function after(ContextInterface $context, Response $response = null) {
-		flock($this->fh, LOCK_UN);
+		$this->fh && flock($this->fh, LOCK_UN);
 	}
 
 }

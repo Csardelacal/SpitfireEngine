@@ -147,7 +147,8 @@ class Response
 			}
 		}
 		
-		elseif ($body instanceof FileInterface) {
+		elseif ($body instanceof \spitfire\storage\objectStorage\Blob) {
+			$this->headers->contentType($body->mime());
 			$this->headers->send();
 			echo $body->read();
 		}

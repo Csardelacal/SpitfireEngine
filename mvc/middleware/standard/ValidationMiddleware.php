@@ -5,6 +5,7 @@ use spitfire\core\ContextCLI;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\exceptions\PublicException;
+use spitfire\validation\ValidationException;
 use spitfire\mvc\middleware\MiddlewareInterface;
 use spitfire\validation\parser\Parser;
 
@@ -64,9 +65,9 @@ class ValidationMiddleware implements MiddlewareInterface
 		
 			$result = $parser->parse($expression)->resolve($scope);
 			
-			if (!$result) {
-				if ($throw) { throw new PublicException('Validation failed', 400); }
-				$context->validation->add('$validator->getMessages()');
+			if (!empty($result)) {
+				if ($throw) { throw new ValidationException('Validation failed', 400, $result); }
+				$context->validation->add($result);
 			}
 		}
 	}

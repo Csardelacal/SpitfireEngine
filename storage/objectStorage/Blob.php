@@ -70,6 +70,10 @@ class Blob
 		return $this->mount->mime($this->key);
 	}
 	
+	public function length() {
+		return $this->mount->length($this->key);
+	}
+	
 	public function stream() {
 		return $this->mount->stream($this->key);
 	}

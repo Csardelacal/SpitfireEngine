@@ -106,6 +106,8 @@ interface DriverInterface
 	 */
 	public function mime($key);
 	
+	public function length($key);
+	
 	/**
 	 * Returns the unix timestamp the blob was modified at. 
 	 * 

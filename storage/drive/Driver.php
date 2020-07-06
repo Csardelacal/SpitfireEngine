@@ -44,7 +44,7 @@ class Driver implements DriverInterface
 		$this->path = rtrim($dsn, '\/') . DIRECTORY_SEPARATOR;
 		
 		if (\Strings::startsWith($this->path, '@')) {
-			$this->path = basedir() . substr($this->path, 1);
+			$this->path = basedir() . DIRECTORY_SEPARATOR . substr($this->path, 1);
 		}
 	}
 
@@ -62,6 +62,10 @@ class Driver implements DriverInterface
 
 	public function mime($key) {
 		return mime($this->path . $key);
+	}
+
+	public function length($key) {
+		return filesize($this->path . $key);
 	}
 
 	public function mtime($key) {
