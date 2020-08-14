@@ -104,9 +104,13 @@ abstract class SQLQuery extends Query
 	 * @throws PrivateException
 	 */
 	public function denormalize($root = false) {
-		if (!$root && $this->isMixed() && !$this->getCompositeRestrictions()->isEmpty()) {
-			throw new PrivateException('Impossible condition satisfied. This is a bug.', 1804292159);
-		}
+		/*
+		 * Previously we  had a condition here that would lead to an exception.
+		 * Replacing this with an assertion makes it more clear that this code is
+		 * not an error handler but describes an impossible condition that should
+		 * not be found.
+		 */
+		assert($root || !$this->isMixed() || $this->getCompositeRestrictions()->isEmpty());
 		
 		$_ret      = new Collection();
 		

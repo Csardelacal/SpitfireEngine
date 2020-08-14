@@ -1,0 +1,19 @@
+{
+	"name" : "spitfire/engine",
+	"license": "MIT",
+	"homepage": "https://spitfirephp.com",
+
+	"require": {
+		"php" : ">7"
+	},
+
+	"autoload": {
+		"files": [
+			"core/functions.php"
+		],
+		"psr-4": {
+        		"spitfire\\": "/"
+	        }
+
+	}
+}
