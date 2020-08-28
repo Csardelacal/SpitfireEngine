@@ -31,6 +31,18 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 	
 	private $operations = [];
 	
+	public function __construct() {
+		
+		/*
+		 * If MMPEG happens to be unavailable, we do not want the system to fail with
+		 * a nasty error that nobody understands. Instead, we report back to the user
+		 * that the system could not find the tool.
+		 */
+		if (!exec('which ffmpeg')) {
+			throw new PrivateException('FFMPeg could not be found on the system', 20082851247);
+		}
+	}
+	
 	public function blur(): MediaManipulatorInterface {
 		$this->operations['blur'] = "boxblur=5:1";
 		return $this;
