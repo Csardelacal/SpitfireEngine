@@ -3,7 +3,7 @@
 use spitfire\core\http\URL;
 use spitfire\storage\database\Query;
 use function collect;
-use function within;
+use function clamp;
 
 /* 
  * The MIT License
@@ -132,7 +132,7 @@ class Paginator
 		 * Optimizing for drawing the most possible pages provides the user with a
 		 * consistent interface and with the biggest amount of options.
 		 */
-		$start = within(2, $this->io->current() - $this->distance, $count - $this->distance * 2 - 2); 
+		$start = clamp(2, $this->io->current() - $this->distance, $count - $this->distance * 2 - 2); 
 		
 		/*
 		 * Generate the page numbers from start to start + 2(distance). This ensures

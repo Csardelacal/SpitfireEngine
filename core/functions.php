@@ -19,7 +19,6 @@ use spitfire\locale\Locale;
 use spitfire\SpitFire;
 use spitfire\SpitFireCLI;
 use spitfire\storage\database\Settings;
-use spitfire\storage\drive\MountPoint;
 use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\NodeInterface;
 use spitfire\validation\ValidationException;
@@ -312,24 +311,39 @@ function url() {
 }
 
 /**
- * The within function is a math function that allows to determine whether a 
- * value is within a range and returns either the value, or the closest range
- * delimiter.
+ * The clamp function is a math function that receives three arguments, a minimum,
+ * a bias and a maximum. Clamp will either return the bias or the closest value
+ * whenever the bias is outside the range of maximum and minimum.
  * 
  * The first and the last parameter delimit the range. The second parameter is 
- * the one being tested.
+ * the bias being tested.
  * 
  * <code>within(1,  50, 100); //Outputs:  50</code>
  * <code>within(1, 500, 100); //Outputs: 100</code>
  * <code>within(1, -50, 100); //Outputs:   1</code>
  * 
  * @param number $min
+ * @param number $bias
+ * @param number $max
+ * @return number
+ */
+function clamp($min, $bias, $max) {
+	return min(max($min, $bias), $max);
+}
+
+/**
+ * This is the deprecated naming for the clamp function.
+ * 
+ * @deprecated since version 0.1-dev 2020-09-29
+ * @see clamp
+ * @param number $min
  * @param number $val
  * @param number $max
  * @return number
  */
 function within($min, $val, $max) {
-	return min(max($min, $val), $max);
+	trigger_error('Function within() is deprecated, rename it to clamp()', E_USER_DEPRECATED);
+	return clamp($min, $val, $max);
 }
 
 function media() {

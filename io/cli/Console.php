@@ -43,7 +43,7 @@ class Console
 	
 	public function error($msg) {
 		$this->current = $this->stdout;
-		$width = within(70, (int)exec('tput cols'), 200) - 7;
+		$width = clamp(70, (int)exec('tput cols'), 200) - 7;
 		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, $width, PHP_EOL)));
 		
 		$this->current
@@ -59,7 +59,7 @@ class Console
 	
 	public function info($msg) {
 		$this->current = $this->stdout;
-		$width = within(70, (int)exec('tput cols'), 200) - 7;
+		$width = clamp(70, (int)exec('tput cols'), 200) - 7;
 		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, $width, PHP_EOL)));
 		
 		$this->current
@@ -75,7 +75,7 @@ class Console
 	
 	public function success($msg) {
 		$this->current = $this->stdout;
-		$width = within(70, (int)exec('tput cols'), 200) - 7;
+		$width = clamp(70, (int)exec('tput cols'), 200) - 7;
 		$out = str_replace(PHP_EOL, PHP_EOL . '       ', trim(chunk_split($msg, $width, PHP_EOL)));
 		
 		$this->current
