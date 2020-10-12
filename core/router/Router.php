@@ -38,7 +38,7 @@ class Router extends Routable
 		$servers = $this->servers;
 		
 		#Split up the URL, get the extension
-		if (\Strings::endsWith($route, '/')) {
+		if (\spitfire\utils\Strings::endsWith($route, '/')) {
 			$url     = pathinfo($route, PATHINFO_DIRNAME) . '/' . pathinfo($route, PATHINFO_BASENAME);
 			$ext     = null;
 		} 

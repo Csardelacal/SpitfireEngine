@@ -1,7 +1,7 @@
 <?php namespace tests\spitfire\storage\database\drivers\mysqlpdo;
 
 use ChildrenField;
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
 use Reference;
 use spitfire\exceptions\PrivateException;

@@ -5,3 +5,5 @@ Documentation/*
 
 *.sublime-workspace
 /nbproject/private/
+/.phpunit.result.cache
+/vendor

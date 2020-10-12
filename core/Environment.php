@@ -145,7 +145,7 @@ class Environment
 		
 		foreach ($this->settings as $key => $entry) {
 			# Obviously, if the key is not part of the namespace we just skip it.
-			if (!\Strings::startsWith($key, $namespace)) { continue; }
+			if (!\spitfire\utils\Strings::startsWith($key, $namespace)) { continue; }
 			
 			# Otherwise we will trim the key so that only the non-obvious part of
 			# it is left, and add it to the return.

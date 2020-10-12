@@ -1,7 +1,7 @@
 <?php namespace tests;
 
 use PHPUnit\Framework\TestCase;
-use Strings;
+use spitfire\utils\Strings;
 
 class StringTest extends TestCase
 {
@@ -52,7 +52,7 @@ class StringTest extends TestCase
 	 * @covers \Strings::escape
 	 */
 	public function testEscape() {
-		$this->assertEquals('&lt;strong', \Strings::escape('<strong'));
+		$this->assertEquals('&lt;strong', Strings::escape('<strong'));
 	}
 	
 	/**
@@ -61,8 +61,8 @@ class StringTest extends TestCase
 	 * @covers \Strings::quote
 	 */
 	public function testQuote() {
-		$this->assertEquals('&quot;strong', \Strings::quote('"strong'));
-		$this->assertEquals('&#039;strong', \Strings::quote('\'strong'));
+		$this->assertEquals('&quot;strong', Strings::quote('"strong'));
+		$this->assertEquals('&#039;strong', Strings::quote('\'strong'));
 	}
 	
 }

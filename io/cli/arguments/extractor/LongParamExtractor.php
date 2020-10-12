@@ -29,7 +29,7 @@ class LongParamExtractor implements ExtractorInterface
 	
 	public function extract($argument) {
 		
-		if (\Strings::startsWith($argument, '--')) { 
+		if (\spitfire\utils\Strings::startsWith($argument, '--')) { 
 			$pieces = explode('=', $argument, 2);
 			$name   = substr(array_shift($pieces), 2);
 			$value  = array_shift($pieces);

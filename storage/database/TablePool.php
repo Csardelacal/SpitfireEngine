@@ -9,7 +9,7 @@ use spitfire\storage\database\tablelocator\OTFTableLocator;
 use spitfire\storage\database\tablelocator\TableLocatorInterface;
 use spitfire\storage\database\tablelocator\TypoCacheLocator;
 use spitfire\storage\database\tablelocator\TypoLocator;
-use Strings;
+use spitfire\utils\Strings;
 
 /* 
  * The MIT License

@@ -70,7 +70,7 @@ class NameLocator implements TableLocatorInterface
 		try {
 			#Sometimes we pass the class name to the model, instead of the name of the model
 			#Since it's easy for us to correlate both, we do so
-			if (\Strings::endsWith($tablename, 'model')) { 
+			if (\spitfire\utils\Strings::endsWith($tablename, 'model')) { 
 				$tablename = substr($tablename, 0, strlen($tablename) - strlen('model')); 
 			}
 			

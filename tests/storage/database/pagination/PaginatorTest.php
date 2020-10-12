@@ -1,6 +1,6 @@
 <?php namespace tests\spitfire\storage\database\pagination;
 
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;

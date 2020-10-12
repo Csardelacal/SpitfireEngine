@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\model\fields;
 
 use spitfire\model\Field;
 use spitfire\Model;
@@ -38,7 +38,7 @@ class ChildrenField extends Field
 	public function getTarget() {
 		
 		#If the target is actually a class name.
-		if (is_string($this->target) && Strings::endsWith($this->target, 'Model')) {
+		if (is_string($this->target) && spitfire\utils\Strings::endsWith($this->target, 'Model')) {
 			$this->target = trim(substr($this->target, 0, 0 - strlen('Model')), '\/');
 		}
 		
@@ -63,7 +63,7 @@ class ChildrenField extends Field
 	 * and return it, otherwise we need to search for a field that references
 	 * this model and return that.
 	 * 
-	 * @return \Reference
+	 * @return Reference
 	 * @throws PrivateException
 	 */
 	public function getReferencedField() {
@@ -76,7 +76,7 @@ class ChildrenField extends Field
 			#Since we could have several items pointing at our Schema we will be
 			#filtering the remote fields looking for candidates.
 			$candidates = array_filter($fields, function ($f) {
-				return $f instanceof \Reference && $f->getTarget() === $this->getModel();
+				return $f instanceof Reference && $f->getTarget() === $this->getModel();
 			});
 			
 			#If there were no candidates we need to let the programmer know

@@ -2,7 +2,7 @@
 
 use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\Field as ParentClass;
-use \Reference;
+use spitfire\model\fields\Reference;
 
 class Field extends ParentClass
 {

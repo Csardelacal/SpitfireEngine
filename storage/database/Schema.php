@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use spitfire\core\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;

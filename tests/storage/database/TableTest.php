@@ -1,15 +1,15 @@
-<?php namespace tests\spitfire\storage\db;
+<?php namespace tests\spitfire\storage\database;
 
-use IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as Field2;
+use spitfire\model\fields\IntegerField;
+use spitfire\model\fields\StringField;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
-use StringField;
 use function db;
 
 class TableTest extends TestCase

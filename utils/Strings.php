@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\utils;
 
 class Strings
 {

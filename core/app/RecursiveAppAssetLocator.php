@@ -4,7 +4,7 @@ use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use spitfire\core\collection\DefinedCollection;
-use Strings;
+use spitfire\utils\Strings;
 use function collect;
 
 /* 

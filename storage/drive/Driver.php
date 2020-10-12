@@ -43,7 +43,7 @@ class Driver implements DriverInterface
 	public function __construct($dsn) {
 		$this->path = rtrim($dsn, '\/') . DIRECTORY_SEPARATOR;
 		
-		if (\Strings::startsWith($this->path, '@')) {
+		if (\spitfire\utils\Strings::startsWith($this->path, '@')) {
 			$this->path = basedir() . DIRECTORY_SEPARATOR . substr($this->path, 1);
 		}
 	}

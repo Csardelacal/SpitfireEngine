@@ -1,5 +1,6 @@
 <?php
 
+#TODO: This is deprecated, and needs to go.
 use spitfire\autoload\AutoLoad;
 
 

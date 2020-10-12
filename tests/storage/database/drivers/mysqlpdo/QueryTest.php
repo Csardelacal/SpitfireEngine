@@ -1,6 +1,6 @@
 <?php namespace tests\spitfire\storage\database\drivers\mysqlpdo;
 
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\AggregateFunction;

@@ -102,7 +102,7 @@ function db(Settings$options = null) {
  * @return type
  */
 function _q($str) {
-	return Strings::quote($str);
+	return spitfire\utils\Strings::quote($str);
 }
 
 /**
@@ -114,7 +114,7 @@ function _q($str) {
  * @return string
  */
 function _e($str) {
-	return Strings::escape($str);
+	return spitfire\utils\Strings::escape($str);
 }
 
 /**
@@ -127,7 +127,7 @@ function _e($str) {
  * @return string
  */
 function _u($str, $cb = null) {
-	return Strings::urls($str, $cb);
+	return spitfire\utils\Strings::urls($str, $cb);
 }
 
 /**
@@ -139,7 +139,7 @@ function _u($str, $cb = null) {
  * @return String
  */
 function __($str, $maxlength = false) {
-	if ($maxlength) { $str = Strings::ellipsis ($str, $maxlength); }
+	if ($maxlength) { $str = spitfire\utils\Strings::ellipsis ($str, $maxlength); }
 	return _u(_e($str));
 }
 
@@ -288,7 +288,7 @@ function url() {
 		$app = $sf->getApp(array_shift($params));
 	}
 	else {
-		$app = $sf;
+		$app = $sf->getApp('');
 	}
 
 	#Get the controller, and the action
@@ -423,7 +423,7 @@ function lock($set = null) {
 }
 
 function basedir() {
-	return BASEDIR;
+	return rtrim(dirname(dirname(__DIR__)), '\/') . DIRECTORY_SEPARATOR;
 }
 
 function asset($name = null, $app = null) {

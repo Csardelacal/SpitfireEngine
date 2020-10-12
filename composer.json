@@ -4,7 +4,12 @@
 	"homepage": "https://spitfirephp.com",
 
 	"require": {
-		"php" : ">7"
+		"php" : ">7",
+		"spitfire/dependency-provider": "dev-master"
+	},
+	
+	"require-dev": {
+		"phpunit/phpunit": "^9.4"
 	},
 
 	"autoload": {
@@ -12,7 +17,7 @@
 			"core/functions.php"
 		],
 		"psr-4": {
-        		"spitfire\\": "/"
+        		"spitfire\\": "./"
 	        }
 
 	}

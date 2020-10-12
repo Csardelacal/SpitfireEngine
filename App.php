@@ -25,74 +25,49 @@ use spitfire\mvc\View;
 abstract class App
 {
 	
-	
-	private $mapping;
-	private $controllerLocator;
-	
 	/**
-	 * Creates a new App. Receives the directory where this app resides in
-	 * and the URI namespace it uses.
+	 * Instances a new application. The application maps a directory where it's residing
+	 * with it's name-space and the URL it's serving.
 	 * 
-	 * @param string $basedir The root directory of this app
-	 * @param string $URISpace The URI namespace it 'owns'
-	 * @param string $namespace The URI namespace it 'owns'
+	 * Please note that some features need to be 'baked' for the applications to 
+	 * properly work (like inline-routes and prebuilt assets). It is recommendable
+	 * that the 'baking' is performed automatically on composer::install or similar.
+	 * 
+	 * @param string $url The URL space the application is intended to be managing
+	 * this is used for URL generation, etc
 	 */
-	public function __construct($basedir, $URISpace, $namespace = false) {
-		$reflection = new ReflectionClass($this);
-		$this->mapping = new NamespaceMapping($basedir, $URISpace, $namespace !== false? $namespace : $reflection->getNamespaceName());
-		$this->controllerLocator = new ControllerLocator($this->mapping);
+	public function __construct($url) { 
+		$this->url = '/' . trim($url, '\/'); 
 	}
 	
 	/**
+	 * Gets the URL space this application is serving. Please note that it's highly
+	 * recommended to avoid using nested namespaces since it will often lead to 
+	 * broken applications.
 	 * 
-	 * @return NamespaceMapping
-	 */
-	public function getMapping() {
-		return $this->mapping;
-	}
-	
-	/**
-	 * 
-	 * @return ControllerLocator
-	 */
-	public function getControllerLocator() {
-		return $this->controllerLocator;
-	}
-	
-	/**
-	 * 
-	 * @return io\template\TemplateLocatorInterface
-	 */
-	public function getTemplateLocator() : io\template\TemplateLocatorInterface {
-		return new io\template\SpitfireTemplateLocator($this->mapping->getBaseDir());
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20190527
 	 * @return string
 	 */
-	public function getBaseDir() {
-		return $this->mapping->getBaseDir();
-	}
-	
-	public function getView(Controller$controller) {
-		
-		$name = implode('\\', $this->controllerLocator->getControllerURI($controller));
-		
-		$c = $this->mapping->getNameSpace() . $name . 'View';
-		if (!class_exists($c)) { $c = View::class; }
-		
-		return new $c($controller->context);
-	}
+	public function url() { return $this->url; }
 	
 	/**
-	 * Creates the default routes for this application. Spitfire will assume that
-	 * a /app/controller/action/object type of path is what you wish to use for
-	 * your app. If you'd rather have custom rules - feel free to override these.
+	 * Returns the directory this application is watching.
+	 * 
+	 * @return string The directory the app resides in and where it's controllers, models, etc directories are located
 	 */
-	public function createRoutes() {
-		$us = $this->mapping->getURISpace();
+	abstract public function directory();
+	
+	/**
+	 * Returns the application's class-namespace. This is the namespace in which
+	 * spitfire will look for controllers, models etc for this application.
+	 */
+	abstract public function namespace();
+
+	public function makeRoutes() {
+		#Include the routes from the user definitions
+		file_exists("{$this->directory()}/settings/routes.php") && include "{$this->directory()}/settings/routes.php";
+
+		#Build some defaults
+		$us = $this->namespace();
 		$ns = $us? '/' . $us : '';
 		
 		#The default route just returns a path based on app/controller/action/object

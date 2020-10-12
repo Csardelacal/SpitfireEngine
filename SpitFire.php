@@ -1,19 +1,19 @@
 <?php namespace spitfire;
 
 use spitfire\App;
+use spitfire\core\app\AppAssetsInterface;
+use spitfire\core\app\RecursiveAppAssetLocator;
 use spitfire\core\Context;
 use spitfire\core\Environment;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
-use Strings;
-
-if (!defined('APP_DIRECTORY')){
-	define ('APP_DIRECTORY',         BASEDIR . '/bin/apps/');
-	define ('CONFIG_DIRECTORY',      BASEDIR . '/bin/settings/');
-	define ('ASSET_DIRECTORY',       BASEDIR . '/assets/');
-	define ('SESSION_SAVE_PATH',     BASEDIR . '/bin/usr/sessions/');
-}
+use spitfire\provider\Provider;
+use spitfire\utils\Strings;
+use function basedir;
+use function collect;
+use function current_context;
+use function debug;
 
 /**
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.
@@ -21,21 +21,22 @@ if (!defined('APP_DIRECTORY')){
  * @author César de la Cal <cesar@magic3w.com>
  * @package spitfire
  */
-class SpitFire extends App
+class SpitFire
 {
 	
 	static  $started = false;
 	
 	private $request;
+	private $provider;
 	private $apps = Array();
 	
 	public function __construct() {
 		#Check if SF is running
 		if (self::$started) { throw new PrivateException('Spitfire is already running'); }
-		
-		#Call parent
-		parent::__construct('bin/', null, null);
 		self::$started = true;
+		
+		$this->provider = new Provider();
+		$this->enable();
 	}
 
 	public function fire() {
@@ -43,9 +44,13 @@ class SpitFire extends App
 		#Import the apps
 		include CONFIG_DIRECTORY . 'apps.php';
 		
+		#Check if there is a defualt app to receive calls to /
+		if (!collect($this->apps)->filter(function (App$e) { return !$e->url(); })->rewind()) {
+			$this->apps[] = new UnnamedApp('');
+		}
+		
 		#Every app now gets the chance to create appropriate routes for it's operation
-		foreach ($this->apps as $app) { $app->createRoutes(); }
-		$this->createRoutes();
+		foreach ($this->apps as $app) { $app->makeRoutes(); }
 		
 		#Get the current path...
 		$request = $this->request = Request::fromServer();
@@ -83,8 +88,34 @@ class SpitFire extends App
 		
 	}
 	
-	public function registerApp($app, $namespace) {
-		$this->apps[$namespace] = $app;
+	/**
+	 * Set / Get applications from Spitfire. The software you write can use this
+	 * to communicate with the applications.
+	 * 
+	 * @param string $uri
+	 * @param App $app
+	 * @return App
+	 * @throws PrivateException If the application was not found
+	 * @todo Move towards a app collection so Spitfire becomes apps + extensions
+	 * @todo Introduce AppNotFound exception
+	 */
+	public function app($uri, App $app = null) {
+		if (!Strings::startsWith($uri, '/')) { $uri.= '/'; }
+		
+		if ($app) { $this->apps[$uri] = $app; }
+		if (!isset($this->apps[$uri])) { throw new PrivateException(sprintf('No app defined for %s', $uri)); }
+		
+		return $this->apps[$uri];
+	}
+	
+	/**
+	 * 
+	 * @deprecated since version 0.1-dev
+	 * @param type $app
+	 * @param type $namespace
+	 */
+	public function registerApp($app) {
+		$this->apps[] = $app;
 	}
 	
 	public function apps() {
@@ -93,7 +124,7 @@ class SpitFire extends App
 	
 	public function appExists($namespace) {
 		if (!is_string($namespace)) { return false; }
-		return isset($this->apps[$namespace]);
+		return collect($this->apps)->filter(function ($e) use ($namespace) { return $e->url() == $namespace; })->rewind();
 	}
 	
 	public function findAppForClass($name) {
@@ -101,9 +132,9 @@ class SpitFire extends App
 			return $this;
 		}
 		
-		/*@var $app \spitfire\App*/
+		/*@var $app App*/
 		foreach($this->apps as $app) {
-			if (Strings::startsWith($name, $app->getMapping()->getNameSpace())) {
+			if (Strings::startsWith($name, $app->namespace())) {
 				return $app;
 			}
 		}
@@ -116,7 +147,7 @@ class SpitFire extends App
 	 * @return App
 	 */
 	public function getApp($namespace) {
-		return isset($this->apps[$namespace]) ? $this->apps[$namespace] : $this;
+		return collect($this->apps)->filter(function ($e) use ($namespace) { return $e->url() === $namespace; })->rewind();
 	}
 	
 	public static function baseUrl(){
@@ -158,12 +189,23 @@ class SpitFire extends App
 	public function getCWD() {
 		return basedir();
 	}
-
+	
+	/**
+	 * Contents need to be moved somewhere else. This function is no longer valid
+	 * due to the fact that spitfire is no longer an app.
+	 * 
+	 * @deprecated since version 0.1-dev 20201012
+	 */
 	public function enable() {
 
 		#Try to include the user's evironment & routes
 		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'environments.php');
 		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'routes.php');
+		
+		/*
+		 * Include the config for the dependency injection.
+		 */
+		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'provider.php');
 		
 		#Define the current timezone
 		date_default_timezone_set(Environment::get('timezone'));
@@ -181,8 +223,18 @@ class SpitFire extends App
 		return $this->request;
 	}
 	
-	public function assets() : core\app\AppAssetsInterface {
-		return new core\app\RecursiveAppAssetLocator($this->getCWD() . '/assets/src/');
+	public function assets() : AppAssetsInterface {
+		return new RecursiveAppAssetLocator($this->getCWD() . '/assets/src/');
+	}
+	
+	/**
+	 * Return the dependency container for this Spitfire instance. This container
+	 * allows the application to inject behaviors into the 
+	 * 
+	 * @return Provider
+	 */
+	public function provider() {
+		return $this->provider;
 	}
 
 }

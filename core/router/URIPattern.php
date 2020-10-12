@@ -1,7 +1,7 @@
 <?php namespace spitfire\core\router;
 
 use spitfire\exceptions\PrivateException;
-use Strings;
+use spitfire\utils\Strings;
 
 /* 
  * The MIT License

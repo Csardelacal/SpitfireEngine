@@ -5,7 +5,7 @@ use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\UploadValidationException;
 use spitfire\io\Filesize;
 use spitfire\storage\objectStorage\FileInterface;
-use Strings;
+use spitfire\utils\Strings;
 use function storage;
 
 /**

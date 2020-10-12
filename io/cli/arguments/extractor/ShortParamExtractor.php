@@ -28,7 +28,7 @@ class ShortParamExtractor implements ExtractorInterface
 {
 	
 	public function extract($argument) {
-		if (\Strings::startsWith($argument, '-' )) {
+		if (\spitfire\utils\Strings::startsWith($argument, '-' )) {
 			$pieces = explode('=', $argument, 2);
 			$name   = str_split(substr(array_shift($pieces), 1));
 			$value  = array_shift($pieces);

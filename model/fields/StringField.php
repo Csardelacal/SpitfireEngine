@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\model\fields;
 
 use spitfire\model\Field;
 use spitfire\Model;

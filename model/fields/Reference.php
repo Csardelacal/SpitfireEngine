@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\model\fields;
 
 use spitfire\model\Field;
 use spitfire\Model;
@@ -62,7 +62,7 @@ class Reference extends Field
 	 */
 	public function getTarget() {
 		#If the target is actually a class name.
-		if (is_string($this->target) && Strings::endsWith($this->target, 'Model')) {
+		if (is_string($this->target) && spitfire\utils\Strings::endsWith($this->target, 'Model')) {
 			$this->target = trim(substr($this->target, 0,  0 - strlen('Model')), '\/');
 		}
 		

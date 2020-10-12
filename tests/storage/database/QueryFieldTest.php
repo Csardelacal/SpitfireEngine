@@ -1,6 +1,6 @@
 <?php namespace tests\storage\database;
 
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use Reference;
 use spitfire\storage\database\drivers\mysqlpdo\QueryField;
 use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
@@ -46,7 +46,7 @@ class QueryFieldTest extends \PHPUnit\Framework\TestCase
 		
 		$schema->index($schema->test, $schema->test2)->setPrimary(true);
 		
-		$field = new Reference($schema);
+		$field = new \spitfire\model\fields\Reference($schema);
 		$field->getTarget();
 		
 		$db = db(Settings::fromArray(['schema' => 'test_schema']));

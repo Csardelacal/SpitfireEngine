@@ -1,6 +1,6 @@
 <?php namespace tests\spitfire\storage\db;
 
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;

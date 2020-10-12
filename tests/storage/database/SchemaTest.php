@@ -1,6 +1,6 @@
 <?php namespace tests\storage\database;
 
-use IntegerField;
+use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
@@ -123,8 +123,8 @@ class SchemaTest extends TestCase
 		 * Prepare a test schema with a bunch of fields.
 		 */
 		$schema = new Schema('test');
-		$schema->a = new \IntegerField();
-		$schema->b = new \IntegerField();
+		$schema->a = new IntegerField();
+		$schema->b = new IntegerField();
 		
 		/*
 		 * Index the two columns we just created.

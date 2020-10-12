@@ -7,7 +7,7 @@ use Model;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\renderers\RenderableFieldGroup;
 use spitfire\validation\ValidationRule;
-use Strings;
+use spitfire\utils\Strings;
 
 /**
  * This class allows a bean to receive data that belongs to this but is handled

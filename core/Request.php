@@ -194,7 +194,7 @@ class Request
 	public function getRange() {
 		$sent = $_SERVER['HTTP_RANGE'];
 		
-		if (!\Strings::startsWith($sent, 'bytes=')) {
+		if (!\spitfire\utils\Strings::startsWith($sent, 'bytes=')) {
 			throw new \spitfire\exceptions\PublicException('Malformed range sent', 416);
 		}
 		

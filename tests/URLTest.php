@@ -14,6 +14,7 @@ class URLTest extends TestCase
 		
 		if (!$this->setup) {
 			#Create a route with parameters
+			Router::getInstance()->request('/me/:b', ['controller' => 'account', 'action' => ':b']);
 			Router::getInstance()->request('/:a/:b', ['controller' => 'test', 'action' => ':b', 'object' => ':a']);
 			
 			#Create a route for a specific server with parameters
@@ -23,7 +24,9 @@ class URLTest extends TestCase
 			Router::getInstance()->request('/about', '/static/about');
 			Router::getInstance()->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
 			
-			spitfire()->createRoutes();
+			$t = new \spitfire\UnnamedApp('');
+			$t->makeRoutes();
+			spitfire()->registerApp($t);
 			
 			$this->setup = true;
 		}
@@ -34,7 +37,6 @@ class URLTest extends TestCase
 	}
 	
 	public function testBlankSerializer() {
-		
 		$url = url();
 		$this->assertEquals('/', strval($url));
 	}
@@ -46,12 +48,12 @@ class URLTest extends TestCase
 	
 	public function testAnotherSerializer() {
 		$url = url('account', 'test');
-		$this->assertEquals('/account/test/', strval($url));
+		$this->assertEquals('/me/test/', strval($url));
 	}
 	
 	public function testAnotherSerializerWithParams() {
 		$url = url('account', 'test', ['a' => 3]);
-		$this->assertEquals('/account/test/?a=3', strval($url));
+		$this->assertEquals('/me/test/?a=3', strval($url));
 	}
 	
 	public function testArrayReverser() {

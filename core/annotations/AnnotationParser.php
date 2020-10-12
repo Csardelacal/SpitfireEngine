@@ -2,7 +2,7 @@
 
 use BadMethodCallException;
 use Reflector;
-use Strings;
+use spitfire\utils\Strings;
 
 /**
  * Reads a docblock and parses the information that it provides to extract the 
