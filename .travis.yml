@@ -5,7 +5,11 @@ php:
 services:
   - mysql
 
-script: phpunit --configuration=phpunit.xml tests
+before_script:
+   - composer install
+   - composer dump-autoload
+
+script: vendor/bin/phpunit --configuration=phpunit.xml tests
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
