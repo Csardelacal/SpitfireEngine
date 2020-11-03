@@ -1,0 +1,21 @@
+{
+	"name": "spitfire/event",
+	"description": "Event and plugin mechanism for spitfire",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "César de la Cal Bretschneider",
+			"email": "cesar@magic3w.com"
+		}
+	],
+	"autoload" : {
+		"psr-4" : {
+			"spitfire\\event\\" : "./src"
+		}
+	},
+	"require": {},
+	"require-dev": {
+		"phpunit/phpunit": "^9.4"
+	}
+}
