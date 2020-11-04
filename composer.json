@@ -1,0 +1,21 @@
+{
+	"name": "spitfire/database",
+	"description": "Database components for spitfire/engine",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "César de la Cal Bretschneider",
+			"email": "cesar@magic3w.com"
+		}
+	],
+	"autoload": {
+		"psr-4" : {
+			"spitfire\\storage\\database\\" : "./src/"
+		}
+	},
+	"require": {},
+	"require-dev": {
+		"phpunit/phpunit": "^9.4"
+	}
+}
