@@ -24,6 +24,12 @@
  * THE SOFTWARE.
  */
 
+/**
+ * This simplified listener allows to use a closure to listen for events instead
+ * of defining your own listener class.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class Listener implements ListenerInterface
 {
 	

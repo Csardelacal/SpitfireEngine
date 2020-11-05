@@ -39,7 +39,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 			return $e->payload() . ' world'; 
 		}));
 		
-		$result = $dispatcher->dispatch('m3w.test', new Event('hello'), function (Event$e) {
+		$result = $dispatcher->dispatch(new Event('m3w.test', 'hello'), function (Event$e) {
 			return $e->payload() . ' death';
 		});
 		
@@ -54,7 +54,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 			return 'hello ' . $e->payload(); 
 		}));
 		
-		$result = $dispatcher->dispatch('m3w.test', new Event('world'), function (Event$e) {
+		$result = $dispatcher->dispatch(new Event('m3w.test', 'world'), function (Event$e) {
 			return 'bye ' . $e->payload();
 		});
 		
@@ -83,7 +83,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 			return 'stop ' . $e->payload(); 
 		}));
 		
-		$result = $dispatcher->dispatch('m3w.test', new Event('world'), function (Event$e) {
+		$result = $dispatcher->dispatch(new Event('m3w.test', 'world'), function (Event$e) {
 			return 'bye ' . $e->payload();
 		});
 		

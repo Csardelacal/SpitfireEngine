@@ -43,7 +43,7 @@ class BasicEventNestedDispatchersTest extends TestCase
 			return 'bye ' . $e->payload();
 		}));
 		
-		$result = $child->dispatch('m3w.test', new Event('world'), null);
+		$result = $child->dispatch(new Event('m3w.test', 'world'), null);
 		$this->assertEquals('bye world', $result);
 	}
 	
@@ -62,7 +62,7 @@ class BasicEventNestedDispatchersTest extends TestCase
 			return 'bye ' . $e->payload();
 		}));
 		
-		$result = $child->dispatch('m3w.test', new Event('world'), null);
+		$result = $child->dispatch(new Event('m3w.test', 'world'), null);
 		$this->assertEquals('hello world', $result);
 	}
 	
@@ -80,7 +80,7 @@ class BasicEventNestedDispatchersTest extends TestCase
 			return 'bye ' . $e->payload();
 		}));
 		
-		$result = $child->dispatch('m3w.test', new Event('world', ['bubbles' => false]), null);
+		$result = $child->dispatch(new Event('m3w.test', 'world', ['bubbles' => false]), null);
 		$this->assertEquals('hello world', $result);
 	}
 }

@@ -36,7 +36,7 @@ class NestedEventTest extends TestCase
 		
 		$dispatcher->hook('m3w.test', new Listener(function (Event$e) use ($dispatcher) { 
 			$e->preventDefault();
-			return 'hello ' . $dispatcher->dispatch('m3w.test2', new Event($e->payload()), function (Event$e) {
+			return 'hello ' . $dispatcher->dispatch(new Event('m3w.test2', $e->payload()), function (Event$e) {
 				return $e->getPayload() . 'a';
 			}); 
 		}));
@@ -46,7 +46,7 @@ class NestedEventTest extends TestCase
 			return $e->payload() . 's'; 
 		}));
 		
-		$result = $dispatcher->dispatch('m3w.test', new Event('world'), function (Event$e) {
+		$result = $dispatcher->dispatch(new Event('m3w.test', 'world'), function (Event$e) {
 			return 'bye ' . $e->payload();
 		});
 		

@@ -24,16 +24,47 @@
  * THE SOFTWARE.
  */
 
+/**
+ * A hook dispatcher is just a small collection of listeners that are attached
+ * to a certain hook.
+ * 
+ * This class provides a simple iterator for the dispatch method to alleviate the 
+ * complexity of the EventDispatcher. This is not a public class.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 class HookDispatcher
 {
 	
+	/**
+	 * The array containing the listeners to be invoked whenever the hook that this
+	 * dispatcher represents is invoked.
+	 *
+	 * @var ListenerInterface[]
+	 */
 	private $listeners = [];
 	
+	/**
+	 * Push a new listener onto the list. Whenever the system dispatches an event
+	 * with the appropriate hook for this to be executed, the system will invoke
+	 * this listener.
+	 * 
+	 * @param ListenerInterface $listener
+	 * @return $this
+	 */
 	public function add (ListenerInterface$listener) {
 		$this->listeners[] = $listener;
 		return $this;
 	}
 	
+	/**
+	 * Dispatches the event to the listeners. Listeners have the option to return
+	 * a value that (if not overridden by a later listener) will be returned to the
+	 * source to use.
+	 * 
+	 * @param \spitfire\event\Event $event
+	 * @return mixed
+	 */
 	public function dispatch(Event$event) {
 		$listeners = $this->listeners;
 		$t = null;

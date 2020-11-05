@@ -92,18 +92,18 @@ class EventDispatch
 	 * really depends on the vendor of the event, please refer to their documentation
 	 * for specifics.
 	 * 
-	 * @param string $hook
 	 * @param Event $event
 	 * @param callable $continue
 	 * @return type
 	 */
-	public function dispatch(string$hook, Event$event, $continue) {
+	public function dispatch(Event$event, $continue) {
 		
 		/*
 		 * By default, the return of an event will be null. This means that no listener
 		 * interacted with the event.
 		 */
 		$_r = null;
+		$hook = $event->hook();
 		
 		/*
 		 * If a listener that is on the current event source wishes to interact with 
@@ -128,7 +128,7 @@ class EventDispatch
 		 * the parent.
 		 */
 		if ($event->bubbles() && $this->parent) {
-			$t = $this->parent->dispatch($hook, $event, $continue);
+			$t = $this->parent->dispatch($event, $continue);
 			return $t? $t : $_r;
 		}
 		

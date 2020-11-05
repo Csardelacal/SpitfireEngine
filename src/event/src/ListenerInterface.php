@@ -24,9 +24,26 @@
  * THE SOFTWARE.
  */
 
+/**
+ * Classes that implement this interface are allowed to listen for events using
+ * spitfire's event mechanism.
+ * 
+ * Whenever the listener gets invoked, your react method will be called and you 
+ * can handle the event. For the specifics of a particular event, please refer to
+ * the vendor's documentation.
+ * 
+ * @author César de la Cal Bretschneider <cesar@magic3w.com>
+ */
 interface ListenerInterface
 {
 	
+	/**
+	 * This method is invoked whenever an event that this listener is registered
+	 * for is fired. Please note that the method may not be invoked if the event
+	 * was earlier cancelled.
+	 * 
+	 * @param Event $event
+	 */
 	public function react(Event$event);
 	
 }
