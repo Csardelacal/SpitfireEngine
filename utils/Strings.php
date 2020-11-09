@@ -75,19 +75,26 @@ class Strings
 	 * @return type
 	 */
 	public static function strToHTML($str) {
-		return Strings::urls(Strings::escape($str));
+		return Strings::urls($str);
 	}
 	
 	public static function urls($str, $cb = null) {
-		$urlRegex = '#(http|https)://([a-zA-z0-9%&?/.\-_=+;@\#]+)#';
+		$urlRegex = '#(https?://[a-zA-z0-9%&?/.\-_=+;@\#]+)#';
+		$flip = false;
 		
-		#Isolate URL with spaces. We add a space after, and before a URL to prevent bogus
-		$isolated = preg_replace($urlRegex, ' $1://$2 ', $str);
-		
-		return preg_replace_callback($urlRegex, $cb?: function($e) {
-			$url = $e[0];
-			return sprintf('<a href="%s">%s</a>', $url, $url);
-		}, $isolated);
+		return collect(preg_split($urlRegex, $str, 0, PREG_SPLIT_DELIM_CAPTURE))->each(function ($e) use (&$flip, $cb) {
+			$flip = !$flip;
+			if ($flip) {
+				#HTML
+				return Strings::escape($e);
+			} 
+			else {
+				#URL
+				return ($cb ?: function($url) {
+					return sprintf('<a href="%s">%s</a>', $url, Strings::escape($url));
+				})($e);
+			}
+		})->join('');
 	}
 	
 	public static function quote($str) {
@@ -105,7 +112,7 @@ class Strings
 	 * @return type
 	 */
 	public static function escape($str) {
-		return htmlentities($str, ENT_HTML5);
+		return htmlspecialchars($str, ENT_HTML5);
 	}
 	
 	/**

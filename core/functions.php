@@ -140,7 +140,7 @@ function _u($str, $cb = null) {
  */
 function __($str, $maxlength = false) {
 	if ($maxlength) { $str = spitfire\utils\Strings::ellipsis ($str, $maxlength); }
-	return _u(_e($str));
+	return _u($str);
 }
 
 /**
