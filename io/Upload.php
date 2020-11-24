@@ -112,32 +112,6 @@ class Upload
 		#Move the file and return the path.
 		return $this->stored = $file;
 	}
-
-	/**
-	 * This function should be called before storing any uploaded file
-	 * 
-	 * Validation should be performed in the validation classes and therefore this
-	 * method has been marked as deprecated.
-	 *
-	 * @param string $expect The string corresponting to the type we want to check against
-	 * 
-	 * @deprecated since version 0.1-dev 20180710
-	 * @return self
-	 * @throws UploadValidationException
-	 */
-	public function validate($expect = 'image'){
-		switch ($expect){
-			case "image":
-				$info = getimagesize($this->meta['tmp_name']);
-				if ($info === FALSE)
-					throw new UploadValidationException('The uploaded file does not appear to be an image', 1703312326);
-				if (!in_array($info[2],[IMAGETYPE_GIF,IMAGETYPE_JPEG,IMAGETYPE_PNG]))
-					throw new UploadValidationException('The uploaded file does not match any supported file type', 1703312327);
-			break;
-		}
-
-		return $this;
-	}
 	
 	public function getData() {
 		
@@ -168,26 +142,50 @@ class Upload
 	 *
 	 * @return Filesize
 	 */
-	static function getMaxUploadSize($sizes = null){
-		if (!isset($sizes))
+	static function getMaxUploadSize($sizes = null) {
+		if (!isset($sizes)) {
 			$sizes = [
 				Filesize::parse(ini_get('post_max_size')),
 				Filesize::parse(ini_get('upload_max_filesize')),
 			];
+		}
 
 		// Sort ascending based on bytes
 		uasort($sizes, function(Filesize$a, Filesize$b){
-			return $a->getSize() > $b->getSize() ? 1 : ($a->getSize() < $b->getSize() ? -1 : 0);
+			return $a->getSize() <=> $b->getSize();
 		});
 
 		return $sizes[0];
 	}
 	
-	public function get($attribute) {
+	/**
+	 * Returns an attribute from the upload, these attributes are usually name,
+	 * type, tmp_name, size and error.
+	 * 
+	 * Please note that this method accesses PHP's metadata directly and there
+	 * 
+	 * @param string $attribute
+	 * @return string
+	 * @throws PrivateException
+	 */
+	public function attr(string $attribute) {
 		if (!isset($this->meta[$attribute])) { return null; }
 		if (is_array($this->meta[$attribute])) { throw new PrivateException('Tried to get attribute of upload array'); }
 		
 		return $this->meta[$attribute];
+	}
+	
+	/**
+	 * This method should be avoided in favor of attr() since the name get() seems
+	 * very misleading here.
+	 * 
+	 * @deprecated since version 0.1-dev
+	 * @param type $attribute
+	 * @return type
+	 */
+	public function get($attribute) {
+		trigger_error('Deprecated Upload::get, see Upload::attr', E_USER_DEPRECATED);
+		return $this->attr($attribute);
 	}
 	
 	public function __get($name) {
