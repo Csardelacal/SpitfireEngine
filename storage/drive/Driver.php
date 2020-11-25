@@ -63,7 +63,14 @@ class Driver implements DriverInterface
 	public function mime($key) {
 		return mime($this->path . $key);
 	}
-
+	
+	/**
+	 * Returns the size (in bytes) of a certain file on the file-system.
+	 * 
+	 * @todo Check the behavior of this method with stuff like /dev/one or similar
+	 * @param string $key
+	 * @return int
+	 */
 	public function length($key) {
 		return filesize($this->path . $key);
 	}

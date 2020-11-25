@@ -106,6 +106,19 @@ interface DriverInterface
 	 */
 	public function mime($key);
 	
+	/**
+	 * Returns the length in bytes of the blob. This is useful when performing seek
+	 * operations, checking whether a drive that we wish to write to has enough
+	 * capacity to receive this bob or checking whether the blob satisfies certain 
+	 * conditions to be transmitted over the network.
+	 * 
+	 * While in my original vision, the length was connected to whether the system
+	 * could stream the blob, it seems that certain mechanisms that do not support
+	 * streaming should be able to report the size of the blob they hold.
+	 * 
+	 * @todo Some blobs may not have not have a determined length in which case this should thrown an exception
+	 * @param string $key
+	 */
 	public function length($key);
 	
 	/**
