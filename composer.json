@@ -5,11 +5,17 @@
 
 	"require": {
 		"php" : ">7",
-		"spitfire/dependency-provider": "dev-master"
+		"spitfire/dependency-provider": "dev-master",
+		"psr/log": "^1.1",
+		"spitfire/request": "^0.1.0"
 	},
 	
 	"require-dev": {
 		"phpunit/phpunit": "^9.4"
+	},
+	
+	"suggest": {
+		"monolog/monolog" : "Provides logging capabilities for applications"
 	},
 
 	"autoload": {

@@ -1,5 +1,6 @@
 <?php namespace spitfire;
 
+use Psr\Log\LoggerInterface;
 use spitfire\App;
 use spitfire\core\app\AppAssetsInterface;
 use spitfire\core\app\RecursiveAppAssetLocator;
@@ -27,7 +28,21 @@ class SpitFire
 	static  $started = false;
 	
 	private $request;
+	
+	/**
+	 *
+	 * @var Provider
+	 */
 	private $provider;
+	
+	/**
+	 * Provides logging capabilities for the applications running within Spitfire.
+	 * You can select a logging mechanism by adding a PSR\log compatible logger
+	 * to the dependency injection file.
+	 *
+	 * @var LoggerInterface 
+	 */
+	private $log;
 	private $apps = Array();
 	
 	public function __construct() {
@@ -36,6 +51,7 @@ class SpitFire
 		self::$started = true;
 		
 		$this->provider = new Provider();
+		$this->log = $this->provider->get(LoggerInterface::class);
 		$this->enable();
 	}
 

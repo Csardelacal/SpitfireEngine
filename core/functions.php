@@ -8,7 +8,7 @@ use spitfire\core\http\URL;
 use spitfire\exceptions\ExceptionHandler;
 use spitfire\exceptions\ExceptionHandlerCLI;
 use spitfire\io\cli\Console;
-use spitfire\io\curl\Request;
+use spitfire\io\request\Request;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
 use spitfire\io\media\ImagickManipulator;

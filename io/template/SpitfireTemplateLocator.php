@@ -1,5 +1,10 @@
 <?php namespace spitfire\io\template;
 
+use ReflectionClass;
+use spitfire\utils\Strings;
+use function collect;
+use function spitfire;
+
 /* 
  * The MIT License
  *
@@ -27,22 +32,31 @@
 class SpitfireTemplateLocator implements TemplateLocatorInterface
 {
 	
+	private $root;
 	private $basedir;
 	
 	public function __construct($basedir) {
+		#TODO: This should be replaced with a proper location, the cwd is not the app root
+		$this->root  = spitfire()->getCWD();
 		$this->basedir = rtrim($basedir, '\/') . DIRECTORY_SEPARATOR;
+		
+		if (Strings::startsWith($this->basedir, $this->root)) {
+			$this->basedir = substr($this->basedir, strlen($this->root));
+		}
 	}
 	
 	public function element($identifier) {
 		return [
-			$this->basedir . 'elements/' . $identifier,
-			$this->basedir . 'elements/' . $identifier . '.php'
+			"override/{$this->basedir}elements/{$identifier}",
+			"override/{$this->basedir}elements/{$identifier}.php",
+			"{$this->basedir}elements/{$identifier}",
+			"{$this->basedir}elements/{$identifier}.php"
 		];
 	}
 	
 	public function exception($type, $extension) {
 		
-		$reflection = new \ReflectionClass($type);
+		$reflection = new ReflectionClass($type);
 		$candidates = collect();
 		$basedir = $this->basedir;
 
@@ -50,6 +64,10 @@ class SpitfireTemplateLocator implements TemplateLocatorInterface
 			$fqn = str_replace('\\', '/', $reflection->getName());
 
 			$candidates->add([
+				"override/{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}{$extension}.php",
+				"override/{$basedir}/bin/error_pages/{$fqn}/default{$extension}.php",
+				"override/{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}.php",
+				"override/{$basedir}/bin/error_pages/{$fqn}/default.php",
 				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}{$extension}.php",
 				"{$basedir}/bin/error_pages/{$fqn}/default{$extension}.php",
 				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}.php",
@@ -60,6 +78,10 @@ class SpitfireTemplateLocator implements TemplateLocatorInterface
 		}
 
 		$candidates->add([
+			 "override/{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
+			 "override/{$basedir}/bin/error_pages/default{$extension}.php",
+			 "override/{$basedir}/bin/error_pages/{$e->getCode()}.php",
+			 "override/{$basedir}/bin/error_pages/default.php",
 			 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
 			 "{$basedir}/bin/error_pages/default{$extension}.php",
 			 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
@@ -74,8 +96,10 @@ class SpitfireTemplateLocator implements TemplateLocatorInterface
 		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $controllerURI));
 		
 		return [
+			"override/{$this->basedir}{$controller}/{$action}{$extension}.php",
+			"override/{$this->basedir}{$controller}{$extension}.php",
 			"{$this->basedir}{$controller}/{$action}{$extension}.php",
-			"{$this->basedir}{$controller}{$extension}.php"
+			"{$this->basedir}{$controller}{$extension}.php",
 		];
 	}
 
@@ -84,6 +108,8 @@ class SpitfireTemplateLocator implements TemplateLocatorInterface
 		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $controllerURI));
 		
 		return [
+			"override/{$this->basedir}{$controller}/layout.php",
+			"override/{$this->basedir}layout.php",
 			"{$this->basedir}{$controller}/layout.php",
 			"{$this->basedir}layout.php"
 		];

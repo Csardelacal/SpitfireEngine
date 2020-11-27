@@ -29,7 +29,7 @@ class View extends MVC
 		$this->extension = $context->request->getPath()->getFormat();
 		
 		#Get the variables needed for the creation of a template
-		$locator    = $this->app->getTemplateLocator();
+		$locator    = new \spitfire\io\template\SpitfireTemplateLocator($context->app->directory());
 		$controller = $this->app->getControllerLocator()->getControllerURI($this->controller);
 		$action     = $this->action;
 		$extension  = $this->extension === 'php'? '' : '.' . $this->extension;

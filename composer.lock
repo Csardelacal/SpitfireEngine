@@ -4,8 +4,38 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac60ca7083acea26a22f8449fd1951e2",
+    "content-hash": "79d6f6ffe5f70eacc142c7465dfd03a5",
     "packages": [
+        {
+            "name": "magic3w/url-reflection",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/url-reflection.git",
+                "reference": "23bcb67767893f9225befba28cfc3aba30bf1b43"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "magic3w\\http\\url\\reflection\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Allows applications to have a URL parsed and retrieve information about it's components",
+            "time": "2020-09-11T13:26:04+00:00"
+        },
         {
             "name": "psr/container",
             "version": "1.0.0",
@@ -56,6 +86,53 @@
             "time": "2017-02-14T16:28:37+00:00"
         },
         {
+            "name": "psr/log",
+            "version": "1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2020-03-23T09:12:05+00:00"
+        },
+        {
             "name": "spitfire/dependency-provider",
             "version": "dev-master",
             "source": {
@@ -81,6 +158,39 @@
                 "MIT"
             ],
             "time": "2020-08-21T08:34:50+00:00"
+        },
+        {
+            "name": "spitfire/request",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitifire-request.git",
+                "reference": "d3b3801273b7d65f42e974834a0658d9255caacd"
+            },
+            "require": {
+                "magic3w/url-reflection": "^0.1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\io\\request\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Spitfire request mechanism",
+            "time": "2020-10-15T16:00:20+00:00"
         }
     ],
     "packages-dev": [
