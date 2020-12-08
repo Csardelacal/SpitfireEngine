@@ -1,6 +1,8 @@
 <?php namespace spitfire\core;
 
+use BadMethodCallException;
 use spitfire\core\Environment;
+use spitfire\core\http\CORS;
 
 /**
  * The headers file allows an application to manipulate the headers of the response
@@ -45,6 +47,21 @@ class Headers
 	
 	public function set ($header, $value) {
 		$this->headers[$header] = $value;
+		return $this;
+	}
+	
+	/**
+	 * Allows the application to remove a header from the current response. While
+	 * this is usually not the case (applications shouldn't be fighting internally)
+	 * it might be the case that your application needs to unset a header that 
+	 * was set earlier.
+	 * 
+	 * @param type $header
+	 * @return $this
+	 */
+	public function unset ($header) {
+		if (array_key_exists($header, $this->headers)) { unset($this->headers[$header]); }
+		return $this;
 	}
 	
 	public function get($header) {
@@ -97,10 +114,21 @@ class Headers
 		}
 	}
 	
+	/**
+	 * Manipulate these Header's CORS options. This returns a CORS object that can
+	 * be used to define how applications running on clients on a different origin
+	 * are allowed to interact with the resources on this server.
+	 * 
+	 * @return CORS
+	 */
+	public function cors() {
+		return new CORS($this);
+	}
+	
 	public function status($code= 200) {
 		#Check if the call was valid
-		if (!is_numeric($code)) { throw new \BadMethodCallException('Invalid argument. Requires a number', 1509031352); }
-		if (!isset($this->states[$code])) { throw new \BadMethodCallException('Invalid status code', 1509031353); }
+		if (!is_numeric($code)) { throw new BadMethodCallException('Invalid argument. Requires a number', 1509031352); }
+		if (!isset($this->states[$code])) { throw new BadMethodCallException('Invalid status code', 1509031353); }
 		
 		$this->status = $code;
 	}

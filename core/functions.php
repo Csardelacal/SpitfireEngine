@@ -40,7 +40,6 @@ function spitfire() {
 		return $sf; 
 	} else {
 		$sf = php_sapi_name() === 'cli'? new SpitFireCLI() : new SpitFire();
-		$sf->enable();
 		return $sf;
 	}
 }
@@ -283,10 +282,11 @@ function url() {
 	$params = func_get_args();
 
 	#Extract the app
-	if (reset($params) instanceof App || $sf->appExists(reset($params))) {
-		$app = $sf->getApp(array_shift($params));
+	try {
+		$app = $sf->getApp(reset($params));
+		array_shift($params);
 	}
-	else {
+	catch (\spitfire\core\app\AppNotFoundException$ex) {
 		$app = $sf->getApp('');
 	}
 
@@ -436,8 +436,17 @@ function lock($set = null) {
 	return $handler;
 }
 
-function basedir() {
-	return rtrim(dirname(dirname(__DIR__)), '\/') . DIRECTORY_SEPARATOR;
+function basedir($set = null) {
+	static $override = null;
+	if ($set) { $override = $set; }
+	
+	/*
+	 * Three dirnames for:
+	 * 1. engine folder
+	 * 2. spitfire folder
+	 * 3. vendor folder
+	 */
+	return $override?: rtrim(dirname(dirname(dirname(__DIR__))), '\/') . DIRECTORY_SEPARATOR;
 }
 
 function asset($name = null, $app = null) {

@@ -81,7 +81,7 @@ use spitfire\core\router\Pattern;
 	  * @param string[]|Pattern[] $parameters
 	  */
 	 public function __construct($app, $controller, $action, $object, $format = 'php', $parameters = Array()) {
-		 $this->app        = $app instanceof App? $app->getMapping()->getURISpace() : $app;
+		 $this->app        = $app instanceof App? $app->url() : $app;
 		 $this->controller = array_filter(is_array($controller)? $controller : [$controller]);
 		 $this->action     = $action;
 		 $this->object     = array_filter(is_array($object)? $object : [$object]);

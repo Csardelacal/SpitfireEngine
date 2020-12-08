@@ -4,7 +4,7 @@ class UnnamedApp extends App
 {
 	
 	public function directory(): string {
-		return dirname(dirname(__DIR__));
+		return basedir();
 	}
 
 	public function enable() {

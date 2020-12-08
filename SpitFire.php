@@ -2,6 +2,7 @@
 
 use Psr\Log\LoggerInterface;
 use spitfire\App;
+use spitfire\core\app\AppNotFoundException;
 use spitfire\core\app\AppAssetsInterface;
 use spitfire\core\app\RecursiveAppAssetLocator;
 use spitfire\core\Context;
@@ -52,13 +53,29 @@ class SpitFire
 		
 		$this->provider = new Provider();
 		$this->log = $this->provider->get(LoggerInterface::class);
-		$this->enable();
+		
 	}
 
 	public function fire() {
 		
-		#Import the apps
-		include CONFIG_DIRECTORY . 'apps.php';
+		#Try to include the user's evironment & routes
+		#It'd be interesting to move these to the index.php file of applications that
+		#wish to implement these features.
+		$overrides = [
+			basedir() . 'bin/settings/provider.php',
+			basedir() . 'bin/settings/environments.php',
+			basedir() . 'bin/settings/routes.php'
+		];
+		
+		foreach ($overrides as $file) {
+			file_exists($file) && include($file);
+		}
+		
+		#Define the current timezone
+		date_default_timezone_set(Environment::get('timezone'));
+                
+		#Set the display errors directive to the value of debug
+		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
 		
 		#Check if there is a defualt app to receive calls to /
 		if (!collect($this->apps)->filter(function (App$e) { return !$e->url(); })->rewind()) {
@@ -110,18 +127,11 @@ class SpitFire
 	 * 
 	 * @param string $uri
 	 * @param App $app
-	 * @return App
-	 * @throws PrivateException If the application was not found
-	 * @todo Move towards a app collection so Spitfire becomes apps + extensions
-	 * @todo Introduce AppNotFound exception
+	 * @return SpitFire
 	 */
-	public function app($uri, App $app = null) {
-		if (!Strings::startsWith($uri, '/')) { $uri.= '/'; }
-		
-		if ($app) { $this->apps[$uri] = $app; }
-		if (!isset($this->apps[$uri])) { throw new PrivateException(sprintf('No app defined for %s', $uri)); }
-		
-		return $this->apps[$uri];
+	public function app(App $app) {
+		$this->apps[] = $app;
+		return $this;
 	}
 	
 	/**
@@ -159,11 +169,29 @@ class SpitFire
 	
 	/**
 	 * 
-	 * @param string $namespace
+	 * @param string|App $namespace
 	 * @return App
 	 */
 	public function getApp($namespace) {
-		return collect($this->apps)->filter(function ($e) use ($namespace) { return $e->url() === $namespace; })->rewind();
+		
+		/*
+		 * If the app we passed happens to be an App object, we can immediately return
+		 * the object. Applications are (at least in theory) only able to be registered
+		 * with the single Spitfire object.
+		 */
+		if ($namespace instanceof App) {
+			return $namespace;
+		}
+		
+		/*
+		 * Loop over the applications and find the one registered for the current
+		 * namespace.
+		 */
+		$_ret = collect($this->apps)->filter(function ($e) use ($namespace) { return $e->url() === $namespace; })->rewind();
+		
+		if ($_ret) { return $_ret; }
+		elseif ($namespace == '') { return new UnnamedApp(''); }
+		else { throw new AppNotFoundException(sprintf('No app found for %s.', $namespace)); }
 	}
 	
 	public static function baseUrl(){
@@ -204,30 +232,6 @@ class SpitFire
 	 */
 	public function getCWD() {
 		return basedir();
-	}
-	
-	/**
-	 * Contents need to be moved somewhere else. This function is no longer valid
-	 * due to the fact that spitfire is no longer an app.
-	 * 
-	 * @deprecated since version 0.1-dev 20201012
-	 */
-	public function enable() {
-
-		#Try to include the user's evironment & routes
-		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'environments.php');
-		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'routes.php');
-		
-		/*
-		 * Include the config for the dependency injection.
-		 */
-		ClassInfo::includeIfPossible(CONFIG_DIRECTORY . 'provider.php');
-		
-		#Define the current timezone
-		date_default_timezone_set(Environment::get('timezone'));
-                
-		#Set the display errors directive to the value of debug
-		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
 	}
 	
 	/**

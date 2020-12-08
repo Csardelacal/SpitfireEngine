@@ -26,7 +26,7 @@ use PHPUnit\Framework\TestCase;
  * THE SOFTWARE.
  */
 
-class WhiteSpacescannerTest extends TestCase
+class WhitespaceScannerTest extends TestCase
 {
 	
 	public function testBasic() {

@@ -44,7 +44,7 @@ class Driver implements DriverInterface
 		$this->path = rtrim($dsn, '\/') . DIRECTORY_SEPARATOR;
 		
 		if (\spitfire\utils\Strings::startsWith($this->path, '@')) {
-			$this->path = basedir() . DIRECTORY_SEPARATOR . substr($this->path, 1);
+			$this->path = rtrim(basedir(), '\/') . DIRECTORY_SEPARATOR . ltrim(substr($this->path, 1), '\/');
 		}
 	}
 

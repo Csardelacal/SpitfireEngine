@@ -1,11 +1,11 @@
-<?php
+<?php namespace spitfire\mvc;
 
 
 /**
  * This class will autoinclude functions the application needs to run and return
  * the result
  */
-class _SF_Invoke
+class Invoke
 {
 	/**
 	 * This function will try to call a requested function and return it's

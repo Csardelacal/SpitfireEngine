@@ -39,11 +39,12 @@ class SpitFireCLI extends SpitFire
 		}
 		
 		#Import the apps
-		include CONFIG_DIRECTORY . 'apps.php';
+		if (!collect($this->apps())->filter(function (App$e) { return !$e->url(); })->rewind()) {
+			$this->app(new UnnamedApp(''));
+		}
 		
 		#Every app now gets the chance to create appropriate routes for it's operation
-		foreach ($this->apps() as $app) { $app->createRoutes(); }
-		$this->createRoutes();
+		foreach ($this->apps() as $app) { $app->makeRoutes(); }
 		
 		#Get the parameters from the command line interface
 		$parser = new Parser();
@@ -58,7 +59,7 @@ class SpitFireCLI extends SpitFire
 		
 		#Set the context as the current one, and load the user's middleware configuration
 		current_context($context);
-		include CONFIG_DIRECTORY . 'middleware.php';
+		file_exists(basedir() . 'bin/settings/middleware.php') && include basedir() . 'bin/settings/middleware.php';
 		
 		return $context->run();
 		

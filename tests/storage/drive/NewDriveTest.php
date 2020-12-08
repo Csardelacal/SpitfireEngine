@@ -41,7 +41,9 @@ class NewDriveTest extends TestCase
 	
 	public function testRead() {
 		$this->storage = storage();
-		$blob = $this->storage->retrieve('app://bin/settings/middleware.copy.php');
+		file_put_contents('/tmp/test.txt', 'Hello world');
+		$blob = $this->storage->retrieve('file:///tmp/test.txt');
+		
 		$this->assertNotEmpty($blob->read());
 		$this->assertNotEmpty($blob->uri());
 		$this->assertEquals(strlen($this->string), $blob->stream()->writer()->write($this->string));

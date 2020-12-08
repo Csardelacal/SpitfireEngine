@@ -1,15 +1,12 @@
 <?php namespace spitfire;
 
-use Controller;
-use ReflectionClass;
-use spitfire\core\app\ControllerLocator;
-use spitfire\core\app\NamespaceMapping;
+use spitfire\core\app\AppAssetsInterface;
+use spitfire\core\app\RecursiveAppAssetLocator;
 use spitfire\core\Environment;
 use spitfire\core\Path;
 use spitfire\core\router\Parameters;
 use spitfire\core\router\reverser\ClosureReverser;
 use spitfire\core\router\Router;
-use spitfire\mvc\View;
 
 /**
  * Spitfire Application Class. This class is the base of every other 'app', an 
@@ -20,7 +17,6 @@ use spitfire\mvc\View;
  * defines what calls Spitfire redirects to the app.
  * 
  * @author César de la Cal<cesar@magic3w.com>
- * @last-revision 2013-10-11
  */
 abstract class App
 {
@@ -91,42 +87,6 @@ abstract class App
 			
 			return '/' . trim(implode('/', array_filter(array_merge([$app], (array)$controller, [$action], $object))), '/');
 		}));
-	}
-	
-	abstract public function enable();
-	
-	/**
-	 * Allows spitfire to list all the assets for this app during installation.
-	 * 
-	 * My second choice would have been giving the application control over where
-	 * the assets are to be located. But since the app later will have no control
-	 * over the fetching of the assets, it makes sense that Spitfire builds the
-	 * assets from a list.
-	 * 
-	 * @return \spitfire\core\app\AppAssetsInterface
-	 */
-	public function assets() : core\app\AppAssetsInterface {
-		return new core\app\RecursiveAppAssetLocator($this->mapping->getBaseDir() . '/assets');
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20190527
-	 * @return string
-	 */
-	public function getNameSpace() {
-		trigger_error('Deprecated getNameSpace was invoked', E_USER_DEPRECATED);
-		return $this->mapping->getNameSpace();
-	}
-
-	/**
-	 * Returns the directory the templates are located in. This function should be 
-	 * avoided in favor of the getDirectory function.
-	 * 
-	 * @deprecated since version 0.1-dev 20150423
-	 */
-	public function getTemplateDirectory() {
-		return $this->mapping->getBaseDir() . 'templates/';
 	}
 	
 }
