@@ -94,6 +94,24 @@ class CORS
 	}
 	
 	/**
+	 * Accepts a list of methods that the user-agent may use to perform a cross 
+	 * origin request. Passing a boolean true will whitelist all methods.
+	 * 
+	 * When passing a boolean true, the server will accept requests for all available
+	 * HTTP methods.
+	 * 
+	 * @param string[]|true $methods
+	 * @return CORS
+	 */
+	public function methods($methods) {
+		
+		if ($methods === true) { $this->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS, CONNECT, TRACE, PATCH'); } 
+		else { $this->headers->set('Access-Control-Allow-Methods', collect($methods)->join(', ')); }
+		
+		return $this;
+	}
+	
+	/**
 	 * Allows the application to decide whether CORS requests should be allowed 
 	 * to send credentials. The header does not support any configuration, it's
 	 * either true or not.
@@ -103,6 +121,38 @@ class CORS
 	public function credentials($allow = true) {
 		if ($allow) { $this->headers->set('Access-Control-Allow-Credentials', 'true'); }
 		else        { $this->headers->unset('Access-Control-Allow-Credentials'); }
+	}
+	
+	/**
+	 * Instructs the user agent to expose the following headers to the application
+	 * when sending a CORS request. This is only relevant during OPTIONS requests,
+	 * otherwise the user-agent will ignore them.
+	 * 
+	 * @param array|boolean $headers
+	 * @return $this
+	 */
+	public function expose($headers) {
+		if ($headers === true) { $this->headers->set('Access-Control-Expose-Headers', '*'); } 
+		elseif ($headers === false) { $this->headers->unset('Access-Control-Expose-Headers'); }
+		else { $this->headers->set('Access-Control-Expose-Headers', collect($headers)->join(', ')); }
+		
+		return $this;
+	}
+	
+	/**
+	 * Indicates to the user-agent that the pre-flight response should be cached 
+	 * for a given amount of time. Please note that different user-agents enforce
+	 * different maximum caches, so your mileage may vary.
+	 * 
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
+	 * @param int|false $seconds
+	 * @return $this
+	 */
+	public function cache($seconds) {
+		if ($seconds === false) { $this->headers->unset('Access-Control-Max-Age', '-1'); }
+		else { $this->headers->set('Access-Control-Max-Age', $seconds); }
+		
+		return $this;
 	}
 	
 }
