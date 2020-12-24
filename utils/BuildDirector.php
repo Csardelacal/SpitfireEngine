@@ -31,26 +31,6 @@ use function console;
 class BuildDirector extends Director
 {
 	
-	public function dependencies() {
-		
-		$deps = basedir() . '/bin/settings/dependencies.php';
-		
-		if (!file_exists($deps)) {
-			throw new PrivateException('Dependencies file is not available, expeced at ' . $deps, 1909101401);
-		}
-		
-		$result = 0;
-		
-		$depend = function ($cb, $name) use (&$result) {
-			if ($cb()) { console()->success($name)->ln(); }
-			else { console()->error($name)->ln(); $result = 1; }
-		};
-		
-		include $deps;
-		
-		return $result;
-	}
-	
 	/**
 	 * Recursively builds the assets for an application. Please note that your 
 	 * application needs to be loaded for this to work.

@@ -1,5 +1,9 @@
 <?php namespace spitfire\io\media;
 
+use Exception;
+use spitfire\exceptions\PrivateException;
+use spitfire\storage\objectStorage\Blob;
+
 /* 
  * The MIT License
  *
@@ -73,7 +77,7 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function load(\spitfire\storage\objectStorage\Blob $blob): MediaManipulatorInterface {
+	public function load(Blob $blob): MediaManipulatorInterface {
 		
 		if ($this->tmp) {
 			unlink($this->tmp);
@@ -86,7 +90,7 @@ class GDManipulator implements MediaManipulatorInterface
 		$this->meta = getimagesize($this->tmp);
 
 		if (!function_exists('imagecreatefrompng')) {
-			throw new \spitfire\exceptions\PrivateException("GD is not installed.", 1805301100);
+			throw new PrivateException("GD is not installed.", 1805301100);
 		}
 		
 		switch($this->meta[2]) {
@@ -112,7 +116,7 @@ class GDManipulator implements MediaManipulatorInterface
 				$this->img = imagecreatefromgif($this->tmp);
 				break;
 			default:
-				throw new \spitfire\exceptions\PrivateException('Unsupported image type: ' . $this->meta[2]);
+				throw new PrivateException('Unsupported image type: ' . $this->meta[2]);
 		}
 		
 		return $this;
@@ -169,10 +173,10 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 
-	public function store(\spitfire\storage\objectStorage\Blob $location): \spitfire\storage\objectStorage\Blob {
+	public function store(Blob $location): Blob {
 		
 		if (!$location->isWritable()) {
-			throw new \spitfire\exceptions\PrivateException('Cannot write to target', 1805301104);
+			throw new PrivateException('Cannot write to target', 1805301104);
 		}
 		
 		switch (pathinfo($location->uri(), PATHINFO_EXTENSION)) {
@@ -196,8 +200,8 @@ class GDManipulator implements MediaManipulatorInterface
 			default:
 				imagepng($this->img, $this->tmp, $this->compression);
 				
-				try { \spitfire\io\image\PNGQuant::compress($this->tmp, $this->tmp); }
-				catch (\Exception$e) { /*If PNGQuant is not installed, we do nothing*/ }
+				try { PNGQuant::compress($this->tmp, $this->tmp); }
+				catch (Exception$e) { /*If PNGQuant is not installed, we do nothing*/ }
 		}
 		
 		$location->write(file_get_contents($this->tmp));

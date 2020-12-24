@@ -1,4 +1,4 @@
-<?php namespace spitfire\io\image;
+<?php namespace spitfire\io\media;
 
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;

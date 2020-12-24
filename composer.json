@@ -8,7 +8,8 @@
 		"spitfire/dependency-provider": "dev-master",
 		"spitfire/caching": "dev-master",
 		"spitfire/request": "dev-master",
-		"psr/log": "^1.1"
+		"psr/log": "^1.1",
+		"spitfire/database": "dev-master"
 	},
 	
 	"require-dev": {
