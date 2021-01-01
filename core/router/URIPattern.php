@@ -56,6 +56,11 @@ class URIPattern
 	 * @param string $pattern
 	 */
 	public function __construct($pattern) {
+		
+		if (Strings::startsWith($pattern, '/')) {
+			$pattern = substr($pattern, 1);
+		}
+		
 		/*
 		 * If the pattern ends in a slash it's not considered open ended, this is
 		 * important for how we parse the pattern.

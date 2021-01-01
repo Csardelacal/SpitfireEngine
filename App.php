@@ -63,15 +63,14 @@ abstract class App
 		file_exists("{$this->directory()}/settings/routes.php") && include "{$this->directory()}/settings/routes.php";
 
 		#Build some defaults
-		$us = $this->namespace();
-		$ns = $us? '/' . $us : '';
+		$ns = $this->url();
 		
 		#The default route just returns a path based on app/controller/action/object
 		#If your application does not wish this to happen, please override createRoutes
 		#with your custome code.
-		$default = Router::getInstance()->request($ns, function (Parameters$params, Parameters$server, $extension) use ($us) {
+		$default = Router::getInstance()->request($ns, function (Parameters$params, Parameters$server, $extension) {
 			$args = $params->getUnparsed();
-			return new Path($us, array_shift($args), array_shift($args), $args, $extension);
+			return new Path($this, array_shift($args), array_shift($args), $args, $extension);
 		});
 		
 		#The reverser for the default route is rather simple again. 

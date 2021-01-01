@@ -100,7 +100,7 @@ function db(Settings$options = null) {
  * @return type
  */
 function _q($str) {
-	return spitfire\utils\Strings::quote($str);
+	return \spitfire\utils\Strings::quote($str);
 }
 
 /**
@@ -112,7 +112,7 @@ function _q($str) {
  * @return string
  */
 function _e($str) {
-	return spitfire\utils\Strings::escape($str);
+	return \spitfire\utils\Strings::escape($str);
 }
 
 /**
@@ -125,7 +125,7 @@ function _e($str) {
  * @return string
  */
 function _u($str, $cb = null) {
-	return spitfire\utils\Strings::urls($str, $cb);
+	return \spitfire\utils\Strings::urls($str, $cb);
 }
 
 /**
@@ -137,7 +137,7 @@ function _u($str, $cb = null) {
  * @return String
  */
 function __($str, $maxlength = false) {
-	if ($maxlength) { $str = spitfire\utils\Strings::ellipsis ($str, $maxlength); }
+	if ($maxlength) { $str = \spitfire\utils\Strings::ellipsis ($str, $maxlength); }
 	return _u($str);
 }
 
@@ -436,7 +436,8 @@ function lock($set = null) {
 	return $handler;
 }
 
-function basedir($set = null) {
+function basedir($set = null) 
+{
 	static $override = null;
 	if ($set) { $override = $set; }
 	
@@ -456,7 +457,7 @@ function asset($name = null, $app = null) {
 		return '/' . implode('/', array_filter([ 
 			trim(SpitFire::baseUrl(), '/'),
 			trim(Environment::get('assets.directory.deploy'), '/'),
-			trim($app->getMapping()->getURISpace()?? '', '/')]));
+			trim($app->url()?? '', '/')]));
 	}
 	
 	$path = pathinfo($name, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . pathinfo($name, PATHINFO_FILENAME);
@@ -468,7 +469,7 @@ function asset($name = null, $app = null) {
 	return '/' . implode('/', array_filter([ 
 			trim(SpitFire::baseUrl(), '/'),
 			trim(Environment::get('assets.directory.deploy'), '/'),
-			trim($app->getMapping()->getURISpace()?? '', '/'),
+			trim($app->url()?? '', '/'),
 			trim($path . '.' . $extension, '/')
 		])
 	);

@@ -92,7 +92,7 @@ class Context implements ContextInterface
 	public static function create() {
 		$context = new Context;
 		$context->get        = $_GET;
-		$context->post       = new InputSanitizer($_POST);
+		$context->post       = $_POST;
 		$context->session    = Session::getInstance();
 		$context->cache      = MemcachedAdapter::getInstance();
 		$context->request    = Request::get();
@@ -101,11 +101,11 @@ class Context implements ContextInterface
 		$context->middleware = new MiddlewareStack($context);
 		
 		$context->app        = spitfire()->getApp($context->request->getPath()->getApp());
-		$context->controller = $context->app->getControllerLocator()->getController($context->request->getPath()->getController(), $context);
+		$context->controller = (new \spitfire\core\app\ControllerLocator($context->app))->getController($context->request->getPath()->getController(), $context);
 		$context->action     = $context->request->getPath()->getAction();
 		$context->object     = $context->request->getPath()->getObject();
 		
-		$context->view        = $context->app->getView($context->controller);
+		$context->view        = new \spitfire\mvc\View($context);
 		
 		try {
 			$reflector            = new ReflectionMethod($context->controller, $context->action);

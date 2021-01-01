@@ -1,5 +1,7 @@
 <?php namespace spitfire\io\template;
 
+use Throwable;
+
 /* 
  * The MIT License
  *
@@ -45,11 +47,11 @@ interface TemplateLocatorInterface
 	
 	/**
 	 * 
-	 * @param string $type
+	 * @param Throwable $e
 	 * @param string $extension
 	 * @return string[]
 	 */
-	public function exception($type, $extension);
+	public function exception(Throwable $e, $extension);
 	
 	/**
 	 * 

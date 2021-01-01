@@ -48,7 +48,7 @@ class ExceptionHandler {
 		$app       = current_context()->app;
 		$extension = Request::get()->getPath()->getFormat()? '.' . Request::get()->getPath()->getFormat() : '';
 
-		$template = new Template($app->getTemplateLocator()->exception(get_class($e), $extension));
+		$template = new Template((new \spitfire\io\template\SpitfireTemplateLocator($app? $app->directory() : basedir() . 'bin/'))->exception($e, $extension));
 
 		try { $response->getHeaders()->status($e->getCode()); }
 		catch(\Exception$ex) { $response->getHeaders()->status(500); }
@@ -83,7 +83,7 @@ class ExceptionHandler {
 				while(ob_get_clean()); 
 				
 				$response  = new Response(null);
-				$basedir   = spitfire()->getCWD();
+				$basedir   = basedir();
 				$extension = Request::get()->getPath()? '.' . Request::get()->getPath()->getFormat() : '';
 					
 				$template = new Template([

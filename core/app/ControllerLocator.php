@@ -55,7 +55,7 @@ class ControllerLocator
 	 * @return string|boolean The name of the class that has the controller
 	 */
 	public function hasController($name) {
-		$c    = $this->mapping->getNameSpace() . implode('\\', (array)$name) . 'Controller';
+		$c    = $this->mapping->namespace() . 'controllers\\' . implode('\\', (array)$name) . 'Controller';
 		if (!class_exists($c)) { return false; }
 
 		$reflection = new ReflectionClass($c);
@@ -81,10 +81,11 @@ class ControllerLocator
 		if ($c === false) { throw new PublicException("Page not found", 404, new PrivateException("Controller {$controller[0]} not found", 0) ); }
 		
 		#Otherwise we will instantiate the class and return it
+		return spitfire()->provider()->make($c, ['intent' => $intent]);
 		return new $c($intent);
 	}
 	
 	public function getControllerURI($controller) {
-		return explode('\\', substr(get_class($controller), strlen($this->mapping->getNameSpace()), 0-strlen('Controller')));
+		return explode('\\', substr(get_class($controller), strlen($this->mapping->namespace() . 'controllers'), 0-strlen('Controller')));
 	}
 }

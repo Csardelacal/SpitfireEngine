@@ -1,5 +1,6 @@
 <?php namespace spitfire\mvc;
 
+use spitfire\core\app\ControllerLocator;
 use spitfire\core\Context;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
@@ -30,7 +31,7 @@ class View extends MVC
 		
 		#Get the variables needed for the creation of a template
 		$locator    = new \spitfire\io\template\SpitfireTemplateLocator($context->app->directory());
-		$controller = $this->app->getControllerLocator()->getControllerURI($this->controller);
+		$controller = (new ControllerLocator($this->app))->getControllerURI($this->controller);
 		$action     = $this->action;
 		$extension  = $this->extension === 'php'? '' : '.' . $this->extension;
 		
@@ -116,15 +117,4 @@ class View extends MVC
 			throw new PrivateException('Missing template file for ' . get_class($this->controller) . '::' . $this->action, 1806011508, $e); 
 		}
 	}
-	
-	public function css($add = null) {
-		if ($add) { $this->css->add ($add); }
-		else      { return $this->css; }
-	}
-	
-	public function js($add = null) {
-		if ($add) $this->js->add ($add);
-		else return $this->js;
-	}
-	
 }

@@ -1,6 +1,6 @@
 <?php namespace spitfire\io\template;
 
-use ReflectionClass;
+use Throwable;
 use spitfire\utils\Strings;
 use function collect;
 use function spitfire;
@@ -54,9 +54,9 @@ class SpitfireTemplateLocator implements TemplateLocatorInterface
 		];
 	}
 	
-	public function exception($type, $extension) {
-		
-		$reflection = new ReflectionClass($type);
+	public function exception(Throwable $e, $extension) 
+	{	
+		$reflection = new \ReflectionClass(get_class($e));
 		$candidates = collect();
 		$basedir = $this->basedir;
 
@@ -103,7 +103,7 @@ class SpitfireTemplateLocator implements TemplateLocatorInterface
 		];
 	}
 
-	public function layout($controllerURI){
+	public function layout($controllerURI = null){
 		
 		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $controllerURI));
 		
