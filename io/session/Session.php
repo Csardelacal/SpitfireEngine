@@ -118,11 +118,28 @@ class Session
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
-		setcookie(session_name(), self::sessionId(), time() + $lifetime, '/');
+		
+		setcookie(
+			session_name(), 
+			self::sessionId(), 
+			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => !Environment::get('debug.mode')]
+		);
 	}
-
-	public function destroy() {
+	
+	/**
+	 * Destroys the session. This code will automatically unset the session cookie,
+	 * and delete the file (or whichever mechanism is used).
+	 */
+	public function destroy() : bool 
+	{
 		$this->start();
+		
+		setcookie(
+			session_name(), 
+			'', 
+			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => !Environment::get('debug.mode')]
+		);
+		
 		return session_destroy();
 	}
 
@@ -138,7 +155,7 @@ class Session
 
 		if ($instance !== null) { return $instance; }
 
-		$handler = Environment::get('session.handler')? : new FileSessionHandler(SESSION_SAVE_PATH);
+		$handler = Environment::get('session.handler')? : new FileSessionHandler(session_save_path());
 		return $instance = new Session($handler);
 	}
 	
