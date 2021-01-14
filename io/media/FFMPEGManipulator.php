@@ -1,5 +1,7 @@
 <?php namespace spitfire\io\media;
 
+use spitfire\exceptions\PrivateException;
+
 /* 
  * The MIT License
  *
@@ -72,6 +74,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 
 	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
 		//Ignore this for now
+		return $this;
 	}
 
 	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {

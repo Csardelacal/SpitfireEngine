@@ -124,6 +124,7 @@ class GDManipulator implements MediaManipulatorInterface
 
 	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
 		//TODO: Implement
+		return $this;
 	}
 	
 	public function at($x, $y) {

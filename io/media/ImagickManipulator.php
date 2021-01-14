@@ -74,6 +74,7 @@ class ImagickManipulator implements MediaManipulatorInterface
 
 	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
 		//TODO Implement
+		return $this;
 	}
 
 	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
