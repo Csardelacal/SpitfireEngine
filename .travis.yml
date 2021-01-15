@@ -13,8 +13,7 @@ before_script:
   # of GD (that includes imagewebp functions) nad ffmpeg
   - sudo apt-get update
   - sudo apt-get install ffmpeg
-  - sudo apt-get install -y apt-utils php"$PHP_VERSION"-gd
-  - printf "\n" | sudo pecl install imagick
+  - sudo apt-get install -y apt-utils php"$PHP_VERSION"-gd php-imagick
   
   # Initialize the composer stuff.
   - composer install
