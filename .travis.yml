@@ -7,7 +7,16 @@ services:
   - mysql
 
 before_script:
-   - sudo apt-get install ffmpeg
+   - LC_ALL=C.UTF-8 sudo add-apt-repository -y ppa:ondrej/php
+   
+   # To make sure everything works properly, we need to load ffmpeg, a modern version
+   # of GD (that includes imagewebp functions) nad ffmpeg
+   - apt-get update
+   - apt-get install ffmpeg
+   - apt-get install -y apt-utils php"$PHP_VERSION"-gd
+   - printf "\n" | pecl install imagick
+   
+   # Initialize the composer stuff.
    - composer install
    - composer dump-autoload
 

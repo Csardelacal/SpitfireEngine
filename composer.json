@@ -5,6 +5,7 @@
 
 	"require": {
 		"php" : ">7",
+		"ext-gd" : "*",
 		"spitfire/dependency-provider": "dev-master",
 		"spitfire/caching": "dev-master",
 		"psr/log": "^1.1",
