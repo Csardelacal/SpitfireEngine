@@ -36,6 +36,7 @@
 class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 {
 	
+	private static $tmpdir = '/tmp';
 	private $filename;
 	
 	public function setUp(): void {
@@ -51,7 +52,7 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testOutputWEBP() {
 		$img = media()->load(storage()->retrieve('file:/' . $this->filename));
-		$output = storage()->retrieve('file:/' . __DIR__ . '/test.webp');
+		$output = storage()->retrieve('file:/' . self::$tmpdir . '/test.webp');
 		
 		$img->store($output);
 		$this->assertEquals(true, $output->exists());
@@ -70,7 +71,7 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	}
 	
 	public static function tearDownAfterClass() : void {
-		storage()->retrieve('file:/' . __DIR__ . '/test.webp')->delete();
+		storage()->retrieve('file:/' . self::$tmpdir . '/test.webp')->delete();
 	}
 	
 }
