@@ -7,8 +7,9 @@
 		"php" : ">7",
 		"spitfire/dependency-provider": "dev-master",
 		"spitfire/caching": "dev-master",
-		"spitfire/request": "dev-master",
 		"psr/log": "^1.1",
+		"spitfire/request": "^0.1.0",
+		"spitfire/cli": "dev-master",
 		"spitfire/database": "dev-master"
 	},
 	
@@ -28,5 +29,7 @@
         		"spitfire\\": "./"
 	        }
 
-	}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }

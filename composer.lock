@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e81b50f107e91f648257ae738ff1f080",
+    "content-hash": "3ccc122573d0a602c60ea45a8b56bb05",
     "packages": [
         {
             "name": "magic3w/url-reflection",
-            "version": "v0.1.0",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/url-reflection.git",
-                "reference": "23bcb67767893f9225befba28cfc3aba30bf1b43"
+                "reference": "6d7529af43c2cb1ed264e9b88d257ac4066b641c"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.3"
@@ -34,7 +34,7 @@
                 }
             ],
             "description": "Allows applications to have a URL parsed and retrieve information about it's components",
-            "time": "2020-09-11T13:26:04+00:00"
+            "time": "2020-11-04T12:01:53+00:00"
         },
         {
             "name": "psr/container",
@@ -171,6 +171,63 @@
             "time": "2020-10-28T14:49:56+00:00"
         },
         {
+            "name": "spitfire/cli",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-cli.git",
+                "reference": "e9a8edcac4da73ab4567c4c463dbbdc8e19a7160"
+            },
+            "require": {
+                "spitfire/collection": "dev-master"
+            },
+            "default-branch": true,
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "CLI Components for Spitfire",
+            "time": "2020-12-09T18:35:05+00:00"
+        },
+        {
+            "name": "spitfire/collection",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-collection.git",
+                "reference": "91331bd1f15d9c15d363734bd477c7bd363291a5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\collection\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Provides collections for spitfire/engine",
+            "time": "2020-10-19T09:26:22+00:00"
+        },
+        {
             "name": "spitfire/database",
             "version": "dev-master",
             "source": {
@@ -231,10 +288,10 @@
         },
         {
             "name": "spitfire/request",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitifire-request.git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-request.git",
                 "reference": "d3b3801273b7d65f42e974834a0658d9255caacd"
             },
             "require": {
@@ -243,7 +300,6 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.4"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2171,16 +2227,16 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.20.0",
+            "version": "v1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "f4ba089a5b6366e453971d3aad5fe8e897b37f41"
+                "reference": "c6c942b1ac76c82448322025e084cadc56048b4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/f4ba089a5b6366e453971d3aad5fe8e897b37f41",
-                "reference": "f4ba089a5b6366e453971d3aad5fe8e897b37f41",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/c6c942b1ac76c82448322025e084cadc56048b4e",
+                "reference": "c6c942b1ac76c82448322025e084cadc56048b4e",
                 "shasum": ""
             },
             "require": {
@@ -2192,7 +2248,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.20-dev"
+                    "dev-main": "1.22-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -2230,7 +2286,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.20.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
             },
             "funding": [
                 {
@@ -2246,7 +2302,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-23T14:02:19+00:00"
+            "time": "2021-01-07T16:49:33+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -2353,14 +2409,14 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "spitfire/dependency-provider": 20,
         "spitfire/caching": 20,
-        "spitfire/request": 20,
+        "spitfire/cli": 20,
         "spitfire/database": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">7"

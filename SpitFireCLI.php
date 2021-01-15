@@ -2,7 +2,7 @@
 
 use spitfire\core\ContextCLI;
 use spitfire\exceptions\PublicException;
-use spitfire\io\cli\arguments\Parser;
+use spitfire\cli\arguments\Parser;
 use const CONFIG_DIRECTORY;
 use function current_context;
 
