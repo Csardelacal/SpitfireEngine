@@ -52,7 +52,6 @@ class SpitFire
 		self::$started = true;
 		
 		$this->provider = new Provider();
-		$this->log = $this->provider->get(LoggerInterface::class);
 		
 	}
 
