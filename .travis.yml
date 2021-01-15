@@ -12,8 +12,20 @@ before_script:
   # To make sure everything works properly, we need to load ffmpeg, a modern version
   # of GD (that includes imagewebp functions) nad ffmpeg
   - sudo apt-get update
-  - sudo apt-get install ffmpeg
-  - sudo apt-get install -y apt-utils php"$PHP_VERSION"-gd php-imagick
+  - sudo apt-get install -y ffmpeg
+  - sudo apt-get install -y apt-utils php"$PHP_VERSION"-cli php"$PHP_VERSION"-gd php-imagick
+  
+  # There's a need for a patch in order to make imagewebp work.
+  # The script we pulled this from includes a lot of debugging output
+  # https://travis-ci.community/t/how-to-enable-webp-image-format-support-in-php-7/3209/19
+  - php -v
+  - rm -f /home/travis/.phpenv/shims/php
+  - ln -s /usr/bin/php /home/travis/.phpenv/shims/php
+  - which php
+  - php -r "var_dump(function_exists('imagewebp'));"
+  - php -r "var_dump(gd_info());"
+  - /usr/bin/php -r "var_dump(function_exists('imagewebp'));"
+  - /usr/bin/php -r "var_dump(gd_info());"
   
   # Initialize the composer stuff.
   - composer install
