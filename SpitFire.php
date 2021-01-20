@@ -61,7 +61,6 @@ class SpitFire
 		#It'd be interesting to move these to the index.php file of applications that
 		#wish to implement these features.
 		$overrides = [
-			basedir() . 'bin/settings/provider.php',
 			basedir() . 'bin/settings/environments.php',
 			basedir() . 'bin/settings/routes.php'
 		];
@@ -69,12 +68,6 @@ class SpitFire
 		foreach ($overrides as $file) {
 			file_exists($file) && include($file);
 		}
-		
-		#Define the current timezone
-		date_default_timezone_set(Environment::get('timezone'));
-                
-		#Set the display errors directive to the value of debug
-		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
 		
 		#Check if there is a defualt app to receive calls to /
 		if (!collect($this->apps)->filter(function (App$e) { return !$e->url(); })->rewind()) {

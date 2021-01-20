@@ -1,9 +1,6 @@
 #!/usr/bin/php
 <?php
 
-include __DIR__ . '/vendor/autoload.php';
-basedir(__DIR__);
-
 /**
  * This is the main file of Spitfire, it is in charge of loading
  * system settings (for custom operation) and also of summoning
@@ -16,19 +13,11 @@ basedir(__DIR__);
  * @copyright 2018 Magic3W - All rights reserved
  */
 
-/* Set error handling directives. AS we do not want Apache / PHP
- * to send the data to the user but to our terminal we will tell
- * it to output the errors. Thanks to this linux command:
- * # tail -f *logfile*
- * We can watch errors happening live. Grepping them can also help
- * filtering.
+/* Include Spitfire core.
  */
-ini_set("log_errors" , 1);
-ini_set("error_log" , "logs/error_log.log");
-ini_set("display_errors" , 0);
+define('BASEDIR', __DIR__);
 
-
-ini_set('memory_limit', '4G');/**/
+include __DIR__ . '/vendor/autoload.php';
 
 /* Call the selected controller with the selected method. */
 exit(spitfire()->fire());
