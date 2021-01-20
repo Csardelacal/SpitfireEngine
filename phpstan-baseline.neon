@@ -56,14 +56,24 @@ parameters:
 			path: SpitFireCLI.php
 
 		-
-			message: "#^Call to static method registerClass\\(\\) on an unknown class spitfire\\\\autoload\\\\AutoLoad\\.$#"
-			count: 57
-			path: autoload_core_files.php
+			message: "#^Instantiated class spitfire\\\\cli\\\\arguments\\\\Parser not found\\.$#"
+			count: 1
+			path: SpitFireCLI.php
 
 		-
-			message: "#^Constant SPITFIRE_BASEDIR not found\\.$#"
-			count: 57
-			path: autoload_core_files.php
+			message: "#^Call to method read\\(\\) on an unknown class spitfire\\\\cli\\\\arguments\\\\Parser\\.$#"
+			count: 1
+			path: SpitFireCLI.php
+
+		-
+			message: "#^Parameter \\#2 \\$newvalue of function ini_set expects string, int given\\.$#"
+			count: 1
+			path: bootstrap.php
+
+		-
+			message: "#^Parameter \\#1 \\$elements of method spitfire\\\\core\\\\collection\\\\DefinedCollection\\:\\:add\\(\\) expects array, spitfire\\\\core\\\\Collection given\\.$#"
+			count: 2
+			path: core/Collection.php
 
 		-
 			message: "#^Parameter \\$callable of method spitfire\\\\core\\\\Collection\\:\\:groupBy\\(\\) has invalid typehint type spitfire\\\\core\\\\Closure\\.$#"
@@ -76,19 +86,64 @@ parameters:
 			path: core/Collection.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\App\\:\\:getControllerLocator\\(\\)\\.$#"
+			message: "#^Property spitfire\\\\core\\\\Context\\:\\:\\$controller has unknown class Controller as its type\\.$#"
 			count: 1
 			path: core/Context.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\App\\:\\:getView\\(\\)\\.$#"
+			message: "#^Property spitfire\\\\core\\\\Context\\:\\:\\$controller \\(Controller\\) does not accept spitfire\\\\core\\\\app\\\\Controller\\.$#"
 			count: 1
 			path: core/Context.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\ContextCLI\\:\\:\\$context \\(spitfire\\\\core\\\\Context\\) does not accept \\$this\\(spitfire\\\\core\\\\ContextCLI\\)\\.$#"
+			count: 2
+			path: core/ContextCLI.php
+
+		-
+			message: "#^Parameter \\$args of method spitfire\\\\core\\\\ContextCLI\\:\\:create\\(\\) has invalid typehint type spitfire\\\\cli\\\\arguments\\\\CLIArguments\\.$#"
+			count: 1
+			path: core/ContextCLI.php
+
+		-
+			message: "#^Call to method arguments\\(\\) on an unknown class spitfire\\\\cli\\\\arguments\\\\CLIArguments\\.$#"
+			count: 1
+			path: core/ContextCLI.php
+
+		-
+			message: "#^Call to method parameters\\(\\) on an unknown class spitfire\\\\cli\\\\arguments\\\\CLIArguments\\.$#"
+			count: 1
+			path: core/ContextCLI.php
 
 		-
 			message: "#^Parameter \\$header of method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) has invalid typehint type spitfire\\\\core\\\\type\\.$#"
 			count: 1
 			path: core/Headers.php
+
+		-
+			message: "#^Invalid array key type spitfire\\\\core\\\\type\\.$#"
+			count: 1
+			path: core/Headers.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of function array_key_exists expects int\\|string, spitfire\\\\core\\\\type given\\.$#"
+			count: 1
+			path: core/Headers.php
+
+		-
+			message: "#^Instanceof between string and spitfire\\\\App will always evaluate to false\\.$#"
+			count: 1
+			path: core/Path.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 2
+			path: core/Path.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of class spitfire\\\\core\\\\Response constructor expects spitfire\\\\core\\\\Context\\|string, null given\\.$#"
+			count: 1
+			path: core/Request.php
 
 		-
 			message: "#^Return typehint of method spitfire\\\\core\\\\Request\\:\\:makeContext\\(\\) has invalid type spitfire\\\\core\\\\type\\.$#"
@@ -101,9 +156,64 @@ parameters:
 			path: core/Request.php
 
 		-
+			message: "#^Property spitfire\\\\core\\\\Request\\:\\:\\$headers \\(spitfire\\\\core\\\\Headers\\) does not accept spitfire\\\\core\\\\request\\\\Headers\\.$#"
+			count: 1
+			path: core/Request.php
+
+		-
+			message: "#^Cannot clone non\\-object variable \\$_GET of type array\\<string, mixed\\>\\.$#"
+			count: 1
+			path: core/Request.php
+
+		-
+			message: "#^Instanceof between array\\<string, mixed\\> and spitfire\\\\io\\\\Get will always evaluate to false\\.$#"
+			count: 1
+			path: core/Request.php
+
+		-
+			message: "#^Parameter \\#5 \\$headers of class spitfire\\\\core\\\\Request constructor expects spitfire\\\\core\\\\Headers, array\\<string, mixed\\> given\\.$#"
+			count: 1
+			path: core/Request.php
+
+		-
+			message: "#^Parameter \\#7 \\$https of class spitfire\\\\core\\\\Request constructor expects bool, string given\\.$#"
+			count: 1
+			path: core/Request.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: core/Request.php
+
+		-
+			message: "#^Parameter \\#1 \\$src of class spitfire\\\\io\\\\stream\\\\StreamSegment constructor expects spitfire\\\\io\\\\stream\\\\SeekableStreamInterface, spitfire\\\\io\\\\stream\\\\StreamReaderInterface given\\.$#"
+			count: 1
+			path: core/Response.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\annotations\\\\AnnotationParser\\:\\:parse\\(\\) should return array\\<array\\<array\\<string\\>\\>\\> but returns array\\<string, array\\<int, string\\>\\>\\.$#"
+			count: 1
+			path: core/annotations/AnnotationParser.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\core\\\\app\\\\NamespaceMapping\\:\\:namespace\\(\\)\\.$#"
+			count: 2
+			path: core/app/ControllerLocator.php
+
+		-
 			message: "#^Return typehint of method spitfire\\\\core\\\\app\\\\ControllerLocator\\:\\:getController\\(\\) has invalid type spitfire\\\\core\\\\app\\\\Controller\\.$#"
 			count: 1
 			path: core/app/ControllerLocator.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: core/app/ControllerLocator.php
+
+		-
+			message: "#^Instanceof between array and spitfire\\\\core\\\\Collection will always evaluate to false\\.$#"
+			count: 1
+			path: core/collection/DefinedCollection.php
 
 		-
 			message: "#^Parameter \\$name of method spitfire\\\\core\\\\collection\\\\DefinedCollection\\:\\:__isset\\(\\) has invalid typehint type spitfire\\\\core\\\\collection\\\\type\\.$#"
@@ -116,12 +226,22 @@ parameters:
 			path: core/collection/DefinedCollection.php
 
 		-
+			message: "#^Parameter \\#1 \\$key of function array_key_exists expects int\\|string, spitfire\\\\core\\\\collection\\\\type given\\.$#"
+			count: 1
+			path: core/collection/DefinedCollection.php
+
+		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$fn$#"
 			count: 1
 			path: core/event/EventDispatcher.php
 
 		-
 			message: "#^Return typehint of method spitfire\\\\core\\\\event\\\\EventDispatcher\\:\\:dispatch\\(\\) has invalid type spitfire\\\\core\\\\event\\\\type\\.$#"
+			count: 1
+			path: core/event/EventDispatcher.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\event\\\\EventDispatcher\\:\\:dispatch\\(\\) should return spitfire\\\\core\\\\event\\\\type but empty return statement found\\.$#"
 			count: 1
 			path: core/event/EventDispatcher.php
 
@@ -151,27 +271,17 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Call to static method quote\\(\\) on an unknown class spitfire\\\\SpitFire\\\\utils\\\\Strings\\.$#"
+			message: "#^Function _e\\(\\) should return string but returns spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: core/functions.php
 
 		-
-			message: "#^Call to static method escape\\(\\) on an unknown class spitfire\\\\SpitFire\\\\utils\\\\Strings\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Call to static method urls\\(\\) on an unknown class spitfire\\\\SpitFire\\\\utils\\\\Strings\\.$#"
+			message: "#^Parameter \\#1 \\$str of static method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) expects spitfire\\\\utils\\\\type, string given\\.$#"
 			count: 1
 			path: core/functions.php
 
 		-
 			message: "#^Default value of the parameter \\#2 \\$maxlength \\(false\\) of function __\\(\\) is incompatible with type int\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Call to static method ellipsis\\(\\) on an unknown class spitfire\\\\SpitFire\\\\utils\\\\Strings\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -196,12 +306,22 @@ parameters:
 			path: core/functions.php
 
 		-
+			message: "#^Instantiated class spitfire\\\\cli\\\\Console not found\\.$#"
+			count: 1
+			path: core/functions.php
+
+		-
 			message: "#^Call to an undefined method spitfire\\\\App\\:\\:getControllerLocator\\(\\)\\.$#"
 			count: 1
 			path: core/functions.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$uri$#"
+			count: 1
+			path: core/functions.php
+
+		-
+			message: "#^Function event\\(\\) should return spitfire\\\\core\\\\event\\\\EventDispatcher but returns spitfire\\\\core\\\\event\\\\Event\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -216,9 +336,39 @@ parameters:
 			path: core/http/AbsoluteURL.php
 
 		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: core/http/AbsoluteURL.php
+
+		-
 			message: "#^Instantiated class spitfire\\\\core\\\\http\\\\PrivateException not found\\.$#"
 			count: 1
 			path: core/http/AbsoluteURL.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\core\\\\http\\\\PrivateException\\.$#"
+			count: 1
+			path: core/http/AbsoluteURL.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: core/http/AbsoluteURL.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\http\\\\AbsoluteURL\\:\\:\\$reverser \\(spitfire\\\\core\\\\router\\\\reverser\\\\ServerReverserInterface\\) does not accept null\\.$#"
+			count: 1
+			path: core/http/AbsoluteURL.php
+
+		-
+			message: "#^Parameter \\#1 \\$header of method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) expects spitfire\\\\core\\\\type, string given\\.$#"
+			count: 1
+			path: core/http/CORS.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\http\\\\LanguageAccept\\:\\:\\$locale \\(string\\) does not accept null\\.$#"
+			count: 1
+			path: core/http/LanguageAccept.php
 
 		-
 			message: "#^Variable \\$rev might not be defined\\.$#"
@@ -231,7 +381,32 @@ parameters:
 			path: core/http/URL.php
 
 		-
+			message: "#^Instanceof between mixed and spitfire\\\\core\\\\parser\\\\parser\\\\Multiple will always evaluate to false\\.$#"
+			count: 1
+			path: core/parser/parser/Block.php
+
+		-
+			message: "#^Instanceof between mixed and spitfire\\\\core\\\\parser\\\\parser\\\\Optional will always evaluate to false\\.$#"
+			count: 1
+			path: core/parser/parser/Block.php
+
+		-
+			message: "#^Parameter \\#2 \\$nodes of class spitfire\\\\core\\\\parser\\\\parser\\\\ParseTree constructor expects spitfire\\\\core\\\\parser\\\\parser\\\\type, array\\<int, mixed\\> given\\.$#"
+			count: 1
+			path: core/parser/parser/Block.php
+
+		-
 			message: "#^Parameter \\$tokens of method spitfire\\\\core\\\\parser\\\\parser\\\\Optional\\:\\:test\\(\\) has invalid typehint type spitfire\\\\core\\\\parser\\\\parser\\\\type\\.$#"
+			count: 1
+			path: core/parser/parser/Optional.php
+
+		-
+			message: "#^Parameter \\#1 \\$tokens of method spitfire\\\\core\\\\parser\\\\parser\\\\Block\\:\\:test\\(\\) expects spitfire\\\\core\\\\parser\\\\TokenBuffer, spitfire\\\\core\\\\parser\\\\parser\\\\type given\\.$#"
+			count: 1
+			path: core/parser/parser/Optional.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\parser\\\\parser\\\\Optional\\:\\:test\\(\\) should return bool but returns null\\.$#"
 			count: 1
 			path: core/parser/parser/Optional.php
 
@@ -239,6 +414,96 @@ parameters:
 			message: "#^Parameter \\$nodes of method spitfire\\\\core\\\\parser\\\\parser\\\\ParseTree\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\parser\\\\parser\\\\type\\.$#"
 			count: 1
 			path: core/parser/parser/ParseTree.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\parser\\\\parser\\\\ParseTree\\:\\:\\$leafs \\(array\\) does not accept spitfire\\\\core\\\\parser\\\\parser\\\\type\\.$#"
+			count: 1
+			path: core/parser/parser/ParseTree.php
+
+		-
+			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, spitfire\\\\core\\\\parser\\\\lexemes\\\\LexemeInterface given\\.$#"
+			count: 1
+			path: core/parser/printer/Printer.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\parser\\\\scanner\\\\IntegerLiteralScanner\\:\\:setBody\\(\\) should return spitfire\\\\core\\\\parser\\\\lexemes\\\\Literal but returns \\$this\\(spitfire\\\\core\\\\parser\\\\scanner\\\\IntegerLiteralScanner\\)\\.$#"
+			count: 1
+			path: core/parser/scanner/IntegerLiteralScanner.php
+
+		-
+			message: "#^Parameter \\#1 \\$src of static method spitfire\\\\core\\\\router\\\\ParametrizedPath\\:\\:replaceIn\\(\\) expects spitfire\\\\core\\\\router\\\\Pattern, array\\<string\\> given\\.$#"
+			count: 3
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Parameter \\#1 \\$src of static method spitfire\\\\core\\\\router\\\\ParametrizedPath\\:\\:replaceIn\\(\\) expects spitfire\\\\core\\\\router\\\\Pattern, string given\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Parameter \\#1 \\$arr1 of function array_merge expects array, spitfire\\\\core\\\\router\\\\Pattern given\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Parameter \\#6 \\$parameters of class spitfire\\\\core\\\\Path constructor expects array\\<spitfire\\\\core\\\\router\\\\Pattern\\|string\\>, spitfire\\\\core\\\\router\\\\Pattern given\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with spitfire\\\\core\\\\router\\\\Pattern will always evaluate to false\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\ParametrizedPath\\:\\:replaceIn\\(\\) should return spitfire\\\\core\\\\router\\\\Pattern but returns array\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\ParametrizedPath\\:\\:replaceIn\\(\\) should return spitfire\\\\core\\\\router\\\\Pattern but returns false\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Parameter \\#1 \\$array_arg of function current expects array, string given\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Parameter \\#1 \\$app of class spitfire\\\\core\\\\router\\\\ParametrizedPath constructor expects spitfire\\\\App\\|spitfire\\\\core\\\\router\\\\Pattern\\|string\\|null, array\\<string\\>\\|null given\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Parameter \\#5 \\$format of class spitfire\\\\core\\\\router\\\\ParametrizedPath constructor expects array\\<string\\>\\|string, null given\\.$#"
+			count: 1
+			path: core/router/ParametrizedPath.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\router\\\\Pattern\\:\\:\\$name \\(string\\) does not accept null\\.$#"
+			count: 1
+			path: core/router/Pattern.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\Pattern\\:\\:test\\(\\) should return string but returns array\\.$#"
+			count: 1
+			path: core/router/Pattern.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\Redirection\\:\\:setReverser\\(\\) should return spitfire\\\\core\\\\router\\\\Route but returns \\$this\\(spitfire\\\\core\\\\router\\\\Redirection\\)\\.$#"
+			count: 1
+			path: core/router/Redirection.php
 
 		-
 			message: "#^Parameter \\$URI of method spitfire\\\\core\\\\router\\\\Redirection\\:\\:rewrite\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\type\\.$#"
@@ -261,7 +526,82 @@ parameters:
 			path: core/router/Redirection.php
 
 		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\Redirection\\:\\:rewrite\\(\\) should return string but returns spitfire\\\\core\\\\router\\\\type\\.$#"
+			count: 1
+			path: core/router/Redirection.php
+
+		-
+			message: "#^Parameter \\#1 \\$parameters of method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) expects spitfire\\\\core\\\\router\\\\type, spitfire\\\\core\\\\router\\\\Parameters given\\.$#"
+			count: 2
+			path: core/router/Redirection.php
+
+		-
+			message: "#^Parameter \\#1 \\$uri of method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:test\\(\\) expects string, spitfire\\\\core\\\\router\\\\type given\\.$#"
+			count: 1
+			path: core/router/Redirection.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\Redirection\\:\\:rewrite\\(\\) should return string but returns false\\.$#"
+			count: 2
+			path: core/router/Redirection.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\Redirection\\:\\:reverse\\(\\) should return string but returns spitfire\\\\core\\\\router\\\\type\\.$#"
+			count: 1
+			path: core/router/Redirection.php
+
+		-
+			message: "#^Call to function is_int\\(\\) with bool will always evaluate to false\\.$#"
+			count: 1
+			path: core/router/RewriteRule.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\RewriteRule\\:\\:testProto\\(\\) should return bool but returns int\\.$#"
+			count: 1
+			path: core/router/RewriteRule.php
+
+		-
+			message: "#^Instanceof between \\*NEVER\\* and spitfire\\\\core\\\\router\\\\URIPattern will always evaluate to false\\.$#"
+			count: 1
+			path: core/router/Routable.php
+
+		-
+			message: "#^Result of \\|\\| is always true\\.$#"
+			count: 1
+			path: core/router/Routable.php
+
+		-
+			message: "#^Parameter \\#4 \\$method of class spitfire\\\\core\\\\router\\\\Redirection constructor expects string, int given\\.$#"
+			count: 1
+			path: core/router/Routable.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: core/router/Routable.php
+
+		-
+			message: "#^Instanceof between spitfire\\\\core\\\\router\\\\URIPattern and Closure will always evaluate to false\\.$#"
+			count: 1
+			path: core/router/Route.php
+
+		-
+			message: "#^Instanceof between spitfire\\\\core\\\\router\\\\URIPattern and spitfire\\\\core\\\\router\\\\ParametrizedPath will always evaluate to false\\.$#"
+			count: 2
+			path: core/router/Route.php
+
+		-
 			message: "#^Method spitfire\\\\core\\\\router\\\\Route\\:\\:rewrite\\(\\) should return spitfire\\\\core\\\\Path\\|spitfire\\\\core\\\\Response but return statement is missing\\.$#"
+			count: 1
+			path: core/router/Route.php
+
+		-
+			message: "#^Result of \\|\\| is always true\\.$#"
+			count: 1
+			path: core/router/Route.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 1
 			path: core/router/Route.php
 
@@ -279,6 +619,16 @@ parameters:
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$protocol$#"
 			count: 1
 			path: core/router/Router.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with string will always evaluate to false\\.$#"
+			count: 1
+			path: core/router/URIPattern.php
+
+		-
+			message: "#^Parameter \\#1 \\$params of method spitfire\\\\core\\\\router\\\\Parameters\\:\\:addParameters\\(\\) expects array\\<string\\>, string given\\.$#"
+			count: 1
+			path: core/router/URIPattern.php
 
 		-
 			message: "#^Parameter \\$parameters of method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\type\\.$#"
@@ -301,6 +651,66 @@ parameters:
 			path: core/router/URIPattern.php
 
 		-
+			message: "#^Access to offset mixed on an unknown class spitfire\\\\core\\\\router\\\\type\\.$#"
+			count: 1
+			path: core/router/URIPattern.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$args of function array_merge expects array, string given\\.$#"
+			count: 1
+			path: core/router/URIPattern.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) should return spitfire\\\\core\\\\router\\\\type but returns string\\.$#"
+			count: 1
+			path: core/router/URIPattern.php
+
+		-
+			message: "#^Parameter \\#1 \\$exception_handler of function set_exception_handler expects \\(callable\\(Throwable\\)\\: void\\)\\|null, array\\(\\$this\\(spitfire\\\\exceptions\\\\ExceptionHandler\\), 'exceptionHandle'\\) given\\.$#"
+			count: 1
+			path: exceptions/ExceptionHandler.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of class spitfire\\\\core\\\\Response constructor expects spitfire\\\\core\\\\Context\\|string, null given\\.$#"
+			count: 2
+			path: exceptions/ExceptionHandler.php
+
+		-
+			message: "#^Parameter \\#1 \\$exception_handler of function set_exception_handler expects \\(callable\\(Throwable\\)\\: void\\)\\|null, array\\(\\$this\\(spitfire\\\\exceptions\\\\ExceptionHandlerCLI\\), 'exceptionHandle'\\) given\\.$#"
+			count: 1
+			path: exceptions/ExceptionHandlerCLI.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: exceptions/ExceptionHandlerCLI.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\CharsetEncoder\\:\\:encode\\(\\) should return string but returns null\\.$#"
+			count: 1
+			path: io/CharsetEncoder.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
+			count: 2
+			path: io/CharsetEncoder.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\CharsetEncoder\\:\\:decode\\(\\) should return string but returns null\\.$#"
+			count: 1
+			path: io/CharsetEncoder.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with string will always evaluate to false\\.$#"
+			count: 1
+			path: io/Get.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\Get\\:\\:getRaw\\(\\) should return spitfire\\\\io\\\\Get but returns array\\<int\\|string, mixed\\>\\.$#"
+			count: 1
+			path: io/Get.php
+
+		-
 			message: "#^Function array_key_exists invoked with 1 parameter, 2 required\\.$#"
 			count: 1
 			path: io/Get.php
@@ -311,9 +721,74 @@ parameters:
 			path: io/Get.php
 
 		-
+			message: "#^Parameter \\#2 \\$assoc of function json_decode expects bool, int given\\.$#"
+			count: 2
+			path: io/Post.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\Upload\\:\\:store\\(\\) should return spitfire\\\\storage\\\\objectStorage\\\\FileInterface but returns string\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
+			count: 2
+			path: io/Upload.php
+
+		-
+			message: "#^Parameter \\#1 \\$number of function base_convert expects string, int given\\.$#"
+			count: 2
+			path: io/Upload.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\Upload\\:\\:store\\(\\) should return spitfire\\\\storage\\\\objectStorage\\\\FileInterface but returns spitfire\\\\storage\\\\objectStorage\\\\Blob\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Property spitfire\\\\io\\\\Upload\\:\\:\\$stored \\(string\\|null\\) does not accept spitfire\\\\storage\\\\objectStorage\\\\Blob\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\Upload\\:\\:attr\\(\\) should return string but returns null\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Parameter \\$attribute of method spitfire\\\\io\\\\Upload\\:\\:get\\(\\) has invalid typehint type spitfire\\\\io\\\\type\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Return typehint of method spitfire\\\\io\\\\Upload\\:\\:get\\(\\) has invalid type spitfire\\\\io\\\\type\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\Upload\\:\\:get\\(\\) should return spitfire\\\\io\\\\type but returns string\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Parameter \\#1 \\$attribute of method spitfire\\\\io\\\\Upload\\:\\:attr\\(\\) expects string, spitfire\\\\io\\\\type given\\.$#"
+			count: 1
+			path: io/Upload.php
+
+		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
+			count: 3
+			path: io/asset/JPEGPreprocessor.php
+
+		-
 			message: "#^Call to static method compress\\(\\) on an unknown class spitfire\\\\io\\\\image\\\\PNGQuant\\.$#"
 			count: 1
 			path: io/asset/PNGPreprocessor.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\beans\\\\BasicField\\:\\:addRule\\(\\) should return spitfire\\\\validation\\\\Validator but returns \\$this\\(spitfire\\\\io\\\\beans\\\\BasicField\\)\\.$#"
+			count: 1
+			path: io/beans/basic_field.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\model\\\\Field\\:\\:getTarget\\(\\)\\.$#"
@@ -371,9 +846,34 @@ parameters:
 			path: io/beans/field.php
 
 		-
+			message: "#^Call to an undefined method spitfire\\\\io\\\\Upload\\:\\:validate\\(\\)\\.$#"
+			count: 1
+			path: io/beans/file_field.php
+
+		-
 			message: "#^Access to an undefined property spitfire\\\\io\\\\beans\\\\FileField\\:\\:\\$type\\.$#"
 			count: 1
 			path: io/beans/file_field.php
+
+		-
+			message: "#^Parameter \\#1 \\$array_arg of function end is passed by reference, so it expects variables only\\.$#"
+			count: 1
+			path: io/beans/file_field.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\beans\\\\FileField\\:\\:getMaxFileSize\\(\\) should return bool\\|int but returns null\\.$#"
+			count: 1
+			path: io/beans/file_field.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\beans\\\\FileField\\:\\:getSupportedFileFormats\\(\\) should return array\\<string\\>\\|bool but returns null\\.$#"
+			count: 1
+			path: io/beans/file_field.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\beans\\\\LongTextField\\:\\:getMaxLength\\(\\) should return bool\\|int but returns null\\.$#"
+			count: 1
+			path: io/beans/long_text_field.php
 
 		-
 			message: "#^Return typehint of method spitfire\\\\io\\\\beans\\\\ManyToManyField\\:\\:getRequestValue\\(\\) has invalid type spitfire\\\\io\\\\beans\\\\Model\\.$#"
@@ -383,6 +883,11 @@ parameters:
 		-
 			message: "#^Call to an undefined method spitfire\\\\model\\\\Field\\:\\:getTarget\\(\\)\\.$#"
 			count: 3
+			path: io/beans/manytomany_field.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\beans\\\\ManyToManyField\\:\\:setMinimumEntries\\(\\) should return spitfire\\\\io\\\\beans\\\\ChildBean but returns \\$this\\(spitfire\\\\io\\\\beans\\\\ManyToManyField\\)\\.$#"
+			count: 1
 			path: io/beans/manytomany_field.php
 
 		-
@@ -416,21 +921,6 @@ parameters:
 			path: io/beans/text_field.php
 
 		-
-			message: "#^Binary operation \"\\-\" between string and int\\<0, max\\> results in an error\\.$#"
-			count: 1
-			path: io/cli/ProgressBar.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\io\\\\cli\\\\arguments\\\\PrivateException not found\\.$#"
-			count: 1
-			path: io/cli/arguments/CLIParameters.php
-
-		-
-			message: "#^Variable \\$parameters might not be defined\\.$#"
-			count: 1
-			path: io/cli/arguments/extractor/ShortParamExtractor.php
-
-		-
 			message: "#^Call to an undefined method spitfire\\\\io\\\\html\\\\dateTimePicker\\:\\:readPostData\\(\\)\\.$#"
 			count: 1
 			path: io/html/date_picker.php
@@ -441,7 +931,17 @@ parameters:
 			path: io/media/FFMPEGManipulator.php
 
 		-
+			message: "#^Throwing object of an unknown class spitfire\\\\io\\\\media\\\\PrivateException\\.$#"
+			count: 1
+			path: io/media/FFMPEGManipulator.php
+
+		-
 			message: "#^Method spitfire\\\\io\\\\media\\\\FFMPEGManipulator\\:\\:quality\\(\\) should return spitfire\\\\io\\\\media\\\\MediaManipulatorInterface but return statement is missing\\.$#"
+			count: 1
+			path: io/media/FFMPEGManipulator.php
+
+		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
 			count: 1
 			path: io/media/FFMPEGManipulator.php
 
@@ -481,6 +981,16 @@ parameters:
 			path: io/media/ImagickManipulator.php
 
 		-
+			message: "#^Method spitfire\\\\io\\\\media\\\\ImagickManipulator\\:\\:load\\(\\) should return spitfire\\\\io\\\\media\\\\MediaManipulatorInterface but returns spitfire\\\\io\\\\media\\\\Imagick\\.$#"
+			count: 1
+			path: io/media/ImagickManipulator.php
+
+		-
+			message: "#^Property spitfire\\\\io\\\\media\\\\ImagickManipulator\\:\\:\\$img \\(Imagick\\) does not accept spitfire\\\\io\\\\media\\\\Imagick\\.$#"
+			count: 1
+			path: io/media/ImagickManipulator.php
+
+		-
 			message: "#^Method spitfire\\\\io\\\\media\\\\ImagickManipulator\\:\\:quality\\(\\) should return spitfire\\\\io\\\\media\\\\MediaManipulatorInterface but return statement is missing\\.$#"
 			count: 1
 			path: io/media/ImagickManipulator.php
@@ -496,12 +1006,22 @@ parameters:
 			path: io/media/ImagickManipulator.php
 
 		-
+			message: "#^Parameter \\#1 \\$color of class ImagickPixel constructor expects string, false given\\.$#"
+			count: 1
+			path: io/media/ImagickManipulator.php
+
+		-
 			message: "#^Access to constant LAYERMETHOD_FLATTEN on an unknown class spitfire\\\\io\\\\media\\\\Imagick\\.$#"
 			count: 1
 			path: io/media/ImagickManipulator.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\io\\\\media\\\\PrivateException not found\\.$#"
+			count: 1
+			path: io/media/MediaDispatcher.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\io\\\\media\\\\PrivateException\\.$#"
 			count: 1
 			path: io/media/MediaDispatcher.php
 
@@ -524,6 +1044,16 @@ parameters:
 			message: "#^Variable \\$error_output might not be defined\\.$#"
 			count: 1
 			path: io/media/PNGQuant.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: io/media/PNGQuant.php
+
+		-
+			message: "#^Instanceof between spitfire\\\\io\\\\renderers\\\\RenderableField and spitfire\\\\io\\\\renderers\\\\RenderableFieldText will always evaluate to false\\.$#"
+			count: 1
+			path: io/renderers/simplefieldrenderer.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\io\\\\renderers\\\\RenderableFieldString\\:\\:getMessages\\(\\)\\.$#"
@@ -601,14 +1131,89 @@ parameters:
 			path: io/renderers/simplefieldrenderer.php
 
 		-
+			message: "#^Method spitfire\\\\io\\\\renderers\\\\SimpleFieldRenderer\\:\\:getErrorsFor\\(\\) should return null but returns spitfire\\\\validation\\\\ValidationError\\.$#"
+			count: 1
+			path: io/renderers/simplefieldrenderer.php
+
+		-
+			message: "#^Parameter \\#1 \\$bean of method spitfire\\\\io\\\\renderers\\\\SimpleFormRenderer\\:\\:getFormAction\\(\\) expects CoffeeBean, spitfire\\\\io\\\\renderers\\\\RenderableForm given\\.$#"
+			count: 1
+			path: io/renderers/simpleformrenderer.php
+
+		-
 			message: "#^Call to an undefined method spitfire\\\\io\\\\renderers\\\\RenderableField\\:\\:getModelField\\(\\)\\.$#"
 			count: 1
 			path: io/renderers/simpleformrenderer.php
 
 		-
+			message: "#^Parameter \\#2 \\$value of function setcookie expects string, bool given\\.$#"
+			count: 1
+			path: io/session/Session.php
+
+		-
 			message: "#^Constant SESSION_SAVE_PATH not found\\.$#"
 			count: 1
 			path: io/session/Session.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\session\\\\Session\\:\\:sessionId\\(\\) should return bool but returns string\\.$#"
+			count: 1
+			path: io/session/Session.php
+
+		-
+			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#1 \\$open of function session_set_save_handler expects callable\\(string, string\\)\\: bool, array\\(\\*NEVER\\*, 'start'\\) given\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#2 \\$close of function session_set_save_handler expects callable\\(\\)\\: bool, array\\(\\*NEVER\\*, 'close'\\) given\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#3 \\$read of function session_set_save_handler expects callable\\(string\\)\\: string, array\\(\\*NEVER\\*, 'read'\\) given\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#4 \\$write of function session_set_save_handler expects callable\\(string, string\\)\\: bool, array\\(\\*NEVER\\*, 'write'\\) given\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#5 \\$destroy of function session_set_save_handler expects callable\\(string\\)\\: bool, array\\(\\*NEVER\\*, 'destroy'\\) given\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#6 \\$gc of function session_set_save_handler expects callable\\(string\\)\\: bool, array\\(\\*NEVER\\*, 'gc'\\) given\\.$#"
+			count: 1
+			path: io/session/SessionHandler.php
+
+		-
+			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, spitfire\\\\utils\\\\type given\\.$#"
+			count: 1
+			path: io/stp/SimpleStackTracePrinter.php
+
+		-
+			message: "#^Instanceof between \\*NEVER\\* and Throwable will always evaluate to false\\.$#"
+			count: 1
+			path: io/stp/StackTracePrinter.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: io/stp/StackTracePrinter.php
+
+		-
+			message: "#^Property spitfire\\\\io\\\\stream\\\\StreamSegment\\:\\:\\$src \\(spitfire\\\\io\\\\stream\\\\StreamReaderInterface\\) does not accept spitfire\\\\io\\\\stream\\\\SeekableStreamInterface\\.$#"
+			count: 1
+			path: io/stream/StreamSegment.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\io\\\\stream\\\\StreamReaderInterface\\:\\:tell\\(\\)\\.$#"
@@ -621,12 +1226,22 @@ parameters:
 			path: io/stream/StreamSegment.php
 
 		-
-			message: "#^Undefined variable\\: \\$e$#"
-			count: 8
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, spitfire\\\\type given\\.$#"
+			count: 1
 			path: io/template/SpitfireTemplateLocator.php
 
 		-
 			message: "#^Parameter \\$value of method spitfire\\\\model\\\\Field\\:\\:validate\\(\\) has invalid typehint type spitfire\\\\model\\\\type\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: model/Field.php
 
@@ -656,6 +1271,11 @@ parameters:
 			path: model/adapters/baseadapter.php
 
 		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:\\$model \\(Model\\) does not accept spitfire\\\\Model\\.$#"
+			count: 1
+			path: model/adapters/baseadapter.php
+
+		-
 			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:getModel\\(\\) has invalid type Model\\.$#"
 			count: 1
 			path: model/adapters/baseadapter.php
@@ -664,6 +1284,41 @@ parameters:
 			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:validate\\(\\) has invalid type spitfire\\\\validation\\\\ValidationResult\\.$#"
 			count: 1
 			path: model/adapters/baseadapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:validate\\(\\) should return spitfire\\\\validation\\\\ValidationResult but returns bool\\|spitfire\\\\validation\\\\ValidationError\\.$#"
+			count: 1
+			path: model/adapters/baseadapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\DateTimeAdapter\\:\\:dbGetData\\(\\) should return string but returns array\\<int\\|string, mixed\\>\\.$#"
+			count: 1
+			path: model/adapters/datetimeadapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$array_arg of function current expects array, string given\\.$#"
+			count: 1
+			path: model/adapters/datetimeadapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$array_arg of function key expects array, string given\\.$#"
+			count: 1
+			path: model/adapters/datetimeadapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$time of class spitfire\\\\DateTime constructor expects string, false given\\.$#"
+			count: 1
+			path: model/adapters/datetimeadapter.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: model/adapters/integeradapter.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between int and null will always evaluate to false\\.$#"
+			count: 1
+			path: model/adapters/integeradapter.php
 
 		-
 			message: "#^Access to an undefined property spitfire\\\\model\\\\fields\\\\IntegerField\\:\\:\\$datatype\\.$#"
@@ -681,9 +1336,44 @@ parameters:
 			path: model/fields/IntegerField.php
 
 		-
+			message: "#^Call to function is_numeric\\(\\) with spitfire\\\\model\\\\type will always evaluate to false\\.$#"
+			count: 1
+			path: model/fields/IntegerField.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\App\\:\\:getControllerLocator\\(\\)\\.$#"
+			count: 1
+			path: mvc/Controller.php
+
+		-
+			message: "#^Call to static method get\\(\\) on an unknown class spitfire\\\\mvc\\\\spitfire\\\\core\\\\Request\\.$#"
+			count: 1
+			path: mvc/Controller.php
+
+		-
+			message: "#^Constant CONFIG_DIRECTORY not found\\.$#"
+			count: 1
+			path: mvc/Controller.php
+
+		-
+			message: "#^Parameter \\#1 \\$context of method spitfire\\\\mvc\\\\MVC\\:\\:__construct\\(\\) expects spitfire\\\\core\\\\Context, spitfire\\\\core\\\\ContextCLI given\\.$#"
+			count: 1
+			path: mvc/Director.php
+
+		-
 			message: "#^Access to an undefined property spitfire\\\\mvc\\\\Director\\:\\:\\$call\\.$#"
 			count: 1
 			path: mvc/Director.php
+
+		-
+			message: "#^Return typehint of method spitfire\\\\mvc\\\\MVC\\:\\:__get\\(\\) has invalid type Controller\\.$#"
+			count: 1
+			path: mvc/MVC.php
+
+		-
+			message: "#^Method spitfire\\\\mvc\\\\MVC\\:\\:__get\\(\\) should return Controller\\|spitfire\\\\mvc\\\\View but returns false\\.$#"
+			count: 1
+			path: mvc/MVC.php
 
 		-
 			message: "#^PHPDoc tag @param for parameter \\$context with type spitfire\\\\Context is not subtype of native type spitfire\\\\core\\\\Context\\.$#"
@@ -692,11 +1382,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\View\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\Context\\.$#"
-			count: 1
-			path: mvc/View.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\App\\:\\:getControllerLocator\\(\\)\\.$#"
 			count: 1
 			path: mvc/View.php
 
@@ -721,34 +1406,14 @@ parameters:
 			path: mvc/View.php
 
 		-
-			message: "#^Access to an undefined property spitfire\\\\mvc\\\\View\\:\\:\\$css\\.$#"
-			count: 2
-			path: mvc/View.php
-
-		-
-			message: "#^Access to an undefined property spitfire\\\\mvc\\\\View\\:\\:\\$js\\.$#"
-			count: 2
-			path: mvc/View.php
-
-		-
-			message: "#^Access to an undefined property Controller\\:\\:\\$call\\.$#"
+			message: "#^Property spitfire\\\\mvc\\\\middleware\\\\MiddlewareStack\\:\\:\\$ctx \\(spitfire\\\\core\\\\Context\\) does not accept spitfire\\\\core\\\\ContextInterface\\.$#"
 			count: 1
-			path: mvc/controller.php
+			path: mvc/middleware/MiddlewareStack.php
 
 		-
-			message: "#^Instantiated class _SF_Invoke not found\\.$#"
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
-			path: mvc/controller.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\App\\:\\:getControllerLocator\\(\\)\\.$#"
-			count: 1
-			path: mvc/controller.php
-
-		-
-			message: "#^Constant CONFIG_DIRECTORY not found\\.$#"
-			count: 1
-			path: mvc/controller.php
+			path: mvc/middleware/MiddlewareStack.php
 
 		-
 			message: "#^Access to an undefined property spitfire\\\\core\\\\ContextInterface\\:\\:\\$annotations\\.$#"
@@ -774,6 +1439,16 @@ parameters:
 			message: "#^Access to an undefined property spitfire\\\\core\\\\ContextInterface\\:\\:\\$view\\.$#"
 			count: 2
 			path: mvc/middleware/standard/LayoutMiddleware.php
+
+		-
+			message: "#^Parameter \\#2 \\$code of class spitfire\\\\mvc\\\\middleware\\\\exceptions\\\\MaintenanceModeException constructor expects int, spitfire\\\\core\\\\Environment\\|string given\\.$#"
+			count: 1
+			path: mvc/middleware/standard/MaintenanceMiddleware.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 2
+			path: mvc/middleware/standard/ModelMiddleware.php
 
 		-
 			message: "#^Access to an undefined property spitfire\\\\core\\\\ContextInterface\\:\\:\\$annotations\\.$#"
@@ -836,12 +1511,22 @@ parameters:
 			path: plugins.php
 
 		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: plugins.php
+
+		-
 			message: "#^Variable \\$textContent might not be defined\\.$#"
 			count: 1
 			path: plugins.php
 
 		-
 			message: "#^Return typehint of method spitfire\\\\storage\\\\drive\\\\Directory\\:\\:all\\(\\) has invalid type spitfire\\\\core\\\\CollectionInterface\\.$#"
+			count: 1
+			path: storage/drive/Directory.php
+
+		-
+			message: "#^Method spitfire\\\\storage\\\\drive\\\\Directory\\:\\:all\\(\\) should return spitfire\\\\core\\\\CollectionInterface but returns spitfire\\\\core\\\\Collection\\.$#"
 			count: 1
 			path: storage/drive/Directory.php
 
@@ -877,6 +1562,11 @@ parameters:
 
 		-
 			message: "#^Instantiated class spitfire\\\\storage\\\\drive\\\\FilePermissionsException not found\\.$#"
+			count: 2
+			path: storage/drive/FileStreamWriter.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\storage\\\\drive\\\\FilePermissionsException\\.$#"
 			count: 2
 			path: storage/drive/FileStreamWriter.php
 
@@ -931,6 +1621,21 @@ parameters:
 			path: storage/objectStorage/IOStream.php
 
 		-
+			message: "#^Throwing object of an unknown class spitfire\\\\storage\\\\objectStorage\\\\PrivateException\\.$#"
+			count: 1
+			path: storage/objectStorage/IOStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of static method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) expects spitfire\\\\utils\\\\type, string given\\.$#"
+			count: 1
+			path: tests/StringTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$app of method spitfire\\\\SpitFire\\:\\:registerApp\\(\\) expects spitfire\\\\type, spitfire\\\\UnnamedApp given\\.$#"
+			count: 1
+			path: tests/URLTest.php
+
+		-
 			message: "#^Anonymous function has an unused use \\$args\\.$#"
 			count: 7
 			path: tests/core/parser/Parser3Test.php
@@ -941,14 +1646,64 @@ parameters:
 			path: tests/core/parser/ParserTest.php
 
 		-
+			message: "#^Cannot access offset 0 on bool\\.$#"
+			count: 3
+			path: tests/core/parser/parser/EitherTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$drive of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:register\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\DriveInterface, spitfire\\\\storage\\\\drive\\\\Driver given\\.$#"
+			count: 1
+			path: tests/io/media/WEBPManipulationTest.php
+
+		-
 			message: "#^Return typehint of method tests\\\\spitfire\\\\io\\\\media\\\\WEBPManipulationTest\\:\\:testOutputWEBP\\(\\) has invalid type tests\\\\spitfire\\\\io\\\\media\\\\type\\.$#"
 			count: 1
 			path: tests/io/media/WEBPManipulationTest.php
 
 		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
+			count: 3
+			path: tests/io/media/WEBPManipulationTest.php
+
+		-
+			message: "#^Method tests\\\\spitfire\\\\io\\\\media\\\\WEBPManipulationTest\\:\\:testOutputWEBP\\(\\) should return tests\\\\spitfire\\\\io\\\\media\\\\type but returns spitfire\\\\storage\\\\objectStorage\\\\Blob\\.$#"
+			count: 1
+			path: tests/io/media/WEBPManipulationTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$drive of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:register\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\DriveInterface, spitfire\\\\storage\\\\drive\\\\Driver given\\.$#"
+			count: 1
+			path: tests/io/stream/StreamSegmentTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
+			count: 1
+			path: tests/io/stream/StreamSegmentTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$arr of static method spitfire\\\\core\\\\router\\\\ParametrizedPath\\:\\:fromArray\\(\\) expects array\\<array\\<string\\>\\>, array\\<string, string\\> given\\.$#"
+			count: 1
+			path: tests/router/RouterTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$drive of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:register\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\DriveInterface, spitfire\\\\storage\\\\drive\\\\Driver given\\.$#"
+			count: 1
+			path: tests/storage/drive/DriveTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
+			count: 8
+			path: tests/storage/drive/DriveTest.php
+
+		-
 			message: "#^PHPDoc tag @param for parameter \\$file with type spitfire\\\\storage\\\\drive\\\\File is incompatible with native type spitfire\\\\storage\\\\objectStorage\\\\Blob\\.$#"
 			count: 2
 			path: tests/storage/drive/DriveTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
+			count: 1
+			path: tests/storage/drive/NewDriveTest.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\validation\\\\ValidatorInterface\\:\\:resolve\\(\\)\\.$#"
@@ -1001,6 +1756,11 @@ parameters:
 			path: utils/Strings.php
 
 		-
+			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, spitfire\\\\utils\\\\type given\\.$#"
+			count: 1
+			path: utils/Strings.php
+
+		-
 			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid typehint type spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: utils/Strings.php
@@ -1011,7 +1771,37 @@ parameters:
 			path: utils/Strings.php
 
 		-
+			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) should return spitfire\\\\utils\\\\type but returns string\\.$#"
+			count: 1
+			path: utils/Strings.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function htmlspecialchars expects string, spitfire\\\\utils\\\\type given\\.$#"
+			count: 1
+			path: utils/Strings.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: validation/Validator.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: validation/Validator.php
+
+		-
+			message: "#^Parameter \\#1 \\$parent of class spitfire\\\\validation\\\\rules\\\\ValidationRuleGroup constructor expects spitfire\\\\validation\\\\rules\\\\type\\|null, \\$this\\(spitfire\\\\validation\\\\Validator\\) given\\.$#"
+			count: 1
+			path: validation/Validator.php
+
+		-
 			message: "#^Instantiated class spitfire\\\\validation\\\\parser\\\\Exception not found\\.$#"
+			count: 1
+			path: validation/parser/Parser.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\validation\\\\parser\\\\Exception\\.$#"
 			count: 1
 			path: validation/parser/Parser.php
 
@@ -1042,6 +1832,16 @@ parameters:
 
 		-
 			message: "#^Parameter \\$parent of method spitfire\\\\validation\\\\rules\\\\ValidationRuleGroup\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\validation\\\\rules\\\\type\\.$#"
+			count: 1
+			path: validation/rules/ValidationRuleGroup.php
+
+		-
+			message: "#^Property spitfire\\\\validation\\\\rules\\\\ValidationRuleGroup\\:\\:\\$parent \\(spitfire\\\\validation\\\\ValidatorInterface\\) does not accept spitfire\\\\validation\\\\rules\\\\type\\|null\\.$#"
+			count: 1
+			path: validation/rules/ValidationRuleGroup.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 1
 			path: validation/rules/ValidationRuleGroup.php
 

@@ -11,7 +11,6 @@ abstract class Controller extends MVC
 	
 	public function __construct(Context$intent) {
 		parent::__construct($intent);
-		//$this->call = new _SF_Invoke();
 	}
 	
 	/**
