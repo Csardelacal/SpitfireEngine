@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\event;
 
-use spitfire\core\collection\DefinedCollection;
+use spitfire\collection\DefinedCollection;
 
 /* 
  * The MIT License

@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\app;
 
-use spitfire\core\collection\DefinedCollection;
+use spitfire\collection\Collection;
 
 /* 
  * The MIT License
@@ -49,9 +49,9 @@ interface AppAssetsInterface
 	 * whishes to use once deployed. Assets are not allowed to be any run-time
 	 * executable files (like php files), they will be processed by Spitfire.
 	 * 
-	 * @return DefinedCollection
+	 * @return Collection
 	 */
-	public function all() : DefinedCollection;
+	public function all() : Collection;
 	
 	/**
 	 * Maps an asset to a file on disk. Passing the asset name as an argument should

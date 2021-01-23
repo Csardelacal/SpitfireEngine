@@ -1,6 +1,6 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\core\ContextCLI;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;

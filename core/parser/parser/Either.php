@@ -42,7 +42,7 @@ class Either
 	 * the application has multiple matches for a tokenbuffer, the first match
 	 * will be considered.
 	 *
-	 * @var \spitfire\core\collection\DefinedCollection < Block >
+	 * @var \spitfire\collection\DefinedCollection < Block >
 	 */
 	private $blocks;
 	

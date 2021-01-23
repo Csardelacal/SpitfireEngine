@@ -3,7 +3,7 @@
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use spitfire\core\collection\DefinedCollection;
+use spitfire\collection\Collection;
 use spitfire\utils\Strings;
 use function collect;
 
@@ -54,9 +54,9 @@ class RecursiveAppAssetLocator implements AppAssetsInterface
 	 * Returns the entire list of the assets needed for the application. Spitfire
 	 * will then place these assets wherever they're needed.
 	 * 
-	 * @return DefinedCollection
+	 * @return Collection
 	 */
-	public function all(): DefinedCollection {
+	public function all(): Collection {
 		$_ret = collect();
 		
 		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->basedir, FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));

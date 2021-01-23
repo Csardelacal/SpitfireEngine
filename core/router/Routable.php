@@ -1,7 +1,7 @@
 <?php namespace spitfire\core\router;
 
 use Closure;
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\core\Path;
 use spitfire\core\Response;
 

@@ -1,6 +1,7 @@
 <?php namespace spitfire;
 
 use Serializable;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Restriction;
 use spitfire\storage\database\Schema;
@@ -283,7 +284,7 @@ abstract class Model implements Serializable
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20190611
-	 * @return core\Collection
+	 * @return Collection
 	 */
 	public function getDependencies() {
 		

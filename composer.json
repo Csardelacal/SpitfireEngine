@@ -11,7 +11,8 @@
 		"psr/log": "^1.1",
 		"spitfire/request": "^0.1.0",
 		"spitfire/cli": "dev-master",
-		"spitfire/database": "dev-master"
+		"spitfire/database": "dev-master",
+		"spitfire/collection": "dev-master"
 	},
 	
 	"require-dev": {

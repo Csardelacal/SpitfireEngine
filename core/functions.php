@@ -1,7 +1,7 @@
 <?php
 
 use spitfire\App;
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\core\ContextInterface;
 use spitfire\core\Environment;
 use spitfire\core\http\URL;
@@ -21,6 +21,7 @@ use spitfire\SpitFireCLI;
 use spitfire\storage\database\Settings;
 use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\NodeInterface;
+use spitfire\utils\Strings;
 use spitfire\validation\ValidationException;
 use spitfire\validation\Validator;
 use spitfire\validation\ValidatorInterface;

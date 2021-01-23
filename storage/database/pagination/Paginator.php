@@ -119,7 +119,7 @@ class Paginator
 	 * left it will try to extend this with results on the other one. This avoids
 	 * broken looking paginations when reaching the final results of a set.
 	 * 
-	 * @return \spitfire\core\Collection <int>
+	 * @return \spitfire\collection\Collection <int>
 	 */
 	public function pages() {
 		$count = $this->getPageCount();

@@ -32,7 +32,7 @@ interface DirectoryInterface extends NodeInterface
 	const CONTAINS_DIR  = 2;
 	
 	
-	public function all() : \spitfire\core\CollectionInterface;
+	public function all() : \spitfire\collection\CollectionInterface;
 	
 	public function open($name) : NodeInterface;
 	

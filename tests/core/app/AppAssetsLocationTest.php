@@ -31,7 +31,7 @@ class AppAssetsLocationTest extends TestCase
 	
 	public function testListingFiles() {
 		$map = (new \spitfire\core\app\RecursiveAppAssetLocator(realpath(dirname(__DIR__))))->all();
-		$this->assertInstanceOf(\spitfire\core\collection\DefinedCollection::class, $map);
+		$this->assertInstanceOf(\spitfire\collection\DefinedCollection::class, $map);
 		$this->assertEquals(true, file_exists(dirname(__DIR__) . '/' . $map[0]));
 		$this->assertEquals(true, file_exists(dirname(__DIR__) . '/' . $map->rewind()));
 	}

@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\drive;
 
-use spitfire\core\CollectionInterface;
+use spitfire\collection\CollectionInterface;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\FilePermissionsException;
 use spitfire\storage\objectStorage\DirectoryInterface;

@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\router;
 
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\core\Path;
 use spitfire\exceptions\PrivateException;
 
