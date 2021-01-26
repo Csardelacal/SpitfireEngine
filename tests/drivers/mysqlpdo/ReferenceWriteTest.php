@@ -91,4 +91,28 @@ class ReferenceWriteTest extends TestCase
 		
 		$this->assertEquals($r1->field2->_id, $r1->_id);
 	}
+	
+	
+	public function testWriteNullValues() 
+	{
+		
+		$r1 = $this->db->table('test')->newRecord();
+		$r2 = $this->db->table('test')->newRecord();
+		
+		$r2->store();
+		
+		$r1->field2 = $r2;
+		$r1->store();
+		
+		$copy = $this->db->table('test')->get('_id', $r1->_id)->first();
+		$this->assertNotNull($copy, 'The record should have been written to the database');
+		
+		$copy->field2 = null;
+		$copy->store();
+		
+		$copy2 = $this->db->table('test')->get('_id', $r1->_id)->first();
+		
+		$this->assertNotNull($copy2, 'The record should have been written to the database');
+		$this->assertNull($copy2->field2);
+	}
 }
