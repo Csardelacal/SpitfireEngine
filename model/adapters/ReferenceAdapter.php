@@ -136,6 +136,17 @@ class ReferenceAdapter extends BaseAdapter
 			return true;
 		}
 		
+		/**
+		 * This is a bit of a special case. If the remote is recorded to contain data, and the data 
+		 * in it is not empty, but the local value is null, then we learn that the data was actually
+		 * changed.
+		 * 
+		 * This resolves a bug that would prevent an application from removing a null value.
+		 */
+		if (is_array($this->remote) && !empty(array_filter($this->remote)) && $this->local === null) {
+			return false;
+		}
+		
 		$pka = $this->remote instanceof Model? $this->remote->getPrimaryData() : null;
 		$pkb = $this->local instanceof Model? $this->local->getPrimaryData() : null;
 		
