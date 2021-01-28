@@ -64,6 +64,57 @@ function app($name, $namespace) {
 }
 
 /**
+ * Raises an exception whenever the application runs into an scenario that was not
+ * expected. This function functions in a very similar manner to an assertion (with 
+ * the exception of this being executed in production).
+ * 
+ * The second parameter contains the name of the exception to be raised on failure,
+ * an exception instance or a closure to be executed, which should then either end
+ * execution or throw an exception itself.
+ * 
+ * This is intended to reduce the boilerplate on code that looks like this:
+ * if (!$condition) { throw new Exception(); }
+ * 
+ * The code becomes a bit more readable and drops the negation, making it look like this:
+ * assume($condition, Exception::class);
+ * 
+ * Overall reducing the strain of visually analyzing the code. 
+ * 
+ * @param bool $condition If the condition is true, the code will continue being executed
+ * @param string|Closure|Exception $failure 
+ * @return void
+ */
+function assume(bool $condition, $failure) : void
+{
+	/*
+	 * If the condition is met, the function doesn't do anything. It just returns and allows
+	 * the application to continue.
+	 */
+	if ($condition) { return; }
+	
+	/**
+	 * Otherwise, we need to stop the execution. This should be done in the closure, but if the
+	 * user does not raise any exception in the closure, our code will do.
+	 */
+	if ($failure instanceof Closure) { 
+		$failure(); 
+		throw new Exception('Failed to meet assumption');
+	}
+	
+	/**
+	 * If the user provided an exception instance, we throw the provided exception.
+	 */
+	if ($failure instanceof Exception) { throw $failure; }
+	
+	/**
+	 * The last case (if the failure code was a string) will instance a new exception without message,
+	 * this is the most common way to use this, since it will be the mechanism activated when using
+	 * the ::class magic constant.
+	 */
+	throw new $failure();
+}
+
+/**
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *
