@@ -22,9 +22,9 @@ use spitfire\storage\database\Settings;
 use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\NodeInterface;
 use spitfire\utils\Strings;
+use spitfire\validation\rules\RegexValidationRule;
 use spitfire\validation\ValidationException;
-use spitfire\validation\Validator;
-use spitfire\validation\ValidatorInterface;
+use spitfire\validation\ValidationRule;
 
 /**
  * This is a quick hand method to use Spitfire's main App class as a singleton.
@@ -204,25 +204,27 @@ function console() {
 	return $console;
 }
 
-function validate($target = null) {
-	$targets  = array_filter(is_array($target)? $target : func_get_args());
+/**
+ * Tests a value against a provided set of rules, if the 
+ */
+function validate($value, $rules) : void
+{
 	
-	if (!empty($targets) && reset($targets) instanceof ValidatorInterface) {
-		$messages = Array();
-		
-		#Retrieve the messages from the validators
-		foreach ($targets as $target) {
-			$messages = array_merge($messages, $target->getMessages());
-		}
-		
-		if (!empty($messages)) { throw new ValidationException('Validation failed', 1604200115, $messages); }
-		
-		return $targets;
-		
-	} else {
-		$validator = new Validator();
-		$validator->setValue($target);
-		return $validator;
+	$messages = collect();
+	
+	collect($rules)
+		->each(function ($e) {
+			if ($e instanceof ValidationRule) { return $e; }
+			if ($e instanceof Closure) { return new ClosureValidationRule($e); }
+			if (is_string($e)) { return new RegexValidationRule($e, 'Invalid format'); }
+			throw new ValidationException('Invalid validation rules');
+		})
+		->each(function (ValidationRule $rule) use ($messages, $value) {
+			$messages->push($rule->test($value));
+		})->filter();
+	
+	if (!$messages->isEmpty()) {
+		throw new ValidationException('Validation failure', 2102011631, $messages->toArray());
 	}
 }
 

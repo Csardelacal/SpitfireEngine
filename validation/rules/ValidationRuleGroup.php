@@ -2,7 +2,6 @@
 
 use spitfire\validation\ValidationError;
 use spitfire\validation\ValidationRule;
-use spitfire\validation\ValidatorInterface;
 
 /**
  * Validation groups allow an application to use several different criteria to 
@@ -29,14 +28,6 @@ class ValidationRuleGroup implements ValidationRule
 	const TYPE_OR  = 'or';
 	
 	/**
-	 * The parent element. It is used to allow chaining rules and groups in the 
-	 * same validator.
-	 *
-	 * @var ValidatorInterface
-	 */
-	private $parent;
-	
-	/**
 	 * The type of the group. You may use AND rules inside of OR rules. Using AND
 	 * without encapsulating them in an OR group is useless since the Validator 
 	 * uses AND by default.
@@ -58,12 +49,8 @@ class ValidationRuleGroup implements ValidationRule
 	 * a regex or a number.
 	 * 
 	 * This scenarios are rare and should usually be implemented with custom rules.
-	 * 
-	 * @param type $parent
 	 */
-	public function __construct($parent = null) {
-		$this->parent = $parent;
-	}
+	public function __construct() {}
 	
 	/**
 	 * Adds a new rule to the validation group. This can be another group, but 
@@ -116,10 +103,6 @@ class ValidationRuleGroup implements ValidationRule
 		else                                    { return count($result) !== count($this->rules)? false : $result; }
 		
 		return false;
-	}
-	
-	public function end() {
-		return $this->parent;
 	}
 
 }

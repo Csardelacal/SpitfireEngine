@@ -8,6 +8,7 @@ use spitfire\core\parser\parser\Block;
 use spitfire\core\parser\parser\IdentifierTerminal;
 use spitfire\core\parser\parser\LiteralTerminal;
 use spitfire\core\parser\parser\Parser as ParserCore;
+use spitfire\core\parser\parser\ParseTree;
 use spitfire\core\parser\scanner\IdentifierScanner;
 use spitfire\core\parser\scanner\IntegerLiteralScanner;
 use spitfire\core\parser\scanner\LiteralScanner;
@@ -21,8 +22,6 @@ use spitfire\validation\rules\NotValidationRule;
 use spitfire\validation\rules\PositiveNumberValidationRule;
 use spitfire\validation\rules\TypeNumberValidationRule;
 use spitfire\validation\rules\TypeStringValidationRule;
-use spitfire\validation\ValidationRule;
-use spitfire\validation\ValidatorInterface;
 use function __;
 use function collect;
 
@@ -93,7 +92,7 @@ class Parser
 	 * data provided by the app's user is correct.
 	 * 
 	 * @param string $string
-	 * @return ValidatorInterface
+	 * @return ParseTree
 	 */
 	public function parse($string) {
 		
