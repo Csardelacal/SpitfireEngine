@@ -82,4 +82,16 @@ class StringTest extends TestCase
 		);
 	}
 
+	/**
+    * Replacing URLs in text is actually surprisingly difficult.
+    * 
+    * @covers \spitfire\utils\Strings::urls
+   */
+	public function testURLWithHash() {
+		$this->assertEquals(
+			'Hello world, checkout <a href="https://magic3w.com/about#anchor">https://magic3w.com/about#anchor</a>',
+			Strings::urls('Hello world, checkout https://magic3w.com/about#anchor')
+		);
+	}
+
 }
