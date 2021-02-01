@@ -1,10 +1,9 @@
 <?php namespace spitfire\io;
 
-use spitfire\io\renderers\RenderableFieldHidden;
 use spitfire\io\session\Session;
 use spitfire\exceptions\PublicException;
 
-class XSSToken implements RenderableFieldHidden
+class XSSToken
 {
 	
 	private $timeout;
@@ -13,14 +12,6 @@ class XSSToken implements RenderableFieldHidden
 		$this->timeout = $timeout;
 	}
 	
-	public function getEnforcedFieldRenderer() {
-		return null;
-	}
-
-	public function getPostId() {
-		return '_XSS_';
-	}
-
 	public function getValue() {
 		$session = Session::getInstance();
 		
@@ -59,14 +50,6 @@ class XSSToken implements RenderableFieldHidden
 		$check = hash('sha512', implode('.', [$expires, $salt, $xss_token]));
 		
 		return $hash === $check;
-	}
-
-	public function getVisibility() {
-		return renderers\RenderableField::VISIBILITY_FORM;
-	}
-
-	public function getCaption() {
-		return null;
 	}
 	
 	public function __toString() {
