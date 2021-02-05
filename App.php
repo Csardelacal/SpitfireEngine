@@ -1,9 +1,5 @@
 <?php namespace spitfire;
 
-use spitfire\core\Environment;
-use spitfire\core\Path;
-use spitfire\core\router\Parameters;
-use spitfire\core\router\reverser\ClosureReverser;
 use spitfire\core\router\Router;
 
 /**
@@ -20,6 +16,12 @@ abstract class App
 {
 	
 	/**
+	 * 
+	 * @var Router
+	 */
+	private $router;
+	
+	/**
 	 * Instances a new application. The application maps a directory where it's residing
 	 * with it's name-space and the URL it's serving.
 	 * 
@@ -27,11 +29,11 @@ abstract class App
 	 * properly work (like inline-routes and prebuilt assets). It is recommendable
 	 * that the 'baking' is performed automatically on composer::install or similar.
 	 * 
-	 * @param string $url The URL space the application is intended to be managing
-	 * this is used for URL generation, etc
+	 * @param Router $router A scoped router for this application to write it's routes
+	 * to.
 	 */
-	public function __construct($url) { 
-		$this->url = '/' . trim($url, '\/'); 
+	public function __construct($router) { 
+		$this->router = $router; 
 	}
 	
 	/**
@@ -41,7 +43,7 @@ abstract class App
 	 * 
 	 * @return string
 	 */
-	public function url() { return $this->url; }
+	public function url() { return $this->router->getPrefix(); }
 	
 	/**
 	 * Returns the directory this application is watching.
