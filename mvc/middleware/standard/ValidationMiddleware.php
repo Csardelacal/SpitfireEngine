@@ -1,10 +1,10 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
 use spitfire\collection\Collection;
+use spitfire\ast\Scope;
 use spitfire\core\ContextCLI;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
-use spitfire\exceptions\PublicException;
 use spitfire\validation\ValidationException;
 use spitfire\mvc\middleware\MiddlewareInterface;
 use spitfire\validation\parser\Parser;
@@ -58,7 +58,7 @@ class ValidationMiddleware implements MiddlewareInterface
 			 * Create a context with the variables that we want to have within the 
 			 * expression's scope.
 			 */
-			$scope = new \spitfire\core\parser\Scope();
+			$scope = new Scope();
 			$scope->set('GET', $_GET);
 			$scope->set('POST', $_POST);
 			$scope->set('ARGV', $context instanceof ContextCLI? $context->parameters : $context->object);

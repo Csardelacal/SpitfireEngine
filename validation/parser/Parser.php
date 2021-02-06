@@ -1,18 +1,19 @@
 <?php namespace spitfire\validation\parser;
 
 use Closure;
-use spitfire\core\parser\lexemes\ReservedWord;
-use spitfire\core\parser\lexemes\Symbol;
-use spitfire\core\parser\Lexer;
-use spitfire\core\parser\parser\Block;
-use spitfire\core\parser\parser\IdentifierTerminal;
-use spitfire\core\parser\parser\LiteralTerminal;
-use spitfire\core\parser\parser\Parser as ParserCore;
-use spitfire\core\parser\parser\ParseTree;
-use spitfire\core\parser\scanner\IdentifierScanner;
-use spitfire\core\parser\scanner\IntegerLiteralScanner;
-use spitfire\core\parser\scanner\LiteralScanner;
-use spitfire\core\parser\scanner\WhiteSpaceScanner;
+use spitfire\ast\lexemes\ReservedWord;
+use spitfire\ast\lexemes\Symbol;
+use spitfire\ast\Lexer;
+use spitfire\ast\parser\Block;
+use spitfire\ast\parser\IdentifierTerminal;
+use spitfire\ast\parser\LiteralTerminal;
+use spitfire\ast\parser\Parser as ParserCore;
+use spitfire\ast\parser\ParseTree;
+use spitfire\ast\scanner\IdentifierScanner;
+use spitfire\ast\scanner\IntegerLiteralScanner;
+use spitfire\ast\scanner\LiteralScanner;
+use spitfire\ast\scanner\WhiteSpaceScanner;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\validation\rules\EmptyValidationRule;
 use spitfire\validation\rules\FilterValidationRule;
@@ -210,7 +211,7 @@ class Parser
 				return $leafs[1]->resolve($scope);
 			}
 			
-			throw new Exception('Impossible condition reached');
+			throw new ApplicationException('Impossible condition reached');
 		});
 		
 		/*

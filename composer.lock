@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b83842736fcf8cba1ea13cb0d09636e",
+    "content-hash": "e053d898acf3d9b9eaff700263225650",
     "packages": [
         {
             "name": "magic3w/url-reflection",
@@ -138,6 +138,41 @@
                 "source": "https://github.com/php-fig/log/tree/1.1.3"
             },
             "time": "2020-03-23T09:12:05+00:00"
+        },
+        {
+            "name": "spitfire/ast",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-ast.git",
+                "reference": "370c8ec285f29c957f0639ca1ac040ff4c21534f"
+            },
+            "require": {
+                "spitfire/collection": "dev-master",
+                "spitfire/exception": "dev-master"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "10.0.x-dev"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\ast\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Allows applications to create abstract syntax trees that can read in input for validation and similar purposes.",
+            "time": "2020-12-22T20:15:51+00:00"
         },
         {
             "name": "spitfire/caching",
@@ -285,6 +320,29 @@
                 "MIT"
             ],
             "time": "2020-08-21T08:34:50+00:00"
+        },
+        {
+            "name": "spitfire/exception",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-exception.git",
+                "reference": "7b1cd4ef3df39dafe16e5a2fd8ed0c37d2881ddf"
+            },
+            "default-branch": true,
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Exception interfaces for spitfire",
+            "time": "2020-12-03T14:13:22+00:00"
         },
         {
             "name": "spitfire/request",
@@ -2511,7 +2569,8 @@
         "spitfire/caching": 20,
         "spitfire/cli": 20,
         "spitfire/database": 20,
-        "spitfire/collection": 20
+        "spitfire/collection": 20,
+        "spitfire/ast": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

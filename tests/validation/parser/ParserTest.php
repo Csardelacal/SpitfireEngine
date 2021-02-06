@@ -36,7 +36,7 @@ class ParserTest extends TestCase
 		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number) AND POST.something(required) AND GET.another(required email)';
 		
 		$p = new Parser();
-		$scope = new \spitfire\core\parser\Scope();
+		$scope = new \spitfire\ast\Scope();
 		$scope->set('GET', ['input' => 'test', 'another' => 'test@test.com']);
 		$scope->set('POST', ['other' => 34, 'something' => '123']);
 		
@@ -50,7 +50,7 @@ class ParserTest extends TestCase
 		$string = 'GET#input(string length[10,24] not["detail"]) OR POST#other(positive number) AND POST#something(required) AND GET#another(required email)';
 		
 		$p = new Parser();
-		$scope = new \spitfire\core\parser\Scope();
+		$scope = new \spitfire\ast\Scope();
 		$scope->set('GET', ['input' => 'test', 'another' => 'test@test.com']);
 		$scope->set('POST', ['other' => 34, 'something' => '123']);
 		
@@ -64,7 +64,7 @@ class ParserTest extends TestCase
 		$string = 'GET.input(string length[10,24] not["detail"]) OR POST.other(positive number)';
 		
 		$p = new Parser();
-		$scope = new \spitfire\core\parser\Scope();
+		$scope = new \spitfire\ast\Scope();
 		$scope->set('GET', ['input' => 'test']);
 		$scope->set('POST', ['other' => -34]);
 		
@@ -83,9 +83,9 @@ class ParserTest extends TestCase
 		#Since the code cannot parse the string, it should fail.
 		$pl = $p->parse($string);
 		$this->expectException(\spitfire\exceptions\PrivateException::class);
-		$this->assertInstanceOf(\spitfire\core\parser\parser\ParseTree::class, $pl);
+		$this->assertInstanceOf(\spitfire\ast\parser\ParseTree::class, $pl);
 		
-		$pl->resolve(new \spitfire\core\parser\Scope());
+		$pl->resolve(new \spitfire\ast\Scope());
 			
 		
 	}
