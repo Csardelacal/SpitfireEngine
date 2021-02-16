@@ -25,6 +25,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use spitfire\ast\Scope;
 use spitfire\validation\parser\Parser;
 
 class InArrayTest extends TestCase
@@ -41,13 +42,13 @@ class InArrayTest extends TestCase
 	
 	public function testExpression() {
 		
-		$good = new \spitfire\core\parser\Scope();
+		$good = new Scope();
 		$good->set('GET', ['test' => 'c d']);
 		
-		$bad = new \spitfire\core\parser\Scope();
+		$bad = new Scope();
 		$bad->set('GET', ['test' => 'i']);
 		
-		$empty = new \spitfire\core\parser\Scope();
+		$empty = new Scope();
 		$empty->set('GET', ['test' => null]);
 		
 		$validator = (new Parser())->parse('GET.test(string in["a", "b", "c d"])');
