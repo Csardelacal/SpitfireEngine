@@ -40,6 +40,17 @@ class InValidationRule extends BaseRule
 	 * @return ValidationError|boolean
 	 */
 	public function test($value) {
+		
+		/*
+		 * The in validation rule needs to allow for null values, so the application
+		 * can ignore undefined values (or empty) since the required rule takes care
+		 * of that. If the in validation does not allow for null values, the in rule
+		 * implies required.
+		 */
+		if ($value === null) {
+			return false;
+		}
+		
 		if (!in_array($value, $this->set)) {
 			return new ValidationError($this->getMessage(), $this->getExtendedMessage());
 		}

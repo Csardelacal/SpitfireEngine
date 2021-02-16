@@ -1,5 +1,5 @@
 {
-	"name" : "spitfire/engine",
+	"name": "spitfire/engine",
 	"license": "MIT",
 	"homepage": "https://spitfirephp.com",
 
@@ -15,14 +15,14 @@
 		"spitfire/collection": "dev-master",
 		"spitfire/ast": "dev-master"
 	},
-	
+
 	"require-dev": {
 		"phpunit/phpunit": "^9.4",
 		"monolog/monolog": "^2.2"
 	},
-	
+
 	"suggest": {
-		"monolog/monolog" : "Provides logging capabilities for applications"
+		"monolog/monolog": "Provides logging capabilities for applications"
 	},
 
 	"autoload": {
@@ -35,5 +35,11 @@
 
 	},
 	"minimum-stability": "dev",
-	"prefer-stable": true
+	"prefer-stable": true,
+	
+	"scripts" : {
+		"test" : [
+			"./vendor/bin/phpunit tests/"
+		]
+	}
 }
