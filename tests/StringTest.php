@@ -14,8 +14,17 @@ class StringTest extends TestCase
 	
 	public function testSlugSpecialChars() {
 		$this->assertEquals('a-string-with-special-chars', Strings::slug('a string with spëcìal chàrs'));
-		$this->assertEquals('a-string-with-special-chrs',  Strings::slug('a string with spëcìal chªrs'));
-		$this->assertEquals('a-string-with-special-chrs',  Strings::slug('a_string_with spëcìal chªrs'));
+		$this->assertEquals('a-string-with-special-ch-rs', Strings::slug('a string with spëcìal chªrs'));
+		$this->assertEquals('a-string-with-special-ch-rs', Strings::slug('a_string_with spëcìal chªrs'));
+		$this->assertEquals('a-string-with-special-ch-rs', Strings::slug('a_string_with spëcìal ch&rs'));
+		$this->assertEquals('a-string-with-special-ch-rs', Strings::slug('a_string_with spëcìal ch@rs'));
+		$this->assertEquals('a-string-with-special-h-rs',  Strings::slug('a_string_with spëcìal ©h@rs'));
+	}
+	
+	public function testSlugPunctuation() {
+		$this->assertEquals('category-news', Strings::slug('category:news'));
+		$this->assertEquals('category-news', Strings::slug('category;news'));
+		$this->assertEquals('category-news', Strings::slug('category/news'));
 	}
 	
 	public function testSlugUppercase() {
