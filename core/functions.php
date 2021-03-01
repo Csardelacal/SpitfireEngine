@@ -22,7 +22,6 @@ use spitfire\SpitFireCLI;
 use spitfire\storage\database\Settings;
 use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\NodeInterface;
-use spitfire\utils\Strings;
 use spitfire\validation\rules\RegexValidationRule;
 use spitfire\validation\ValidationException;
 use spitfire\validation\ValidationRule;
@@ -455,11 +454,6 @@ function request($url) {
 function mime($file) {
 	if (function_exists('mime_content_type')) { return mime_content_type($file); }
 	else { return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0]; }
-}
-
-function debug() {
-	static $instance = null;
-	return $instance? $instance : $instance = php_sapi_name() === 'cli'? new ExceptionHandlerCLI() : new ExceptionHandler();
 }
 
 /**

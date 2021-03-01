@@ -17,7 +17,6 @@ use spitfire\utils\Strings;
 use function basedir;
 use function collect;
 use function current_context;
-use function debug;
 
 /**
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.
@@ -215,29 +214,6 @@ class SpitFire
 	 */
 	public function locations() {
 		return $this->locations;
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20190527
-	 * @see debug
-	 * @param string $msg
-	 * @return string
-	 */
-	public function log($msg) {
-		debug()->log($msg);
-		return $msg;
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20190527
-	 * @see debug
-	 * @param type $msg
-	 * @return string[]
-	 */
-	public function getMessages() {
-		return debug()->getMessages();
 	}
 	
 	/**
