@@ -169,5 +169,5 @@ abstract class RewriteRule
 	 * @todo Server parameter should be a Parameter set provided by the server IMO
 	 * Need to check whether the server itself could have any impact on it
 	 */
-	abstract public function rewrite($URI, $method, $protocol, $server);
+	abstract public function rewrite($URI, $method, $protocol, Parameters $server);
 }

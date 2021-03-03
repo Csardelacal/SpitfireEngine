@@ -32,19 +32,17 @@ class ParametrizedPathTest extends TestCase
 {
 	
 	public function testReplacement() {
-		$pp = new ParametrizedPath(new Pattern(':app'), new Pattern(':controller'), new Pattern(':action'), new Pattern(':object'));
-		$path = $pp->replace(['app' => 'a', 'controller' => 'b', 'action' => 'c', 'object' => 'd']);
+		$pp = new ParametrizedPath(new Pattern(':controller'), new Pattern(':action'), new Pattern(':object'));
+		$path = $pp->replace(['controller' => 'b', 'action' => 'c', 'object' => 'd']);
 		
-		$this->assertEquals('a', $path->getApp());
 		$this->assertEquals('b', $path->getController()[0]);
 		$this->assertEquals('c', $path->getAction());
 	}
 	
 	public function testReplacementArrays() {
-		$pp = new ParametrizedPath(new Pattern(':app'), [new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
-		$path = $pp->replace(['app' => 'a', 'c1' => 'b1', 'c2' => 'b2', 'action' => 'c', 'object' => 'd']);
+		$pp = new ParametrizedPath([new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
+		$path = $pp->replace(['c1' => 'b1', 'c2' => 'b2', 'action' => 'c', 'object' => 'd']);
 		
-		$this->assertEquals('a',  $path->getApp());
 		$this->assertEquals('b2', $path->getController()[0]);
 		$this->assertEquals('c',  $path->getAction());
 	}

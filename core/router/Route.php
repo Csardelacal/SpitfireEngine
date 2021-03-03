@@ -34,6 +34,7 @@ class Route extends RewriteRule
 	const METHOD_PUT    = 0x04;
 	const METHOD_DELETE = 0x08;
 	const METHOD_HEAD   = 0x10;
+	const METHOD_OPTIONS= 0x20;
 	
 	private $reverser = null;
 	
@@ -46,7 +47,7 @@ class Route extends RewriteRule
 	 * @param string $extension
 	 * @return \spitfire\core\Path|\spitfire\core\Response
 	 */
-	public function rewrite($URI, $method, $protocol, $server, $extension = 'php') {
+	public function rewrite($URI, $method, $protocol, Parameters $server, $extension = 'php') {
 		$params = $this->getSource()->test($URI);
 		
 		/*

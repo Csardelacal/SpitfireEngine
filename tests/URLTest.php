@@ -21,7 +21,6 @@ class URLTest extends TestCase
 			Router::getInstance()->server(':lang.:tld.com')->request('/hello/', ['controller' => 'test', 'action' => 'a', 'object' => 'a']);
 			
 			#Create a redirection
-			Router::getInstance()->request('/about', '/static/about');
 			Router::getInstance()->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
 			
 			$t = new \spitfire\UnnamedApp('');
@@ -70,14 +69,6 @@ class URLTest extends TestCase
 	public function testServerReverser2() {
 		$absURL = url('test', 'a', 'a')->absolute('test.com');
 		$this->assertEquals('http://test.com/a/a/', strval($absURL));
-	}
-	
-	public function testRedirectionReverser() {
-		$urla = url('content', 'page', 'about');
-		$urlb = url('content', 'page', 'me');
-		
-		$this->assertEquals('/static/me/', strval($urlb));
-		$this->assertEquals('/about/', strval($urla));
 	}
 	
 }

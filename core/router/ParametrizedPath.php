@@ -66,7 +66,6 @@ class ParametrizedPath extends Path
 		 * with controller, action and object.
 		 */
 		$path = new Path(
-			self::replaceIn($this->getApp(), $data), 
 			self::replaceIn($this->getController(), $data), 
 			self::replaceIn($this->getAction(), $data), 
 			array_merge(self::replaceIn($this->getObject(), $data), $add), 
@@ -122,7 +121,6 @@ class ParametrizedPath extends Path
 		 * internal data.
 		 */
 		$p = new Parameters();
-		$p->addParameters($fn([$this->getApp()],        [$from->getApp()]));
 		$p->addParameters($fn($this->getController(),   $from->getController()));
 		$p->addParameters($fn([$this->getAction()],     [$from->getAction()]));
 		$p->addParameters($fn($this->getObject(),       $from->getObject(), true));
@@ -146,7 +144,6 @@ class ParametrizedPath extends Path
 	public function getPatterns() {
 		#Extract the patterns
 		$patterns = new Collection(array_merge(
-			[$this->getApp()],
 			$this->getController(),
 			[$this->getAction()],
 			$this->getObject(),
@@ -227,7 +224,6 @@ class ParametrizedPath extends Path
 		 * of code that requires the new version to function.
 		 */
 		return new ParametrizedPath(
-			$arr['app']?? null, 
 			$arr['controller']?? null, 
 			isset($arr['action'])? reset($arr['action']) : null, 
 			$arr['object']?? null, 

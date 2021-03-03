@@ -16,14 +16,6 @@ use spitfire\core\router\Pattern;
  {
 	 
 	 /**
-	  * The namespace of the app being used. This allows spitfire to locate the 
-	  * application for the namespace and correctly handle it.
-	  * 
-	  * @var string|null|Pattern 
-	  */
-	 private $app;
-	 
-	 /**
 	  * The 'name' of the controller expected. The name of the controller is a list
 	  * of string in an array. This is especially useful when mapping a URL
 	  * (<code>/a/url</code>) to a Controller class (<code>\a\urlController</code>)
@@ -73,48 +65,18 @@ use spitfire\core\router\Pattern;
 	  * the expected response format and the parameters it took from the URL.
 	  * 
 	  * 
-	  * @param string|Pattern|App|null $app
 	  * @param string[]|Pattern[]|Pattern|string|null  $controller
 	  * @param string|Pattern|null $action
 	  * @param string[]|Pattern[]|string|Pattern|null  $object
 	  * @param string[]|string $format
 	  * @param string[]|Pattern[] $parameters
 	  */
-	 public function __construct($app, $controller, $action, $object, $format = 'php', $parameters = Array()) {
-		 $this->app        = $app instanceof App? $app->url() : $app;
+	 public function __construct($controller, $action, $object, $format = 'php', $parameters = Array()) {
 		 $this->controller = array_filter(is_array($controller)? $controller : [$controller]);
 		 $this->action     = $action;
 		 $this->object     = array_filter(is_array($object)? $object : [$object]);
 		 $this->format     = $format;
 		 $this->parameters = $parameters;
-	 }
-	 
-	 /**
-	  * Returns the namespace of the app chosen to handle the request. This allows
-	  * your application to quickly generate links pointing to the current app.
-	  * 
-	  * @return string|null|Pattern
-	  */
-	 public function getApp() {
-		 return $this->app;
-	 }
-	 
-	 /**
-	  * Changes the app in charge of handling the requested Path. Please note that
-	  * this is required to be the namespace of the app, so you will have to retrieve
-	  * this from the app in case you wanna use it.
-	  * 
-	  * @param string $app
-	  * @return Path
-	  */
-	 public function setApp($app) {
-		 #If the App is actually an App and the user didn't read the doc, we will
-		 #forgive him.
-		 if ($app instanceof App) {
-			 $app = $app->getMapping()->getNameSpace();
-		 }
-		 $this->app = $app;
-		 return $this;
 	 }
 	 
 	 /**
@@ -251,3 +213,4 @@ use spitfire\core\router\Pattern;
 	 }
 	 
  }
+ 

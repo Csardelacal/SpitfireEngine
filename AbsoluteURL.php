@@ -46,7 +46,7 @@ class AbsoluteURL extends spitfire\core\http\AbsoluteURL
 		$get          = array_shift($params);
 		$environment  = array_shift($params);
 
-		parent::__construct($app, $controller, $action, $object, 'php', $get, $environment);
+		parent::__construct($controller, $action, $object, 'php', $get, $environment);
 	}
 	
 }

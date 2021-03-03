@@ -6,7 +6,10 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use spitfire\core\Path;
+use spitfire\core\router\Parameters;
 use spitfire\core\router\Route;
+use spitfire\core\router\RouteMismatchException;
 use spitfire\core\router\Router;
 
 class RouterTest extends TestCase
@@ -25,8 +28,8 @@ class RouterTest extends TestCase
 	 */
 	public function testCreateRoute() {
 		
-		$route  = $this->router->get('/test', 'test2');
-		$this->assertInstanceOf('\spitfire\core\router\Redirection', $route);
+		$route  = $this->router->get('/test', ['controller' => 'test']);
+		$this->assertInstanceOf('\spitfire\core\router\Route', $route);
 	}
 	
 	/**
@@ -38,45 +41,37 @@ class RouterTest extends TestCase
 		$router = $this->router;
 		
 		#Prepare a route that redirects with no parameters
-		$route  = $router->get('/test', 'test2');
+		$route  = $router->get('/test', ['controller' => 'test']);
 		$this->assertEquals(true, $route->test('/test', 'GET', Route::PROTO_HTTP, $router->server()));
-		$this->assertEquals('/test2/', $route->rewrite('/test', 'GET', Route::PROTO_HTTP, $router->server()));
+		$this->assertInstanceOf(Path::class, $route->rewrite('/test', 'GET', Route::PROTO_HTTP, new Parameters));
 		$this->assertEquals(false, $route->test('/test', 'POST', Route::PROTO_HTTP, $router->server()));
 			//> This last test should fail because we're sending a POST request to a GET route
 		
-		#Prepare a route that redirects with parameters
-		$route2 = $router->get('/another/:param', '/:param/another');
-		$this->assertEquals('/test/another/', $route2->rewrite('/another/test', 'GET', Route::PROTO_HTTP, $router->server()));
-		$this->assertEquals('/test/another/', $route2->rewrite('/another/test/', 'GET', Route::PROTO_HTTP, $router->server()));
-		$this->assertEquals(false, $route2->test('/another/test', 'POST', Route::PROTO_HTTP, $router->server()));
 	}
 	
 	public function testTrailingSlashStringRoute() {
 		$router = $this->router;
 		
 		#Create a route with a trailing slash
-		$route1 = $router->get('/this/is/a/test/', '/output/');
+		$route1 = $router->get('/this/is/a/test/', ['controller' => 'test']);
 		
 		$this->assertEquals(true, $route1->test('/this/is/a/test',  'GET', Route::PROTO_HTTP, $router->server()), 'The route should match a route without trailing slash');
 		$this->assertEquals(true, $route1->test('/this/is/a/test/', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should match a route with a trailing slash');
+		$this->assertEquals(false, $route1->test('/this/is/a/test/with/more', 'GET', Route::PROTO_HTTP, $router->server()), 'The route shouldnot match excessive content');
 		
-		$this->assertEquals(   '/output/', $route1->rewrite('/this/is/a/test/', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should match a route with a trailing slash');
-		$this->assertNotEquals('/output/', $route1->rewrite('/this/is/a/test/with/extra', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should not match additional pieces');
+		$this->assertInstanceOf(Path::class, $route1->rewrite('/this/is/a/test/', 'GET', Route::PROTO_HTTP, new Parameters), 'The route should match a route with a trailing slash');
+		
+		$this->expectException(RouteMismatchException::class, 'The route should not match additional pieces');
+		$route1->rewrite('/this/is/a/test/with/extra', 'GET', Route::PROTO_HTTP, new Parameters);
+	}
+	
+	public function testTrailingSlashStringRoute2() {
+		$router = $this->router;
 		
 		#Create a route without a trailing slash
-		$route2 = $router->get('/this/is/a/test', '/output/');
+		$route2 = $router->get('/this/is/a/test', ['controller' => 'test']);
 		$this->assertEquals(true, $route2->test('/this/is/a/test/with/more/fragments', 'GET', Route::PROTO_HTTP, $router->server()), 'The route shoud match a route with additional fragments');
 		$this->assertEquals(true, $route2->test('/this/is/a/test/', 'GET', Route::PROTO_HTTP, $router->server()), 'The route shoud match a route with a trailing slash');
-		$this->assertEquals('/output/', $route2->rewrite('/this/is/a/test/', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should rewrite a string without additional frgaments fine');
-		$this->assertEquals(false, $route2->rewrite('/this/is/a/test/with/strings', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should remove additional fragments.');
-		
-		#Create a route without a trailing slash with a target without trailing slash
-		#This addresses a bug found on 16/11/2014
-		$route3 = $router->get('/this/is/a/test', '/output');
-		$this->assertEquals(true, $route3->test('/this/is/a/test/with/more/fragments', 'GET', Route::PROTO_HTTP, $router->server()), 'The route shoud match a route with additional fragments');
-		$this->assertEquals(true, $route3->test('/this/is/a/test/', 'GET', Route::PROTO_HTTP, $router->server()), 'The route shoud match a route with a trailing slash');
-		$this->assertEquals('/output/', $route3->rewrite('/this/is/a/test/', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should rewrite a string without additional frgaments fine');
-		$this->assertEquals('/output/with/strings/', $route3->rewrite('/this/is/a/test/with/strings', 'GET', Route::PROTO_HTTP, $router->server()), 'The route should rewrite a string with additional fragments fine.');
 	}
 	
 	public function testArrayRoute() {

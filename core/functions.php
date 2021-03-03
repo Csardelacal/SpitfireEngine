@@ -281,17 +281,7 @@ function collect($elements = []) {
  */
 function url() {
 	#Get the parameters the first time
-	$sf     = spitfire();
 	$params = func_get_args();
-
-	#Extract the app
-	try {
-		$app = $sf->getApp(reset($params));
-		array_shift($params);
-	}
-	catch (\spitfire\core\app\AppNotFoundException$ex) {
-		$app = $sf->getApp('');
-	}
 
 	#Get the controller, and the action
 	$controller = null;
@@ -310,7 +300,7 @@ function url() {
 	$get          = array_shift($params);
 	$environment  = array_shift($params);
 	
-	return new URL($app, $controller, $action, $object, 'php', $get, $environment);
+	return new URL($controller, $action, $object, 'php', $get, $environment);
 }
 
 /**

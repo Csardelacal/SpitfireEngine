@@ -63,10 +63,7 @@ class Server extends Routable
 		if (!($params = $this->test($server))) { return false; }
 		
 		#Combine routes from the router and server
-		$routes = array_merge(
-				  $this->getRedirections()->toArray(), $this->router->getRedirections()->toArray(),
-				  $this->getRoutes()->toArray(), $this->router->getRoutes()->toArray()
-		);
+		$routes = array_merge( $this->getRoutes()->toArray(), $this->router->getRoutes()->toArray() );
 		
 		#Test the routes
 		foreach ($routes as $route) { /*@var $route Route*/

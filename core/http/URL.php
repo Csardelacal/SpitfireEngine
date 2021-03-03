@@ -29,10 +29,10 @@ class URL
 	private $params = Array();
 
 	
-	public function __construct($app, $controller = null, $action = null, $object = null, $extension = null, $get = null, $environment = null) {
+	public function __construct($controller = null, $action = null, $object = null, $extension = null, $get = null, $environment = null) {
 		
 		$this->params = $get;
-		$this->path   = new Path($app, $controller, $action, $object, $extension, $environment);
+		$this->path   = new Path($controller, $action, $object, $extension, $environment);
 	}
 	
 	public function setExtension($extension) {
@@ -51,15 +51,6 @@ class URL
 	public function setPath($path) {
 		$this->path = $path;
 		return $this;
-	}
-	
-	public function setApp($app) {
-		$this->path->setApp($app);
-		return $this;
-	}
-	
-	public function getApp() {
-		return $this->path->getApp();
 	}
 	
 	/**
@@ -133,11 +124,6 @@ class URL
 			$url = $rev->reverse($this->path);
 		}
 		
-		foreach ($this->getRedirections() as $red) {
-			try { $url = $red->reverse($url); }
-			catch (\Exception$e) { /*Ignore*/ }
-		}
-		
 		if (empty(trim($url, '/')) && $this->path->getFormat() !== 'php') {
 			$url = $rev->reverse($this->path, true);
 		}
@@ -197,7 +183,7 @@ class URL
 			return $e instanceof \spitfire\Model? implode(':', $e->getPrimaryData()) : $e;
 		}, $ctx->object);
 		
-		return new URL($ctx->app, $ctx->app->getControllerLocator()->getControllerURI($ctx->controller), $ctx->action, $object, $ctx->extension, $_GET);
+		return new URL($ctx->app->getControllerLocator()->getControllerURI($ctx->controller), $ctx->action, $object, $ctx->extension, $_GET);
 	}
 	
 	public static function canonical() {
@@ -207,11 +193,11 @@ class URL
 			throw new PrivateException("No context for URL generation"); 
 		}
 		
-		return new URL($ctx->app, $ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET->getCanonical());
+		return new URL($ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET->getCanonical());
 	}
 	
 	public function absolute($domain = null) {
-		$t = new AbsoluteURL($this->getApp());
+		$t = new AbsoluteURL();
 		
 		$t->setExtension($this->getExtension());
 		$t->setParams($this->params);
@@ -228,15 +214,5 @@ class URL
 		));
 	}
 	
-	/**
-	 * 
-	 * @return \spitfire\core\router\Redirection[]
-	 */
-	public function getRedirections() {
-		$router = Router::getInstance();
-		return array_merge(
-			$router->server()->getRedirections()->toArray(), $router->getRedirections()->toArray()
-		);
-	}
 
 }
