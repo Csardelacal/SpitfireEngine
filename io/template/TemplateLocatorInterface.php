@@ -36,14 +36,14 @@ interface TemplateLocatorInterface
 	 * @param string $extension
 	 * @return string[]
 	 */
-	public function template($controllerURI, $action, $extension);
+	public function template($template, $extension);
 	
 	/**
 	 * 
 	 * @param string $identifier
 	 * @return string[]
 	 */
-	public function element($identifier);
+	public function component($identifier);
 	
 	/**
 	 * 
@@ -55,9 +55,10 @@ interface TemplateLocatorInterface
 	
 	/**
 	 * 
-	 * @param string[] $controllerURI
+	 * @param string $disambiguation
+	 * @param string $extension
 	 * @return string[]
 	 */
-	public function layout($controllerURI = null);
+	public function layout($disambiguation = '', $extension = '');
 	
 }

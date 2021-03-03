@@ -24,6 +24,9 @@
  * THE SOFTWARE.
  */
 
+ /**
+  * @deprecated since 0.2
+  */
 class NamespaceMapping
 {
 	

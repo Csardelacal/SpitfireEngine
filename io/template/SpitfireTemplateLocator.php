@@ -2,6 +2,7 @@
 
 use Throwable;
 use spitfire\utils\Strings;
+use ReflectionClass;
 use function collect;
 use function spitfire;
 
@@ -29,90 +30,116 @@ use function spitfire;
  * THE SOFTWARE.
  */
 
+/**
+ * The template locator provides functionality to locate a template for a specific
+ * use case. This can range anywhere from:
+ * 
+ * - Layouts
+ * - Templates
+ * - Components
+ * 
+ * Unlike previous iterations, this component has become very static about where
+ * it looks for a file, if it's not there, it won't be retrieved.
+ */
 class SpitfireTemplateLocator implements TemplateLocatorInterface
 {
 	
-	private $root;
+	/**
+	 * Defines the directory where view resources are located, this will be under
+	 * `$resources/views`.
+	 *
+	 * @var string
+	 */
 	private $basedir;
 	
-	public function __construct($basedir) {
-		#TODO: This should be replaced with a proper location, the cwd is not the app root
-		$this->root  = spitfire()->getCWD();
-		$this->basedir = rtrim($basedir, '\/') . DIRECTORY_SEPARATOR;
+	public function __construct() {
+		$this->basedir = spitfire()->locations()->resources('views/');
+	}
+	
+	/**
+	 * Returns the file that should be used to render a component.
+	 * 
+	 * @param string $identifier
+	 * @return string[]
+	 */
+	public function component($identifier) {
+		return [ "{$this->basedir}components/{$identifier}.php" ];
+	}
+	
+	/**
+	 * Returns a list of candidate files that could be used to render a error page
+	 * for a certain exception. This uses reflection to generate a list of pages
+	 * that for the types the error inherits from.
+	 * 
+	 * This means that a LoginRequired exception that inherits from PublicException
+	 * will generate a list of candidates like this
+	 * 
+	 * - views/error/myapp/LoginRequiredException/{code}{.responseType}.php
+	 * - views/error/spitfire/exception/PublicException/{code}{.responseType}.php
+	 * 
+	 * @param string $type
+	 * @param string $extension
+	 * @return string[]
+	 */
+	public function exception($type, $extension) {
 		
-		if (Strings::startsWith($this->basedir, $this->root)) {
-			$this->basedir = substr($this->basedir, strlen($this->root));
-		}
-	}
-	
-	public function element($identifier) {
-		return [
-			"override/{$this->basedir}elements/{$identifier}",
-			"override/{$this->basedir}elements/{$identifier}.php",
-			"{$this->basedir}elements/{$identifier}",
-			"{$this->basedir}elements/{$identifier}.php"
-		];
-	}
-	
-	public function exception(Throwable $e, $extension) 
-	{	
-		$reflection = new \ReflectionClass(get_class($e));
+		$reflection = new ReflectionClass($type);
 		$candidates = collect();
 		$basedir = $this->basedir;
-
+		
+		/*
+		 * For each type this error inherits from, we will add the appropriate
+		 * templates to render it's parent.
+		 */
 		while ($reflection) {
 			$fqn = str_replace('\\', '/', $reflection->getName());
 
 			$candidates->add([
-				"override/{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}{$extension}.php",
-				"override/{$basedir}/bin/error_pages/{$fqn}/default{$extension}.php",
-				"override/{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}.php",
-				"override/{$basedir}/bin/error_pages/{$fqn}/default.php",
-				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}{$extension}.php",
-				"{$basedir}/bin/error_pages/{$fqn}/default{$extension}.php",
-				"{$basedir}/bin/error_pages/{$fqn}/{$e->getCode()}.php",
-				"{$basedir}/bin/error_pages/{$fqn}/default.php"
+				"{$basedir}error/{$fqn}/{$e->getCode()}{$extension}.php",
+				"{$basedir}error/{$fqn}/default{$extension}.php",
 			]);
 
 			$reflection = $reflection->getParentClass();
 		}
-
+		
+		/*
+		 * A few fallback error pages in case the exception was not handled by the
+		 * system the way it should, preventing it from escaping.
+		 */
 		$candidates->add([
-			 "override/{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
-			 "override/{$basedir}/bin/error_pages/default{$extension}.php",
-			 "override/{$basedir}/bin/error_pages/{$e->getCode()}.php",
-			 "override/{$basedir}/bin/error_pages/default.php",
-			 "{$basedir}/bin/error_pages/{$e->getCode()}{$extension}.php",
-			 "{$basedir}/bin/error_pages/default{$extension}.php",
-			 "{$basedir}/bin/error_pages/{$e->getCode()}.php",
-			 "{$basedir}/bin/error_pages/default.php"
+			 "{$basedir}error/{$e->getCode()}{$extension}.php",
+			 "{$basedir}error/default{$extension}.php",
 		]);
 			 
 		return $candidates->toArray();
 	}
 	
-	public function template($controllerURI, $action, $extension) {
-		
-		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $controllerURI));
-		
-		return [
-			"override/{$this->basedir}{$controller}/{$action}{$extension}.php",
-			"override/{$this->basedir}{$controller}{$extension}.php",
-			"{$this->basedir}{$controller}/{$action}{$extension}.php",
-			"{$this->basedir}{$controller}{$extension}.php",
-		];
+	/**
+	 * Returns a candidate template file for the template to be loaded. This has 
+	 * become much stricter and we now require that a call to a certain template
+	 * issues a unique locator.
+	 * 
+	 * @param string $template
+	 * @param string $extension
+	 * @return string[]
+	 */
+	public function template($template, $extension) 
+	{
+		return [ "{$this->basedir}{$template}{$extension}.php" ];
 	}
-
-	public function layout($controllerURI = null){
-		
-		$controller = strtolower(implode(DIRECTORY_SEPARATOR, $controllerURI));
-		
-		return [
-			"override/{$this->basedir}{$controller}/layout.php",
-			"override/{$this->basedir}layout.php",
-			"{$this->basedir}{$controller}/layout.php",
-			"{$this->basedir}layout.php"
-		];
+	
+	/**
+	 * Returns the filename for the layout to be used. The user can specify a layout
+	 * to be used.
+	 * 
+	 * @param string $disambiguation
+	 * @param string $extension
+	 * @return string[]
+	 */
+	public function layout($disambiguation = '', $extension = '')
+	{	
+		$name = $disambiguation?: 'layout';
+		return [ "{$this->basedir}layout/{$name}{$extension}.php" ];
 	}
 
 }

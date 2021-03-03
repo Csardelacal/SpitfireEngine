@@ -2,8 +2,7 @@
 
 use spitfire\core\ContextCLI;
 use spitfire\exceptions\PublicException;
-use spitfire\cli\arguments\Parser;
-use const CONFIG_DIRECTORY;
+use spitfire\io\cli\arguments\Parser;
 use function current_context;
 
 /* 
@@ -39,9 +38,7 @@ class SpitFireCLI extends SpitFire
 		}
 		
 		#Import the apps
-		if (!collect($this->apps())->filter(function (App$e) { return !$e->url(); })->rewind()) {
-			$this->app(new UnnamedApp(''));
-		}
+		include $this->locations->config() . 'apps.php';
 		
 		#Every app now gets the chance to create appropriate routes for it's operation
 		foreach ($this->apps() as $app) { $app->makeRoutes(); }
@@ -59,7 +56,7 @@ class SpitFireCLI extends SpitFire
 		
 		#Set the context as the current one, and load the user's middleware configuration
 		current_context($context);
-		file_exists(basedir() . 'bin/settings/middleware.php') && include basedir() . 'bin/settings/middleware.php';
+		include $this->locations->config() . 'middleware.php';
 		
 		return $context->run();
 		
