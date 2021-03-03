@@ -32,17 +32,12 @@ class EnvironmentTest extends TestCase
 	private $env;
 	
 	public function setUp() : void {
-		$this->env = new \spitfire\core\Environment('test_' . time());
-		$this->env->set('test.123', 'abc');
-		$this->env->set('test.abc', '123');
-		$this->env->set('test.245', 'bcd');
+		$this->env = new \spitfire\core\Environment('tests/core/sample.environment.ini');
 	}
 	
-	public function testSubTree() {
-		$subtree = $this->env->subtree('test.');
-		$this->assertArrayHasKey('abc', $subtree);
-		$this->assertArrayHasKey('123', $subtree);
-		$this->assertEquals('123', $subtree['abc']);
+	public function testRead() 
+	{
+		$this->assertEquals('Hello world', $this->env->read('EXAMPLE'));
 	}
 	
 }

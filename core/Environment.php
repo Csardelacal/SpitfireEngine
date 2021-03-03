@@ -1,9 +1,13 @@
 <?php namespace spitfire\core;
 
+use BadMethodCallException;
+
 /**
- * Environments are a way to store multiple settings for a single application
- * and several machines. We can even set automatic environment detection to 
- * make the process of switching the settings for several servers seamless.
+ * The environment loads settings from an ini file, and from the system's environment,
+ * making them accessible to the application.
+ * 
+ * If you use config caching you should not use this outside of the config files, since
+ * the data in the environment gets 'baked' into the config and cached to a file.
  * 
  * @author  César de la Cal <cesar@magic3w.com>
  */
@@ -15,91 +19,34 @@ class Environment
 	 * in Spitfire. They can later be overriden if needed by using set inside 
 	 * of each environment.
 	 */
-	protected $settings = Array (
-		#Maintenance related settings.
-		'maintenance_enabled'      => false,
-		'maintenance_controller'   => 'maintenance',
-		'debug_mode'           => true, //TODO: Change for stable
-		
-		#Database settings
-		'db'                       => 'mysqlpdo://root:@localhost:3306/database',
-	
-		#Character encoding settings
-		'system_encoding'          => 'utf-8',
-		'database_encoding'        => 'latin1',
-	    
-		#MVC Related settings
-		'pretty_urls'              => true,
-		'default_controller'       => 'home',
-		'default_action'           => 'index',
-		'default_object'           => Array(),
-	    
-		#Request settings
-		'supported_view_extensions'=> Array('php', 'xml', 'json'),
-		'request.replace_globals'  => true,
-		
-		#Memcached settings
-		'memcached_enabled'        => false,
-		'memcached_servers'        => Array('localhost'),
-		'memcached_port'           => '11211',
-		 
-		#Directory settings
-		'cachefile.directory'     => 'app://bin/usr/cache/',
-		'uploads.directory'       => 'app://bin/usr/uploads/',
-		'sessions.directory'      => 'app://bin/usr/sessions/',
-	    
-		#Asset preprocessors
-		'assets.preprocessors.scss' => '\spitfire\io\asset\SassPreprocessor',
-		'assets.preprocessors.js'   => '\spitfire\io\asset\JSPreprocessor',
-		'assets.preprocessors.png'  => '\spitfire\io\asset\PNGPreprocessor',
-		'assets.preprocessors.jpg'  => '\spitfire\io\asset\JPEGPreprocessor',
-		'assets.preprocessors.jpeg' => '\spitfire\io\asset\JPEGPreprocessor',
-	    
-		#Timezone settings
-		'timezone'                 => 'Europe/Berlin',
-		'datetime.format'          => 'd/m/Y H:i:s',
-		
-		'storage.engines.app'      => '\spitfire\storage\drive\Driver:@',
-		'storage.engines.uploads'  => '\spitfire\storage\drive\Driver:@bin/usr/uploads',
-		'storage.engines.file'     => '\spitfire\storage\drive\Driver:/'
-		
-	);
+	protected $settings = [];
 	
 	/**
-	 * The array of declared environments. This allows the user to easily define
-	 * several configurations that they can manage with ease.
-	 *
-	 * @var Environment[]
-	 */
-	static    $envs               = Array();
-	
-	/**
-	 * The environment currently being used by the system. This is only used by the
-	 * singleton methods and should be avoided in multi-head and multi-context
-	 * environments.
-	 *
-	 * @var Environment|null
-	 */
-	static    $active_environment = null;
-	
-	/**
-	 * When creating a new environment it'll be created with a name that will
-	 * identify it and a set of default settings that can be overriden afterwards.
+	 * Loads the environment file from disk and initializes an environment for the application,
+	 * please note that the envioronment file is always loaded from a location relative to the
+	 * application root.
 	 * 
-	 * @param string $env_name Name of the environment i.e. Testing.
+	 * Using an environment file outside the application root is usually not advisable, and may
+	 * lead to unexpected behavior.
 	 */
-	public function __construct($env_name) {
-		self::$envs[$env_name] = $this;
-		self::$active_environment = $this;
-	}
-	
-	public function keys() {
-		return array_keys($this->settings);
+	public function __construct($env = '.env') 
+	{
+		$file = spitfire()->locations()->root($env);
+		
+		/**
+		 * Load the ini file that represents the environment on this machine.
+		 */
+		if (file_exists($env)) {
+			$this->settings = parse_ini_file($file, false, INI_SCANNER_TYPED);
+		}
+		#TODO: Add a log output error whenever the environment failed to load
 	}
 	
 	/**
 	 * This function creates / overrides a setting with a value defined by the
 	 * developer. Names are case insensitive.
+	 * 
+	 * @deprecated since v0.2 ()
 	 * @param string $key The name of the setting
 	 * @param string $value The value of the parameter.
 	 */
@@ -109,35 +56,22 @@ class Environment
 	}
 	
 	/**
-	 * Defines which environment should be used to read data from it.
-	 * @param string|Environment $env The environment to be used.
-	 */
-	public static function set_active_environment ($env) {
-		if (is_a($env, __class__) )                          { self::$active_environment = $env; }
-		elseif (is_string($env) && isset(self::$envs[$env])) { self::$active_environment = self::$envs[$env]; }
-	}
-	
-	/**
 	 * Returns the selected key from the settings.
+	 * 
 	 * @param string $key The key to be returned.
+	 * @return mixed
 	 */
 	public function read($key) {
-		$low = strtolower($key);
-		if (isset( $this->settings[$low] )) { return $this->settings[$low]; }
-		else { return false; }
+		if (isset( $this->settings[$key] )) { return $this->settings[$key]; }
+		else { return getenv($key); }
 	}
 	
 	/**
-	 * Returns a slice of the environment containing all the records that match
-	 * the namespace given as a parameter.
+	 * This method has been deprecated, the system should not use the subtree method to
+	 * explore system configuration, instead, it should use service providers for this
+	 * and refer to the config only with known keys.
 	 * 
-	 * For example, Environment::subtree('memcached.') will return all the records
-	 * pertaining to memcached in an associative array.
-	 * 
-	 * This function has to loop over all the entries since, generally speaking,
-	 * environments are not recursive. They just have a simple dictionary with 
-	 * strings. No further arrays.
-	 * 
+	 * @deprecated since 0.2-dev
 	 * @see https://phabricator.magic3w.com/T69 for further notes
 	 */
 	public function subtree($namespace) {
@@ -159,17 +93,12 @@ class Environment
 	 * Static version of read. Will return the selected key from the currently 
 	 * active environment.
 	 * 
+	 * @deprecated since v0.2
 	 * @param string $key The key to be returned.
 	 * @return string|Environment
 	 */
 	public static function get($key = null) {
-		#If no key was set we're expecting the system to return the active environment
-		if ($key === null) { return self::$active_environment? : new self('default');}
-		
-		if (self::$active_environment) { return self::$active_environment->read($key); }
-		#Implicit else
-		new self('default');
-		return self::get($key); //Repeat
+		throw new BadMethodCallException('Environment::get is deprecated');
 	}
 	
 }
