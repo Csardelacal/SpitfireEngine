@@ -13,8 +13,6 @@ use spitfire\ast\scanner\IdentifierScanner;
 use spitfire\ast\scanner\IntegerLiteralScanner;
 use spitfire\ast\scanner\LiteralScanner;
 use spitfire\ast\scanner\WhiteSpaceScanner;
-use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
 use spitfire\validation\rules\EmptyValidationRule;
 use spitfire\validation\rules\FilterValidationRule;
 use spitfire\validation\rules\InValidationRule;
@@ -211,7 +209,7 @@ class Parser
 				return $leafs[1]->resolve($scope);
 			}
 			
-			throw new ApplicationException('Impossible condition reached');
+			throw new ParserException('Impossible condition reached');
 		});
 		
 		/*
@@ -255,7 +253,7 @@ class Parser
 			$_ret = collect($leaf->getLeafs()[0])->each(function ($e) use ($scope) {
 				list($argument, $options) = $e;
 				
-				if (!isset($this->rules[$argument->getBody()])) { throw new PrivateException('Invalid validation rule'); }
+				if (!isset($this->rules[$argument->getBody()])) { throw new ParserException('Invalid validation rule'); }
 				
 				$params = $options? collect($options)->each(function ($e) use ($scope) { return $e->resolve($scope); })->toArray() : [[]];
 				return call_user_func_array($this->rules[$argument->getBody()], $params[0]);
@@ -291,7 +289,7 @@ class Parser
 		 * fail and inform the user that the parsing went south.
 		 */
 		if (empty($res)) {
-			throw new PrivateException('Parser could not read the expression', 2004102105);
+			throw new ParserException('Parser could not read the expression', 2004102105);
 		}
 		
 		return $res;

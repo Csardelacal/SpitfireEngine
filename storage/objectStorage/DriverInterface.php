@@ -1,5 +1,8 @@
 <?php namespace spitfire\storage\objectStorage;
 
+use spitfire\exceptions\ApplicationException;
+use spitfire\exceptions\PermissionsException;
+
 /* 
  * The MIT License
  *
@@ -64,7 +67,8 @@ interface DriverInterface
 	 * asynchronous calls.
 	 * 
 	 * @param string $key
-	 * @throws IOException If the blob cannot be retrieved
+	 * @throws ApplicationException If the blob cannot be retrieved
+	 * @throws PermissionsException If the application has no permission to retrieve the blob
 	 */
 	public function read($key);
 	

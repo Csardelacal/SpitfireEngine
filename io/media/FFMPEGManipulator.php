@@ -1,6 +1,6 @@
 <?php namespace spitfire\io\media;
 
-use spitfire\exceptions\PrivateException;
+use spitfire\io\media\exceptions\EncoderUnavailableException;
 
 /* 
  * The MIT License
@@ -33,6 +33,9 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 	
 	private $operations = [];
 	
+	/**
+	 * @throws EncoderUnavailableException
+	 */
 	public function __construct() {
 		
 		/*
@@ -41,7 +44,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		 * that the system could not find the tool.
 		 */
 		if (!exec('which ffmpeg')) {
-			throw new PrivateException('FFMPeg could not be found on the system', 20082851247);
+			throw new EncoderUnavailableException('FFMPeg could not be found on the system', 20082851247);
 		}
 	}
 	

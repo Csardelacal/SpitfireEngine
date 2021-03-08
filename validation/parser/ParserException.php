@@ -1,8 +1,6 @@
-<?php namespace spitfire\io\media;
+<?php namespace spitfire\validation\parser;
 
 use spitfire\exceptions\ApplicationException;
-use spitfire\io\media\exceptions\EncoderUnavailableException;
-use spitfire\storage\objectStorage\Blob;
 
 /* 
  * The MIT License
@@ -28,43 +26,8 @@ use spitfire\storage\objectStorage\Blob;
  * THE SOFTWARE.
  */
 
-class MediaDispatcher
+class ParserException extends ApplicationException
 {
 	
-	private $associations = [];
-	
-	/**
-	 * 
-	 * @throws ApplicationException
-	 * 
-	 * @param string $mime
-	 * @param MediaManipulatorInterface $manipulator
-	 * @return void
-	 */
-	public function register($mime, MediaManipulatorInterface$manipulator) {
-		
-		if (!$manipulator->supports($mime)) {
-			throw new ApplicationException('Invalid association', 1805301139);
-		}
-		
-		$this->associations[$mime] = $manipulator;
-	}
-	
-	/**
-	 * 
-	 * @throws EncoderUnavailableException
-	 * 
-	 * @param Blob $object
-	 * @return MediaManipulatorInterface
-	 */
-	public function load(\spitfire\storage\objectStorage\Blob$object) : MediaManipulatorInterface {
-		if (isset($this->associations[$object->mime()])) {
-			$copy = clone $this->associations[$object->mime()];
-			$copy->load($object);
-			return $copy;
-		}
-		
-		throw new EncoderUnavailableException(sprintf('No manipulator found for %s(%s)', $object->uri(), $object->mime()), 1805301140);
-	}
-	
 }
+ 

@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\drive;
 
-use spitfire\io\stream\StreamReaderInterface;
+use spitfire\storage\drive\exceptions\FilePermissionsException;
 
 /* 
  * The MIT License

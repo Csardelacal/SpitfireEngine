@@ -436,6 +436,28 @@
             "time": "2020-12-03T14:13:22+00:00"
         },
         {
+            "name": "spitfire/exception",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-exception.git",
+                "reference": "7b1cd4ef3df39dafe16e5a2fd8ed0c37d2881ddf"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Exception interfaces for spitfire",
+            "time": "2020-12-03T14:13:22+00:00"
+        },
+        {
             "name": "spitfire/request",
             "version": "v0.1.0",
             "source": {

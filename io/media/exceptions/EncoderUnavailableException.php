@@ -1,11 +1,11 @@
-<?php namespace spitfire\exceptions\core;
+<?php namespace spitfire\io\media\exceptions;
 
-use Exception;
+use spitfire\exceptions\ApplicationException;
 
 /* 
  * The MIT License
  *
- * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,8 @@ use Exception;
  * THE SOFTWARE.
  */
 
-/**
- * This exception is thrown when the user tries to cast an exception to array 
- * but the collection does not provide a defined scope.
- * 
- * @author César de la Cal Bretschneider <cesar@magic3w.com>
- */
-class UndefinedCollectionException extends Exception
+class EncoderUnavailableException extends ApplicationException
 {
 	
 }
-
+ 

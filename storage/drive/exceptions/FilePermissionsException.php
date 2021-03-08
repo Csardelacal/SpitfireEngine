@@ -1,13 +1,11 @@
-<?php namespace spitfire\storage\objectStorage;
+<?php namespace spitfire\storage\drive\exceptions;
 
-use spitfire\io\stream\StreamReaderInterface;
-use spitfire\io\stream\StreamWriterInterface;
-use spitfire\storage\drive\exceptions\FilePermissionsException;
+use spitfire\exceptions\PermissionsException;
 
 /* 
  * The MIT License
  *
- * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,26 +26,8 @@ use spitfire\storage\drive\exceptions\FilePermissionsException;
  * THE SOFTWARE.
  */
 
-class IOStream
+class FilePermissionsException extends PermissionsException
 {
 	
-	private $reader;
-	private $writer;
-	
-	public function __construct(StreamReaderInterface$reader, StreamWriterInterface$writer = null) {
-		$this->reader = $reader;
-		$this->writer = $writer;
-	}
-
-	public function reader() : StreamReaderInterface {
-		return $this->reader;
-	}
-
-	public function writer() : StreamWriterInterface {
-		if (!$this->writer) {
-			throw new FilePermissionsException('No writable stream', 2001161650);
-		}
-		
-		return $this->writer;
-	}
 }
+ 
