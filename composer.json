@@ -13,7 +13,7 @@
 		"spitfire/defer": "^0.1.0",
 		"spitfire/cli": "dev-master",
 		"spitfire/database": "dev-master",
-		"spitfire/collection": "dev-master",
+		"spitfire/collection": "^0.1.0",
 		"spitfire/ast": "dev-master"
 	},
 

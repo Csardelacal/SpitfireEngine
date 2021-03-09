@@ -12,6 +12,7 @@ use spitfire\core\Locations;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
+use spitfire\provider\Container;
 use spitfire\provider\Provider;
 use spitfire\utils\Strings;
 use function basedir;
@@ -71,7 +72,7 @@ class SpitFire
 		 * Initialize the service container, which will manage all the services that
 		 * the framework provides to the application.
 		 */
-		$this->provider = new Provider();
+		$this->provider = new Container();
 		$loaded = [];
 		
 		/*

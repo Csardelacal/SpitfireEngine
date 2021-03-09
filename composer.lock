@@ -4,17 +4,18 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4640c61f18df5761e1baa0ef7050a5c0",
+    "content-hash": "86a3bc4f7e79aefd7d606a9b43f0df91",
     "packages": [
         {
             "name": "magic3w/url-reflection",
-            "version": "v0.1.1",
+            "version": "v0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/url-reflection.git",
-                "reference": "6d7529af43c2cb1ed264e9b88d257ac4066b641c"
+                "reference": "c106e4bde9cf2a565121ba2efc47a12defbc61bb"
             },
             "require-dev": {
+                "phpstan/phpstan": "^0.12.77",
                 "phpunit/phpunit": "^9.3"
             },
             "type": "library",
@@ -34,20 +35,20 @@
                 }
             ],
             "description": "Allows applications to have a URL parsed and retrieve information about it's components",
-            "time": "2020-11-04T12:01:53+00:00"
+            "time": "2021-04-08T09:01:02+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.81",
+            "version": "0.12.84",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8"
+                "reference": "9c43f15da8798c8f30a4b099e6a94530a558cfd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
-                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9c43f15da8798c8f30a4b099e6a94530a558cfd5",
+                "reference": "9c43f15da8798c8f30a4b099e6a94530a558cfd5",
                 "shasum": ""
             },
             "require": {
@@ -78,7 +79,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.81"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.84"
             },
             "funding": [
                 {
@@ -94,31 +95,26 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-08T22:03:02+00:00"
+            "time": "2021-04-19T17:10:54+00:00"
         },
         {
             "name": "psr/container",
-            "version": "1.0.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+                "reference": "8622567409010282b7aeebe4bb841fe98b58dcaf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
-                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/8622567409010282b7aeebe4bb841fe98b58dcaf",
+                "reference": "8622567409010282b7aeebe4bb841fe98b58dcaf",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=7.2.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Psr\\Container\\": "src/"
@@ -131,7 +127,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common Container Interface (PHP FIG PSR-11)",
@@ -145,9 +141,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-fig/container/issues",
-                "source": "https://github.com/php-fig/container/tree/master"
+                "source": "https://github.com/php-fig/container/tree/1.1.1"
             },
-            "time": "2017-02-14T16:28:37+00:00"
+            "time": "2021-03-05T17:36:06+00:00"
         },
         {
             "name": "psr/log",
@@ -200,41 +196,6 @@
             "time": "2020-03-23T09:12:05+00:00"
         },
         {
-            "name": "spitfire/ast",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitfire-ast.git",
-                "reference": "370c8ec285f29c957f0639ca1ac040ff4c21534f"
-            },
-            "require": {
-                "spitfire/collection": "dev-master",
-                "spitfire/exception": "dev-master"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "10.0.x-dev"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "spitfire\\ast\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "César de la Cal Bretschneider",
-                    "email": "cesar@magic3w.com"
-                }
-            ],
-            "description": "Allows applications to create abstract syntax trees that can read in input for validation and similar purposes.",
-            "time": "2020-12-22T20:15:51+00:00"
-        },
-        {
             "name": "spitfire/caching",
             "version": "dev-master",
             "source": {
@@ -271,10 +232,11 @@
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-cli.git",
-                "reference": "e9a8edcac4da73ab4567c4c463dbbdc8e19a7160"
+                "reference": "3ed11eaf2a6802d39ca9c92cc463cdcb8252800c"
             },
             "require": {
-                "spitfire/collection": "dev-master"
+                "ext-posix": "*",
+                "spitfire/collection": "0.1"
             },
             "default-branch": true,
             "type": "library",
@@ -289,11 +251,11 @@
                 }
             ],
             "description": "CLI Components for Spitfire",
-            "time": "2020-12-09T18:35:05+00:00"
+            "time": "2021-03-09T08:47:06+00:00"
         },
         {
             "name": "spitfire/collection",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-collection.git",
@@ -302,7 +264,6 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.4"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -328,7 +289,7 @@
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-database.git",
-                "reference": "fb0764e966a5eb1d4fb751f8ec76405422f008e6"
+                "reference": "d2ec8e1ad185fbae29539a11257c99967937ff4c"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.4"
@@ -351,7 +312,7 @@
                 }
             ],
             "description": "Database components for spitfire/engine",
-            "time": "2020-11-04T15:22:44+00:00"
+            "time": "2021-01-26T11:01:28+00:00"
         },
         {
             "name": "spitfire/defer",
@@ -414,14 +375,22 @@
         },
         {
             "name": "spitfire/exception",
-            "version": "dev-master",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-exception.git",
-                "reference": "7b1cd4ef3df39dafe16e5a2fd8ed0c37d2881ddf"
+                "reference": "02b1d64efe48d8a379013cd341e7865c0768779f"
             },
-            "default-branch": true,
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.71",
+                "phpunit/phpunit": "^9.5"
+            },
             "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\exceptions\\": "./src"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
@@ -433,40 +402,21 @@
                 }
             ],
             "description": "Exception interfaces for spitfire",
-            "time": "2020-12-03T14:13:22+00:00"
-        },
-        {
-            "name": "spitfire/exception",
-            "version": "v0.1",
-            "source": {
-                "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitfire-exception.git",
-                "reference": "7b1cd4ef3df39dafe16e5a2fd8ed0c37d2881ddf"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "César de la Cal Bretschneider",
-                    "email": "cesar@magic3w.com"
-                }
-            ],
-            "description": "Exception interfaces for spitfire",
-            "time": "2020-12-03T14:13:22+00:00"
+            "time": "2021-02-06T15:12:59+00:00"
         },
         {
             "name": "spitfire/request",
-            "version": "v0.1.0",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-request.git",
-                "reference": "d3b3801273b7d65f42e974834a0658d9255caacd"
+                "reference": "cabee05f5eb1c593cb9fbbe895239b5fd52fb5b5"
             },
             "require": {
-                "magic3w/url-reflection": "^0.1.0"
+                "ext-curl": "*",
+                "magic3w/url-reflection": "^0.1.2",
+                "phpstan/phpstan": "^0.12.82",
+                "spitfire/exception": "^0.1.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.4"
@@ -488,7 +438,7 @@
                 }
             ],
             "description": "Spitfire request mechanism",
-            "time": "2020-10-15T16:00:20+00:00"
+            "time": "2021-03-31T09:15:07+00:00"
         }
     ],
     "packages-dev": [
@@ -833,16 +783,16 @@
         },
         {
             "name": "phar-io/version",
-            "version": "3.0.4",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/version.git",
-                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451"
+                "reference": "bae7c545bef187884426f042434e561ab1ddb182"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/version/zipball/e4782611070e50613683d2b9a57730e9a3ba5451",
-                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/bae7c545bef187884426f042434e561ab1ddb182",
+                "reference": "bae7c545bef187884426f042434e561ab1ddb182",
                 "shasum": ""
             },
             "require": {
@@ -878,9 +828,9 @@
             "description": "Library for handling version information and constraints",
             "support": {
                 "issues": "https://github.com/phar-io/version/issues",
-                "source": "https://github.com/phar-io/version/tree/3.0.4"
+                "source": "https://github.com/phar-io/version/tree/3.1.0"
             },
-            "time": "2020-12-13T23:18:30+00:00"
+            "time": "2021-02-23T14:00:09+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -1042,16 +992,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.12.2",
+            "version": "1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "245710e971a030f42e08f4912863805570f23d39"
+                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/245710e971a030f42e08f4912863805570f23d39",
-                "reference": "245710e971a030f42e08f4912863805570f23d39",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be1996ed8adc35c3fd795488a653f4b518be70ea",
+                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea",
                 "shasum": ""
             },
             "require": {
@@ -1103,22 +1053,22 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/1.12.2"
+                "source": "https://github.com/phpspec/prophecy/tree/1.13.0"
             },
-            "time": "2020-12-19T10:15:11+00:00"
+            "time": "2021-03-17T13:42:18+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.5",
+            "version": "9.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "f3e026641cc91909d421802dd3ac7827ebfd97e1"
+                "reference": "f6293e1b30a2354e8428e004689671b83871edde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f3e026641cc91909d421802dd3ac7827ebfd97e1",
-                "reference": "f3e026641cc91909d421802dd3ac7827ebfd97e1",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f6293e1b30a2354e8428e004689671b83871edde",
+                "reference": "f6293e1b30a2354e8428e004689671b83871edde",
                 "shasum": ""
             },
             "require": {
@@ -1174,7 +1124,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.5"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.6"
             },
             "funding": [
                 {
@@ -1182,7 +1132,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-28T06:44:49+00:00"
+            "time": "2021-03-28T07:26:59+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1427,16 +1377,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.1",
+            "version": "9.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "e7bdf4085de85a825f4424eae52c99a1cec2f360"
+                "reference": "c73c6737305e779771147af66c96ca6a7ed8a741"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e7bdf4085de85a825f4424eae52c99a1cec2f360",
-                "reference": "e7bdf4085de85a825f4424eae52c99a1cec2f360",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c73c6737305e779771147af66c96ca6a7ed8a741",
+                "reference": "c73c6737305e779771147af66c96ca6a7ed8a741",
                 "shasum": ""
             },
             "require": {
@@ -1514,7 +1464,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.1"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.4"
             },
             "funding": [
                 {
@@ -1526,7 +1476,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-01-17T07:42:25+00:00"
+            "time": "2021-03-23T07:16:29+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -2494,7 +2444,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.22.0",
+            "version": "v1.22.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -2553,7 +2503,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.1"
             },
             "funding": [
                 {
@@ -2623,30 +2573,35 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.9.1",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
-                "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
+                "reference": "6964c76c7804814a842473e0c8fd15bab0f18e25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
-                "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/6964c76c7804814a842473e0c8fd15bab0f18e25",
+                "reference": "6964c76c7804814a842473e0c8fd15bab0f18e25",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3 || ^7.0 || ^8.0",
+                "php": "^7.2 || ^8.0",
                 "symfony/polyfill-ctype": "^1.8"
             },
             "conflict": {
                 "phpstan/phpstan": "<0.12.20",
-                "vimeo/psalm": "<3.9.1"
+                "vimeo/psalm": "<4.6.1 || 4.6.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.36 || ^7.5.13"
+                "phpunit/phpunit": "^8.5.13"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.10-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Webmozart\\Assert\\": "src/"
@@ -2670,9 +2625,9 @@
             ],
             "support": {
                 "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.9.1"
+                "source": "https://github.com/webmozarts/assert/tree/1.10.0"
             },
-            "time": "2020-07-08T17:02:28+00:00"
+            "time": "2021-03-09T10:59:23+00:00"
         }
     ],
     "aliases": [],
@@ -2680,9 +2635,7 @@
     "stability-flags": {
         "spitfire/caching": 20,
         "spitfire/cli": 20,
-        "spitfire/database": 20,
-        "spitfire/collection": 20,
-        "spitfire/ast": 20
+        "spitfire/database": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
