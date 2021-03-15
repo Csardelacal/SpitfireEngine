@@ -8,6 +8,7 @@ use spitfire\core\http\URL;
 use spitfire\exceptions\ExceptionHandler;
 use spitfire\exceptions\ExceptionHandlerCLI;
 use spitfire\cli\Console;
+use spitfire\core\exceptions\FailureException;
 use spitfire\io\request\Request;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
@@ -112,6 +113,26 @@ function assume(bool $condition, $failure) : void
 	 * the ::class magic constant.
 	 */
 	throw new $failure();
+}
+
+/**
+ * This function allows the developer to stop the execution of the application.
+ * It raises a failure exception that will prevent the code from continuing and
+ * display a message to the end user that explains the situation.
+ * 
+ * Whenever your application runs into a more specific issue, you should avoid
+ * using this and instead raise a custom exception that offers the user support
+ * to resolve the issue or additional information.
+ * 
+ * 
+ * @param int $status
+ * @param string $message
+ * @return void
+ * @throws FailureException
+ */
+function fail(int $status, string $message = '') : void
+{
+	throw new FailureException($message, $status);
 }
 
 /**
