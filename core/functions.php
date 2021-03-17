@@ -515,27 +515,58 @@ function basedir($set = null)
 	return $override?: rtrim(dirname(dirname(dirname(__DIR__))), '\/') . DIRECTORY_SEPARATOR;
 }
 
-function asset($name = null, $app = null) {
-	if ($app === null) { $app = current_context()->app; }
+/**
+ * 
+ * 
+ * @param string $name
+ * @param string $scope A directory to scope this to. If an application builds it's 
+ *                      own assets and generates a manifest file, it will be located here.
+ *                      The mix-manifest file is required to be located in the root
+ *                      of this directory.
+ * 
+ *                      Note that the scope must be relative to the public directory,
+ *                      if this is not the case, the system will generate bad URLs
+ *                      or fail to locate the manifests.
+ * 
+ *                      If, for example, your application publishes it's assets to the 
+ *                      assets/vendor/myapp older within public folder, this is exactly
+ *                      the string it should pass
+ * @return string
+ */
+function asset(string $name, string $scope = 'assets/') : string 
+{
+	static $scopes = [];
 	
-	if ($name === null) { 
-		return '/' . implode('/', array_filter([ 
-			trim(SpitFire::baseUrl(), '/'),
-			trim(Environment::get('assets.directory.deploy'), '/'),
-			trim($app->url()?? '', '/')]));
+	if (!isset($scopes[$scope])) {
+		/*
+		 * Check if the manifest file exists. In most cases, laravel-mix will generate
+		 * a simple dictionary that contains an entry and the exact same file name
+		 * as the alue for that entry. But sometimes it contains disambiguations.
+		 */
+		$manifest = spitfire()->locations()->public(rtrim($scope, '\/') . DIRECTORY_SEPARATOR . 'mix-manifest.json');
+		if (!file_exists($manifest)) { throw new \spitfire\exceptions\ApplicationException(sprintf('No asset manifest for %s', $scope)); }
+		
+		/*
+		 * If the key exists, we generate a manifest object.
+		 */
+		$scopes[$scope] = new \spitfire\cache\MemoryCache(json_decode(file_get_contents($manifest)));
 	}
 	
-	$path = pathinfo($name, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . pathinfo($name, PATHINFO_FILENAME);
-	$extension = pathinfo($name, PATHINFO_EXTENSION);
+	#TODO: Read the config for the public URL of the assets or the application
+	$base = SpitFire::baseUrl();
 	
-	$preprocessor = Environment::get('assets.preprocessors.' . $extension);
-	if ($preprocessor) { $extension = (new $preprocessor())->extension($extension); }
+	/*
+	 * Look for the asset inside the memory cache. This allows us to make use of 
+	 * the versioned files without having to look them up every single time.
+	 */
+	$asset = $scopes[$scope]->get($name, function ($name) { 
+		throw new \spitfire\exceptions\user\NotFoundException(sprintf('Asset %s is not available', $name));
+	});
 	
 	return '/' . implode('/', array_filter([ 
-			trim(SpitFire::baseUrl(), '/'),
-			trim(Environment::get('assets.directory.deploy'), '/'),
-			trim($app->url()?? '', '/'),
-			trim($path . '.' . $extension, '/')
+			trim($base, '/'),
+			trim($scope?? '', '/'),
+			trim($asset, '/')
 		])
 	);
 }
