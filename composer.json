@@ -14,11 +14,7 @@
 		"spitfire/cli": "dev-master",
 		"spitfire/database": "dev-master",
 		"spitfire/collection": "dev-master",
-<<<<<<< HEAD
 		"spitfire/ast": "dev-master"
-=======
-		"spitfire/defer": "^0.1.0"
->>>>>>> Using sf/defer 0.1
 	},
 
 	"require-dev": {
