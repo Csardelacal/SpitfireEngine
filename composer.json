@@ -6,14 +6,19 @@
 	"require": {
 		"php" : ">7",
 		"ext-gd" : "*",
-		"spitfire/dependency-provider": "dev-master",
+		"spitfire/dependency-provider": "^0.2.0",
 		"spitfire/caching": "dev-master",
 		"psr/log": "^1.1",
 		"spitfire/request": "^0.1.0",
+		"spitfire/defer": "^0.1.0",
 		"spitfire/cli": "dev-master",
 		"spitfire/database": "dev-master",
 		"spitfire/collection": "dev-master",
+<<<<<<< HEAD
 		"spitfire/ast": "dev-master"
+=======
+		"spitfire/defer": "^0.1.0"
+>>>>>>> Using sf/defer 0.1
 	},
 
 	"require-dev": {

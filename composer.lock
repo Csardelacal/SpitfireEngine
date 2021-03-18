@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e053d898acf3d9b9eaff700263225650",
+<<<<<<< HEAD
+    "content-hash": "305b8ecd3d387f174b7eab3d61c7c1ae",
+=======
+    "content-hash": "4640c61f18df5761e1baa0ef7050a5c0",
+>>>>>>> Using sf/defer 0.1
     "packages": [
         {
             "name": "magic3w/url-reflection",
@@ -35,6 +39,66 @@
             ],
             "description": "Allows applications to have a URL parsed and retrieve information about it's components",
             "time": "2020-11-04T12:01:53+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "0.12.81",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
+                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1|^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
+            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.12-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.81"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpstan",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-03-08T22:03:02+00:00"
         },
         {
             "name": "psr/container",
@@ -294,21 +358,52 @@
             "time": "2020-11-04T15:22:44+00:00"
         },
         {
+            "name": "spitfire/defer",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-defer.git",
+                "reference": "d29be40cfb8602fc191f00c54a142a713a226364"
+            },
+            "require": {
+                "spitfire/cli": "dev-master",
+                "spitfire/database": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\defer\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Allozs spitfire apps to defer tasks to be executed at a later point",
+            "time": "2021-03-09T10:00:05+00:00"
+        },
+        {
             "name": "spitfire/dependency-provider",
-            "version": "dev-master",
+            "version": "v0.2",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/Spitfire-Provider.git",
-                "reference": "f62f4f265191203c79c49d8f4a5320e3e5da4626"
+                "reference": "b2b9be645e382b9d958217c7a480991b2e4e5798"
             },
             "require": {
                 "php": ">7",
+                "phpstan/phpstan": "^0.12.64",
                 "psr/container": "^1.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.3"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -319,7 +414,7 @@
             "license": [
                 "MIT"
             ],
-            "time": "2020-08-21T08:34:50+00:00"
+            "time": "2021-01-26T08:01:51+00:00"
         },
         {
             "name": "spitfire/exception",
@@ -2565,12 +2660,15 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "spitfire/dependency-provider": 20,
         "spitfire/caching": 20,
         "spitfire/cli": 20,
         "spitfire/database": 20,
+<<<<<<< HEAD
         "spitfire/collection": 20,
         "spitfire/ast": 20
+=======
+        "spitfire/collection": 20
+>>>>>>> Using sf/defer 0.1
     },
     "prefer-stable": true,
     "prefer-lowest": false,

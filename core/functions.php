@@ -570,3 +570,29 @@ function asset(string $name, string $scope = 'assets/') : string
 		])
 	);
 }
+
+/**
+ * Convenience method for accessing the TaskFactory for deferring tasks. You can
+ * pass a task class to be deferred, a bunch of settings and a time to execute
+ * this task at.
+ * 
+ * Please refer to the documentation to enable the daemon required to process the 
+ * queue.
+ * 
+ * @staticvar spitfire\defer\TaskFactory $async
+ * @param string $task
+ * @param mixed $options
+ * @param int $defer
+ * @param int $ttl
+ * @return void
+ */
+function defer(string $task, $options, int $defer = 0, int $ttl = 10) : void
+{
+	static $async = null;
+	
+	if (!$async) {
+		$async = spitfire()->provider()->get(spitfire\defer\TaskFactory::class);
+	}
+	
+	$async->defer($task, $options, $defer, $ttl);
+}
