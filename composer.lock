@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "305b8ecd3d387f174b7eab3d61c7c1ae",
-=======
     "content-hash": "4640c61f18df5761e1baa0ef7050a5c0",
->>>>>>> Using sf/defer 0.1
     "packages": [
         {
             "name": "magic3w/url-reflection",
@@ -2663,12 +2659,8 @@
         "spitfire/caching": 20,
         "spitfire/cli": 20,
         "spitfire/database": 20,
-<<<<<<< HEAD
         "spitfire/collection": 20,
         "spitfire/ast": 20
-=======
-        "spitfire/collection": 20
->>>>>>> Using sf/defer 0.1
     },
     "prefer-stable": true,
     "prefer-lowest": false,
