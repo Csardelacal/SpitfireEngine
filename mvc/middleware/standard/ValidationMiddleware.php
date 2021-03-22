@@ -2,7 +2,6 @@
 
 use spitfire\collection\Collection;
 use spitfire\ast\Scope;
-use spitfire\core\ContextCLI;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\validation\ValidationException;
@@ -61,7 +60,7 @@ class ValidationMiddleware implements MiddlewareInterface
 			$scope = new Scope();
 			$scope->set('GET', $_GET);
 			$scope->set('POST', $_POST);
-			$scope->set('ARGV', $context instanceof ContextCLI? $context->parameters : $context->object);
+			$scope->set('ARGV', $_SERVER['argv']?? []);
 		
 			$result = $parser->parse($expression)->resolve($scope);
 			

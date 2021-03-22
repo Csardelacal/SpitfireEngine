@@ -18,7 +18,6 @@ use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
 use spitfire\SpitFire;
-use spitfire\SpitFireCLI;
 use spitfire\storage\database\Settings;
 use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\NodeInterface;
@@ -40,7 +39,7 @@ function spitfire() {
 	if ($sf !== null) { 
 		return $sf; 
 	} else {
-		$sf = php_sapi_name() === 'cli'? new SpitFireCLI() : new SpitFire();
+		$sf = new SpitFire();
 		return $sf;
 	}
 }
