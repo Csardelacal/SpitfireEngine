@@ -102,47 +102,48 @@ class SpitFire
 		#Import the apps
 		include $this->locations->config() . 'apps.php';
 		
-		#Check if there is a defualt app to receive calls to /
-		if (!collect($this->apps)->filter(function (App$e) { return !$e->url(); })->rewind()) {
-			$this->apps[] = new UnnamedApp('');
+		#TODO: This needs to be moved to service providers
+		#Try to include the user's evironment & routes
+		#It'd be interesting to move these to the index.php file of applications that
+		#wish to implement these features.
+		$overrides = [
+			basedir() . 'bin/settings/environments.php',
+			basedir() . 'bin/settings/routes.php'
+		];
+		
+		foreach ($overrides as $file) {
+			file_exists($file) && include($file);
 		}
 		
-		#Every app now gets the chance to create appropriate routes for it's operation
-		foreach ($this->apps as $app) { $app->makeRoutes(); }
-		
-		#Get the current path...
-		$request = $this->request = Request::fromServer();
-		
-		#If the developer responded to the current route with a response we do not need 
-		#to handle the request
-		if ($request instanceof Response) {
-			return $request->getPath()->send();
+		/*
+		 * Load the appropriate kernel for the user's intent. This is the main 'fork'
+		 * in spitfire's logic. 
+		 */
+		if (php_sapi_name() === 'cli') {
+			$kernel = $this->provider->get(\spitfire\core\kernel\ConsoleKernel::class);
+			$kernel->boot();
+			
+			/*
+			 * The kernel needs to know which command to execute, the command will 
+			 * be written to argv[1]. From there on, the kernel can take over, arrange
+			 * the arguments so they make sense to the command, and pass over control
+			 * to the director that executes the script.
+			 */
+			$_ret = $kernel->exec($argv[1], array_slice($argv, 2));
+			exit($_ret);
+		}
+		else {
+			$kernel = $this->provider->get(\spitfire\core\kernel\WebKernel::class);
+			$kernel->boot();
+			
+			/*
+			 * Generate a request object that allows the kernel to work with an
+			 * abstraction of the real request.
+			 */
+			$response = $kernel->process(Request::fromServer());
+			$response->send();
 		}
 		
-		#Start debugging output
-		ob_start();
-
-		#If the request has no defined controller, action and object it will define
-		#those now.
-		$path    = $request->getPath();
-
-		#Receive the initial context for the app. The controller can replace this later
-		/*@var $initContext Context*/
-		$initContext = ($path instanceof Context)? $path : $request->makeContext();
-
-		#Define the context, include the application's middleware configuration.
-		current_context($initContext);
-		include $this->locations->config() . 'middleware.php';
-
-		#Get the return context
-		/*@var $context Context*/
-		$context = $initContext->run();
-
-		#End debugging output
-		$context->view->set('_SF_DEBUG_OUTPUT', ob_get_clean());
-
-		#Send the response
-		$context->response->send();
 		
 	}
 	
