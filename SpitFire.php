@@ -193,15 +193,6 @@ class SpitFire
 	
 	/**
 	 * 
-	 * @deprecated since v0.2
-	 */
-	public function appExists($namespace) {
-		if (!is_string($namespace)) { return false; }
-		return $this->apps->has($namespace);
-	}
-	
-	/**
-	 * 
 	 * @deprecated since version 0.2
 	 * @param string $namespace
 	 * @return App
