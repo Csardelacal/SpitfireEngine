@@ -1,5 +1,6 @@
 <?php namespace spitfire;
 
+use JsonSerializable;
 use Serializable;
 use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
@@ -15,7 +16,7 @@ use spitfire\storage\database\Field;
  * @todo Make this class implement Iterator
  * @author César de la Cal <cesar@magic3w.com>
  */
-abstract class Model implements Serializable
+abstract class Model implements Serializable, JsonSerializable
 {
 	
 	/**
@@ -300,6 +301,30 @@ abstract class Model implements Serializable
 	
 	public function isNew() {
 		return $this->new;
+	}
+	
+	/**
+	 * The jsonserialize endpoint allows applications to json_encode this model without
+	 * having to loop over all the keys.
+	 * 
+	 * If your application wishes to not expose certain data to the outside world, feel
+	 * free to implement jsonSerialize in your model and unset the keys you do not wish
+	 * to broadcast.
+	 * 
+	 * This method is intended to aid passing data to views and rendering output, the data
+	 * exported here cannot be imported back into spitfire.
+	 * 
+	 * @return array
+	 */
+	public function jsonSerialize()
+	{
+		$raw = [];
+		
+		foreach ($this->data as $name => $adapter) {
+			$raw[$name] = $adapter->usrGetData();
+		}
+		
+		return $raw;
 	}
 	
 	/**
