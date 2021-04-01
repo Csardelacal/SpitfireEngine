@@ -43,11 +43,10 @@ class Route extends RewriteRule
 	 * @param string $URI
 	 * @param string $method
 	 * @param string $protocol
-	 * @param Parameters $server
 	 * @param string $extension
 	 * @return \spitfire\core\Path|\spitfire\core\Response
 	 */
-	public function rewrite($URI, $method, $protocol, Parameters $server, $extension = 'php') {
+	public function rewrite($URI, $method, $protocol, string $extension = 'php') {
 		$params = $this->getSource()->test($URI);
 		
 		/*
@@ -56,7 +55,7 @@ class Route extends RewriteRule
 		 * request's components.
 		 */
 		if ($this->getTarget() instanceof Closure) {
-			return call_user_func_array($this->getTarget(), Array($params, $server, $extension, $method, $protocol));
+			return call_user_func_array($this->getTarget(), Array($params, $extension, $method, $protocol));
 		}
 		
 		/*
@@ -65,7 +64,7 @@ class Route extends RewriteRule
 		 * used to answer the request.
 		 */
 		if ($this->getTarget() instanceof ParametrizedPath) {
-			return $this->getTarget()->replace($server->merge($params)->setUnparsed($params->getUnparsed()))->setFormat($extension);
+			return $this->getTarget()->replace($params->setUnparsed($params->getUnparsed()))->setFormat($extension);
 		}
 		
 	}

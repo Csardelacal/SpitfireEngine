@@ -59,15 +59,8 @@ abstract class RewriteRule
 	const METHOD_HEAD    = 0x10;
 	const METHOD_OPTIONS = 0x20;
 	
-	/**
-	 * This var holds a reference to a route server (an object containing a pattern
-	 * to match virtualhosts) that isolates this route from the others.
-	 * 
-	 * @var Routable
-	 */
-	private $server;
+	
 	private $pattern;
-	private $patternStr;
 	private $newRoute;
 	private $method;
 	private $protocol;
@@ -78,14 +71,12 @@ abstract class RewriteRule
 	 * directly send back a response or assign a custom controller, action and 
 	 * object to the request.
 	 * 
-	 * @param Routable $server The server this route belongs to
 	 * @param string $pattern
 	 * @param Closure|ParametrizedPath|array $new_route
 	 * @param string $method
 	 * @param int    $proto
 	 */
-	public function __construct(Routable$server, $pattern, $new_route, $method, $proto = Route::PROTO_ANY) {
-		$this->server    = $server;
+	public function __construct($pattern, $new_route, $method, $proto = Route::PROTO_ANY) {
 		$this->newRoute  = $new_route;
 		$this->method    = $method;
 		$this->protocol  = $proto;
@@ -126,22 +117,20 @@ abstract class RewriteRule
 	 * This way the user can quickly decide whether he wants to use any or both
 	 * of them to match a route.
 	 * 
+	 * @deprecated We're letting the web server care about https
 	 * @param boolean $protocol
 	 * @return boolean
 	 */
 	public function testProto($protocol) {
-		if (!is_int($protocol)) {
-			$protocol = ($protocol && $protocol != 'off')? Route::PROTO_HTTPS : Route::PROTO_HTTP;
-		}
-		return $this->protocol & $protocol;
+		return true;
 	}
 	
-	public function test($URI, $method, $protocol) {
+	public function test($URI, $method) {
 		try {
 			#First we test the URI. Since the URI will throw an exception, we need 
 			#to catch it and return false.
 			$this->pattern->test($URI);
-			return $this->testMethod($method) && $this->testProto($protocol);
+			return $this->testMethod($method);
 		}
 		catch (RouteMismatchException$e) {
 			return false;
@@ -150,7 +139,7 @@ abstract class RewriteRule
 	
 	/**
 	 * 
-	 * @return URIPattern
+	 * @return ParametrizedPath|URIPattern
 	 */
 	public function getTarget() {
 		return $this->newRoute;
@@ -166,8 +155,6 @@ abstract class RewriteRule
 	
 	/**
 	 * 
-	 * @todo Server parameter should be a Parameter set provided by the server IMO
-	 * Need to check whether the server itself could have any impact on it
 	 */
-	abstract public function rewrite($URI, $method, $protocol, Parameters $server);
+	abstract public function rewrite($URI, $method, $protocol, string $extension = 'php');
 }

@@ -18,7 +18,7 @@ class URLTest extends TestCase
 			Router::getInstance()->request('/:a/:b', ['controller' => 'test', 'action' => ':b', 'object' => ':a']);
 			
 			#Create a route for a specific server with parameters
-			Router::getInstance()->server(':lang.:tld.com')->request('/hello/', ['controller' => 'test', 'action' => 'a', 'object' => 'a']);
+			Router::getInstance()->request('/hello/', ['controller' => 'test', 'action' => 'a', 'object' => 'a']);
 			
 			#Create a redirection
 			Router::getInstance()->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
