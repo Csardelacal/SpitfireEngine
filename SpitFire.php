@@ -155,20 +155,6 @@ class SpitFire
 	}
 	
 	/**
-	 * Set / Get applications from Spitfire. The software you write can use this
-	 * to communicate with the applications.
-	 * 
-	 * @param App $app
-	 * @return App
-	 * @throws PrivateException If the application was not found
-	 * @todo Remove the URI parameter
-	 */
-	public function app(App $app) {
-		$this->apps->put($app);
-		return $app;
-	}
-	
-	/**
 	 * 
 	 * @deprecated since version 0.1-dev
 	 * @param type $app
