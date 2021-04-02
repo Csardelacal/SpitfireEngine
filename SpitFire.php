@@ -3,9 +3,7 @@
 use Psr\Log\LoggerInterface;
 use spitfire\App;
 use spitfire\core\app\AppNotFoundException;
-use spitfire\core\app\AppAssetsInterface;
 use spitfire\core\app\Cluster;
-use spitfire\core\app\RecursiveAppAssetLocator;
 use spitfire\core\Context;
 use spitfire\core\ContextCLI;
 use spitfire\core\Environment;
@@ -239,19 +237,6 @@ class SpitFire
                 
 		#Set the display errors directive to the value of debug
 		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
-	}
-	
-	/**
-	 * Returns the current request.
-	 * 
-	 * @return Request The current request
-	 */
-	public function getRequest() {
-		return $this->request;
-	}
-	
-	public function assets() : AppAssetsInterface {
-		return new RecursiveAppAssetLocator($this->getCWD() . '/assets/src/');
 	}
 	
 	/**
