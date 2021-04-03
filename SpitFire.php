@@ -175,16 +175,6 @@ class SpitFire
 		return $this->apps;
 	}
 	
-	/**
-	 * 
-	 * @deprecated since version 0.2
-	 * @param string $namespace
-	 * @return App
-	 */
-	public function getApp($namespace) {
-		return $this->apps->filter(function ($e) use ($namespace) { return $e->url() === $namespace; })->rewind();
-	}
-	
 	public static function baseUrl(){
 		if (Environment::get('base_url')) { return Environment::get('base_url'); }
 		if (php_sapi_name() === 'cli')    { return '/'; }
