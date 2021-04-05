@@ -55,34 +55,5 @@ abstract class App
 	 * spitfire will look for controllers, models etc for this application.
 	 */
 	abstract public function namespace();
-
-	public function makeRoutes() {
-		#Include the routes from the user definitions
-		file_exists("{$this->directory()}/settings/routes.php") && include "{$this->directory()}/settings/routes.php";
-
-		#Build some defaults
-		$ns = $this->url();
-		
-		#The default route just returns a path based on app/controller/action/object
-		#If your application does not wish this to happen, please override createRoutes
-		#with your custome code.
-		$default = Router::getInstance()->request($ns, function (Parameters$params, Parameters$server, $extension) {
-			$args = $params->getUnparsed();
-			return new Path($this, array_shift($args), array_shift($args), $args, $extension);
-		});
-		
-		#The reverser for the default route is rather simple again. 
-		#It will concatenate app, controller and action
-		$default->setReverser(new ClosureReverser(function (Path$path, $explicit = false) {
-			$controller = $path->getController();
-			$action     = $path->getAction();
-			$object     = $path->getObject();
-			
-			if ($action     ===        Environment::get('default_action')     && empty($object) && !$explicit)                   { $action     = ''; }
-			if ($controller === (array)Environment::get('default_controller') && empty($object) && empty($action) && !$explicit) { $controller = Array(); }
-			
-			return '/' . trim(implode('/', array_filter(array_merge((array)$controller, [$action], $object))), '/');
-		}));
-	}
 	
 }

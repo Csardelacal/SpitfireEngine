@@ -24,7 +24,6 @@ class URLTest extends TestCase
 			Router::getInstance()->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
 			
 			$t = new \spitfire\UnnamedApp('');
-			$t->makeRoutes();
 			spitfire()->registerApp($t);
 			
 			$this->setup = true;

@@ -65,10 +65,6 @@ class WebKernel
 		# TODO: The stack needs to be 'decorated' with requesthandlers
 		# TODO: Run the stack
 		
-		#Every app now gets the chance to create appropriate routes for it's operation
-		#TODO: The apps should have the appropriate route service providers
-		foreach ($this->apps as $app) { $app->makeRoutes(); }
-		
 		#Start debugging output
 		ob_start();
 
