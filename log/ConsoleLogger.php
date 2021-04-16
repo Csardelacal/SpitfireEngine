@@ -1,6 +1,6 @@
-<?php
+<?php namespace spitfire\log;
 
-namespace spitfire\log;
+use Psr\Log\LoggerInterface;
 
 /*
  * The MIT License
@@ -30,11 +30,12 @@ namespace spitfire\log;
  * This is a really simple class that performs passthrough operations for the 
  * log. This allows the application to function without a proper logger
  */
-class ConsoleLogger implements Psr\Log\LoggerInterface 
+class ConsoleLogger implements LoggerInterface 
 {
 	
 	/**
 	 * 
+	 * @see https://www.php-fig.org/psr/psr-3/ For the source of this method
 	 * @param string $message
 	 * @param array<mixed> $context
 	 * @return string
@@ -54,47 +55,47 @@ class ConsoleLogger implements Psr\Log\LoggerInterface
 		return strtr($message, $replace);
 	}
 	
-	public function alert($message, mixed $context = array()): void 
+	public function alert($message, array $context = array()): void 
 	{
 		console()->error($this->interpolate($message, $context))->ln();
 	}
 	
-	public function critical($message, mixed $context = array()): void 
+	public function critical($message, array $context = array()): void 
 	{
 		console()->error($this->interpolate($message, $context))->ln();
 	}
 	
-	public function debug($message, mixed $context = array()): void 
+	public function debug($message, array $context = array()): void 
 	{
 		console()->error($this->interpolate($message, $context))->ln();
 	}
 
-	public function emergency($message, mixed $context = array()): void 
+	public function emergency($message, array $context = array()): void 
 	{
 		console()->error($this->interpolate($message, $context))->ln();
 	}
 
-	public function error($message, mixed $context = array()): void 
+	public function error($message, array $context = array()): void 
 	{
 		console()->error($this->interpolate($message, $context))->ln();
 	}
 
-	public function info($message, mixed $context = array()): void 
+	public function info($message, array $context = array()): void 
 	{
 		console()->info($this->interpolate($message, $context))->ln();
 	}
 
-	public function log($level, $message, mixed $context = array()): void 
+	public function log($level, $message, array $context = array()): void 
 	{
 		console()->info($level . ': ' . $this->interpolate($message, $context))->ln();
 	}
 
-	public function notice($message, mixed $context = array()): void 
+	public function notice($message, array $context = array()): void 
 	{
 		console()->info($this->interpolate($message, $context))->ln();
 	}
 
-	public function warning($message, mixed $context = array()): void 
+	public function warning($message, $context = array()): void 
 	{
 		console()->error($this->interpolate($message, $context))->ln();
 	}
