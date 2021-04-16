@@ -116,4 +116,33 @@ class Locations
 	{
 		return $this->root('resources/' . ltrim($path, '\/'));
 	}
+	
+	/**
+	 * The storage folder allows the application to determine where it should place
+	 * files within the server. Files placed here are not accessible by the users without
+	 * code that exposes them.
+	 * 
+	 * @param string|null $path
+	 * @return string
+	 */
+	public function storage (string $path = '') : string
+	{
+		#Right now, for compatibility, I'm using this out-of-character location within
+		#bin to locate uploads. Moving it to another location is a potentially breaking
+		#change for many apps that needs careful planning.
+		return $this->root('bin/usr/uploads/' . ltrim($path, '\/'));
+	}
+	
+	/**
+	 * The public storage folder returns a location to storage that the system provides
+	 * within the scope of the webserver's document root. This means that files placed
+	 * here will be accessible by users without the need for credentials or anything similar.
+	 * 
+	 * @param string|null $path
+	 * @return string
+	 */
+	public function publicStorage (string $path = '') : string
+	{
+		return $this->public('storage/' . ltrim($path, '\/'));
+	}
 }
