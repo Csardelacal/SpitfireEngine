@@ -3,10 +3,7 @@
 use spitfire\App;
 use spitfire\collection\Collection;
 use spitfire\core\ContextInterface;
-use spitfire\core\Environment;
 use spitfire\core\http\URL;
-use spitfire\exceptions\ExceptionHandler;
-use spitfire\exceptions\ExceptionHandlerCLI;
 use spitfire\cli\Console;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\config\Configuration;
@@ -139,27 +136,25 @@ function fail(int $status, string $message = '') : void
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *
- * @param Settings $options
  * @return \spitfire\storage\database\DB
  */
-function db(Settings$options = null) {
+function db() 
+{
 	static $db = null;
 	
 	#If we're requesting the standard driver and have it cached, we use this
-	if ($options === null && $db !== null) { return $db; }
+	if ($db !== null) { return $db; }
 	
-	#If no options were passed, we try to fetch them from the environment
-	$settings = Settings::fromURL($options? : Environment::get('db'));
+	#If no options were passed, we try to fetch them from the configuration
+	$driver   = config('storage.database.driver', 'mysqlpdo');
+	$settings = Settings::fromURL(config('storage.database.' . $driver));
 	
 	#Instantiate the driver
 	$driver = 'spitfire\storage\database\drivers\\' . $settings->getDriver() . '\Driver';
 	$driver = new $driver($settings);
 	
 	#If no options were provided we will assume that this is the standard DB handler
-	if ($options === null) { $db = $driver; }
-	
-	#Return the driver
-	return $driver;
+	return $db = $driver;
 }
 
 /**
