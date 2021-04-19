@@ -2,7 +2,6 @@
 
 use spitfire\exceptions\FilePermissionsException;
 use spitfire\exceptions\PrivateException;
-use spitfire\exceptions\UploadValidationException;
 use spitfire\io\Filesize;
 use spitfire\storage\objectStorage\FileInterface;
 use spitfire\utils\Strings;
@@ -49,7 +48,7 @@ class Upload
 	
 	public function __construct($meta) {
 		$this->meta      = $meta;
-		$this->uploadDir = \spitfire\core\Environment::get('uploads.directory')?: 'app://bin/usr/uploads';
+		$this->uploadDir = config('storage.uploads.directory', spitfire()->locations()->storage());
 	}
 	
 	public function isOk() {
