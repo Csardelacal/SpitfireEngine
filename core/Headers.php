@@ -1,7 +1,6 @@
 <?php namespace spitfire\core;
 
 use BadMethodCallException;
-use spitfire\core\Environment;
 use spitfire\core\http\CORS;
 
 /**
@@ -94,9 +93,7 @@ class Headers
 	 */
 	public function contentType($str) {
 		
-		#Check if we have a defined environment that provides a legit encoding
-		if (class_exists('\spitfire\core\Environment')) { $encoding = Environment::get('system_encoding'); }
-		else                                            { $encoding = 'utf8'; }
+		$encoding = config('app.http.encoding', 'utf8');
 		
 		switch ($str) {
 			case 'php':
