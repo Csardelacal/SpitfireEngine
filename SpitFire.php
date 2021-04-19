@@ -1,24 +1,14 @@
 <?php namespace spitfire;
 
 use Psr\Log\LoggerInterface;
-use spitfire\App;
-use spitfire\core\app\AppNotFoundException;
 use spitfire\core\app\Cluster;
-use spitfire\core\Context;
-use spitfire\core\ContextCLI;
-use spitfire\core\Environment;
 use spitfire\core\Locations;
 use spitfire\core\Request;
 use spitfire\core\resource\Publisher;
-use spitfire\core\resource\PublisherDirector;
-use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
 use spitfire\provider\Container;
 use spitfire\provider\Provider;
-use spitfire\utils\Strings;
 use function basedir;
-use function collect;
-use function current_context;
 
 /**
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.
@@ -100,8 +90,6 @@ class SpitFire
 		foreach ($loaded as $provider) {
 			$provider->init();
 		}
-		
-		$this->enable();
 	}
 
 	public function fire() {
@@ -175,16 +163,31 @@ class SpitFire
 		return $this->apps;
 	}
 	
-	public static function baseUrl(){
+	public static function baseUrl()
+	{
 		/**
-		 * If the user has defined an application URL in the config, we do not attempt
-		 * to find it ourselves.
+		 * If the application has a url defined as the base url for the application,
+		 * we use that.
 		 */
-		if (config('app.url')) { return config('app.url'); }
-		if (php_sapi_name() === 'cli')    { return '/'; }
+		if (config('app.url')) { 
+			return config('app.url'); 
+		}
 		
-		list($base_url) = explode('/index.php', $_SERVER['PHP_SELF'], 2);
-		return $base_url;
+		/**
+		 * CLI applications must have a base url defined, since otherwise the application
+		 * could be generating bad URLs without our knowledge. This is usually a very bad 
+		 * experience for the user who receives a URL they cannot access.
+		 */
+		if (php_sapi_name() === 'cli') {
+			throw new ApplicationException('CLI applications require the app.url config to be defined', 2104191131);
+		}
+		
+		/**
+		 * Poorly configured applications can always fall back to guessing the base url.
+		 * This is by no means a good way of handling this.
+		 */
+		$public = explode('/index.php', $_SERVER['PHP_SELF'], 2)[0];
+		return dirname($public);
 	}
 	
 	/**
@@ -202,15 +205,6 @@ class SpitFire
 	 */
 	public function getCWD() {
 		return basedir();
-	}
-	
-	/**
-	 * Contents need to be moved somewhere else. This function is no longer valid
-	 * due to the fact that spitfire is no longer an app.
-	 * 
-	 * @deprecated since version 0.1-dev 20201012
-	 */
-	public function enable() {
 	}
 	
 	/**
