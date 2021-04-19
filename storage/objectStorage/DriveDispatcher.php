@@ -131,20 +131,18 @@ class DriveDispatcher
 	}
 	
 	/**
-	 * Initializes the drives from the definitions in the environment. This allows
-	 * applications to receive virtual drives from the environments.
+	 * Initializes the drives from the definitions in the configurations. Virtual 
+	 * drives provide access to potentially more exotic drivers like object storages
+	 * or similar.
 	 */
-	public function init() {
-		$defs = \spitfire\core\Environment::get()->subtree('storage.engines.');
+	public function init() 
+	{
+		$defs = config('storage.engines');
 		
-		foreach ($defs as $k => $e) {
-			
-			if (!is_array($e)) {
-				$e = explode(':', $e, 2);
-			}
-			
-			$class = $e[0];
-			$settings = $e[1];
+		foreach ($defs as $k => $e) 
+		{
+			$class = $e['type'];
+			$settings = $e['settings'];
 			$i = new $class($settings);
 			
 			$this->register($k, $i);
