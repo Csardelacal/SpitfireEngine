@@ -211,7 +211,7 @@ class SpitFire
 	 * Return the dependency container for this Spitfire instance. This container
 	 * allows the application to inject behaviors into the 
 	 * 
-	 * @return Provider
+	 * @return Container
 	 */
 	public function provider() {
 		return $this->provider;

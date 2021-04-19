@@ -1,7 +1,6 @@
 <?php namespace spitfire\io\session;
 
 use spitfire\App;
-use spitfire\core\Environment;
 
 /**
  * The Session class allows your application to write data to a persistent space
@@ -122,7 +121,7 @@ class Session
 		setcookie(
 			session_name(), 
 			self::sessionId(), 
-			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => !Environment::get('debug.mode')]
+			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => true]
 		);
 	}
 	
@@ -137,7 +136,7 @@ class Session
 		setcookie(
 			session_name(), 
 			'', 
-			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => !Environment::get('debug.mode')]
+			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => true]
 		);
 		
 		return session_destroy();
@@ -154,9 +153,7 @@ class Session
 		static $instance = null;
 
 		if ($instance !== null) { return $instance; }
-
-		$handler = Environment::get('session.handler')? : new FileSessionHandler(session_save_path());
-		return $instance = new Session($handler);
+		return $instance = spitfire()->provider()->get(self::class);
 	}
 	
 	/**
