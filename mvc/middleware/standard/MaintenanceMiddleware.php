@@ -1,7 +1,7 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
+use JsonException;
 use spitfire\core\ContextInterface;
-use spitfire\core\Environment;
 use spitfire\core\Response;
 use spitfire\mvc\middleware\exceptions\MaintenanceModeException;
 use spitfire\mvc\middleware\MiddlewareInterface;
@@ -32,13 +32,13 @@ use spitfire\mvc\middleware\MiddlewareInterface;
 
 /**
  * The maintenance middleware allows Spitfire to provide a maintenance mode, if 
- * the administrator sets the Environment variable `spitfire.maintenance` to true,
+ * the administrator creates the file `.maintenance` containing information for the user,
  * the maintenance mode will fire an exception that will prevent execution from
  * continuing and try to fetch a user error page for the maintenance mode.
  * 
- * The Environment `spitfire.maintenance` can contain an integer that will be passed
- * to the exception. This can be used to customize the error message displayed to 
- * the user. The meaning of these codes is determined by the application owner.
+ * The administrator can create a `.maintenance` file that can either contain a message
+ * or a json object with the keys `message` and `code` that will be used to generate
+ * a maintenance exception.
  * 
  * For example, the app owner may determine that the codes mean the following:
  * 
@@ -58,9 +58,16 @@ class MaintenanceMiddleware implements MiddlewareInterface
 		//Do nothing, after the request was processed, this can just continue.
 	}
 
-	public function before(ContextInterface $context) {
-		if (Environment::get('spitfire.maintenance')) {
-			throw new MaintenanceModeException('Maintenance mode is enabled', Environment::get('spitfire.maintenance'));
+	public function before(ContextInterface $context) 
+	{
+		if (file_exists(spitfire()->locations()->root('.maintenance'))) {
+			try {
+				$error = json_decode(file_get_contents(spitfire()->locations()->root('.maintenance')), false, null, JSON_THROW_ON_ERROR);
+				throw new MaintenanceModeException($error->message, $error->code);
+			}
+			catch (JsonException $e) {
+				throw new MaintenanceModeException(file_get_contents(spitfire()->locations()->root('.maintenance')), 500);
+			}
 		}
 	}
 
