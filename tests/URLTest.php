@@ -10,7 +10,8 @@ class URLTest extends TestCase
 	
 	private $setup = false;
 	
-	public function setUp() : void {
+	public function setUp() : void 
+	{
 		
 		if (!$this->setup) {
 			#Define a configuration for this test
