@@ -1,4 +1,4 @@
-<?php namespace spitfire\provider;
+<?php namespace spitfire\core\service;
 
 /* 
  * The MIT License
