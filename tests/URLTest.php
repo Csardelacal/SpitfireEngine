@@ -9,6 +9,7 @@ class URLTest extends TestCase
 {
 	
 	private $setup = false;
+	private $router;
 	
 	public function setUp() : void 
 	{
@@ -21,16 +22,19 @@ class URLTest extends TestCase
 			$config = spitfire()->provider()->get(Configuration::class);
 			$config->set('app.hostname', 'localhost');
 			
+			#Instance the router
+			$this->router = spitfire()->provider()->get(Router::class);
+			
 			#Create a route with parameters
-			Router::getInstance()->request('/', ['controller' => 'home', 'action' => 'index']);
-			Router::getInstance()->request('/me/:b', ['controller' => 'account', 'action' => ':b']);
-			Router::getInstance()->request('/:a/:b', ['controller' => 'test', 'action' => ':b', 'object' => ':a']);
+			$this->router->request('/', ['controller' => 'home', 'action' => 'index']);
+			$this->router->request('/me/:b', ['controller' => 'account', 'action' => ':b']);
+			$this->router->request('/:a/:b', ['controller' => 'test', 'action' => ':b', 'object' => ':a']);
 			
 			#Create a route for a specific server with parameters
-			Router::getInstance()->request('/hello/', ['controller' => 'test', 'action' => 'a', 'object' => 'a']);
+			$this->router->request('/hello/', ['controller' => 'test', 'action' => 'a', 'object' => 'a']);
 			
 			#Create a redirection
-			Router::getInstance()->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
+			$this->router->request('/static/:page', ['controller' => 'content', 'action' => 'page', 'object' => ':page']);
 			
 			$this->setup = true;
 		}

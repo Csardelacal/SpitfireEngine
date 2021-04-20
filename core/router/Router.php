@@ -65,17 +65,4 @@ class Router extends Routable
 		throw new \spitfire\exceptions\PublicException('No such route', 404);
 	}
 	
-	/**
-	 * Allows the router to act with a singleton pattern. This allows your app to
-	 * share routes across several points of it.
-	 * 
-	 * @staticvar Router $instance
-	 * @return Router
-	 */
-	public static function getInstance() {
-		static $instance = null;
-		if ($instance) { return $instance; }
-		else           { return $instance = new Router(); }
-	}
-
 }

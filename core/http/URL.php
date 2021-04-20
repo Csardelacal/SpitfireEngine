@@ -200,7 +200,8 @@ class URL
 	}
 	
 	public function getRoutes() {
-		$router = Router::getInstance();
+		$router = spitfire()->provider()->get(Router::class);
+		
 		return array_filter(array_merge(
 			$router->getRoutes()->toArray(), $router->getRoutes()->toArray()
 		));
