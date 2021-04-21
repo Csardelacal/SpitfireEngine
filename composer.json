@@ -7,14 +7,16 @@
 		"php" : ">7",
 		"ext-gd" : "*",
 		"spitfire/dependency-provider": "^0.2.0",
-		"spitfire/caching": "dev-master",
+		"spitfire/caching": "^0.1.0",
 		"psr/log": "^1.1",
 		"spitfire/request": "^0.1.0",
 		"spitfire/defer": "^0.1.0",
 		"spitfire/cli": "dev-master",
 		"spitfire/database": "dev-master",
 		"spitfire/collection": "^0.1.0",
-		"spitfire/ast": "dev-master"
+		"spitfire/ast": "dev-master",
+		"psr/http-server-middleware": "^1.0",
+		"psr/http-factory": "^1.0"
 	},
 
 	"require-dev": {

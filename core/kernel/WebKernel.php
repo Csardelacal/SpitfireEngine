@@ -1,9 +1,13 @@
 <?php namespace spitfire\core\kernel;
 
 use spitfire\core\Context;
+use spitfire\core\http\request\handler\StaticResponseRequestHandler;
+use spitfire\core\http\request\handler\DecoratingRequestHandler;
+use spitfire\mvc\RouterMiddleware;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\core\router\Router;
+use spitfire\exceptions\ExceptionHandler;
 
 /* 
  * The MIT License
@@ -51,6 +55,22 @@ class WebKernel
 	
 	public function process(Request $request) : Response
 	{
+		
+		try {
+			$notfound = new StaticResponseRequestHandler(new Response('Not found', 404));
+			$routed   = new DecoratingRequestHandler(new RouterMiddleware(), $notfound);
+			
+			return $routed->handle($request);
+		}
+		catch (\Exception $e) {
+			$handler = new ExceptionHandler();
+			return $handler->handle($e);
+		}
+		
+		/**
+		 * @todo Introduce a decorating request handler that wraps around the router's
+		 * middleware and generates a response.
+		 */
 		$intent = $this->router->rewrite($request);
 		
 		/*
