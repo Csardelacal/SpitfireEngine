@@ -9,12 +9,8 @@ use function db;
 class DBTest extends TestCase
 {
 	
-	public function testdb() {
-		$this->assertInstanceOf('spitfire\storage\database\DB', db());
-	}
-	
 	public function testTableCache() {
-		$db = new Driver(Settings::fromURL(Environment::get('db')));
+		$db = new Driver(Settings::fromArray([]));
 		$db->table(new \spitfire\storage\database\Schema('test'));
 		
 		$tc = $db->getTableCache();

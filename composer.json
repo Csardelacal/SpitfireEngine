@@ -3,6 +3,8 @@
 	"description": "Database components for spitfire/engine",
 	"type": "library",
 	"license": "MIT",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
 	"authors": [
 		{
 			"name": "César de la Cal Bretschneider",
@@ -14,7 +16,9 @@
 			"spitfire\\storage\\database\\" : "./src/"
 		}
 	},
-	"require": {},
+	"require": {
+		"spitfire/caching": "^0.1.0"
+	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.4"
 	}
