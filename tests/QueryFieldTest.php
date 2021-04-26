@@ -4,7 +4,7 @@ use spitfire\model\fields\IntegerField;
 use Reference;
 use spitfire\storage\database\drivers\mysqlpdo\QueryField;
 use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 use function db;

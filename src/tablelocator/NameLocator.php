@@ -4,8 +4,8 @@ use ReflectionClass;
 use ReflectionException;
 use spitfire\exceptions\PrivateException;
 use spitfire\Model;
+use spitfire\model\Schema;
 use spitfire\storage\database\DB;
-use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 
 /* 

@@ -8,7 +8,7 @@ use spitfire\storage\database\drivers\mysqlpdo\QueryField;
 use spitfire\storage\database\drivers\mysqlpdo\QueryTable;
 use spitfire\storage\database\drivers\mysqlpdo\Restriction;
 use spitfire\storage\database\drivers\mysqlpdo\RestrictionGroup;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 use spitfire\storage\database\Table;
 use function db;
 

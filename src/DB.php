@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use BadMethodCallException;
-use spitfire\cache\MemoryCache;
+use spitfire\model\Schema;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\CharsetEncoder;

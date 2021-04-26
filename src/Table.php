@@ -3,7 +3,7 @@
 use CoffeeBean;
 use Model;
 use spitfire\exceptions\PrivateException;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 
 /**
  * This class simulates a table belonging to a database. This way we can query

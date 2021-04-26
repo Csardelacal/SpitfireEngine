@@ -3,6 +3,7 @@
 use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
+use spitfire\model\Schema;
 use spitfire\storage\database\DB;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;
@@ -15,7 +16,6 @@ use spitfire\storage\database\QueryField as AbstractQueryField;
 use spitfire\storage\database\QueryTable as AbstractQueryTable;
 use spitfire\storage\database\Relation as RelationAbstract;
 use spitfire\storage\database\RestrictionGroup as AbstractRestrictionGroup;
-use spitfire\storage\database\Schema;
 use spitfire\storage\database\Table;
 use TextField;
 

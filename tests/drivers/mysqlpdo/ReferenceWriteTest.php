@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Reference;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 

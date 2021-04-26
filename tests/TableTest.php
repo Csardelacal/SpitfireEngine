@@ -7,7 +7,7 @@ use spitfire\model\fields\IntegerField;
 use spitfire\model\fields\StringField;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\Field;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 use function db;

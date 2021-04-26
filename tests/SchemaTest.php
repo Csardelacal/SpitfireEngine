@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field;
 use spitfire\model\Index;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 use function db;
 
 class SchemaTest extends TestCase
@@ -42,8 +42,8 @@ class SchemaTest extends TestCase
 	 * this case the schema should return a table name that contains hyphens instead
 	 * of backslashes since tables do accept hyphens and don't accept backslashes.
 	 * 
-	 * @covers \spitfire\storage\database\Schema::getName
-	 * @covers \spitfire\storage\database\Schema::getTableName
+	 * @covers \spitfire\model\Schema::getName
+	 * @covers \spitfire\model\Schema::getTableName
 	 */
 	public function testComplexTableName() {
 		$schema = new Schema('test\test');

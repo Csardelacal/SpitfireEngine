@@ -11,7 +11,7 @@ class DBTest extends TestCase
 	
 	public function testTableCache() {
 		$db = new Driver(Settings::fromArray([]));
-		$db->table(new \spitfire\storage\database\Schema('test'));
+		$db->table(new \spitfire\model\Schema('test'));
 		
 		$tc = $db->getTableCache();
 		$this->assertInstanceOf(\spitfire\storage\database\Table::class, $tc->get('test'));
