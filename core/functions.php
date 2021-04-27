@@ -542,8 +542,17 @@ function asset(string $name, string $scope = 'assets/') : string
 		$scopes[$scope] = new \spitfire\cache\MemoryCache(json_decode(file_get_contents($manifest)));
 	}
 	
-	#TODO: Read the config for the public URL of the assets or the application
-	$base = SpitFire::baseUrl();
+	/**
+	 * It's possible that the developer has set an asset location to serve static assets
+	 * from. This may be a CDN or a separate domain (to protect the users against origin
+	 * based attacks - this seems to be an issue with flash files).
+	 * 
+	 * @see https://secure.phabricator.com/book/phabricator/article/configuring_file_domain/
+	 * 
+	 * The location defined in `app.assets.location` needs to point to a mirror of the app's
+	 * public directory.
+	 */
+	$base = config('app.assets.location', SpitFire::baseUrl());
 	
 	/*
 	 * Look for the asset inside the memory cache. This allows us to make use of 
