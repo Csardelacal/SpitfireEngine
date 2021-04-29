@@ -1,7 +1,5 @@
 <?php namespace spitfire;
 
-use spitfire\core\app\AppAssetsInterface;
-use spitfire\core\app\RecursiveAppAssetLocator;
 use spitfire\core\Environment;
 use spitfire\core\Path;
 use spitfire\core\router\Parameters;

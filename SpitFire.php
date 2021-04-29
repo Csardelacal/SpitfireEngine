@@ -7,9 +7,12 @@ use spitfire\core\app\AppAssetsInterface;
 use spitfire\core\app\Cluster;
 use spitfire\core\app\RecursiveAppAssetLocator;
 use spitfire\core\Context;
+use spitfire\core\ContextCLI;
 use spitfire\core\Environment;
 use spitfire\core\Locations;
 use spitfire\core\Request;
+use spitfire\core\resource\Publisher;
+use spitfire\core\resource\PublisherDirector;
 use spitfire\core\Response;
 use spitfire\exceptions\PrivateException;
 use spitfire\provider\Container;
@@ -23,7 +26,6 @@ use function current_context;
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.
  * 
  * @author César de la Cal <cesar@magic3w.com>
- * @package spitfire
  */
 class SpitFire
 {
@@ -47,6 +49,12 @@ class SpitFire
 	private $locations;
 	
 	/**
+	 *
+	 * @var Publisher
+	 */
+	private $publisher;
+	
+	/**
 	 * Provides logging capabilities for the applications running within Spitfire.
 	 * You can select a logging mechanism by adding a PSR\log compatible logger
 	 * to the dependency injection file.
@@ -67,6 +75,7 @@ class SpitFire
 		self::$started = true;
 
 		$this->apps = new Cluster();
+		$this->publisher = new Publisher();
 		
 		/*
 		 * Initialize the service container, which will manage all the services that
@@ -273,6 +282,16 @@ class SpitFire
 	 */
 	public function config($path) {
 		return [];
+	}	
+	
+	/**
+	 * Returns the publisher for spitfire. This object allows the applications to
+	 * suggest pablishing resources to certain shared resources.
+	 * 
+	 * @return Publisher
+	 */
+	public function publisher() {
+		return $this->publisher;
 	}
 
 }
