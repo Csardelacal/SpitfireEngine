@@ -15,7 +15,7 @@ use spitfire\SpitFire;
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
-class URL
+class URL implements \JsonSerializable
 {
 	
 	/**
@@ -238,4 +238,19 @@ class URL
 	}
 	
 
+	/**
+	 * Returns the string representation of the URL. This is because the URL object 
+	 * does contain additional data that will generally cause unexpected behavior
+	 * when rendering a URL.
+	 * 
+	 * One would not expect that json_encode(['url' => new URL()]) would lead to 
+	 * a complex object, but instead to {url: '/'}
+	 * 
+	 * @return string
+	 */
+	public function jsonSerialize() 
+	{
+		return (string)$this;
+	}
+	
 }

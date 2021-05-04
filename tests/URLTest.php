@@ -50,6 +50,11 @@ class URLTest extends TestCase
 		$this->assertEquals('/', strval($url));
 	}
 	
+	public function testJSONEncode() {
+		$url = url();
+		$this->assertEquals('{"url": "/"}', json_encode(['url' => $url]));
+	}
+	
 	public function testBlankSerializer2() {
 		$url = url('home', 'index');
 		$this->assertEquals('/', $url->stringify());
