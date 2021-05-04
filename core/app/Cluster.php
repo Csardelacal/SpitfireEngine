@@ -2,6 +2,7 @@
 
 use spitfire\App;
 use spitfire\collection\Collection;
+use spitfire\utils\Strings;
 
 /* 
  * The MIT License
@@ -39,7 +40,7 @@ class Cluster
 	 * Contains the underlying collection of applications that the cluster is 
 	 * managing.
 	 *
-	 * @var Collection
+	 * @var Collection<App>
 	 */
 	private $apps;
 	
@@ -104,7 +105,7 @@ class Cluster
 	 * @return void
 	 * @throws AppNotFoundException
 	 */
-	public function remove($name) : void
+	public function remove(string $name) : void
 	{
 		/*
 		 * If we do not have a app registered for this cluster, we throw an exception.
@@ -114,5 +115,31 @@ class Cluster
 		}
 		
 		$this->apps->offsetUnset($name);
+	}
+	
+	/**
+	 * Looks for an App based on the namespace provided. A namespace can also be a classname
+	 * here. The cluster will return the application that is in charge of managing the
+	 * class you provided.
+	 * 
+	 * If the class is not part of any application, you will receive a null return value here.
+	 * 
+	 * NOTE: This method's API is potentially unstable, since it currently assumes that only
+	 * one instance of an application can be run at a time in a spitfire cluster. This is open
+	 * for change, allowing a developer to deploy the same application multiple times with
+	 * different settings.
+	 * 
+	 * @param string $namespace
+	 * @return App|null
+	 */
+	public function findByNamespace(string $namespace) :? App
+	{
+		foreach($this->apps as $app) {
+			if (Strings::startsWith($namespace, $app->namespace())) {
+				return $app;
+			}
+		}
+		
+		return null;
 	}
 }
