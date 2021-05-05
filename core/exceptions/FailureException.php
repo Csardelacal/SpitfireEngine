@@ -39,7 +39,7 @@ class FailureException extends Exception implements PublicExceptionInterface
 	 * 
 	 * @return int
 	 */
-	public function httpCode()
+	public function httpCode() : int
 	{
 		return $this->getCode();
 	}
