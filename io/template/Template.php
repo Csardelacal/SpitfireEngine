@@ -1,5 +1,6 @@
 <?php namespace spitfire\io\template;
 
+use Closure;
 use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\FileNotFoundException;
 
@@ -27,57 +28,106 @@ use spitfire\exceptions\FileNotFoundException;
  * THE SOFTWARE.
  */
 
+ /**
+  * @todo Implement template inheritance mechanisms.
+  */
 class Template
 {
 	
 	private $file;
+	private $data = [];
 	
+	/**
+	 * If this template extends another, the behavior changes slightly. Sections will not
+	 * be rendered, and instead they'll be pushed to the extended parent to render it's
+	 * layout.
+	 * 
+	 * @var Template|null
+	 */
+	private $extends = null;
+	
+	/**
+	 * 
+	 * @var Closure[]
+	 */
 	private $sections;
 	
-	public function __construct($file) {
-		$this->file = (array)$file;
-	}
-	
-	public function renderable() {
-		
-		foreach ($this->file as $file) {
-			if (file_exists($file)) { return $file; }
-		}
-		
-		return false;
+	public function __construct($file) 
+	{
+		$this->file = $file;
 	}
 	
 	public function setFile($file) {
-		$this->file = (array)$file;
+		$this->file = $file;
 		return $this;
 	}
 	
-	public function section($name, Template$set = null) {
-		if ($set) {
-			$this->sections[$name] = $set;
-			return $this;
-		}
-		
-		if (isset($this->sections[$name])) {
-			return $this->sections[$name];
-		}
-		
-		throw new PrivateException('Section ' . $name . ' not available', 1806011432);
+	public function extends($template) 
+	{
+		$this->extends = new Template($template);
+		return $this;
 	}
 	
-	public function render($__data) {
-		#Consider that a missing template file that should be rendered is an error
-		if (!$__file = $this->renderable()) { 
-			throw new FileNotFoundException('No valid template file provided', 1806011423);
+	/**
+	 * This method allows a child template to pass all of the blocks it has
+	 * available to the view it's extending.
+	 * 
+	 * @param Closure[] $sections
+	 */
+	public function setSections(array $sections) 
+	{
+		$this->sections = $sections;
+		return $this;
+	}
+	
+	/**
+	 * 
+	 */
+	public function section($name, Closure $content = null) 
+	{
+		/**
+		 * If the section is being set, and the section has not yet been overriden
+		 * by a template that was executed before this one, we can override it.
+		 */
+		if ($content && !isset($this->sections[$name])) {
+			$this->sections[$name] = $content;
 		}
 		
+		if (isset($this->sections[$name]) && !$this->extends) {
+			$this->sections[$name]($this);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @param string $key
+	 * @param mixed $value
+	 * @return Template
+	 */
+	public function set(string $key, $value) : Template
+	{
+		$this->data[$key] = $value;
+		return $this;
+	}
+	
+	public function render() 
+	{	
 		ob_start();
 		
-		foreach ($__data as $__var => $__content) {
+		foreach ($this->data as $__var => $__content) {
 			$$__var = $__content;
 		}
 		
-		include $__file;
+		include $this->file . '.php';
+		
+		if ($this->extends) {
+			ob_clean();
+			$this->extends
+				->setSections($this->sections)
+				->render();
+		}
 		
 		return ob_get_clean();
 	}
