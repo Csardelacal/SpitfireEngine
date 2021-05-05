@@ -91,56 +91,6 @@ class SpitFire
 			$provider->init();
 		}
 	}
-
-	public function fire() {
-		
-		#Import the apps
-		include $this->locations->config() . 'apps.php';
-		
-		#TODO: This needs to be moved to service providers
-		#Try to include the user's evironment & routes
-		#It'd be interesting to move these to the index.php file of applications that
-		#wish to implement these features.
-		$overrides = [
-			basedir() . 'bin/settings/environments.php',
-			basedir() . 'bin/settings/routes.php'
-		];
-		
-		foreach ($overrides as $file) {
-			file_exists($file) && include($file);
-		}
-		
-		/*
-		 * Load the appropriate kernel for the user's intent. This is the main 'fork'
-		 * in spitfire's logic. 
-		 */
-		if (php_sapi_name() === 'cli') {
-			$kernel = $this->provider->get(\spitfire\core\kernel\ConsoleKernel::class);
-			$kernel->boot();
-			
-			/*
-			 * The kernel needs to know which command to execute, the command will 
-			 * be written to argv[1]. From there on, the kernel can take over, arrange
-			 * the arguments so they make sense to the command, and pass over control
-			 * to the director that executes the script.
-			 */
-			$_ret = $kernel->exec($argv[1], array_slice($argv, 2));
-			exit($_ret);
-		}
-		else {
-			$kernel = $this->provider->get(\spitfire\core\kernel\WebKernel::class);
-			$kernel->boot();
-			
-			/*
-			 * Generate a request object that allows the kernel to work with an
-			 * abstraction of the real request.
-			 */
-			$response = $kernel->process(Request::fromServer());
-			$response->send();
-		}
-		
-		
-	}
 	
 	/**
 	 * 
