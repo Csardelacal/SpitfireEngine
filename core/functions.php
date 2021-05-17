@@ -9,6 +9,8 @@ use spitfire\exceptions\ExceptionHandler;
 use spitfire\exceptions\ExceptionHandlerCLI;
 use spitfire\cli\Console;
 use spitfire\core\exceptions\FailureException;
+use spitfire\core\config\Configuration;
+use spitfire\exceptions\ApplicationException;
 use spitfire\io\request\Request;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
@@ -588,4 +590,49 @@ function defer(string $task, $options, int $defer = 0, int $ttl = 10) : void
 	}
 	
 	$async->defer($task, $options, $defer, $ttl);
+}
+
+/**
+ * Returns an application configuration. Note that configuration in Spitfire is tiered,
+ * configuration and environments.
+ * 
+ * You as the developer should establish the configuration so the components you add to
+ * your application work as expected, and should expose the environment to the person
+ * deploying the application so they can customize the behavior.
+ * 
+ * 
+ * @param string $key The key in the configuration
+ * @param mixed  $fallback The value to return if the configuration does not contain the key
+ * @return mixed The data for this configuration entry
+ */
+function config($key, $fallback = null)
+{
+	return spitfire()->provider()->get(Configuration::class)->get($key, $fallback);
+}
+
+/**
+ * This function should ONLY be invoked from the config files. This data is not cached, and therefore
+ * not always available during runtime.
+ * 
+ * Reads a value from the current environment.
+ * 
+ * @param string Set the environment, or look up the current env
+ * @return string|null
+ */
+function env(string $param) :? string
+{
+	/**
+	 * @var Environment
+	 */
+	$env = spitfire()->provider()->get(Environment::class);
+	
+	/**
+	 * If the user is performing an empty lookup, or the environment has not yet been
+	 * set, the application should fail.
+	 */
+	if ($param === null || $env === null) {
+		throw new ApplicationException('Environment was read before it was loaded');
+	}
+	
+	return $env->get($param);
 }
