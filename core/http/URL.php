@@ -3,19 +3,28 @@
 use spitfire\core\Path;
 use spitfire\core\router\Route;
 use spitfire\core\router\Router;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\io\Get;
 use spitfire\SpitFire;
 
 /**
  * 
- * This dinamically generates system urls this allows us to validate URLs if needed
+ * This dynamically generates system urls this allows us to validate URLs if needed
  * or generate different types of them depending on if pretty links is enabled
  * 
  * @author César de la Cal <cesar@magic3w.com>
  */
 class URL
 {
+	
+	/**
+	 * @var bool Indicates whether the URL should be prefixed with the application's
+	 * hostname. This hostname will be retrieved from the application configuration
+	 * if available (otherwise the system will attempt to guess it or throw an exception)
+	 */
+	private $absolute = false;
+	
 	/**
 	 * @var Path Contains information about the controller / action
 	 * / object combination that will be used for this URL.
@@ -110,7 +119,7 @@ class URL
 	 * 
 	 * @see URL::defaultSerializer() For the standard behavior.
 	 */
-	public function __toString() {
+	public function stringify() {
 		$routes = $this->getRoutes();
 		$url    = false;
 		
@@ -139,7 +148,21 @@ class URL
 			$url.= '?' . http_build_query($this->params);
 		}
 		
-		return '/' . ltrim(implode('/', [trim(SpitFire::baseUrl(), '/'), ltrim($url, '/')]), '/');
+		/**
+		 * We default to enforcing HTTPS on absolute URLs. This reduces complexity on our APIs
+		 * and there is currently no environment where we do provide HTTP access to our services.
+		 */
+		if ($this->absolute) {
+			return 'https://' . $this->hostname() . '/' . ltrim(implode('/', [trim(SpitFire::baseUrl(), '/'), ltrim($url, '/')]), '/');
+		}
+		else {
+			return '/' . ltrim(implode('/', [trim(SpitFire::baseUrl(), '/'), ltrim($url, '/')]), '/');
+		}
+	}
+	
+	public function __toString()
+	{
+		return $this->stringify();
 	}
 
 	/**
@@ -196,22 +219,47 @@ class URL
 		return new URL($ctx->controller, $ctx->action, $ctx->object, $ctx->extension, $_GET->getCanonical());
 	}
 	
-	public function absolute($domain = null) {
-		$t = new AbsoluteURL();
-		
-		$t->setExtension($this->getExtension());
-		$t->setParams($this->params);
-		$t->setPath($this->path);
-		$t->setProtocol(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'? AbsoluteURL::PROTO_HTTPS : AbsoluteURL::PROTO_HTTP);
-		
-		return $t->setDomain($domain);
+	public function absolute(bool $set = true) : URL
+	{
+		$this->absolute = $set;
+		return $this;
 	}
 	
 	public function getRoutes() {
 		$router = Router::getInstance();
 		return array_filter(array_merge(
-			$router->server()->getRoutes()->toArray(), $router->getRoutes()->toArray()
+			$router->getRoutes()->toArray(), $router->getRoutes()->toArray()
 		));
+	}
+	
+	public function hostname() : string
+	{
+		/**
+		 * If this url is not set to be an absolute url, the hostname is left
+		 * empty.
+		 */
+		if (!$this->absolute) {
+			return '';
+		}
+		
+		/**
+		 * If the application has defined a hostname for itself, the URL generator
+		 * should respect this and use the URL provided.
+		 */
+		if (config('app.hostname', false)) {
+			return config('app.hostname');
+		}
+		
+		/**
+		 * If the application provides no hostname for itself, the web-server's hostname
+		 * will be used. Please note that there's a few security considerations when 
+		 * working with this, so it's recommended to set a canonical hostname in config.
+		 */
+		if ($_SERVER['SERVER_NAME']?? false) {
+			return $_SERVER['SERVER_NAME'];
+		}
+		
+		throw new ApplicationException('Could not detemine the hostname for an absolute url', 2104181221);
 	}
 	
 

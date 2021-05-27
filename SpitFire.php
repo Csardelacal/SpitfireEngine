@@ -176,7 +176,11 @@ class SpitFire
 	}
 	
 	public static function baseUrl(){
-		if (Environment::get('base_url')) { return Environment::get('base_url'); }
+		/**
+		 * If the user has defined an application URL in the config, we do not attempt
+		 * to find it ourselves.
+		 */
+		if (config('app.url')) { return config('app.url'); }
 		if (php_sapi_name() === 'cli')    { return '/'; }
 		
 		list($base_url) = explode('/index.php', $_SERVER['PHP_SELF'], 2);
@@ -207,12 +211,6 @@ class SpitFire
 	 * @deprecated since version 0.1-dev 20201012
 	 */
 	public function enable() {
-		
-		#Define the current timezone
-		date_default_timezone_set(Environment::get('timezone'));
-                
-		#Set the display errors directive to the value of debug
-		ini_set("display_errors" , Environment::get('debug_mode')? '1' : '0');
 	}
 	
 	/**
