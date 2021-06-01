@@ -7,7 +7,6 @@ use spitfire\core\Request;
 use spitfire\core\resource\Publisher;
 use spitfire\exceptions\PrivateException;
 use spitfire\provider\Container;
-use spitfire\provider\Provider;
 use function basedir;
 
 /**
@@ -24,7 +23,7 @@ class SpitFire
 	
 	/**
 	 *
-	 * @var Provider
+	 * @var Container
 	 */
 	private $provider;
 	
