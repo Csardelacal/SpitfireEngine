@@ -1,6 +1,7 @@
 <?php namespace spitfire\core;
 
 use spitfire\core\router\Pattern;
+use spitfire\mvc\Controller;
 
 /**
  * The Path represents the set of data that Spitfire can obtain by parsing the 

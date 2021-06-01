@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use spitfire\core\router\ParametrizedPath;
 use spitfire\core\router\Pattern;
+use spitfire\mvc\Controller;
 
 /* 
  * The MIT License
@@ -32,33 +33,33 @@ class ParametrizedPathTest extends TestCase
 {
 	
 	public function testReplacement() {
-		$pp = new ParametrizedPath(new Pattern(':controller'), new Pattern(':action'), new Pattern(':object'));
+		$pp = new ParametrizedPath(Controller::class, new Pattern(':action'), new Pattern(':object'));
 		$path = $pp->replace(['controller' => 'b', 'action' => 'c', 'object' => 'd']);
 		
-		$this->assertEquals('b', $path->getController()[0]);
+		$this->assertEquals('d', $path->getObject()[0]);
 		$this->assertEquals('c', $path->getAction());
 	}
 	
 	public function testReplacementArrays() {
-		$pp = new ParametrizedPath([new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
+		$pp = new ParametrizedPath(Controller::class, new Pattern(':action'), new Pattern(':object'));
 		$path = $pp->replace(['c1' => 'b1', 'c2' => 'b2', 'action' => 'c', 'object' => 'd']);
 		
-		$this->assertEquals('b2', $path->getController()[0]);
+		$this->assertEquals(Controller::class, $path->getController()[0]);
 		$this->assertEquals('c',  $path->getAction());
 	}
 	
 	public function testExtract() {
-		$pp = new ParametrizedPath(new Pattern(':app'), [new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
-		$vars = $pp->extract(new \spitfire\core\Path('app', ['c1', 'c2'], 'action', ['o1']));
+		$pp = new ParametrizedPath('\app\HomeController', new Pattern(':action'), new Pattern(':object'));
+		$vars = $pp->extract(new \spitfire\core\Path('\app\HomeController', 'action', ['o1']));
 		
-		$this->assertEquals('app', $vars->getParameter('app'));
+		$this->assertEquals('action', $vars->getParameter('action'));
 	}
 	
 	public function testExtract2() {
-		$pp = new ParametrizedPath(new Pattern(':app'), [new Pattern(':c2'), new Pattern(':c1')], new Pattern(':action'), new Pattern(':object'));
-		$vars = $pp->extract(new \spitfire\core\Path('app', ['c1', 'c2'], 'action', ['o1', 'o2']));
+		$pp = new ParametrizedPath('\app\HomeController', new Pattern(':action'), new Pattern(':object'));
+		$vars = $pp->extract(new \spitfire\core\Path('\app\HomeController', 'action', ['o1', 'o2']));
 		
-		$this->assertEquals('app', $vars->getParameter('app'));
+		$this->assertEquals('action', $vars->getParameter('action'));
 	}
 	
 }

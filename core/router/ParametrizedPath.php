@@ -77,6 +77,30 @@ class ParametrizedPath extends Path
 	}
 	
 	/**
+	 * This function tests whether a Path matches this one. If two paths match, we can
+	 * assume that they are able to exchange information to generate new URLs from each
+	 * other.
+	 * 
+	 * @todo This assumes controllers are arrays
+	 * @todo This does not currently test actions or objects
+	 */
+	public function matches(Path $path) : bool
+	{
+		
+		try {
+			foreach ($this->getController() as $controller) {
+				$controller->test($path->getController());
+			}
+			
+		}
+		catch (\Exception $e) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * Extracts data from the given Path into a series of parameters. These can, 
 	 * for example, then be used to either sequence a URI using URIPattern.
 	 * 
@@ -121,7 +145,7 @@ class ParametrizedPath extends Path
 		 * internal data.
 		 */
 		$p = new Parameters();
-		$p->addParameters($fn($this->getController(),   $from->getController()));
+		$p->addParameters($fn((array)$this->getController(), (array)$from->getController()));
 		$p->addParameters($fn([$this->getAction()],     [$from->getAction()]));
 		$p->addParameters($fn($this->getObject(),       $from->getObject(), true));
 		$p->addParameters($fn([$this->getParameters()], [$from->getParameters()]));

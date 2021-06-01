@@ -22,6 +22,7 @@ class URLTest extends TestCase
 			$config->set('app.hostname', 'localhost');
 			
 			#Create a route with parameters
+			Router::getInstance()->request('/', ['controller' => 'home', 'action' => 'index']);
 			Router::getInstance()->request('/me/:b', ['controller' => 'account', 'action' => ':b']);
 			Router::getInstance()->request('/:a/:b', ['controller' => 'test', 'action' => ':b', 'object' => ':a']);
 			

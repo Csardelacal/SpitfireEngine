@@ -2,6 +2,7 @@
 
 use Closure;
 use Exception;
+use spitfire\core\Path;
 use spitfire\core\router\reverser\ClosureReverser;
 use spitfire\core\router\reverser\RouteReverserInterface;
 
@@ -76,7 +77,10 @@ class Route extends RewriteRule
 	public function getReverser() {
 		if ($this->reverser || !$this->getTarget() instanceof ParametrizedPath) { return $this->reverser; }
 
-		return $this->reverser = new ClosureReverser(function ($path) {
+		return $this->reverser = new ClosureReverser(function (Path $path) {
+			
+			if (!$this->getTarget()->matches($path)) { return false; }
+			
 			try { return $this->getSource()->reverse($this->getTarget()->extract($path)); } 
 			catch (Exception$e) { return false; }
 		});
