@@ -2,8 +2,6 @@
 
 use Closure;
 use spitfire\collection\Collection;
-use spitfire\core\Path;
-use spitfire\core\Response;
 
 /**
  * The routable class is the base class for both routers and router servers, 
@@ -109,7 +107,7 @@ abstract class Routable
 	 * a certain set of methods for the route to rewrite.
 	 * 
 	 * @param string $pattern  A route valid pattern @link http://www.spitfirephp.com/wiki/index.php/Router/Patterns
-	 * @param string $target   Where the content will be redirected to @link http://www.spitfirephp.com/wiki/index.php/Router/Target
+	 * @param Closure|string[] $target   Where the content will be redirected to @link http://www.spitfirephp.com/wiki/index.php/Router/Target
 	 * @param int    $method   The current method, default: Route::METHOD_GET | Route::METHOD_POST
 	 * @param int    $protocol Whether the request s sent HTTP or HTTPS
 	 * 
@@ -117,25 +115,21 @@ abstract class Routable
 	 */
 	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x03) {
 		
-		/*
-		 * For the other accepted targets, we will create a route. This will 
-		 * translate in a response from the system (either through a controller or
-		 * by directly issuing a response).
-		 */
-		if ($target instanceof Path || $target instanceof Response || 
-		    $target instanceof Closure || $target instanceof ParametrizedPath) { 
-			return $this->routes->push(new Route(URIPattern::make($pattern), $target, $method, $protocol)); 
-		}
-		
-		/*
-		 * If the target is an array then we need to build the Parametrized path
-		 * that the array represents and use that instead of the array.
+		/**
+		 * We always wrap our target in a function to be invoked if the router
+		 * matched the method. I am not a fan of this way of handling the code,
+		 * since we've wrapped a closure in a closure so it doesn't get executed
+		 * immediately.
 		 */
 		if (is_array($target)) {
-			return $this->routes->push(
-				new Route(URIPattern::make($pattern), 
-				ParametrizedPath::fromArray($target), $method, $protocol));
+			$call = function() use ($target) { return Closure::fromCallable([spitfire()->provider()->get($target[0]), $target[1]]); };
 		}
+		
+		elseif ($target instanceof Closure) {
+			$call = function() use ($target) { return $target; };
+		}
+		
+		return $this->routes->push(new Route(URIPattern::make($pattern), $call, $method, $protocol)); 
 	}
 	
 	public function getRoutes() {

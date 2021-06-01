@@ -1,9 +1,5 @@
 <?php namespace spitfire\core\router;
 
-use Closure;
-use Exception;
-use spitfire\core\Path;
-use spitfire\core\router\reverser\ClosureReverser;
 use spitfire\core\router\reverser\RouteReverserInterface;
 
 /**
@@ -45,46 +41,34 @@ class Route extends RewriteRule
 	 * @param string $method
 	 * @param string $protocol
 	 * @param string $extension
+	 * @return Parameters
+	 */
+	public function params($URI, $method, $protocol, string $extension = 'php') 
+	{
+		return $this->getSource()->test($URI);
+	}
+	
+	/**
+	 * 
+	 * @param string $URI
+	 * @param string $method
+	 * @param string $protocol
+	 * @param string $extension
 	 * @return \spitfire\core\Path|\spitfire\core\Response
 	 */
-	public function rewrite($URI, $method, $protocol, string $extension = 'php') {
+	public function rewrite($URI, $method, $protocol, string $extension = 'php') 
+	{
 		$params = $this->getSource()->test($URI);
+		
+		if ($params === null) { return null; }
 		
 		/*
 		 * Closures are the most flexible way to handle requests. They allow to 
 		 * determine how the application should react depending on any of the
 		 * request's components.
 		 */
-		if ($this->getTarget() instanceof Closure) {
-			return call_user_func_array($this->getTarget(), Array($params, $extension, $method, $protocol));
-		}
+		return $this->getTarget($params);
 		
-		/*
-		 * When using a parameterized path, the idea is to replace the parameters
-		 * we extracted from the URL and construct a valid Path that can then be
-		 * used to answer the request.
-		 */
-		if ($this->getTarget() instanceof ParametrizedPath) {
-			return $this->getTarget()->replace($params->setUnparsed($params->getUnparsed()))->setFormat($extension);
-		}
-		
-	}
-	
-	/**
-	 * 
-	 * @return RouteReverserInterface
-	 */
-	public function getReverser() {
-		if ($this->reverser || !$this->getTarget() instanceof ParametrizedPath) { return $this->reverser; }
-
-		return $this->reverser = new ClosureReverser(function (Path $path) {
-			
-			if (!$this->getTarget()->matches($path)) { return false; }
-			
-			try { return $this->getSource()->reverse($this->getTarget()->extract($path)); } 
-			catch (Exception$e) { return false; }
-		});
-
 	}
 	
 	/**

@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\router;
 
+use spitfire\utils\Strings;
+
 /**
  * The pattern class allows to test an URL fragment (the piece that originates 
  * when splitting the path by '/'). While the router doesn't allow to use complex
@@ -9,6 +11,7 @@
  * to use this more simple patterns. This allow a user to test a string and assign
  * it an ID the user can use to retrieve it.
  * 
+ * @deprecated
  * @author César de la Cal <cesar@magic3w.com>
  */
 class Pattern
@@ -80,7 +83,33 @@ class Pattern
 	 * 
 	 * @param string $pattern
 	 */
-	public function __construct($pattern) {
+	public function __construct($pattern) 
+	{
+		/**
+		 * Depending on whether our pattern is terminated (meaning it ends in a forward slash),
+		 * we will enforce that our route only matches urls that match completely, or whether we
+		 * allow routes to have extra payload.
+		 */
+		$terminated = Strings::endsWith($pattern, '/');
+		$template = $terminated? '#^%s$#' : '#^%s(.*)$#';
+		
+		
+		/**
+		 * Since SF0.2, we've started using handlebars to match URL components. This has a
+		 * series of advantages:
+		 * 
+		 * 1. Handlebars do not usually occurr on URLs
+		 * 2. We can match patterns that contain prefixed components like `/user/@username` without black magic
+		 * 
+		 * To do so, we generate a regular expression from the pattern we received, that we
+		 * can now use to test the routes and see whether they match.
+		 */
+		$expression  = sprintf($template, preg_replace(
+			['/\{([^\}\:]+)\}/', '/\{([^\}]+)\}/'],   # In this case, expressions containing a colon, will get replaced by
+			['([a-zA-Z0-9-_]+)', '([a-zA-Z0-9-_]*)'], # a capturing group that accepts an empty string
+			$pattern)
+		);
+		
 		$this->extractType($this->extractOptional($pattern));
 	}
 	

@@ -5,16 +5,19 @@
  * check that rewriting basic strings and Objects will work properly.
  */
 
+use Closure;
 use PHPUnit\Framework\TestCase;
-use spitfire\core\Path;
-use spitfire\core\router\Parameters;
 use spitfire\core\router\Route;
-use spitfire\core\router\RouteMismatchException;
 use spitfire\core\router\Router;
+use tests\router\_support\TestController;
 
 class RouterTest extends TestCase
 {
 	
+	/**
+	 * 
+	 * @var Router
+	 */
 	private $router;
 	
 	public function setUp() : void {
@@ -41,32 +44,31 @@ class RouterTest extends TestCase
 		$router = $this->router;
 		
 		#Prepare a route that redirects with no parameters
-		$route  = $router->get('/test', ['controller' => 'test']);
+		$route  = $router->get('/test', [TestController::class, 'index']);
 		$this->assertEquals(true, $route->test('/test', 'GET', Route::PROTO_HTTP));
-		$this->assertInstanceOf(Path::class, $route->rewrite('/test', 'GET', Route::PROTO_HTTP));
+		$this->assertInstanceOf(Closure::class, $route->rewrite('/test', 'GET', Route::PROTO_HTTP));
 		$this->assertEquals(false, $route->test('/test', 'POST', Route::PROTO_HTTP));
 			//> This last test should fail because we're sending a POST request to a GET route
 		
 	}
 	
 	public function testTrailingSlashStringRoute() {
-		$router = $this->router;
+		$router = new Router();
 		
 		#Create a route with a trailing slash
-		$route1 = $router->get('/this/is/a/test/', ['controller' => 'test']);
+		$route1 = $router->get('/this/is/a/test/', [TestController::class, 'index']);
 		
 		$this->assertEquals(true, $route1->test('/this/is/a/test',  'GET', Route::PROTO_HTTP), 'The route should match a route without trailing slash');
 		$this->assertEquals(true, $route1->test('/this/is/a/test/', 'GET', Route::PROTO_HTTP), 'The route should match a route with a trailing slash');
-		$this->assertEquals(false, $route1->test('/this/is/a/test/with/more', 'GET', Route::PROTO_HTTP), 'The route shouldnot match excessive content');
+		$this->assertEquals(false, $route1->test('/this/is/a/test/with/more', 'GET', Route::PROTO_HTTP), 'The route should not match excessive content');
+		$this->assertEquals(false, $route1->rewrite('/this/is/a/test/with/extra', 'GET', Route::PROTO_HTTP), 'The route should not match additional pieces');;
 		
-		$this->assertInstanceOf(Path::class, $route1->rewrite('/this/is/a/test/', 'GET', Route::PROTO_HTTP), 'The route should match a route with a trailing slash');
+		$this->assertInstanceOf(Closure::class, $route1->rewrite('/this/is/a/test/', 'GET', Route::PROTO_HTTP), 'The route should match a route with a trailing slash');
 		
-		$this->expectException(RouteMismatchException::class, 'The route should not match additional pieces');
-		$route1->rewrite('/this/is/a/test/with/extra', 'GET', Route::PROTO_HTTP);
 	}
 	
 	public function testTrailingSlashStringRoute2() {
-		$router = $this->router;
+		$router = new Router();
 		
 		#Create a route without a trailing slash
 		$route2 = $router->get('/this/is/a/test', ['controller' => 'test']);
@@ -78,68 +80,46 @@ class RouterTest extends TestCase
 		$router = $this->router;
 		
 		#Rewrite a parameter based URL into an array
-		$route = $router->get('/:param1/:param2', Array('controller' => ':param1', 'action' => ':param2'));
+		$route = $router->get('/{param1}/{param2}', Array('controller' => ':param1', 'action' => ':param2'));
 		
 		#Test whether matching works for the array string
 		$this->assertEquals(true, $route->test('/another/test', 'GET', Route::PROTO_HTTP));
 		
 		#Test if the route returns a Path object
-		$this->assertInstanceOf('\spitfire\core\Path', $route->rewrite('/another/test', 'GET', Route::PROTO_HTTP));
-		
-		#Test if the rewriting succeeded and the data was written in the right spot
-		$path  = $router->rewrite('/another/test', 'GET', Route::PROTO_HTTP);
-		$this->assertEquals('another', current($path->getController()));
-		$this->assertEquals('test',    $path->getAction());
+		$this->assertInstanceOf(Closure::class, $route->rewrite('/another/test', 'GET', Route::PROTO_HTTP));
 	}
 	
 	public function testArrayRouteWithStaticFragments() {
 		$router = $this->router;
 		
 		#Rewrite a parameter based URL into an array
-		$router->get('/:param1/:param2', Array('controller' => ':param1', 'action' => 'something', 'object' => ':param2'));
+		$router->get('/{param1}/{param2}', Array('controller' => ':param1', 'action' => 'something', 'object' => ':param2'));
 		
 		#Test if the rewriting succeeded and the data was written in the right spot
 		$path  = $router->rewrite('/another/test', 'GET', Route::PROTO_HTTP);
-		$this->assertEquals('another',     current($path->getController()));
-		$this->assertEquals('something',   $path->getAction());
-		$this->assertEquals(Array('test'), $path->getObject());
+		$this->assertInstanceOf(Closure::class, $path);
 	}
 	
 	public function testOptionalParameters() {
 		$router = $this->router;
-		$router->get('/test/:param1?optional', Array('controller' => ':param1'));
+		$router->get('/test/{param1}', [TestController::class, 'index']);
 		
 		$p1 = $router->rewrite('/test/provided', 'GET', Route::PROTO_HTTP);
 		$p2 = $router->rewrite('/test/',         'GET', Route::PROTO_HTTP);
 		$p3 = $router->rewrite('/some/',         'GET', Route::PROTO_HTTP);
 		
-		$this->assertEquals('provided', current($p1->getController()));
-		$this->assertEquals('optional', current($p2->getController()));
-		
-		$this->assertEquals(false, $p3);
+		$this->assertInstanceOf(Closure::class, $p1);
+		$this->assertInstanceOf(Closure::class, $p2);
+		$this->assertEquals(null, $p3);
 	}
 	
-	public function testExtension() {
-		$router = $this->router;
-		$router->get('/test/:param1', Array('controller' => ':param1'));
-		
-		$p1 = $router->rewrite('/test/provided.xml',   'GET', Route::PROTO_HTTP);
-		$p2 = $router->rewrite('/test/provided.json',  'GET', Route::PROTO_HTTP);
-		$p3 = $router->rewrite('/test/provided.json/', 'GET', Route::PROTO_HTTP);
-		
-		$this->assertEquals('xml',  $p1->getFormat());
-		$this->assertEquals('json', $p2->getFormat());
-		$this->assertEquals('php',  $p3->getFormat());
-	}
-	
-	public function testExtraction() {
+	public function testMixedURLS() 
+	{
 		$router  = $this->router;
-		$reverse = \spitfire\core\router\ParametrizedPath::fromArray(['controller' => ':p']);
-		$router->get('/test/:param1', Array('controller' => ':param1'));
+		$route   = $router->get('/@{param1}', Array('controller' => 'UserController', 'object' => [':param1']));
 		
-		$rewrite = $router->rewrite('/test/provided', 'GET', Route::PROTO_HTTP);
-		$data = $reverse->extract($rewrite);
-		$this->assertEquals('provided', $data->getParameter('p'));
+		$rewrite = $route->params('/@provided', 'GET', Route::PROTO_HTTP);
+		$this->assertEquals('provided', $rewrite->getParameter('param1'));
 	}
 	
 }

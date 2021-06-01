@@ -40,6 +40,17 @@ class Parameters
 	}
 	
 	/**
+	 * Imports a set of parameters parsed by the router. Usually, this will be a
+	 * single element provided by the route.
+	 * 
+	 * @param string[] $params
+	 */
+	public function addParameter($key, $value) {
+		$this->parameters[$key] = $value;
+		return $this;
+	}
+	
+	/**
 	 * Returns the parameter for the given parameter name. Please note that this 
 	 * function may return boolean false and empty strings alike. You can use the
 	 * === operator to compare the values and check if the returned one was 

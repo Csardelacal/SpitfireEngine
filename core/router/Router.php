@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\router;
 
+use Closure;
 use spitfire\core\Path;
 use spitfire\core\Response;
 
@@ -39,12 +40,12 @@ class Router extends Routable
 		$routes = $this->getRoutes()->toArray();
 		
 		if (\spitfire\utils\Strings::endsWith($url, '/')) {
-			$url     = pathinfo($url, PATHINFO_DIRNAME) . '/' . pathinfo($url, PATHINFO_BASENAME);
+			$url     = rtrim(pathinfo($url, PATHINFO_DIRNAME), '/') . '/' . pathinfo($url, PATHINFO_BASENAME);
 			$ext     = 'php';
 		} 
 		else {
 			$ext     = pathinfo($url, PATHINFO_EXTENSION);
-			$url     = pathinfo($url, PATHINFO_DIRNAME) . '/' . pathinfo($url, PATHINFO_FILENAME);
+			$url     = rtrim(pathinfo($url, PATHINFO_DIRNAME), '/') . '/' . pathinfo($url, PATHINFO_FILENAME);
 		}
 		
 		#Test the routes
@@ -55,14 +56,13 @@ class Router extends Routable
 			
 			#Check whether the route can rewrite the request
 			$rewrite = $route->rewrite($url, $method, $protocol, $ext);
+			assert($rewrite !== false);
 
-			if ( $rewrite instanceof Path || $rewrite instanceof Response) { return $rewrite; }
-			if ( $rewrite !== false)         { $url = $rewrite; }
+			if ( $rewrite instanceof Closure) { return $rewrite; }
 		}
 		
 		#Implicit else.
 		return false;
-		throw new \spitfire\exceptions\PublicException('No such route', 404);
 	}
 	
 }

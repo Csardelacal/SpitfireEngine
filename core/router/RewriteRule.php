@@ -59,11 +59,17 @@ abstract class RewriteRule
 	const METHOD_HEAD    = 0x10;
 	const METHOD_OPTIONS = 0x20;
 	
-	
+	/**
+	 * @var URIPattern
+	 */
 	private $pattern;
+	
+	/**
+	 * 
+	 * @var Closure
+	 */
 	private $newRoute;
 	private $method;
-	private $protocol;
 	
 	/**
 	 * A route is a pattern Spitfire uses to redirect an URL to something else.
@@ -72,17 +78,16 @@ abstract class RewriteRule
 	 * object to the request.
 	 * 
 	 * @param string $pattern
-	 * @param Closure|ParametrizedPath|array $new_route
+	 * @param Closure $new_route
 	 * @param string $method
 	 * @param int    $proto
 	 */
-	public function __construct($pattern, $new_route, $method, $proto = Route::PROTO_ANY) {
+	public function __construct(URIPattern $pattern, Closure $new_route, $method, $proto = Route::PROTO_ANY) 
+	{
+		$this->pattern   = $pattern;
 		$this->newRoute  = $new_route;
 		$this->method    = $method;
 		$this->protocol  = $proto;
-		
-		$this->patternStr = $pattern;
-		$this->pattern    = URIPattern::make($pattern);
 	}
 	
 	/**
@@ -105,7 +110,7 @@ abstract class RewriteRule
 				case 'OPTIONS': $method = self::METHOD_OPTIONS; break;
 			}
 		}
-		return $this->method & $method;
+		return (bool)($this->method & $method);
 	}
 	
 	/**
@@ -125,23 +130,26 @@ abstract class RewriteRule
 		return true;
 	}
 	
-	public function test($URI, $method) {
-		try {
-			#First we test the URI. Since the URI will throw an exception, we need 
-			#to catch it and return false.
-			$this->pattern->test($URI);
-			return $this->testMethod($method);
-		}
-		catch (RouteMismatchException$e) {
+	public function test($URI, $method) 
+	{
+		
+		if ($this->testMethod($method) === false) {
 			return false;
 		}
+		
+		if ($this->pattern->test($URI) === null) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
 	 * 
-	 * @return ParametrizedPath|URIPattern
+	 * @return Closure
 	 */
-	public function getTarget() {
+	public function getTarget() : Closure
+	{
 		return $this->newRoute;
 	}
 	

@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\router;
 
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\utils\Strings;
 
@@ -33,12 +34,28 @@ use spitfire\utils\Strings;
  */
 class URIPattern
 {
+	
+	/**
+	 * The pattern is the string that we were given to extract data from the 
+	 * URL. This is mostly used for debugging and information purposes, letting
+	 * the developer know which rule we're working on.
+	 */
+	private $pattern;
+	
 	/**
 	 * The patterns used by this class to test the URL it receives. 
 	 *
-	 * @var Pattern[]
+	 * @var string
 	 */
-	private $patterns;
+	private $expression;
+	
+	/**
+	 * These are the variables that the user defined in their URL pattern. These are
+	 * matched and returned to the route.
+	 * 
+	 * @var Collection<string[]>
+	 */
+	private $variables;
 	
 	/**
 	 * Indicates whether this is an open ended pattern. This implies that it'll
@@ -57,21 +74,49 @@ class URIPattern
 	 */
 	public function __construct($pattern) {
 		
-		if (Strings::startsWith($pattern, '/')) {
-			$pattern = substr($pattern, 1);
+		if (!Strings::startsWith($pattern, '/')) {
+			$pattern = sprintf('/%s', $pattern);
 		}
 		
 		/*
-		 * If the pattern ends in a slash it's not considered open ended, this is
-		 * important for how we parse the pattern.
-		 */
-		$this->open     = !Strings::endsWith($pattern, '/');
+		* If the pattern ends in a slash it's not considered open ended, this is
+		* important for how we parse the pattern.
+		*/
+		$this->open = !Strings::endsWith($pattern, '/');
+		$this->pattern = $pattern;
 		
-		/*
-		 * The patterns allow the system to test the URL piece by piece, making it
-		 * more granular.
+		/**
+		 * Depending on whether our pattern is terminated (meaning it ends in a forward slash),
+		 * we will enforce that our route only matches urls that match completely, or whether we
+		 * allow routes to have extra payload.
 		 */
-		$this->patterns = array_values(array_map(function ($e) { return new Pattern($e); }, array_filter(explode('/', $pattern))));
+		$template = $this->open? '#^%s(.*)$#' : '#^%s$#';
+		
+		
+		/**
+		 * Since SF0.2, we've started using handlebars to match URL components. This has a
+		 * series of advantages:
+		 * 
+		 * 1. Handlebars do not usually occurr on URLs
+		 * 2. We can match patterns that contain prefixed components like `/user/@username` without black magic
+		 * 
+		 * To do so, we generate a regular expression from the pattern we received, that we
+		 * can now use to test the routes and see whether they match.
+		 */
+		$this->expression  = sprintf($template, preg_replace(
+			['/\//', '/\{([^\}]+)\}/'],   # In this case, expressions containing a colon, will get replaced by
+			['(?:/|$)', '([a-zA-Z0-9-_]*)'], # a capturing group that accepts an empty string
+			$pattern)
+		);
+		
+		/**
+		 * A second, very similar expression, is used to extract the variables that we need.
+		 */
+		preg_match_all('/\{([^\}]+)\}/', $pattern, $matches);
+		
+		$this->variables = collect($matches[1])->each(function ($match) {
+			return explode(':', $match, 2);
+		});
 	}
 	
 	/**
@@ -81,24 +126,72 @@ class URIPattern
 	 * 
 	 * @param string $uri
 	 * @return \spitfire\core\router\Parameters
-	 * @throws RouteMismatchException
 	 */
-	public function test($uri) {
-		$pieces = is_array($uri)? $uri : array_filter(explode('/', $uri));
-		$params = new Parameters();
+	public function test($uri) :? Parameters
+	{
 		
-		/*
-		 * Walk the patterns and test whether they're all satisfied. Remember that
-		 * test raises an Exception when unsatisfied, so there's no need to check -
-		 * if the code runs the route was satisfied
-		 */
-		for ($i = 0; $i < count($this->patterns); $i++) {
-			$params->addParameters($this->patterns[$i]->test(array_shift($pieces)));
+		if (!preg_match_all($this->expression, $uri, $raw)) {
+			return null;
 		}
 		
-		if (count($pieces)) {
-			if ($this->open) { $params->setUnparsed($pieces); }
-			else             { throw new RouteMismatchException('Too many parameters', 1705201331); }
+		/**
+		 * Preg_match_all's return is really nasty to work with, it contains a multidimensional array,
+		 * which in our case always contains 1 item in the second layer, something like this
+		 * 
+		 * array(4) {
+		 *   [0]=>
+		 *   array(1) {
+		 *     [0]=>
+		 *     string(59) "..."
+		 *   }
+		 *   [1]=>
+		 *   array(1) {
+		 *     [0]=>
+		 *     string(5) "..."
+		 *   }
+		 *   ...
+		 * }
+		 * 
+		 * We use this function to conver it into something easier to work with by removing the intermediate
+		 * layer. Leaving us with something like this:
+		 * 
+		 * array(4) {
+		 *   [0]=>
+		 *   string(59) "..."
+		 *   [1]=>
+		 *   string(5) "..."
+		 *   ...
+		 * }
+		 * 
+		 * @var string[]
+		 */
+		$matches = array_map(function ($e) { return $e[0]; }, $raw);
+		
+		$params = new Parameters();
+		
+		/**
+		 * The first match contains the entire URL, since it will match the complete
+		 * regular expression. Meaning that we have to discard it to keep the variables 
+		 * that we need
+		 */
+		array_shift($matches);
+		
+		/**
+		 * The rest of the array contains the matches that we found. This is a bit of a complicated
+		 * expression, but the gist of it is really simple.
+		 * 
+		 * - Every variable contains an array with a name and an optional default value in the keys 0 and 1
+		 * - preg_match writes the result of every capturing group into the matches 
+		 *   array as another array(since we have no nesting or similar they only have one key)
+		 * - We combine the variable name with either the match or the default for the variable
+		 */
+		foreach ($this->variables as $var) {
+			$match = array_shift($matches);
+			$params->addParameter($var[0], $match?: $var[1]?? null);
+		}
+		
+		if (!empty($matches)) {
+			$params->setUnparsed(explode('/', array_shift($matches)));
 		}
 		
 		return $params;
