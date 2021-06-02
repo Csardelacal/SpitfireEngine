@@ -74,7 +74,7 @@ class Index
 	/**
 	 * Creates a new index for the schema.
 	 * 
-	 * @param Field[] $fields
+	 * @param Collection<Field> $fields
 	 */
 	public function __construct($fields = null) {
 		$this->fields = new Collection($fields);

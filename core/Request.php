@@ -2,6 +2,7 @@
 
 use spitfire\io\Get;
 use spitfire\core\router\Router;
+use spitfire\exceptions\ApplicationException;
 
 /**
  * The request class is a component that allows developers to retrieve information
@@ -195,11 +196,11 @@ class Request
 		$sent = $_SERVER['HTTP_RANGE'];
 		
 		if (!\spitfire\utils\Strings::startsWith($sent, 'bytes=')) {
-			throw new \spitfire\exceptions\PublicException('Malformed range sent', 416);
+			throw new ApplicationException('Malformed range sent', 416);
 		}
 		
 		if (strstr($sent, ',')) {
-			throw new \spitfire\exceptions\PublicException('Spitfire does not accept multiple ranges', 416);
+			throw new ApplicationException('Spitfire does not accept multiple ranges', 416);
 		}
 		
 		$pieces = explode('-', substr($_SERVER['HTTP_RANGE'], 6));

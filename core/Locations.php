@@ -97,7 +97,7 @@ class Locations
 	 * Returns a path to the public folder (or a selected path within it). Files 
 	 * in this location can be served by the web-server.
 	 * 
-	 * @param string|null $path
+	 * @param string $path
 	 * @return string
 	 */
 	public function public (string $path = '') : string
@@ -109,7 +109,7 @@ class Locations
 	 * The resources folder contains uncompiled assets, templates, locales, etc
 	 * that the system can use to enrich the experience of the user.
 	 * 
-	 * @param string|null $path
+	 * @param string $path
 	 * @return string
 	 */
 	public function resources (string $path = '') : string
