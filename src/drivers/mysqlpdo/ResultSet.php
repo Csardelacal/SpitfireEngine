@@ -2,7 +2,7 @@
 
 use PDO;
 use PDOStatement;
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\storage\database\ResultSetInterface;
 use spitfire\storage\database\Table;
 

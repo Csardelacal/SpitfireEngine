@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use InvalidArgumentException;
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 
 /**

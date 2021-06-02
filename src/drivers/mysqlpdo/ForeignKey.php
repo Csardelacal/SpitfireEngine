@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKeyInterface;
 

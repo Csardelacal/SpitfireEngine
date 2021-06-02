@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
+use spitfire\collection\Collection;
 use spitfire\model\Index as LogicalIndex;
 use spitfire\storage\database\IndexInterface;
 
@@ -44,7 +45,7 @@ class Index implements IndexInterface
 		/*
 		 * Prepare an array for the fields.
 		 */
-		$arr = new \spitfire\core\Collection();
+		$arr = new Collection();
 
 		/**
 		 * Each field has one / many physical fields that need to be brought into

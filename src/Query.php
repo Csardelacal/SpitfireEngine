@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use Exception;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\exceptions\PublicException;
 use spitfire\Model;
@@ -263,7 +264,7 @@ abstract class Query extends RestrictionGroup
 	 * 
 	 * @param int $skip
 	 * @param int $amt
-	 * @return \spitfire\core\Collection
+	 * @return Collection
 	 */
 	public function range($skip = 0, $amt = 1) {
 		if ($skip < 0 || $amt < 1) {
@@ -275,9 +276,10 @@ abstract class Query extends RestrictionGroup
 	
 	/**
 	 * 
-	 * @return \spitfire\core\Collection
+	 * @return Collection
 	 */
-	public function all() {
+	public function all() : Collection
+	{
 		return $this->execute()->fetchAll();
 	}
 
@@ -286,11 +288,12 @@ abstract class Query extends RestrictionGroup
 	 * inside a collection object to make them easier to access.
 	 * 
 	 * @deprecated since version 0.1-dev 20180509
-	 * @return \spitfire\core\Collection[]
+	 * @return Collection
 	 */
-	public function fetchAll() {
+	public function fetchAll() : Collection
+	{
 		if (!$this->result) { $this->query(); }
-		return new \spitfire\core\Collection($this->result->fetchAll());
+		return new Collection($this->result->fetchAll());
 	}
 	
 	/**
@@ -323,7 +326,8 @@ abstract class Query extends RestrictionGroup
 	 * @todo This method's behavior is extremely inconsistent
 	 * @return int
 	 */
-	public function count() {
+	public function count() : int 
+	{
 		//This is a temporary fix that will only count distinct values in complex
 		//queries.
 		$query = $this->query(Array('COUNT(DISTINCT ' . $this->table->getTable()->getPrimaryKey()->getFields()->join(', ') . ')'), true)->fetchArray();

@@ -3,6 +3,7 @@
 use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
 use Reference;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
 use spitfire\model\Schema;
@@ -89,7 +90,7 @@ class ComplexQueryTest extends TestCase
 		$q2 = $this->table2->get('refer', $q1);
 		$q3 = $this->table3->get('refer', $q2);
 		
-		$this->assertInstanceOf(\spitfire\core\Collection::class, $q3->fetchAll());
+		$this->assertInstanceOf(Collection::class, $q3->fetchAll());
 		$this->assertEquals(0, $q3->count());
 	}
 	
@@ -103,7 +104,7 @@ class ComplexQueryTest extends TestCase
 		$q2 = $this->table2->get('refer', $q1)->first();
 		$q3 = $this->table3->get('refer', $q2);
 		
-		$this->assertInstanceOf(\spitfire\core\Collection::class, $q3->fetchAll());
+		$this->assertInstanceOf(Collection::class, $q3->fetchAll());
 		$this->assertEquals(0, $q3->count());
 	}
 	

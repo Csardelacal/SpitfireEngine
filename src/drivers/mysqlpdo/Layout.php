@@ -2,7 +2,7 @@
 
 use Reference;
 use spitfire\cache\MemoryCache;
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Index as LogicalIndex;
 use spitfire\storage\database\Field;

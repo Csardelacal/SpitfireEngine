@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database\drivers\sql;
 
-use spitfire\core\Collection;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\drivers\mysqlpdo\CompositeRestriction;
 use spitfire\storage\database\Query;
