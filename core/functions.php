@@ -682,3 +682,12 @@ function env(string $param) :? string
 	
 	return $env->get($param);
 }
+
+/**
+ * Allows the application to reliably determine whether it is running in a console or 
+ * on a web server environment. 
+ */
+function cli() : bool
+{
+	return php_sapi_name() === 'cli';
+}
