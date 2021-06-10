@@ -114,6 +114,10 @@ class Session
 		 * otherwise a twenty minute session would end after 20 minutes even 
 		 * if the user was actively using it.
 		 * 
+		 * Sessions are httponly, this means that they are not available to the client
+		 * application running within the user-agent. This should mititgate potential
+		 * XSS attacks that would use JS to extract the cookie to impersonate the user.
+		 * 
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
@@ -121,7 +125,7 @@ class Session
 		setcookie(
 			session_name(), 
 			self::sessionId(), 
-			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => true]
+			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => true, 'httponly' => true]
 		);
 	}
 	
@@ -136,7 +140,7 @@ class Session
 		setcookie(
 			session_name(), 
 			'', 
-			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => true]
+			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => true, 'httponly' => true]
 		);
 		
 		return session_destroy();
