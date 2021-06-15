@@ -2,7 +2,6 @@
 
 use spitfire\App;
 use spitfire\collection\Collection;
-use spitfire\core\ContextInterface;
 use spitfire\core\http\URL;
 use spitfire\core\config\Configuration;
 use spitfire\core\kernel\KernelInterface;
@@ -295,12 +294,6 @@ function _t() {
 	}
 	
 	return call_user_func_array(Array($domains->getDefault(), 'say'), $args);
-}
-
-function current_context(ContextInterface$set = null) {
-	static $context = null;
-	if ($set!==null) {$context = $set;}
-	return $context;
 }
 
 function console() {

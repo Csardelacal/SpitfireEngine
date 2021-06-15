@@ -50,9 +50,9 @@ class Response implements ResponseInterface
 	 * It also provides the App with the ability to discard a certain response 
 	 * before it was sent and generate a completely new one.
 	 * 
-	 * @param string|Context $body
-	 * @param int            $status
-	 * @param mixed          $headers
+	 * @param StreamInterface $body
+	 * @param int             $status
+	 * @param mixed           $headers
 	 */
 	public function __construct(StreamInterface $body, $status = 200, $headers = null) {
 		$this->body = $body;
