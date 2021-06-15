@@ -1451,16 +1451,6 @@ parameters:
 			path: mvc/View.php
 
 		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: mvc/middleware/MiddlewareStack.php
-
-		-
-			message: "#^Property spitfire\\\\mvc\\\\middleware\\\\MiddlewareStack\\:\\:\\$ctx \\(spitfire\\\\core\\\\Context\\) does not accept spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/MiddlewareStack.php
-
-		-
 			message: "#^Access to an undefined property spitfire\\\\core\\\\ContextInterface\\:\\:\\$annotations\\.$#"
 			count: 1
 			path: mvc/middleware/standard/CacheDurationMiddleware.php
