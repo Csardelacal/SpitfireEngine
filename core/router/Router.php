@@ -66,9 +66,9 @@ class Router extends Routable
 	 * @param string $route
 	 * @param string $method
 	 * @param string $protocol
-	 * @return RequestHandlerInterface|Response
+	 * @return RouterResult
 	 */
-	public function rewrite ($url, $method, $protocol) 
+	public function rewrite ($url, $method, $protocol) : RouterResult
 	{
 		
 		#Combine routes from the router and server
@@ -110,9 +110,8 @@ class Router extends Routable
 			if ($_r) { return $_r; }
 		}
 		
-		
 		#Implicit else.
-		return false;
+		return new RouterResult(null);
 	}
 	
 	/**
