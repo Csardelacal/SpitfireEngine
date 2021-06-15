@@ -13,7 +13,7 @@ before_script:
   # of GD (that includes imagewebp functions) nad ffmpeg
   - sudo apt-get update
   - sudo apt-get install -y ffmpeg
-  - sudo apt-get install -y php$(phpenv version-name)-cli php$(phpenv version-name)-gd php$(phpenv version-name)-xml php$(phpenv version-name)-curl php-imagick
+  - sudo apt-get install -y php$(phpenv version-name)-cli php$(phpenv version-name)-gd php$(phpenv version-name)-xml php$(phpenv version-name)-curl php$(phpenv version-name)-imagick
   - sudo apt-get install -y php$(phpenv version-name)-zip php$(phpenv version-name)-mbstring php$(phpenv version-name)-mysql  php$(phpenv version-name)-memcached
   - sudo apt-get install -y php$(phpenv version-name)-memcache
   
