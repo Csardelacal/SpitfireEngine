@@ -5,6 +5,7 @@ use spitfire\core\app\Cluster;
 use spitfire\core\Locations;
 use spitfire\core\Request;
 use spitfire\core\resource\Publisher;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\provider\Container;
 use function basedir;
@@ -63,6 +64,7 @@ class SpitFire
 
 		$this->apps = new Cluster();
 		$this->publisher = new Publisher();
+		$this->locations = new Locations();
 		
 		/*
 		 * Initialize the service container, which will manage all the services that

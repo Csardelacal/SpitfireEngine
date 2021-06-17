@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\objectStorage;
 
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
 
@@ -113,16 +114,13 @@ class DriveDispatcher
 		$pieces = explode('://', $args, 2);
 		
 		if(!isset($pieces[1])) {
-			throw new PrivateException('Invalid URI provided', 1805301529);
+			throw new ApplicationException('Invalid URI provided', 1805301529);
 		}
 		
 		list($scheme, $path) = $pieces;
 		
 		if(!isset($this->drives[$scheme])) {
-			
-			console()->error($scheme)->ln();
-			var_dump($this->drives);
-			throw new PrivateException('Scheme ' . $scheme . ' cannot be handled', 1805301529);
+			throw new ApplicationException('Scheme ' . $scheme . ' cannot be handled', 1805301529);
 		}
 		
 		$mount  = $this->drives[$scheme];

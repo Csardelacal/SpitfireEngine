@@ -82,7 +82,7 @@ class ParserTest extends TestCase
 		
 		#Since the code cannot parse the string, it should fail.
 		$pl = $p->parse($string);
-		$this->expectException(\spitfire\exceptions\PrivateException::class);
+		$this->expectException(\spitfire\exceptions\ApplicationException::class);
 		$this->assertInstanceOf(\spitfire\ast\parser\ParseTree::class, $pl);
 		
 		$pl->resolve(new \spitfire\ast\Scope());
@@ -100,7 +100,7 @@ class ParserTest extends TestCase
 		
 		$p = new Parser();
 		
-		$this->expectException(\spitfire\exceptions\PrivateException::class);
+		$this->expectException(\spitfire\exceptions\ApplicationException::class);
 		$p->parse($string);
 			
 	}
@@ -115,7 +115,7 @@ class ParserTest extends TestCase
 		
 		$p = new Parser();
 		
-		$this->expectException(\spitfire\exceptions\PrivateException::class);
+		$this->expectException(\spitfire\exceptions\ApplicationException::class);
 		$p->parse($string);
 		
 	}
