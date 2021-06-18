@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\kernel;
 
+use spitfire\_init\LoadConfiguration;
 use spitfire\core\Context;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
@@ -39,7 +40,7 @@ use spitfire\exceptions\ExceptionHandler;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class WebKernel
+class WebKernel implements KernelInterface
 {
 	
 	private $router;
@@ -116,6 +117,13 @@ class WebKernel
 	public function router() : Router
 	{
 		return $this->router;
+	}
+
+	public function initScripts(): array 
+	{
+		return [
+			LoadConfiguration::class
+		];
 	}
 	
 }

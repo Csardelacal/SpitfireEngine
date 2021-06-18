@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\kernel;
 
+use spitfire\_init\LoadConfiguration;
 use spitfire\cli\arguments\Parser;
 use spitfire\collection\Collection;
 use spitfire\core\kernel\exceptions\CommandNotFoundException;
@@ -36,7 +37,7 @@ use function spitfire;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class ConsoleKernel
+class ConsoleKernel implements KernelInterface
 {
 	
 	/**
@@ -117,5 +118,18 @@ class ConsoleKernel
 	public function all() : Collection
 	{
 		return $this->commands;
+	}
+	
+	/**
+	 * The list of init scripts that need to be executed in order for the kernel to
+	 * be usable.
+	 * 
+	 * @return array
+	 */
+	public function initScripts(): array 
+	{
+		return [
+			LoadConfiguration::class
+		];
 	}
 }
