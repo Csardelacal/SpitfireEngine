@@ -1,14 +1,10 @@
 <?php namespace spitfire;
 
-use Psr\Log\LoggerInterface;
 use spitfire\core\app\Cluster;
 use spitfire\core\Locations;
-use spitfire\core\Request;
 use spitfire\core\resource\Publisher;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
 use spitfire\provider\Container;
-use function basedir;
 
 /**
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.
@@ -17,10 +13,6 @@ use function basedir;
  */
 class SpitFire
 {
-	
-	static  $started = false;
-	
-	private $request;
 	
 	/**
 	 *
@@ -43,24 +35,12 @@ class SpitFire
 	private $publisher;
 	
 	/**
-	 * Provides logging capabilities for the applications running within Spitfire.
-	 * You can select a logging mechanism by adding a PSR\log compatible logger
-	 * to the dependency injection file.
-	 *
-	 * @var LoggerInterface 
-	 */
-	private $log;
-	
-	/**
 	 * 
 	 * @var Cluster
 	 */
 	private $apps;
 	
 	public function __construct() {
-		#Check if SF is running
-		if (self::$started) { throw new PrivateException('Spitfire is already running'); }
-		self::$started = true;
 
 		$this->apps = new Cluster();
 		$this->publisher = new Publisher();
@@ -71,16 +51,6 @@ class SpitFire
 		 * the framework provides to the application.
 		 */
 		$this->provider = new Container();
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev
-	 * @param type $app
-	 * @param type $namespace
-	 */
-	public function registerApp($app) {
-		$this->apps[] = $app;
 	}
 	
 	/**
@@ -130,15 +100,6 @@ class SpitFire
 	}
 	
 	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20190527
-	 * @return type
-	 */
-	public function getCWD() {
-		return basedir();
-	}
-	
-	/**
 	 * Return the dependency container for this Spitfire instance. This container
 	 * allows the application to inject behaviors into the 
 	 * 
@@ -147,17 +108,6 @@ class SpitFire
 	public function provider() {
 		return $this->provider;
 	}
-	
-	/**
-	 * @todo This method needs to lazy load configuration from the appropriate files and
-	 * so on, a helper for this would probably make sense
-	 * 
-	 * @param type $path
-	 * @return type
-	 */
-	public function config($path) {
-		return [];
-	}	
 	
 	/**
 	 * Returns the publisher for spitfire. This object allows the applications to
