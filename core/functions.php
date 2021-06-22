@@ -4,9 +4,10 @@ use spitfire\App;
 use spitfire\collection\Collection;
 use spitfire\core\ContextInterface;
 use spitfire\core\http\URL;
+use spitfire\core\config\Configuration;
+use spitfire\core\kernel\KernelInterface;
 use spitfire\cli\Console;
 use spitfire\core\exceptions\FailureException;
-use spitfire\core\config\Configuration;
 use spitfire\exceptions\ApplicationException;
 use spitfire\io\request\Request;
 use spitfire\io\media\FFMPEGManipulator;
@@ -59,6 +60,47 @@ function app($name, $namespace) {
 	$app = new $appName(APP_DIRECTORY . $name . DIRECTORY_SEPARATOR, $namespace);
 	spitfire()->registerApp($app, $namespace);
 	return $app;
+}
+
+/**
+ * Ths function will boot a kernel, instancing it and executing the necessary scripts to
+ * initialize it.
+ * 
+ * @param class-string<KernelInterface> $kernel The name of the kernel to boot
+ * @return KernelInterface
+ * @throws ApplicationException
+ */
+function boot(string $kernel) : KernelInterface
+{
+	$reflection = new ReflectionClass($kernel);
+	
+	/**
+	 * Ensure that the kernel is a kernel. If it's not a kernel, the application can't
+	 * use it and it will most definitely malfunction.
+	 */
+	assert($reflection->isSubclassOf(KernelInterface::class), 'Cannot boot non-kernel class');
+	
+	/**
+	 * Instance the new kernel. Kernels must be able to be instanced with minimum
+	 * available configuration and set up. At this point no service providers or 
+	 * similar are running.
+	 * 
+	 * We use the service provider for this, allowing the developer to potentially
+	 * override the kernel with custom logic.
+	 */
+	$instance = spitfire()->provider()->get($kernel);
+	
+	/**
+	 * Loop over the kernel's init script and execute them, making the kernel function.
+	 */
+	foreach ($instance->initScripts() as $script) {
+		(new $script($instance))->exec();
+	}
+	
+	/**
+	 * Return the kernel, so the application can work as expected.
+	 */
+	return $instance;
 }
 
 /**
