@@ -1,5 +1,9 @@
 <?php
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use spitfire\App;
 use spitfire\collection\Collection;
 use spitfire\core\http\URL;
@@ -476,10 +480,6 @@ function storage() {
 	}
 	
 	return $dispatcher;
-}
-
-function request($url) {
-	return new Request($url);
 }
 
 function mime($file) {
