@@ -16,9 +16,25 @@ use spitfire\collection\Collection;
 abstract class Routable
 {
 	
+	/**
+	 * This is the url prefix the router is connected to. Every time the addRoute
+	 * method is invoked, this router will prefix the route to scope it to the
+	 * router.
+	 * 
+	 * Please note that forcing a router to accept a route that is not inside it's
+	 * scope is likely to cause undefined behavior. Mostly because the router will
+	 * reject every request that doesn't match it's namespace, but may generate
+	 * urls that are outside it's scope.
+	 * 
+	 * @var string
+	 */
+	private $prefix;
+	
 	private $routes;
 	
-	public function __construct() {
+	public function __construct(string $prefix) 
+	{
+		$this->prefix = $prefix;
 		$this->routes = new Collection();
 	}
 	
@@ -100,6 +116,11 @@ abstract class Routable
 	 */
 	public function post($pattern, $target) {
 		return $this->addRoute($pattern, $target, Route::METHOD_POST);
+	}
+	
+	public function getPrefix() 
+	{
+		return $this->prefix;
 	}
 	
 	/**

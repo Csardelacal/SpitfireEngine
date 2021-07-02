@@ -1,8 +1,10 @@
 <?php namespace spitfire\core\router;
 
 use Closure;
-use spitfire\core\Path;
 use spitfire\core\Response;
+use Psr\Http\Server\RequestHandlerInterface;
+use spitfire\collection\Collection;
+use spitfire\mvc\middleware\MiddlewareInterface;
 
 /**
  * Routers are tools that allow your application to listen on alternative urls and
@@ -15,6 +17,39 @@ use spitfire\core\Response;
 class Router extends Routable
 {
 	
+	/**
+	 * The middleware this router applies to it's routes and children. Middleware is 
+	 * applied once the Intent object is created and being returned.
+	 * 
+	 * This means that more specific middleware is applied first when handling a request,
+	 * and later when handling a response.
+	 * 
+	 * @var Collection<MiddlewareInterface>
+	 */
+	private $middleware;
+	
+	/**
+	 * These routers inherit from this. Whenever this router is tasked with handling a 
+	 * request that it cannot satisfy itself, the router will delegate this request to
+	 * it's children.
+	 * 
+	 * This behavior implies that routes defined in the parent take precedence over the
+	 * routes defined by it's children.
+	 * 
+	 * Also note: whenever you call the scope() method, the router generates a NEW Router
+	 * for your scope. This means that you can have routers that manage routes within
+	 * the same scope but have different middleware.
+	 * 
+	 * @var Collection<Router>
+	 */
+	private $children;
+	
+	public function __construct($prefix)
+	{
+		$this->middleware = new Collection();
+		$this->children = new Collection();
+		parent::__construct($prefix);
+	}
 	
 	/**
 	 * This rewrites a request into a Path (or in given cases, a Response). This 
@@ -31,7 +66,7 @@ class Router extends Routable
 	 * @param string $route
 	 * @param string $method
 	 * @param string $protocol
-	 * @return Path|Response
+	 * @return RequestHandlerInterface|Response
 	 */
 	public function rewrite ($url, $method, $protocol) 
 	{
@@ -61,8 +96,40 @@ class Router extends Routable
 			if ( $rewrite instanceof Closure) { return $rewrite; }
 		}
 		
+		/**
+		 * In case the router could not handle the route itself, iterate over the children.
+		 * 
+		 * If any of the children is able to issue a request handler for this, we should
+		 * return it.
+		 * 
+		 * By doing it this way, children routes have lower precedence than the parent, meaning
+		 * that a parent route that matches a request will override a child.
+		 */
+		foreach ($this->children as $child) {
+			$_r = $child->rewrite($url, $method, $protocol);
+			if ($_r) { return $_r; }
+		}
+		
+		
 		#Implicit else.
 		return false;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @var string $scope
+	 * @var Closure $do
+	 * @return Router
+	 */
+	public function scope(string $scope, Closure $do = null) : Router
+	{
+		$child = new Router(rtrim($this->getPrefix(), '/') . '/' . ltrim($scope, '/'));
+		$do && $do($child);
+		
+		$this->children->push($child);
+		
+		return $child;
+	}
+
 }
