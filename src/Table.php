@@ -1,9 +1,7 @@
 <?php namespace spitfire\storage\database;
 
-use CoffeeBean;
 use Model;
 use spitfire\exceptions\PrivateException;
-use spitfire\model\Schema;
 
 /**
  * This class simulates a table belonging to a database. This way we can query
@@ -23,15 +21,6 @@ class Table
 	protected $db;
 	
 	/**
-	 * The model this table uses as template to create itself on the DBMS. This is
-	 * one of the key components to Spitfire's ORM as it allows the DB engine to 
-	 * create the tables automatically and to discover the data relations.
-	 *
-	 * @var Schema
-	 */
-	protected $schema;
-	
-	/**
 	 * Provides access to the table's layout (physical schema) 
 	 * 
 	 * @var LayoutInterface
@@ -45,14 +34,6 @@ class Table
 	 * @var Relation
 	 */
 	private $relation;
-	
-	/**
-	 * Contains the bean this table uses to generate forms for itself. The bean
-	 * contains additional data to make the data request more user friendly.
-	 * 
-	 * @var CoffeeBean
-	 */
-	protected $bean;
 	
 	/**
 	 * Caches a list of fields that compound this table's primary key. The property
@@ -76,51 +57,27 @@ class Table
 	 * Creates a new Database Table instance. The tablename will be used to find
 	 * the right model for the table and will be stored prefixed to this object.
 	 *
-	 * @param DB            $db
-	 * @param string|Schema $schema
+	 * @param DB     $db
+	 * @param Layout $layout
 	 *
 	 * @throws PrivateException
 	 */
-	public function __construct(DB$db, $schema) {
+	public function __construct(DB $db, LayoutInterface $layout) 
+	{
+		/**
+		 * The table will always exist within a defined scope, the scope is provided by the database
+		 * driver object.
+		 */
 		$this->db = $db;
-		$factory = $this->db->getObjectFactory();
-		
-		if (!$schema instanceof Schema) {
-			throw new PrivateException('Table requires a Schema to be passed');
-		}
-		
-		#Attach the schema to this table
-		$this->schema = $schema;
-		$this->schema->setTable($this);
 		
 		#Create a database table layout (physical schema)
-		$this->layout = $factory->makeLayout($this);
+		$this->layout = $layout;
 		
-		#Create the relation
-		$this->relation = $factory->makeRelation($this);
-	}
-	
-	/**
-	 * Fetch the fields of the table the database works with. If the programmer
-	 * has defined a custom set of fields to work with, this function will
-	 * return the overridden fields.
-	 * 
-	 * @return Field[] The fields this table handles.
-	 */
-	public function getFields() {
-		trigger_error('Deprecated function Table::getFields() called', E_USER_DEPRECATED);
-		return $this->layout->getFields();
-	}
-	
-	/**
-	 * 
-	 * @deprecated since version 0.1-dev 20171128
-	 * @param type $name
-	 * @return type
-	 */
-	public function getField($name) {
-		trigger_error('Deprecated function Table::getField() called', E_USER_DEPRECATED);
-		return $this->layout->getField($name);
+		/**
+		 * The relation represents the data within the table. It's the object giving you access
+		 * to CRUD operations and querying.
+		 */
+		$this->relation = new Relation($this);
 	}
 	
 	/**
@@ -144,7 +101,21 @@ class Table
 		if ($this->primaryK) { return $this->primaryK; }
 		
 		$indexes = $this->layout->getIndexes();
-		return $this->primaryK = $indexes->filter(function (IndexInterface$i) { return $i->isPrimary(); })->rewind();
+		$this->primaryK = $indexes->filter(function (IndexInterface$i) { return $i->isPrimary(); })->rewind();
+		
+		/**
+		 * This safeguard enforces a new rule that should make Spitfire incredibly 
+		 * more easy to work with. Primary keys (and therefore references, children, etc)
+		 * are no longer allowed to have more than one field. If the user disregards
+		 * this, the application will fail here.
+		 * 
+		 * Please note that you can disable this check in production by disabling assertions,
+		 * this is for optimzation purposes only, and the application will not behave
+		 * properly if the check is disabled to circumvent the error.
+		 */
+		assert(!$this->primaryK || $this->primaryK->count() === 1);
+		
+		return $this->primaryK;
 	}
 	
 	public function getAutoIncrement() {
@@ -200,10 +171,10 @@ class Table
 	/**
 	 * 
 	 * @deprecated since version 0.1-dev 20160902
-	 * @return Schema
+	 * @return Layout
 	 */
 	public function getModel() {
-		return $this->schema;
+		return $this->layout;
 	}
 	
 	/**
@@ -235,27 +206,11 @@ class Table
 	
 	/**
 	 * 
-	 * @return Schema
+	 * @deprecated since 0.2
+	 * @return Layout
 	 */
 	public function getSchema() {
-		return $this->schema;
-	}
-	
-	/**
-	 * Returns the bean this model uses to generate Forms to feed itself with data
-	 * the returned value normally is a class that inherits from CoffeeBean.
-	 * 
-	 * @deprecated since version 0.1-dev 20161220
-	 * @return CoffeeBean
-	 */
-	public function getBean($name = null) {
-		
-		if (!$name) { $beanName = $this->schema->getName() . 'Bean'; }
-		else        { $beanName = $name . 'Bean'; }
-		
-		$bean = new $beanName($this);
-		
-		return $bean;
+		return $this->layout;
 	}
 	
 	public function get($field, $value, $operator = '=') {

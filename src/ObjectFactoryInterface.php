@@ -45,6 +45,7 @@ interface ObjectFactoryInterface
 	 * into a separate layer.
 	 * 
 	 * @param Table $table
+	 * @deprecated since 0.2
 	 *
 	 * @return Relation
 	 */
@@ -55,6 +56,7 @@ interface ObjectFactoryInterface
 	 * store the data.
 	 * 
 	 * @param Table $table
+	 * @deprecated since 0.2
 	 * 
 	 * @return LayoutInterface The layout for the table
 	 */

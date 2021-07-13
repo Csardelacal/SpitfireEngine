@@ -34,8 +34,8 @@ use spitfire\Model;
  * This class represents the collection, it will provide the mechanisms to CRUD 
  * records and also may provide caching for the database.
  * 
- * @todo Relations should also provide a proper caching mechanism
- * @todo Move "below" a table.
+ * @todo The relation should not be abstract, it should be based on abstracted interfaces
+ * @todo References to the model class need to go
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
