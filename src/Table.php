@@ -118,14 +118,15 @@ class Table
 		return $this->primaryK;
 	}
 	
-	public function getAutoIncrement() {
+	public function getAutoIncrement() : Field
+	{
 		if ($this->autoIncrement) { return $this->autoIncrement; }
 		
 		//Implicit else
 		$fields  = $this->layout->getFields();
 		
 		foreach($fields as $field) {
-			if ($field->getLogicalField()->isAutoIncrement()) { return  $this->autoIncrement = $field; }
+			if ($field->isAutoIncrement()) { return  $this->autoIncrement = $field; }
 		}
 		
 		 return null;

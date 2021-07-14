@@ -4,6 +4,11 @@ use spitfire\model\Field as LogicalField;
 use spitfire\storage\database\Field as ParentClass;
 use spitfire\model\fields\Reference;
 
+/**
+ * 
+ * @todo This class should be moved to a grammar style namespace that allows to generate
+ * the SQL equivalent of the column's definition and how to reference it.
+ */
 class Field extends ParentClass
 {
 	
@@ -40,17 +45,30 @@ class Field extends ParentClass
 	public function columnDefinition() {
 		$definition = $this->columnType();
 		
-		if (!$this->getLogicalField()->getNullable())    $definition.= " NOT NULL ";
-		if ($this->getLogicalField()->isAutoIncrement()) $definition.= "AUTO_INCREMENT ";
+		if ($this->isNullable()) {
+			$definition.= " NOT NULL ";
+		}
+		
+		if ($this->isAutoIncrement()) {
+			$definition.= "AUTO_INCREMENT ";
+		}
 		
 		return $definition;
 	}
-
+	
+	/**
+	 * 
+	 * @deprecated since 0.2
+	 */
 	public function add() {
 		$stt = "ALTER TABLE `{$this->getTable()->getLayout()->getTableName()}` 
 			ADD COLUMN (`{$this->getName()}` {$this->columnDefinition()} )";
 		$this->getTable()->getDb()->execute($stt);
 		
+		/**
+		 * @todo This code is broken since it expects the field to report whether it
+		 * is a primary key, but the field is not supposed to know this.
+		 */
 		if ($this->getLogicalField()->isPrimary()) {
 			$pk = implode(', ', array_keys($this->getTable()->getPrimaryKey()));
 			$stt = "ALTER TABLE {$this->getTable()->getLayout()->getTableName()} 

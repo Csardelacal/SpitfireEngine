@@ -10,7 +10,7 @@ use spitfire\model\Field as LogicalField;
  * This class should be extended by each driver to allow it to use them in an 
  * efficient manner for them.
  */
-abstract class Field
+class Field
 {
 	/**
 	 * Contains a reference to the logical field that contains information
@@ -30,6 +30,44 @@ abstract class Field
 	private $name;
 	
 	/**
+	 * The nullable attribute indicates whether the field can be nulled. This 
+	 * allows the field to have a separate `empty` value or similar.
+	 * 
+	 * @var bool
+	 */
+	private $nullable = true;
+	
+	/**
+	 * The type of data this field accepts, generally databases will store some
+	 * variation of int, float, double, string and binary data.
+	 * 
+	 * @var string
+	 */
+	private $type;
+	
+	/**
+	 * Some data types allow to define the length or size of the data they can
+	 * hold. The database will enforce the maximum length to be shorter than
+	 * the provided length.
+	 * 
+	 * @var int
+	 */
+	private $length;
+	
+	/**
+	 * Most databases allow certain datatypes to be automatically incremented if
+	 * the data is set to an empty value.
+	 * 
+	 * Please note that most database engines will require the field to be part 
+	 * of the primary key to be automatically incremented. Also, most DBMS will
+	 * not allow your application to define more than one auto incrementing field
+	 * per table.
+	 * 
+	 * @var bool
+	 */
+	private $autoIncrements = false;
+	
+	/**
 	 * This allows the field to provide information about a field it refers 
 	 * to on another table on the same DBMS. This helps connecting the fields
 	 * and generating links on the DBMS that allow the engine to optimize
@@ -46,14 +84,15 @@ abstract class Field
 	 * requires several DBFields to store, this class creates an adapter
 	 * to easily handle the different objects.
 	 * 
-	 * @param \spitfire\model\Field $logical
 	 * @param string $name
+	 * @param string $type
+	 * @param int $length
 	 * @param \spitfire\storage\database\Field $references
 	 */
-	public function __construct(LogicalField$logical, $name, Field$references = null) {
-		$this->logical = $logical;
+	public function __construct(string $name, string $type, int $length = null) {
 		$this->name = $name;
-		$this->referenced = $references;
+		$this->type = $type;
+		$this->length = $length;
 	}
 	
 	/**
@@ -73,6 +112,26 @@ abstract class Field
 	
 	public function setName($name) {
 		$this->name = $name;
+	}
+	
+	public function getType() : string
+	{
+		return $this->type;
+	}
+	
+	public function getLength() : int
+	{
+		return $this->length;
+	}
+	
+	public function isAutoIncrement() : bool
+	{
+		return $this->autoIncrements;
+	}
+	
+	public function isNullable() : bool
+	{
+		return $this->nullable;
 	}
 	
 	/**
@@ -102,6 +161,7 @@ abstract class Field
 	 * logical field contains relevant data about what data it contains
 	 * and how it relates.
 	 * 
+	 * @deprecated since 0.2
 	 * @return \spitfire\model\Field
 	 */
 	public function getLogicalField() {
@@ -112,6 +172,7 @@ abstract class Field
 	 * Defines which logical field this belongs to. The logical field is the one 
 	 * in charge to provide data about the field and the data it contains.
 	 * 
+	 * @deprecated since 0.2
 	 * @param LogicalField $logical
 	 */
 	public function setLogicalField(LogicalField$logical) {
@@ -124,6 +185,7 @@ abstract class Field
 	 * needing to read all the intermediate layers that compound the logical
 	 * template of the Table.
 	 * 
+	 * @deprecated since 0.2
 	 * @return \spitfire\storage\database\Table
 	 */
 	public function getTable() {
