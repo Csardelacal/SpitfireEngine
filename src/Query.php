@@ -51,7 +51,7 @@ abstract class Query extends RestrictionGroup
 	
 	/**
 	 *
-	 * @var Aggregate[]
+	 * @var QueryField[]
 	 */
 	protected $aggregate = null;
 
@@ -343,14 +343,12 @@ abstract class Query extends RestrictionGroup
 	 * @todo When adding aggregation, the system should automatically use the aggregation for extraction
 	 * @todo Currently the system only supports grouping and not aggregation, this is a bit of a strange situation that needs resolution
 	 * 
-	 * @param LogicalField|FieLogicalFieldld[]|null $column
+	 * @param QueryField|null $column
 	 * @return Query Description
 	 */
-	public function aggregateBy($column) {
-		if (is_array($column))   { $this->aggregate = $column; }
-		elseif($column === null) { $this->aggregate = null; }
-		else                     { $this->aggregate = Array($column); }
-		
+	public function aggregateBy(QueryField $column = null) 
+	{
+		$this->aggregate = [$column];
 		return $this;
 	}
 	
