@@ -79,8 +79,8 @@ abstract class RewriteRule
 	 * 
 	 * @param string $pattern
 	 * @param Closure $new_route
-	 * @param string $method
-	 * @param int    $proto
+	 * @param int $method
+	 * @param int $proto
 	 */
 	public function __construct(URIPattern $pattern, Closure $new_route, $method, $proto = Route::PROTO_ANY) 
 	{

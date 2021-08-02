@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\router;
 
+use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\core\router\reverser\RouteReverserInterface;
 
 /**
@@ -34,6 +35,29 @@ class Route extends RewriteRule
 	const METHOD_OPTIONS= 0x20;
 	
 	/**
+	 * The name of a route allows the application to quickly look up the route
+	 * from a list of available routes when building URLs to other parts of the 
+	 * application.
+	 * 
+	 * By default, Spitfire will set the controller::action combination as the
+	 * name of the route, making it quick to find anonymous routes.
+	 * 
+	 * @var string
+	 */
+	private $name = null;
+	
+	public function getName() : string
+	{
+		return $this->name;
+	}
+	
+	public function setName(string $name) : Route
+	{
+		$this->name = $name;
+		return $this;
+	}
+	
+	/**
 	 * 
 	 * @param string $URI
 	 * @param string $method
@@ -52,20 +76,22 @@ class Route extends RewriteRule
 	 * @param string $method
 	 * @param string $protocol
 	 * @param string $extension
-	 * @return \spitfire\core\Path|\spitfire\core\Response
+	 * @return RequestHandlerInterface|null
+	 * 
+	 * @todo Wrap the returned closure in a requesthandler that can actually make use of
+	 * this.
 	 */
 	public function rewrite($URI, $method, $protocol, string $extension = 'php') 
 	{
-		$params = $this->getSource()->test($URI);
 		
-		if ($params === null) { return null; }
+		if ($this->getSource()->test($URI) === null) { return null; }
 		
 		/*
 		 * Closures are the most flexible way to handle requests. They allow to 
 		 * determine how the application should react depending on any of the
 		 * request's components.
 		 */
-		return $this->getTarget($params);
+		return $this->getTarget();
 		
 	}
 }

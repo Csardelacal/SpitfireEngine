@@ -63,7 +63,7 @@ class Router extends Routable
 	 * @todo The extension should be passed down to the servers (and therefore 
 	 * the routes) to allow the routes to respond to different requests properly.
 	 * 
-	 * @param string $route
+	 * @param string $url
 	 * @param string $method
 	 * @param string $protocol
 	 * @return RouterResult
@@ -129,6 +129,58 @@ class Router extends Routable
 		$this->children->push($child);
 		
 		return $child;
+	}
+	
+	/**
+	 * Finds a route by name, this searches recursively, so you don't need to.
+	 * Since this method searches for the route, it may become taxing to your
+	 * application if you have a ton of routes.
+	 * 
+	 * @param string $name
+	 * @return Route|null
+	 */
+	public function findByName($name): ?Route
+	{
+		
+		/**
+		 * First, search this router for any routes that match the given name
+		 */
+		foreach ($this->getRoutes() as $route) {
+			/**
+			 * The router must only contain instances of route, if this is not the
+			 * case, we do have a problem.
+			 */
+			assert($route instanceof Route);
+			
+			if ($route->getName() === $name) {
+				return $route;
+			}
+		}
+		
+		/**
+		 * If they're not in this router, make sure that the child routers do not
+		 * have it either.
+		 */
+		foreach ($this->children as $child) {
+			/**
+			 * Again, children only contain instances of router, if this is not the
+			 * case, we do have a problem.
+			 */
+			assert($child instanceof Router);
+			
+			/**
+			 * If the child does find a matching route, we stop there.
+			 */
+			$result = $child->findByName($name);
+			if ($result) { return $result; }
+		}
+		
+		
+		/**
+		 * Last case would be if the router did not have any matching route. In this case,
+		 * we return null to indicate that there is no such route available.
+		 */
+		return null;
 	}
 
 }
