@@ -15,9 +15,9 @@ class Headers
 	private $status = 200;
 	
 	private $headers = Array(
-	    'Content-type' => 'text/html;charset=utf-8',
-	    'x-Powered-By' => 'Spitfire',
-	    'x-version'    => '0.1 Beta'
+	    'Content-type' => ['text/html;charset=utf-8'],
+	    'x-Powered-By' => ['Spitfire'],
+	    'x-version'    => ['0.1 Beta']
 	);
 	
 	private $states = Array(
@@ -45,7 +45,7 @@ class Headers
 	);
 	
 	public function set ($header, $value) {
-		$this->headers[$header] = $value;
+		$this->headers[$header] = (array)$value;
 		return $this;
 	}
 	
@@ -63,8 +63,18 @@ class Headers
 		return $this;
 	}
 	
-	public function get($header) {
-		return $this->headers[$header];
+	/**
+	 * 
+	 * @return string[]
+	 */
+	public function get($header) : array
+	{
+		return $this->headers[$header]?? [];
+	}
+	
+	public function all()
+	{
+		return $this->headers;
 	}
 	
 	/**
@@ -128,6 +138,16 @@ class Headers
 		if (!isset($this->states[$code])) { throw new BadMethodCallException('Invalid status code', 1509031353); }
 		
 		$this->status = $code;
+	}
+	
+	public function getStatus() 
+	{
+		return $this->status;
+	}
+	
+	public function getReasonPhrase() 
+	{
+		return $this->states[$this->status];
 	}
 	
 	public function redirect($location, $status = 302) {

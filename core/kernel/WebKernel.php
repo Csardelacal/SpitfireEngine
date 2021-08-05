@@ -112,6 +112,43 @@ class WebKernel implements KernelInterface
 
 		#Send the response
 		$context->response->send();
+		
+		/**
+		 * If we follow the spec to a tee, the response contains the headers we need to send,
+		 * the data we need to send, etc. We just need a short piece fo code to place those on
+		 * PHP's buffers
+		 * 
+		 * @var Response
+		 */
+		$response = $request->handle();
+		
+		/**
+		 * First to be sent is the reason phrase. We let PHP choose the status phrase it wishes to
+		 * use and just set the status code.
+		 */
+		http_response_code($response->getStatusCode());
+		
+		/**
+		 * After that, each header is sent to the SAPI so the headers are placed first and the application
+		 * behaves consistently. Otherwise we would get a bunch of errors indicating that our headers
+		 * already left.
+		 * 
+		 * The first variable enforces that the header is replaced the first time and appended afterwards,
+		 * ensuring that only the headers we set are sent, and all defaults are overridden.
+		 */
+		foreach($response->getHeaders() as $header => $contents) {
+			$first = true;
+			
+			foreach ($contents as $content) {
+				header(sprintf('%s: %s', $header, $content), $first, $response->getStatusCode());
+				$first = false;
+			}
+		}
+		
+		/**
+		 * Print the response body to the output buffer so it gets sent to the end user.
+		 */
+		echo $response->getBody();
 	}
 	
 	public function router() : Router
