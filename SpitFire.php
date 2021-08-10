@@ -69,26 +69,6 @@ class SpitFire
 		 * the framework provides to the application.
 		 */
 		$this->provider = new Container();
-		$loaded = [];
-		
-		/*
-		 * Instance all the service providers and call the register method, this
-		 * allows them to bind all the services they provide.
-		 */
-		foreach($this->config('app.providers') as $name) {
-			$provider = new $name($this->provider);
-			$provider->register();
-			$loaded[] = $provider;
-		}
-		
-		/*
-		 * Each provider is allowed to invoke a start method, which it can then use
-		 * to register resources and further services (after all the  service providers
-		 * had a chance to register the services they provide).
-		 */
-		foreach ($loaded as $provider) {
-			$provider->init();
-		}
 	}
 	
 	/**
