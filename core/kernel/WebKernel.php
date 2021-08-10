@@ -1,6 +1,8 @@
 <?php namespace spitfire\core\kernel;
 
 use spitfire\_init\LoadConfiguration;
+use spitfire\_init\ProvidersInit;
+use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
 use spitfire\mvc\RouterMiddleware;
@@ -101,7 +103,9 @@ class WebKernel implements KernelInterface
 	public function initScripts(): array 
 	{
 		return [
-			LoadConfiguration::class
+			LoadConfiguration::class,
+			ProvidersInit::class,
+			ProvidersRegister::class
 		];
 	}
 	
