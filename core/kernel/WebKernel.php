@@ -104,8 +104,8 @@ class WebKernel implements KernelInterface
 	{
 		return [
 			LoadConfiguration::class,
-			ProvidersInit::class,
-			ProvidersRegister::class
+			ProvidersRegister::class,
+			ProvidersInit::class
 		];
 	}
 	
