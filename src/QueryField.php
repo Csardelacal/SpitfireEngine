@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\model\Field as Logical;
+use spitfire\exceptions\ApplicationException;
 
 /**
  * The query field object is a component that allows a Query to wrap a field and
@@ -12,24 +12,37 @@ use spitfire\model\Field as Logical;
  * and create complex queries that can properly be joined.
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
- * @abstract
  */
-abstract class QueryField
+class QueryField
 {
 	/** 
-	 * The actual database field. Note that this field is 
+	 * The actual database field.
 	 * 
-	 * @var Logical 
+	 * @todo This feels slightly 'overlinked', since the field only provides us with it's name
+	 * in this context, and we do not need access to information like it's type, whether
+	 * it's nullable or what table it belongs to. 
+	 * 
+	 * @var Field
 	 */
 	private $field;
 	
 	/**
+	 * The query-table we're working with. This allows the field to know which 
+	 * table alias it belongs to.
 	 *
 	 * @var QueryTable
 	 */
 	private $table;
 	
-	public function __construct(QueryTable$table, $field) {
+	/**
+	 * Instances a new Queryfield. This object scopes a field to a certain query,
+	 * which makes it very versatile for referencing fields accross queries in 
+	 * join operations.
+	 * 
+	 * @param QueryTable $table
+	 * @param Field $field
+	 */
+	public function __construct(QueryTable$table, Field $field) {
 		$this->table = $table;
 		$this->field = $field;
 	}
@@ -39,31 +52,19 @@ abstract class QueryField
 	 * 
 	 * @return QueryTable
 	 */
-	public function getQueryTable() : QueryTable {
+	public function getQueryTable() : QueryTable 
+	{
 		return $this->table;
-	}
-	
-	public function setQueryTable(QueryTable $table) {
-		$this->table = $table;
-		return $this;
 	}
 	
 	/**
 	 * Returns the source field for this object.
 	 * 
-	 * @return Logical|Field
+	 * @return Field
 	 */
-	public function getField() {
+	public function getField() : Field 
+	{
 		return $this->field;
-	}
-	
-	/**
-	 * 
-	 * 
-	 * @return bool
-	 */
-	public function isLogical() : bool {
-		return $this->field instanceof Logical;
 	}
 	
 	/**
@@ -71,39 +72,10 @@ abstract class QueryField
 	 * field. This method automatically converts the fields to QueryField so they
 	 * can be used again.
 	 * 
+	 * @deprecated since v0.2 20210812 This is broken, do not use
 	 * @return Field[]
 	 */
 	public function getPhysical() : array {
-		/*
-		 * Get the object factory for the current DB connection. It is then used 
-		 * to create physical copies of logical fields.
-		 */
-		$of = $this->table->getTable()->getDb()->getObjectFactory();
-		
-		if ($this->isLogical()) {
-			$fields = $this->field->getPhysical();
-			
-			foreach ($fields as &$field) {
-				$field = $of->queryFieldInstance($this->table, $field);
-			}
-			
-			return $fields;
-		}
-		
-		return [$of->queryFieldInstance($this->table, $this->field)];
+		throw new ApplicationException('Broken method getPhysical was invoked');
 	}
-	
-	/**
-	 * Many drivers use this objects to generate "object identifiers", strings that
-	 * indicate what field in which table is being adressed. So we're forcing driver
-	 * vendors to implement the __toString method to achieve the most consistent
-	 * result possible.
-	 * 
-	 * This may not be the case for your driver. In this event, just return a string
-	 * that may be used for debugging and create an additional method for your
-	 * driver.
-	 * 
-	 * @return string
-	 */
-	abstract public function __toString();
 }
