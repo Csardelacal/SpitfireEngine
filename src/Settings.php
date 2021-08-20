@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\database;
 
+use magic3w\http\url\reflection\URLReflection;
+
 /* 
  * The MIT License
  *
@@ -33,15 +35,58 @@
 class Settings
 {
 	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $driver;
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $server;
+	
+	/**
+	 * 
+	 * @var int
+	 */
 	private $port;
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $user;
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $password;
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $schema;
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $prefix;
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	private $encoding;
 	
+	/**
+	 * 
+	 * @var array{driver: string, server: string, port: int|null, user: string, password: string, schema: string, prefix: string, encoding: string}
+	 */
 	private static $defaults = [
 		'driver'   => 'mysqlpdo',
 		'server'   => 'localhost',
@@ -53,7 +98,8 @@ class Settings
 		'encoding' => 'utf8'
 	];
 	
-	public function __construct($driver, $server, $port, $user, $password, $schema, $prefix, $encoding) {
+	public function __construct(string $driver, string $server, int $port, string $user, string $password, string $schema, string $prefix, string $encoding) 
+	{
 		$this->driver = $driver;
 		$this->server = $server;
 		$this->port   = $port;
@@ -64,74 +110,90 @@ class Settings
 		$this->encoding = $encoding;
 	}
 	
-	public function getDriver() {
+	public function getDriver() : string
+	{
 		return $this->driver;
 	}
 	
-	public function getServer() {
+	public function getServer() : string
+	{
 		return $this->server;
 	}
 	
-	public function getUser() {
+	public function getUser() : string 
+	{
 		return $this->user;
 	}
 	
-	public function getPassword() {
+	public function getPassword() : string
+	{
 		return $this->password;
 	}
 	
-	public function getSchema() {
+	public function getSchema() : string
+	{
 		return $this->schema;
 	}
 	
-	public function getPrefix() {
+	public function getPrefix() : string
+	{
 		return $this->prefix;
 	}
 	
-	public function getEncoding() {
+	public function getEncoding() : string
+	{
 		return $this->encoding;
 	}
 	
-	public function getPort() {
+	public function getPort() : int
+	{
 		return $this->port;
 	}
 	
-	public function setDriver($driver) {
+	public function setDriver(string $driver) : Settings
+	{
 		$this->driver = $driver;
 		return $this;
 	}
 	
-	public function setServer($server) {
+	public function setServer(string $server) : Settings
+	{
 		$this->server = $server;
 		return $this;
 	}
 	
-	public function setPort($port) {
+	public function setPort(int $port) : Settings
+	{
 		$this->port = $port;
 		return $this;
 	}
 	
-	public function setUser($user) {
+	public function setUser(string $user) : Settings
+	{
 		$this->user = $user;
 		return $this;
 	}
 	
-	public function setPassword($password) {
+	public function setPassword(string $password) : Settings
+	{
 		$this->password = $password;
 		return $this;
 	}
 	
-	public function setSchema($schema) {
+	public function setSchema(string $schema) : Settings
+	{
 		$this->schema = $schema;
 		return $this;
 	}
 	
-	public function setPrefix($prefix) {
+	public function setPrefix(string $prefix) : Settings
+	{
 		$this->prefix = $prefix;
 		return $this;
 	}
 	
-	public function setEncoding($encoding) {
+	public function setEncoding(string $encoding) : Settings
+	{
 		$this->encoding = $encoding;
 		return $this;
 	}
@@ -142,40 +204,35 @@ class Settings
 	 * settings outside of the application and on the server itself.
 	 * 
 	 * @todo Move to external URL parser
-	 * @param Settings|string $url
+	 * @param string $url
 	 * @return Settings
 	 */
-	public static function fromURL($url) {
-		
-		/*
-		 * If the parameter provided is already a settings object, it will be 
-		 * returned as is.
-		 */
-		if ($url instanceof Settings) { return $url; }
-		
-		/*
-		 * Extract the basic data
-		 */
-		$driver   = parse_url($url, PHP_URL_SCHEME)?: self::$defaults['driver'];
-		$server   = parse_url($url, PHP_URL_HOST)  ?: self::$defaults['server'];
-		$port     = parse_url($url, PHP_URL_PORT)  ?: self::$defaults['port']; 
-		$user     = parse_url($url, PHP_URL_USER)  ?: self::$defaults['user'];
-		$password = parse_url($url, PHP_URL_PASS)  ?: self::$defaults['password'];
-		$schema   = parse_url($url, PHP_URL_PATH)  ?: self::$defaults['port'];
+	public static function fromURL(string $url) : Settings
+	{
 		
 		/**
-		 * Extract the data that was provided by the URL. Then we should be able 
-		 * to easily retrieve the data it provides.
+		 * Reflect the URL we received.
 		 */
-		parse_str(parse_url($url, PHP_URL_QUERY), $query);
+		$reflection = URLReflection::fromURL($url);
 		
-		$prefix   = $query['prefix']  ?? self::$defaults['prefix'];
-		$encoding = $query['encoding']?? self::$defaults['encoding'];
-		
-		return new Settings($driver, $server, $port, $user, $password, substr($schema, 1), $prefix, $encoding);
+		return new Settings(
+			$reflection->getProtocol()?: self::$defaults['driver'], 
+			$reflection->getHostname()?: self::$defaults['server'], 
+			$reflection->getPort()?: self::$defaults['port'], 
+			$reflection->getUser()?: self::$defaults['user'], 
+			$reflection->getPassword()?: self::$defaults['password'], 
+			substr($reflection->getPath(), 1)?: self::$defaults['schema'], 
+			$reflection->getQueryString()['prefix']?? self::$defaults['prefix'], 
+			$reflection->getQueryString()['encoding']?? self::$defaults['encoding']
+		);
 	}
 	
-	public static function fromArray($arr) {
+	/**
+	 * 
+	 * @param array{driver: string, server: string, port: int|null, user: string, password: string, schema: string, prefix: string, encoding: string} $arr
+	 */
+	public static function fromArray(array $arr) : Settings
+	{
 		$ops = $arr + self::$defaults;
 		
 		return new Settings(
