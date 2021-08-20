@@ -26,7 +26,7 @@ class ManifestCacheBuildDirector extends Director
 		$reader = new ComposerReader();
 		$manifest = $reader->read(spitfire()->locations()->root('composer.json'));
 		
-		$export = var_export($manifest);
+		$export = var_export($manifest, true);
 		$cache = spitfire()->locations()->root('bin/apps.php');
 		
 		file_put_contents($cache, sprintf('return %s', $export));
