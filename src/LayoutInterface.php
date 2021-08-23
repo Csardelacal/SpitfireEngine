@@ -32,6 +32,8 @@ use spitfire\collection\Collection;
  * 
  * A driver can implement this interface to provide common operations on it's 
  * tables for spitfire to run.
+ * 
+ * @deprecated since 2021.06.08
  */
 interface LayoutInterface
 {
