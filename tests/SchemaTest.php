@@ -107,13 +107,6 @@ class SchemaTest extends TestCase
 		$this->assertInstanceOf(Field::class, $a->getField('_id'), 'The id field should be present');
 	}
 	
-	public function testMakePhysicalFields() {
-		$schema = new Schema('test');
-		$table  = db()->table($schema);
-		
-		$this->assertEquals(1, count($table->getLayout()->getFields()));
-	}
-	
 	/*
 	 * Ensures that the schema creates a bunch of indexes that the system can read
 	 * appropriately and therefore process as expected.

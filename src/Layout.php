@@ -66,7 +66,6 @@ class Layout
 	 * 
 	 * @param string $tablename
 	 */
-	 * Sets a certain field to a certain value. 
 	public function __construct(string $tablename)
 	{
 		$this->tablename = $tablename;
