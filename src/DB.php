@@ -4,7 +4,7 @@ use BadMethodCallException;
 use spitfire\model\Schema;
 use spitfire\core\Environment;
 use spitfire\exceptions\PrivateException;
-use spitfire\io\CharsetEncoder;
+use spitfire\storage\database\io\CharsetEncoder;
 use spitfire\storage\database\restrictionmaker\RestrictionMaker;
 
 /**
