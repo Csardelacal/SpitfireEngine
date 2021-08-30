@@ -5,11 +5,13 @@ use spitfire\_init\ProvidersInit;
 use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
-use spitfire\mvc\RouterMiddleware;
+use spifire\io\Stream;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\core\router\Router;
+use spitfire\core\router\RoutingMiddleware;
 use spitfire\exceptions\ExceptionHandler;
+use spitfire\provider\Container;
 
 /* 
  * The MIT License
@@ -46,21 +48,47 @@ class WebKernel implements KernelInterface
 	
 	private $router;
 	
-	public function __construct() 
+	public function __construct(Container $provider) 
 	{
-		$this->router = new Router();
+		/**
+		 * If a router has already been defined for the system to use from here on
+		 * out, we will do so.
+		 */
+		if ($provider->has(Router::class)) {
+			$this->router = $provider->get(Router::class);
+		}
+		
+		/**
+		 * Otherwise we will have the provider assemble one so we can use it the way
+		 * we prefer.
+		 */
+		else {
+			$this->router = $provider->assemble(Router::class, ['prefix' => '']);
+			$provider->set(Router::class, $this->router);
+		}
 	}
 	
 	public function boot()
 	{
 	}
 	
+	/**
+	 * The web kernel receives a request and processes it to generate a response. At the time
+	 * of writing this means that Spitfire will use the router to find a compatible controller,
+	 * and if this didn't work, it will proceed to issue a standard 404 page.
+	 * 
+	 * If the application ran into a different error than not having a route available, Spitfire
+	 * will issue an appropriate error page.
+	 * 
+	 * @param Request $request
+	 * @return Response
+	 */
 	public function process(Request $request) : Response
 	{
 		
 		try {
-			$notfound = new StaticResponseRequestHandler(new Response('Not found', 404));
-			$routed   = new DecoratingRequestHandler(new RouterMiddleware(), $notfound);
+			$notfound = new StaticResponseRequestHandler(new Response(new Stream('Not found'), 404));
+			$routed   = new DecoratingRequestHandler(new RoutingMiddleware($this->router), $notfound);
 			
 			return $routed->handle($request);
 		}
@@ -69,30 +97,6 @@ class WebKernel implements KernelInterface
 			return $handler->handle($e);
 		}
 		
-		/**
-		 * @todo Introduce a decorating request handler that wraps around the router's
-		 * middleware and generates a response.
-		 */
-		$intent = $this->router->rewrite($request);
-		
-		/*
-		 * Sometimes the router can provide a shortcut for really small and simple
-		 * responses. It will return a response instead of a Intent, which will cause
-		 * the application to just emit the response
-		 */
-		if ($intent instanceof Response) { return $intent; }
-		
-		# See PHPFIG PSR15
-		# TODO: Router should return a middleware stack
-		# TODO: The stack needs to be 'decorated' with requesthandlers
-		# TODO: Run the stack
-		
-		#Start debugging output
-		ob_start();
-
-		#If the request has no defined controller, action and object it will define
-		#those now.
-		$path    = $request->getPath();
 	}
 	
 	public function router() : Router
