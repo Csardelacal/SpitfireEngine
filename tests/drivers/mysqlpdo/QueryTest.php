@@ -2,10 +2,13 @@
 
 use spitfire\model\fields\IntegerField;
 use PHPUnit\Framework\TestCase;
+use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\AggregateFunction;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
 use spitfire\model\Schema;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\Layout;
 use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 use StringField;

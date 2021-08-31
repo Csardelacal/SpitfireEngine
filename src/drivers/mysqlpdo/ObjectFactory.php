@@ -3,8 +3,6 @@
 use BadMethodCallException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Field as LogicalField;
-use spitfire\model\Schema;
-use spitfire\storage\database\DB;
 use spitfire\storage\database\drivers\mysqlpdo\Field as MysqlField;
 use spitfire\storage\database\drivers\mysqlpdo\Query;
 use spitfire\storage\database\drivers\mysqlpdo\Restriction;
@@ -56,34 +54,6 @@ use TextField;
  */
 class ObjectFactory implements ObjectFactoryInterface
 {
-	
-	/**
-	 * Creates a new on the fly model. This means that the model is created during
-	 * runtime, and by reverse engineering the tables that the database already
-	 * has.
-	 * 
-	 * Please note, that this model would not perfectly replicate a model you could
-	 * build with a proper definition yourself.
-	 * 
-	 * @todo  At the time of writing this, the method does not use adequate types.
-	 * @param string $modelname
-	 * @return Table
-	 */
-	public function getOTFSchema(DB$db, $modelname) {
-		#Create a Schema we can feed the data into.
-		$schema  = new Schema($modelname);
-		
-		#Make the SQL required to read in the data
-		$sql    = sprintf('DESCRIBE `%s%s`', $schema->getTableName(), $modelname);
-		/** @var $fields Query */
-		$fields = $db->execute($sql, false);
-		
-		while ($row = $fields->fetch()) { 
-			$schema->{$row['Field']} = new TextField(); 
-		}
-		
-		return new Table($db, $schema);
-	}
 	
 	/**
 	 * Creates a new MySQL PDO Field object. This receives the fields 'prototype',
