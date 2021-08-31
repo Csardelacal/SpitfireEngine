@@ -1,6 +1,7 @@
 <?php namespace spitfire\core\router;
 
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\utils\Strings;
 
@@ -204,7 +205,6 @@ class URIPattern
 	 * @param type $parameters
 	 * @return type
 	 * @throws PrivateException
-	 * @throws RouteMismatchException
 	 */
 	public function reverse($parameters) {
 		
@@ -220,7 +220,7 @@ class URIPattern
 		 * them if the route does not support them.
 		 */
 		if (!empty($add) && !$this->open) {
-			throw new PrivateException('This route rejects additional params', 1705221031);
+			throw new ApplicationException('This route rejects additional params', 1705221031);
 		}
 		
 		/*
@@ -292,7 +292,7 @@ class URIPattern
 		 * route properly
 		 */
 		if ($left) {
-			throw new PrivateException('Parameter count exceeded pattern count', 1705221044);
+			throw new ApplicationException('Parameter count exceeded pattern count', 1705221044);
 		}
 		
 		return '/' . implode('/', array_merge($replaced, $add)) . '/';

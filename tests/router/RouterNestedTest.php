@@ -7,9 +7,7 @@
 
 use PHPUnit\Framework\TestCase;
 use spitfire\core\Path;
-use spitfire\core\router\Parameters;
 use spitfire\core\router\Route;
-use spitfire\core\router\RouteMismatchException;
 use spitfire\core\router\Router;
 
 class RouterNestedTest extends TestCase
