@@ -1,12 +1,17 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
 use spitfire\ast\Scope;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
+use spitfire\provider\Container;
 use spitfire\validation\ValidationException;
-use spitfire\mvc\middleware\MiddlewareInterface;
 use spitfire\validation\parser\Parser;
+use spitfire\validation\ValidationRule;
 
 /* 
  * The MIT License
@@ -35,6 +40,81 @@ use spitfire\validation\parser\Parser;
 class ValidationMiddleware implements MiddlewareInterface
 {
 	
+	/**
+	 * 
+	 * @var RequestHandlerInterface|null
+	 */
+	private $response;
+	
+	/**
+	 * 
+	 * @var Collection<ValidationRule>
+	 */
+	private $rules;
+	
+	/**
+	 * The middleware needs access to the container, so that we can interact with
+	 * other components of the system appropriately.
+	 * 
+	 * @var Container
+	 */
+	private $container;
+	
+	public function __construct(Container $container, Collection $rules, ?RequestHandlerInterface $errorpage)
+	{
+		$this->container = $container;
+		$this->rules = $rules;
+		$this->response = $errorpage;
+		
+		assert($rules->containsOnly(ValidationRule::class));
+	}
+	
+	/**
+	 * Handle the request, performing validation. 
+	 * 
+	 * @todo If the validation fails, the information should be injected into view, so the application can use it
+	 * @todo Introduce a class that maintains the list of validation errors so controllers can locate them
+	 */
+	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+	{
+		$errors = $this->rules->each(function (ValidationRule $rule, string $key) use ($request) {
+			return $rule->test($request->getParsedBody()[$key]?? null);
+		})->filter();
+		
+		/**
+		 * We invoke the ViewFactory to set the new defaults for views that are created
+		 * from here on out. This way, whenever the application invokes the view() method,
+		 * we also pass the errors into the new view so the validation can be properly
+		 * displayed.
+		 */
+		$this->container->get(ViewFactory::class)->set('errors', $errors);
+		
+		/**
+		 * If there's errors, and there's a special handler defined for error pages, then we 
+		 * send the user to the appropriate page.
+		 * 
+		 * Here's where I'd recommend introduce a flasher handler that would redirect the user
+		 * to the form page and have the data they sent us resubmitted, allowing it to pretend
+		 * it is a get request, using a "_method" hidden input.
+		 * 
+		 * @todo Introduce flasher handler
+		 */
+		if (!$errors->isEmpty() && $this->response) {
+			return $this->response->handle($request);
+		}
+		
+		/**
+		 * If the errors are empty, or we just do want the controller to handle them in an explicit
+		 * manner, we can let the application do so.
+		 */
+		return $handler->handle($request);
+	}
+	
+	/**
+	 * 
+	 * @deprecated
+	 * @todo Remove
+	 */
 	public function before(ContextInterface $context) {
 		$expressions = $context->annotations['validate']?? null;
 		$parser      = new Parser();
@@ -71,6 +151,12 @@ class ValidationMiddleware implements MiddlewareInterface
 		}
 	}
 	
+	
+	/**
+	 * 
+	 * @deprecated
+	 * @todo Remove
+	 */
 	public function after(ContextInterface $context, Response $response = null) {
 		
 	}

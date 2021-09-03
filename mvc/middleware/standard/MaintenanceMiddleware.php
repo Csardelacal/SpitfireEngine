@@ -1,10 +1,13 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
 use JsonException;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
 use spitfire\mvc\middleware\exceptions\MaintenanceModeException;
-use spitfire\mvc\middleware\MiddlewareInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /* 
  * The MIT License
@@ -54,10 +57,37 @@ use spitfire\mvc\middleware\MiddlewareInterface;
 class MaintenanceMiddleware implements MiddlewareInterface
 {
 	
+	private $response;
+	
+	public function __construct(ResponseInterface $response)
+	{
+		$this->response = $response;
+	}
+	
+	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+	{
+		
+		if (file_exists(spitfire()->locations()->root('.maintenance'))) {
+			return $this->response;
+		}
+		
+		return $handler->handle($request);
+	}
+	
+	/**
+	 * 
+	 * @deprecated
+	 * @todo Remove
+	 */
 	public function after(ContextInterface $context, Response $response = null) {
 		//Do nothing, after the request was processed, this can just continue.
 	}
 
+	/**
+	 * 
+	 * @deprecated
+	 * @todo Remove
+	 */
 	public function before(ContextInterface $context) 
 	{
 		if (file_exists(spitfire()->locations()->root('.maintenance'))) {
