@@ -581,20 +581,6 @@ function lock($set = null) {
 	return $handler;
 }
 
-function basedir($set = null) 
-{
-	static $override = null;
-	if ($set) { $override = $set; }
-	
-	/*
-	 * Three dirnames for:
-	 * 1. engine folder
-	 * 2. spitfire folder
-	 * 3. vendor folder
-	 */
-	return $override?: rtrim(dirname(dirname(dirname(__DIR__))), '\/') . DIRECTORY_SEPARATOR;
-}
-
 /**
  * 
  * 
