@@ -48,13 +48,13 @@ class ProvidersInit implements InitScriptInterface
 		 * to register resources and further services (after all the  service providers
 		 * had a chance to register the services they provide).
 		 */
-		foreach(config('app.providers') as $name) {
+		array_walk_recursive(config('app.providers'), function ($name) {
 			/**
-			 * @var ServiceProvider $provider
+			 * @var Provider $provider
 			 */
 			$provider = spitfire()->provider()->get($name);
 			$provider->init();
-		}
+		});
 		
 	}
 

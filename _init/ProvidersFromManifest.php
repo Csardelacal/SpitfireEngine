@@ -1,6 +1,7 @@
 <?php namespace spitfire\_init;
 
-use spitfire\core\service\Provider;
+use spitfire\core\app\support\manifest\ComposerReader;
+use spitfire\core\config\Configuration;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -21,31 +22,29 @@ use spitfire\core\service\Provider;
  * MA 02110-1301  USA
  */
 
-/**
- * This init script allows our application to register all the service providers'
- * services that we need in order to make the component they provide work properly.
- * 
- * A service provider must be able to register components without any dependencies
- * on other components, if you need to depend on other components, please refer to
- * the init method.
- */
-class ProvidersRegister implements InitScriptInterface
+class ProvidersFromManifest implements InitScriptInterface
 {
 	
 	public function exec(): void 
 	{
 		
-		/*
-		 * Instance all the service providers and call the register method, this
-		 * allows them to bind all the services they provide.
+		$cache = spitfire()->locations()->root('bin/providers.php');
+		
+		if (file_exists($cache)) {
+			$providers = include $cache;
+		}
+		
+		else {
+			$providers = ComposerReader::providers(spitfire()->locations()->root('vendor/composer/installed.json'));
+		}
+		
+		/**
+		 * Write the providers back to the configuration
 		 */
-		array_walk_recursive(config('app.providers'), function ($name) {
-			/**
-			 * @var Provider $provider
-			 */
-			$provider = spitfire()->provider()->get($name);
-			$provider->register();
-		});
+		$config = spitfire()->provider()->get(Configuration::class);
+		assert($config instanceof Configuration);
+		
+		$config->set('app.providers._composer', $providers);
+		
 	}
-
 }

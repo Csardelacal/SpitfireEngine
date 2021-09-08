@@ -1,30 +1,26 @@
 <?php namespace spitfire\core\app\support\manifest;
 
+use BadMethodCallException;
 use spitfire\collection\Collection;
 use spitfire\core\app\AppManifest;
 
 /* 
- * The MIT License
+ * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
- * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301  USA
  */
 
 /**
@@ -78,5 +74,48 @@ class ComposerReader
 		#TODO: Check the data in extra.spitfire is correctly formatted
 		
 		return new AppManifest($json->name?? '', $apps, $events);
+	}
+	
+	/**
+	 * 
+	 * @todo Allow passing a list of packages to be ignored by this function
+	 * @param string $installedJSON
+	 * @return string[]
+	 */
+	public static function providers(string $installedJSON) : array
+	{
+		
+		/*
+		* We need to read the installed.json file that composer generates, which includes
+		* all the packages that our application depends on.
+		*/
+		$json = json_decode(file_get_contents($installedJSON), null, 512, JSON_THROW_ON_ERROR);
+		$packages = $json->packages;
+		
+		/**
+		 * Prepare an empty array that we will use to populate the service providers that our 
+		 * application needs to load.
+		 */
+		$providers = [];
+		
+		foreach ($packages as $package) {
+			/**
+			 * The service providers are written to the `extra` key inside a package's spec, if
+			 * the extra key is missing, the application is not registering any.
+			 */
+			if (!isset($package->extra)) { continue; }
+			if (!isset($package->extra->spitfire)) { continue; }
+			if (!isset($package->extra->spitfire->providers)) { continue; }
+			
+			/**
+			 * Ensure that the data we're receiving is an array, otherwise we're guaranteed to
+			 * not have a working dataset.
+			 */
+			assert(is_array($package->extra->spitfire->providers));
+			
+			$providers = array_merge($providers, $package->extra->spitfire->providers);
+		}
+		
+		return $providers;
 	}
 }
