@@ -33,8 +33,6 @@ class Route extends RewriteRule
 	const METHOD_HEAD   = 0x10;
 	const METHOD_OPTIONS= 0x20;
 	
-	private $reverser = null;
-	
 	/**
 	 * 
 	 * @param string $URI
@@ -69,15 +67,5 @@ class Route extends RewriteRule
 		 */
 		return $this->getTarget($params);
 		
-	}
-	
-	/**
-	 * 
-	 * @param RouteReverserInterface $reverser
-	 * @return Route
-	 */
-	public function setReverser($reverser) {
-		$this->reverser = $reverser;
-		return $this;
 	}
 }
