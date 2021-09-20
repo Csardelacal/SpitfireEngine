@@ -1,9 +1,12 @@
 <?php namespace spitfire\mvc\providers;
 
-use spitfire\core\app\support\directors\ManifestCacheBuildDirector;
-use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
-use spitfire\service\Provider;
 use spitfire\core\kernel\ConsoleKernel;
+use spitfire\core\kernel\KernelInterface;
+use spitfire\core\service\Provider as ServiceProvider;
+
+use spitfire\core\app\support\directors\ManifestCacheBuildDirector;
+use spitfire\core\config\directors\BuildConfigurationDirector;
+use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -30,7 +33,7 @@ use spitfire\core\kernel\ConsoleKernel;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class DirectorProvider extends Provider
+class DirectorProvider extends ServiceProvider
 {
 	
 	/**
@@ -48,17 +51,16 @@ class DirectorProvider extends Provider
 	public function init()
 	{
 		
-		$kernel = spitfire()->kernel();
+		$kernel = spitfire()->provider()->get(KernelInterface::class);
 		
 		/*
 		 * We only need to register the directors if our kernel is actually the 
 		 * console kernel. We cannot work with directors on the web server.
 		 */
 		if ($kernel instanceof ConsoleKernel) {
-			$kernel->register('spitfire.config.build', new \spitfire\config\directors\BuildConfigDirector());
+			$kernel->register('spitfire.config.build', new BuildConfigurationDirector());
 			$kernel->register('spitfire.app.cache.build', new ManifestCacheBuildDirector);
-			$kernel->register('spitfire.defer.process', \spitfire\defer\directors\ProcessDirector::class);
-			$kernel->register('spitfire.storage.check.permissions', CheckStoragePermissionsDirector::class);
+			$kernel->register('spitfire.storage.check.permissions', new CheckStoragePermissionsDirector);
 		}
 	}
 }

@@ -10,6 +10,7 @@ use spitfire\core\http\URL;
 use spitfire\core\config\Configuration;
 use spitfire\core\kernel\KernelInterface;
 use spitfire\cli\Console;
+use spitfire\core\Environment;
 use spitfire\core\exceptions\FailureException;
 use spitfire\exceptions\ApplicationException;
 use spitfire\io\request\Request;
@@ -76,6 +77,7 @@ function app($name, $namespace) {
 function boot(string $kernel) : KernelInterface
 {
 	$reflection = new ReflectionClass($kernel);
+	$provider   = spitfire()->provider();
 	
 	/**
 	 * Ensure that the kernel is a kernel. If it's not a kernel, the application can't
@@ -91,7 +93,7 @@ function boot(string $kernel) : KernelInterface
 	 * We use the service provider for this, allowing the developer to potentially
 	 * override the kernel with custom logic.
 	 */
-	$instance = spitfire()->provider()->get($kernel);
+	$instance = $provider->get($kernel);
 	
 	/**
 	 * Loop over the kernel's init script and execute them, making the kernel function.
@@ -99,6 +101,12 @@ function boot(string $kernel) : KernelInterface
 	foreach ($instance->initScripts() as $script) {
 		(new $script($instance))->exec();
 	}
+	
+	/**
+	 * Set the kernel as the currently running kernel in the service container so the app
+	 * can find the kernel if needed
+	 */
+	$provider->set(KernelInterface::class, $kernel);
 	
 	/**
 	 * Return the kernel, so the application can work as expected.
@@ -625,7 +633,7 @@ function defer(string $task, $options, int $defer = 0, int $ttl = 10) : void
 	static $async = null;
 	
 	if (!$async) {
-		$async = spitfire()->provider()->get(spitfire\defer\TaskFactory::class);
+		$async = spitfire()->provider()->get(\spitfire\defer\TaskFactory::class);
 	}
 	
 	$async->defer($task, $options, $defer, $ttl);
@@ -660,20 +668,27 @@ function config($key, $fallback = null)
  */
 function env(string $param) :? string
 {
+	$provider = spitfire()->provider();
+	
 	/**
-	 * @var Environment
+	 * If no parameter was given, the application would be unable to work with it.
 	 */
-	$env = spitfire()->provider()->get(Environment::class);
+	assert($param !== '');
 	
 	/**
 	 * If the user is performing an empty lookup, or the environment has not yet been
 	 * set, the application should fail.
 	 */
-	if ($param === null || $env === null) {
+	if (!$provider->has(Environment::class)) {
 		throw new ApplicationException('Environment was read before it was loaded');
 	}
 	
-	return $env->get($param);
+	/**
+	 * @var Environment
+	 */
+	$env = $provider->get(Environment::class);
+	
+	return $env->read($param);
 }
 
 /**

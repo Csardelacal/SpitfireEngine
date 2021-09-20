@@ -30,10 +30,10 @@ class CheckStoragePermissionsDirector extends Director
 	/**
 	 * 
 	 * @param array $parameters
-	 * @param \spitfire\cli\arguments\CLIArguments $arguments
+	 * @param \spitfire\cli\arguments\CLIParameters $arguments
 	 * @return int
 	 */
-	public function exec(array $parameters, \spitfire\cli\arguments\CLIArguments $arguments): int 
+	public function exec(array $parameters, \spitfire\cli\arguments\CLIParameters $arguments): int 
 	{
 		
 		$success = true;

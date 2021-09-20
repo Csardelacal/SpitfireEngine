@@ -52,7 +52,7 @@ class PublisherDirector extends \spitfire\mvc\Director
 		];
 	}
 	
-	public function exec(array $parameters, CLIArguments $arguments): int
+	public function exec($parameters, $arguments) : int
 	{
 		$publisher = spitfire()->publisher();
 		$file      = spitfire()->locations()->root('bin/published.json');

@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database\pagination;
 
+use spitfire\collection\Collection;
 use spitfire\core\http\URL;
 use spitfire\storage\database\Query;
 use function collect;
@@ -119,7 +120,7 @@ class Paginator
 	 * left it will try to extend this with results on the other one. This avoids
 	 * broken looking paginations when reaching the final results of a set.
 	 * 
-	 * @return \spitfire\collection\Collection <int>
+	 * @return Collection <int>
 	 */
 	public function pages() {
 		$count = $this->getPageCount();

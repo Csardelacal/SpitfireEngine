@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\app;
 
-use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\ApplicationException;
 
 /**
  * This exception is raised whenever Spitfire has been unable to locate an app.
@@ -8,7 +8,7 @@ use spitfire\exceptions\PrivateException;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class AppNotFoundException extends PrivateException
+class AppNotFoundException extends ApplicationException
 {
 	
 }

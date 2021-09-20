@@ -1,7 +1,6 @@
 <?php namespace spitfire\mvc;
 
-use spitfire\cli\arguments\CLIArguments;
-
+use spitfire\cli\arguments\CLIParameters;
 
 /**
  * The director allows an application to register a command that should be able 
@@ -52,9 +51,9 @@ abstract class Director
 	 * Executes the director, handling control to the application implementing it.
 	 * 
 	 * @param array $parameters The array of parameters parsed from the input, using the data provided by parameters()
-	 * @param CLIArguments $arguments The raw arguments read from the process
+	 * @param CLIParameters $arguments The raw arguments read from the process
 	 * @return int The return code
 	 */
-	public abstract function exec(array $parameters, CLIArguments $arguments): int;
+	public abstract function exec(array $parameters, CLIParameters $arguments): int;
 	
 }

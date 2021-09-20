@@ -1,4 +1,4 @@
-<?php
+<?php namespace spitfire\core\config\directors;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -30,10 +30,10 @@ class BuildConfigurationDirector extends Director
 	/**
 	 * 
 	 * @param array $parameters
-	 * @param \spitfire\cli\arguments\CLIArguments $arguments
+	 * @param \spitfire\cli\arguments\CLIParameters $arguments
 	 * @return int
 	 */
-	public function exec(array $parameters, \spitfire\cli\arguments\CLIArguments $arguments): int 
+	public function exec(array $parameters, \spitfire\cli\arguments\CLIParameters $arguments): int 
 	{
 		
 		$cacheFile = spitfire()->locations()->root('bin/config.php');

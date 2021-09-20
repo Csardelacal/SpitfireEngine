@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\app\support\directors;
 
-use spitfire\cli\arguments\CLIArguments;
+use spitfire\cli\arguments\CLIParameters;
 use spitfire\core\app\support\manifest\ComposerReader;
 use spitfire\mvc\Director;
 
@@ -21,7 +21,7 @@ class ManifestCacheBuildDirector extends Director
 		];
 	}
 	
-	public function exec(array $parameters, CLIArguments $arguments) : int
+	public function exec(array $parameters, CLIParameters $arguments) : int
 	{
 		$reader = new ComposerReader();
 		$manifest = $reader->read(spitfire()->locations()->root('composer.json'));
