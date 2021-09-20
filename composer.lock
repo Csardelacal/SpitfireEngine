@@ -4,25 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b893aa6a18885a9052236fb2defcc72",
+    "content-hash": "fdc185bacba356482b399d4cc6e32bf5",
     "packages": [
         {
             "name": "andrewbreksa/rsmq",
-            "version": "1.2.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/abreksa4/php-rsmq.git",
-                "reference": "49caa25f95b63ea9319c7d0775d8a0644207b8ed"
+                "reference": "6ce954b2bcdff3e64e8836869a95b1b6884f6d1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/abreksa4/php-rsmq/zipball/49caa25f95b63ea9319c7d0775d8a0644207b8ed",
-                "reference": "49caa25f95b63ea9319c7d0775d8a0644207b8ed",
+                "url": "https://api.github.com/repos/abreksa4/php-rsmq/zipball/6ce954b2bcdff3e64e8836869a95b1b6884f6d1a",
+                "reference": "6ce954b2bcdff3e64e8836869a95b1b6884f6d1a",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": "^7.2",
+                "php": "^7.4|^8.0",
                 "predis/predis": "^1.1"
             },
             "require-dev": {
@@ -30,7 +30,6 @@
                 "phpstan/phpstan": "^0.11.12 || ^0.12.0",
                 "phpunit/phpunit": "^8.3 || ^9.0",
                 "roave/security-advisories": "dev-master",
-                "sensiolabs/security-checker": "^6.0",
                 "squizlabs/php_codesniffer": "^3.5",
                 "vimeo/psalm": "^3.12"
             },
@@ -60,9 +59,9 @@
             "description": "Redis Simple Message Queue.",
             "support": {
                 "issues": "https://github.com/abreksa4/php-rsmq/issues",
-                "source": "https://github.com/abreksa4/php-rsmq/tree/master"
+                "source": "https://github.com/abreksa4/php-rsmq/tree/v2.0.1"
             },
-            "time": "2020-07-18T17:18:58+00:00"
+            "time": "2021-10-04T05:17:01+00:00"
         },
         {
             "name": "magic3w/url-reflection",
@@ -682,7 +681,7 @@
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-database.git",
-                "reference": "32887b88a71665849d52171f2e49133e27588df5"
+                "reference": "d36b9090327118760effc682832769f6a839850c"
             },
             "require": {
                 "magic3w/url-reflection": "^0.1.3",
@@ -712,18 +711,18 @@
                 }
             ],
             "description": "Database components for spitfire/engine",
-            "time": "2021-08-31T18:52:15+00:00"
+            "time": "2021-09-07T10:11:46+00:00"
         },
         {
             "name": "spitfire/defer",
-            "version": "0.2.1",
+            "version": "0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://phabricator.magic3w.com/source/spitfire-defer.git",
-                "reference": "9bf94cffbac83592138713c83b33764717acaced"
+                "reference": "40fe22088e7186461136286d1b6982f785f2e20c"
             },
             "require": {
-                "andrewbreksa/rsmq": "^1.2",
+                "andrewbreksa/rsmq": "^2.0",
                 "spitfire/cli": "^0.1.0",
                 "spitfire/exception": "^0.1.0"
             },
@@ -748,7 +747,7 @@
                 }
             ],
             "description": "Allozs spitfire apps to defer tasks to be executed at a later point",
-            "time": "2021-09-07T09:02:52+00:00"
+            "time": "2021-09-10T08:58:40+00:00"
         },
         {
             "name": "spitfire/dependency-provider",
@@ -808,42 +807,6 @@
             ],
             "description": "Exception interfaces for spitfire",
             "time": "2021-02-06T15:12:59+00:00"
-        },
-        {
-            "name": "spitfire/request",
-            "version": "0.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitfire-request.git",
-                "reference": "af5e19d2fbc21213856eeeea4fa120587f545485"
-            },
-            "require": {
-                "ext-curl": "*",
-                "magic3w/url-reflection": "^0.1.2",
-                "phpstan/phpstan": "^0.12.82",
-                "spitfire/exception": "^0.1.1"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "spitfire\\io\\request\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "César de la Cal Bretschneider",
-                    "email": "cesar@magic3w.com"
-                }
-            ],
-            "description": "Spitfire request mechanism",
-            "time": "2021-03-31T09:15:07+00:00"
         }
     ],
     "packages-dev": [
@@ -1527,16 +1490,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "5.2.2",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "069a785b2141f5bcf49f3e353548dc1cce6df556"
+                "reference": "622548b623e81ca6d78b721c5e029f4ce664f170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/069a785b2141f5bcf49f3e353548dc1cce6df556",
-                "reference": "069a785b2141f5bcf49f3e353548dc1cce6df556",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/622548b623e81ca6d78b721c5e029f4ce664f170",
+                "reference": "622548b623e81ca6d78b721c5e029f4ce664f170",
                 "shasum": ""
             },
             "require": {
@@ -1547,7 +1510,8 @@
                 "webmozart/assert": "^1.9.1"
             },
             "require-dev": {
-                "mockery/mockery": "~1.3.2"
+                "mockery/mockery": "~1.3.2",
+                "psalm/phar": "^4.8"
             },
             "type": "library",
             "extra": {
@@ -1577,9 +1541,9 @@
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
             "support": {
                 "issues": "https://github.com/phpDocumentor/ReflectionDocBlock/issues",
-                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/master"
+                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/5.3.0"
             },
-            "time": "2020-09-03T19:13:55+00:00"
+            "time": "2021-10-19T17:43:47+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -1700,23 +1664,23 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.7",
+            "version": "9.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "d4c798ed8d51506800b441f7a13ecb0f76f12218"
+                "reference": "cf04e88a2e3c56fc1a65488afd493325b4c1bc3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/d4c798ed8d51506800b441f7a13ecb0f76f12218",
-                "reference": "d4c798ed8d51506800b441f7a13ecb0f76f12218",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/cf04e88a2e3c56fc1a65488afd493325b4c1bc3e",
+                "reference": "cf04e88a2e3c56fc1a65488afd493325b4c1bc3e",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "nikic/php-parser": "^4.12.0",
+                "nikic/php-parser": "^4.13.0",
                 "php": ">=7.3",
                 "phpunit/php-file-iterator": "^3.0.3",
                 "phpunit/php-text-template": "^2.0.2",
@@ -1765,7 +1729,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.7"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.8"
             },
             "funding": [
                 {
@@ -1773,7 +1737,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-09-17T05:39:03+00:00"
+            "time": "2021-10-30T08:01:38+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3608,16 +3572,16 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v5.3.8",
+            "version": "v5.3.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "eaaea4098be1c90c8285543e1356a09c8aa5c8da"
+                "reference": "875432adb5f5570fff21036fd22aee244636b7d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/eaaea4098be1c90c8285543e1356a09c8aa5c8da",
-                "reference": "eaaea4098be1c90c8285543e1356a09c8aa5c8da",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/875432adb5f5570fff21036fd22aee244636b7d1",
+                "reference": "875432adb5f5570fff21036fd22aee244636b7d1",
                 "shasum": ""
             },
             "require": {
@@ -3676,7 +3640,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v5.3.8"
+                "source": "https://github.com/symfony/var-dumper/tree/v5.3.10"
             },
             "funding": [
                 {
@@ -3692,7 +3656,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-24T15:59:58+00:00"
+            "time": "2021-10-26T09:30:15+00:00"
         },
         {
             "name": "theseer/tokenizer",
