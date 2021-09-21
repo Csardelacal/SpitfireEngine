@@ -1,27 +1,23 @@
 <?php namespace spitfire\io\lock;
 
+
 /* 
- * The MIT License
+ * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
- * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301  USA
  */
 
 class FileLock implements LockInterface
@@ -30,24 +26,28 @@ class FileLock implements LockInterface
 	private $file;
 	private $handle;
 	
-	public function __construct($file) {
+	public function __construct($file) 
+	{
 		$this->file = $file;
 		$this->handle = fopen($file, file_exists($file)? 'r' : 'w+');
 	}
 	
-	public function lock($wait = true): LockInterface {
+	public function lock($wait = true): LockInterface 
+	{
 		if ($wait) { flock($this->handle, LOCK_EX); }
 		elseif(!flock($this->handle, LOCK_EX | LOCK_NB)) { throw new LockUnavailableException('Could not obtain lock', 2001311655); }
 		
 		return $this;
 	}
 
-	public function unlock() {
+	public function unlock() 
+	{
 		flock($this->handle, LOCK_UN);
 		return $this;
 	}
 
-	public function synchronize($fn, $wait = true) {
+	public function synchronize($fn, $wait = true) 
+	{
 		try {
 			$this->lock($wait);
 			$fn();
