@@ -88,9 +88,9 @@ class Layout
 	 * @param string $name
 	 * @return Field
 	 */
-	function getField($name) : Field
+	function getField($name) :? Field
 	{
-		return $this->fields[$name];
+		return $this->fields[$name]?? null;
 	}
 	
 	/**
