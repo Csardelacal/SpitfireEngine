@@ -51,6 +51,19 @@ class DecoratingRequestHandler implements RequestHandlerInterface
 	private $handler;
 	
 	/**
+	 * Creates a new decorating request handler, which wraps a requesthandler with a 
+	 * middleware so the middleware can intercept the request.
+	 * 
+	 * @param RequestHandlerInterface $handler
+	 * @param MiddlewareInterface $middleware
+	 */
+	public function __construct(RequestHandlerInterface $handler, MiddlewareInterface $middleware)
+	{
+		$this->handler = $handler;
+		$this->middleware = $middleware;
+	}
+	
+	/**
 	 * Use the middleware, the undelying handler, or a combination of both to handle
 	 * the request.
 	 * 

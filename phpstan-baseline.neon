@@ -1,9 +1,39 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Access to an undefined property spitfire\\\\App\\:\\:\\$url\\.$#"
+			message: "#^Call to method getAutoIncrement\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 2
-			path: App.php
+			path: Model.php
+
+		-
+			message: "#^Call to method getCollection\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 5
+			path: Model.php
+
+		-
+			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: Model.php
+
+		-
+			message: "#^Call to method getModel\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 5
+			path: Model.php
+
+		-
+			message: "#^Call to method getPrimaryKey\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: Model.php
+
+		-
+			message: "#^Call to method increment\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: Model.php
+
+		-
+			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			count: 1
+			path: Model.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
@@ -21,7 +51,22 @@ parameters:
 			path: Model.php
 
 		-
+			message: "#^Parameter \\$table of method spitfire\\\\Model\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 2
+			path: Model.php
+
+		-
+			message: "#^Property spitfire\\\\Model\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
+			count: 1
+			path: Model.php
+
+		-
 			message: "#^Return typehint of method spitfire\\\\Model\\:\\:definitions\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
+			count: 1
+			path: Model.php
+
+		-
+			message: "#^Return typehint of method spitfire\\\\Model\\:\\:getTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: Model.php
 
@@ -39,6 +84,26 @@ parameters:
 			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:config\\(\\)\\.$#"
 			count: 1
 			path: _init/LoadConfiguration.php
+
+		-
+			message: "#^Call to method init\\(\\) on an unknown class spitfire\\\\_init\\\\Provider\\.$#"
+			count: 1
+			path: _init/ProvidersInit.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$provider contains unknown class spitfire\\\\_init\\\\Provider\\.$#"
+			count: 1
+			path: _init/ProvidersInit.php
+
+		-
+			message: "#^Parameter \\#1 \\$input of function array_walk_recursive is passed by reference, so it expects variables only\\.$#"
+			count: 1
+			path: _init/ProvidersInit.php
+
+		-
+			message: "#^Parameter \\#1 \\$input of function array_walk_recursive is passed by reference, so it expects variables only\\.$#"
+			count: 1
+			path: _init/ProvidersRegister.php
 
 		-
 			message: "#^Invalid array key type spitfire\\\\core\\\\type\\.$#"
@@ -61,36 +126,6 @@ parameters:
 			path: core/Locations.php
 
 		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 2
-			path: core/Path.php
-
-		-
-			message: "#^Parameter \\$action of method spitfire\\\\core\\\\Path\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\Pattern\\.$#"
-			count: 1
-			path: core/Path.php
-
-		-
-			message: "#^Parameter \\$controller of method spitfire\\\\core\\\\Path\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\Pattern\\.$#"
-			count: 2
-			path: core/Path.php
-
-		-
-			message: "#^Parameter \\$object of method spitfire\\\\core\\\\Path\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\Pattern\\.$#"
-			count: 2
-			path: core/Path.php
-
-		-
-			message: "#^Parameter \\$parameters of method spitfire\\\\core\\\\Path\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\Pattern\\.$#"
-			count: 1
-			path: core/Path.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\annotations\\\\AnnotationParser\\:\\:parse\\(\\) should return array\\<array\\<array\\<string\\>\\>\\> but returns array\\<string, array\\<int, string\\>\\>\\.$#"
-			count: 1
-			path: core/annotations/AnnotationParser.php
-
-		-
 			message: "#^Method spitfire\\\\core\\\\app\\\\AppCollection\\:\\:byClassName\\(\\) should return spitfire\\\\App\\|null but returns \\$this\\(spitfire\\\\core\\\\app\\\\AppCollection\\)\\.$#"
 			count: 1
 			path: core/app/AppCollection.php
@@ -101,18 +136,8 @@ parameters:
 			path: core/app/AppCollection.php
 
 		-
-			message: "#^Instantiated class spitfire\\\\core\\\\app\\\\support\\\\manifest\\\\BadMethodCallException not found\\.$#"
-			count: 1
-			path: core/app/support/manifest/ComposerReader.php
-
-		-
 			message: "#^Parameter \\#2 \\$assoc of function json_decode expects bool, null given\\.$#"
-			count: 1
-			path: core/app/support/manifest/ComposerReader.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\core\\\\app\\\\support\\\\manifest\\\\BadMethodCallException\\.$#"
-			count: 1
+			count: 2
 			path: core/app/support/manifest/ComposerReader.php
 
 		-
@@ -157,6 +182,16 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:registerApp\\(\\)\\.$#"
+			count: 1
+			path: core/functions.php
+
+		-
+			message: "#^Call to static method fromString\\(\\) on an unknown class spitfire\\\\io\\\\Stream\\.$#"
+			count: 2
+			path: core/functions.php
+
+		-
+			message: "#^Call to static method import\\(\\) on an unknown class spitfire\\\\core\\\\event\\\\RecipeLoader\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -241,6 +276,11 @@ parameters:
 			path: core/functions.php
 
 		-
+			message: "#^Return typehint of function db\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			count: 1
+			path: core/functions.php
+
+		-
 			message: "#^Undefined variable\\: \\$app$#"
 			count: 1
 			path: core/functions.php
@@ -261,6 +301,16 @@ parameters:
 			path: core/http/LanguageAccept.php
 
 		-
+			message: "#^Call to method getFormat\\(\\) on an unknown class spitfire\\\\core\\\\Path\\.$#"
+			count: 4
+			path: core/http/URL.php
+
+		-
+			message: "#^Call to method setFormat\\(\\) on an unknown class spitfire\\\\core\\\\Path\\.$#"
+			count: 1
+			path: core/http/URL.php
+
+		-
 			message: "#^Cannot call method getCanonical\\(\\) on array\\<string, mixed\\>\\.$#"
 			count: 1
 			path: core/http/URL.php
@@ -271,8 +321,18 @@ parameters:
 			path: core/http/URL.php
 
 		-
+			message: "#^Instantiated class spitfire\\\\core\\\\Path not found\\.$#"
+			count: 1
+			path: core/http/URL.php
+
+		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
 			count: 2
+			path: core/http/URL.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\http\\\\URL\\:\\:\\$path has unknown class spitfire\\\\core\\\\Path as its type\\.$#"
+			count: 1
 			path: core/http/URL.php
 
 		-
@@ -284,6 +344,56 @@ parameters:
 			message: "#^Variable \\$rev might not be defined\\.$#"
 			count: 1
 			path: core/http/URL.php
+
+		-
+			message: "#^Property spitfire\\\\core\\\\http\\\\request\\\\handler\\\\ClosureResponseRequestHandler\\:\\:\\$response \\(Psr\\\\Http\\\\Message\\\\ResponseInterface\\) does not accept Closure\\.$#"
+			count: 1
+			path: core/http/request/handler/ClosureResponseRequestHandler.php
+
+		-
+			message: "#^Method spitfire\\\\provider\\\\Container\\:\\:call\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: core/http/request/handler/RouterClosureRequestHandler.php
+
+		-
+			message: "#^Call to method handle\\(\\) on an unknown class spitfire\\\\exceptions\\\\ExceptionHandler\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\StaticResponseRequestHandler does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Instantiated class spifire\\\\io\\\\Stream not found\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\exceptions\\\\ExceptionHandler not found\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\kernel\\\\WebKernel\\:\\:process\\(\\) should return spitfire\\\\core\\\\Response but returns Psr\\\\Http\\\\Message\\\\ResponseInterface\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of class spitfire\\\\core\\\\Response constructor expects Psr\\\\Http\\\\Message\\\\StreamInterface, spifire\\\\io\\\\Stream given\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Parameter \\#1 \\$handler of class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\DecoratingRequestHandler constructor expects Psr\\\\Http\\\\Server\\\\RequestHandlerInterface, spitfire\\\\core\\\\router\\\\RoutingMiddleware given\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
+
+		-
+			message: "#^Parameter \\#2 \\$middleware of class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\DecoratingRequestHandler constructor expects Psr\\\\Http\\\\Server\\\\MiddlewareInterface, spitfire\\\\core\\\\http\\\\request\\\\handler\\\\StaticResponseRequestHandler given\\.$#"
+			count: 1
+			path: core/kernel/WebKernel.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$params$#"
@@ -301,29 +411,34 @@ parameters:
 			path: core/router/Routable.php
 
 		-
-			message: "#^If condition is always true\\.$#"
+			message: "#^Variable \\$handler might not be defined\\.$#"
 			count: 1
-			path: core/router/Router.php
+			path: core/router/Routable.php
 
 		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$route$#"
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$URI$#"
 			count: 1
-			path: core/router/Router.php
+			path: core/router/Route.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\core\\\\router\\\\RouterResult\\:\\:requestHandler\\(\\)\\.$#"
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$extension$#"
 			count: 1
-			path: core/router/RoutingMiddleware.php
+			path: core/router/Route.php
 
 		-
-			message: "#^Parameter \\#3 \\$protocol of method spitfire\\\\core\\\\router\\\\Router\\:\\:rewrite\\(\\) expects string, int given\\.$#"
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$method$#"
 			count: 1
-			path: core/router/RoutingMiddleware.php
+			path: core/router/Route.php
 
 		-
-			message: "#^Access to an undefined property spitfire\\\\core\\\\router\\\\URIPattern\\:\\:\\$patterns\\.$#"
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$protocol$#"
 			count: 1
-			path: core/router/URIPattern.php
+			path: core/router/Route.php
+
+		-
+			message: "#^PHPDoc tag @return with type void is incompatible with native type spitfire\\\\core\\\\router\\\\Parameters\\|null\\.$#"
+			count: 1
+			path: core/router/Route.php
 
 		-
 			message: "#^Access to offset mixed on an unknown class spitfire\\\\core\\\\router\\\\type\\.$#"
@@ -341,17 +456,12 @@ parameters:
 			path: core/router/URIPattern.php
 
 		-
-			message: "#^Method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) should return spitfire\\\\core\\\\router\\\\type but returns string\\.$#"
+			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
 			count: 1
 			path: core/router/URIPattern.php
 
 		-
 			message: "#^Parameter \\$parameters of method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\type\\.$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) has invalid type spitfire\\\\core\\\\router\\\\type\\.$#"
 			count: 1
 			path: core/router/URIPattern.php
 
@@ -761,6 +871,11 @@ parameters:
 			path: io/stp/StackTracePrinter.php
 
 		-
+			message: "#^Result of \\|\\| is always true\\.$#"
+			count: 1
+			path: io/stream/Stream.php
+
+		-
 			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 2
 			path: model/Field.php
@@ -802,6 +917,11 @@ parameters:
 
 		-
 			message: "#^Return typehint of method spitfire\\\\model\\\\Field\\:\\:getModel\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Return typehint of method spitfire\\\\model\\\\Field\\:\\:getTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: model/Field.php
 
@@ -863,6 +983,16 @@ parameters:
 		-
 			message: "#^Call to an undefined method spitfire\\\\model\\\\Field\\:\\:getRole\\(\\)\\.$#"
 			count: 3
+			path: model/adapters/ChildrenAdapter.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:fetch\\(\\)\\.$#"
+			count: 1
+			path: model/adapters/ChildrenAdapter.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:fetchAll\\(\\)\\.$#"
+			count: 1
 			path: model/adapters/ChildrenAdapter.php
 
 		-
@@ -1011,6 +1141,11 @@ parameters:
 			path: model/adapters/ReferenceAdapter.php
 
 		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Field\\:\\:getReferencedField\\(\\)\\.$#"
+			count: 2
+			path: model/adapters/ReferenceAdapter.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: model/adapters/ReferenceAdapter.php
@@ -1044,6 +1179,11 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 3
 			path: model/adapters/ReferenceAdapter.php
+
+		-
+			message: "#^Call to method getModel\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/adapters/bridgeadapter.php
 
 		-
 			message: "#^Class spitfire\\\\DateTime not found\\.$#"
@@ -1084,6 +1224,11 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 2
 			path: model/adapters/enumadapter.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Field\\:\\:getReferencedField\\(\\)\\.$#"
+			count: 1
+			path: model/children.php
 
 		-
 			message: "#^Call to method getField\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
@@ -1186,7 +1331,17 @@ parameters:
 			path: model/fields/IntegerField.php
 
 		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Field\\:\\:getReferencedField\\(\\)\\.$#"
+			count: 1
+			path: model/fields/Reference.php
+
+		-
 			message: "#^Call to function is_string\\(\\) with spitfire\\\\storage\\\\database\\\\Schema will always evaluate to false\\.$#"
+			count: 1
+			path: model/fields/Reference.php
+
+		-
+			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: model/fields/Reference.php
 
@@ -1316,6 +1471,31 @@ parameters:
 			path: mvc/Invoke.php
 
 		-
+			message: "#^Instantiated class spitfire\\\\mvc\\\\middleware\\\\exceptions\\\\MaintenanceModeException not found\\.$#"
+			count: 2
+			path: mvc/middleware/standard/MaintenanceMiddleware.php
+
+		-
+			message: "#^Parameter \\#3 \\$depth of function json_decode expects int, null given\\.$#"
+			count: 1
+			path: mvc/middleware/standard/MaintenanceMiddleware.php
+
+		-
+			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\MaintenanceMiddleware\\:\\:after\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
+			count: 1
+			path: mvc/middleware/standard/MaintenanceMiddleware.php
+
+		-
+			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\MaintenanceMiddleware\\:\\:before\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
+			count: 1
+			path: mvc/middleware/standard/MaintenanceMiddleware.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\mvc\\\\middleware\\\\exceptions\\\\MaintenanceModeException\\.$#"
+			count: 2
+			path: mvc/middleware/standard/MaintenanceMiddleware.php
+
+		-
 			message: "#^Access to property \\$action on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
 			count: 1
 			path: mvc/middleware/standard/SynchronizedMiddleware.php
@@ -1336,6 +1516,11 @@ parameters:
 			path: mvc/middleware/standard/SynchronizedMiddleware.php
 
 		-
+			message: "#^Function basedir not found\\.$#"
+			count: 3
+			path: mvc/middleware/standard/SynchronizedMiddleware.php
+
+		-
 			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\SynchronizedMiddleware\\:\\:after\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
 			count: 1
 			path: mvc/middleware/standard/SynchronizedMiddleware.php
@@ -1353,6 +1538,16 @@ parameters:
 		-
 			message: "#^Access to property \\$validation on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
 			count: 3
+			path: mvc/middleware/standard/ValidationMiddleware.php
+
+		-
+			message: "#^Class spitfire\\\\mvc\\\\middleware\\\\standard\\\\ViewFactory not found\\.$#"
+			count: 1
+			path: mvc/middleware/standard/ValidationMiddleware.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of method spitfire\\\\provider\\\\Container\\:\\:get\\(\\) expects class\\-string, string given\\.$#"
+			count: 1
 			path: mvc/middleware/standard/ValidationMiddleware.php
 
 		-
@@ -1414,6 +1609,11 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\FilePermissionsException\\.$#"
 			count: 2
 			path: storage/drive/Directory.php
+
+		-
+			message: "#^Method spitfire\\\\core\\\\Locations\\:\\:storage\\(\\) invoked with 2 parameters, 0\\-1 required\\.$#"
+			count: 1
+			path: storage/drive/Driver.php
 
 		-
 			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\drive\\\\Driver\\:\\:atime\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
@@ -1564,6 +1764,66 @@ parameters:
 			message: "#^Return typehint of method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: utils/Strings.php
+
+		-
+			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			count: 1
+			path: utils/database/DatabaseExportDirector.php
+
+		-
+			message: "#^Function basedir not found\\.$#"
+			count: 1
+			path: utils/database/DatabaseExportDirector.php
+
+		-
+			message: "#^Call to method getLayout\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 8
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Call to method getSchema\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 2
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Call to method getTarget\\(\\) on an unknown class Reference\\.$#"
+			count: 3
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Call to method newRecord\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			count: 1
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Class Reference not found\\.$#"
+			count: 2
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Parameter \\$table of anonymous function has invalid typehint type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: utils/database/DatabaseImportDirector.php
+
+		-
+			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			count: 1
+			path: utils/database/DatabaseInitDirector.php
+
+		-
+			message: "#^Function basedir not found\\.$#"
+			count: 1
+			path: utils/database/DatabaseInitDirector.php
+
+		-
+			message: "#^Method spitfire\\\\utils\\\\database\\\\DatabaseInitDirector\\:\\:exec\\(\\) should return int but return statement is missing\\.$#"
+			count: 1
+			path: utils/database/DatabaseInitDirector.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$source$#"

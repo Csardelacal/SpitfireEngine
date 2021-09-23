@@ -1,10 +1,11 @@
 <?php namespace spitfire\core\router;
 
 use Closure;
+use Psr\Http\Server\MiddlewareInterface;
 use spitfire\core\Response;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
-use spitfire\mvc\middleware\MiddlewareInterface;
+use spitfire\core\http\request\handler\DecoratingRequestHandler;
 
 /**
  * Routers are tools that allow your application to listen on alternative urls and
@@ -51,6 +52,12 @@ class Router extends Routable
 		parent::__construct($prefix);
 	}
 	
+	public function middleware(MiddlewareInterface $middleware) : Router
+	{
+		$this->middleware->push($middleware);
+		return $this;
+	}
+	
 	/**
 	 * This rewrites a request into a Path (or in given cases, a Response). This 
 	 * allows Spitfire to use the data from the Router to accordingly find a 
@@ -94,9 +101,15 @@ class Router extends Routable
 			
 			#Check whether the route can rewrite the request
 			$rewrite = $route->rewrite($url, $method, $protocol, $ext);
-			assert($rewrite !== false);
-
-			if ( $rewrite instanceof Closure) { return new RouterResult($rewrite); }
+			assert($rewrite instanceof RequestHandlerInterface);
+			
+			/**
+			 * The middleware is placed around the rewritten route in a
+			 * decorated stack of middleware.
+			 */
+			return new RouterResult($this->middleware->reverse()->reduce(function (RequestHandlerInterface $handler, MiddlewareInterface $middleware) {
+				return new DecoratingRequestHandler($handler, $middleware);
+			}, $rewrite));
 		}
 		
 		/**
@@ -110,7 +123,19 @@ class Router extends Routable
 		 */
 		foreach ($this->children as $child) {
 			$_r = $child->rewrite($url, $method, $protocol);
-			if ($_r) { return $_r; }
+			assert($_r instanceof RouterResult);
+			
+			if ($_r->success()) { 
+				
+				/**
+				 * If the router is processing the result from an underlying router, it will simply
+				 * unwrap it's result and decorate it with middleware before returning it as a new 
+				 * result.
+				 */
+				return new RouterResult($this->middleware->reverse()->reduce(function (RequestHandlerInterface $handler, MiddlewareInterface $middleware) : RequestHandlerInterface {
+					return new DecoratingRequestHandler($handler, $middleware);
+				}, $_r->getHandler()));
+			}
 		}
 		
 		#Implicit else.
