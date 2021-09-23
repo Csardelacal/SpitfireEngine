@@ -86,36 +86,6 @@ parameters:
 			path: core/Path.php
 
 		-
-			message: "#^Call to method getCode\\(\\) on an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
-			count: 1
-			path: core/Response.php
-
-		-
-			message: "#^Caught class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
-			count: 1
-			path: core/Response.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PublicException not found\\.$#"
-			count: 1
-			path: core/Response.php
-
-		-
-			message: "#^Method Psr\\\\Http\\\\Message\\\\StreamInterface\\:\\:read\\(\\) invoked with 0 parameters, 1 required\\.$#"
-			count: 1
-			path: core/Response.php
-
-		-
-			message: "#^Parameter \\#1 \\$src of class spitfire\\\\io\\\\stream\\\\StreamSegment constructor expects spitfire\\\\io\\\\stream\\\\SeekableStreamInterface, spitfire\\\\io\\\\stream\\\\StreamReaderInterface given\\.$#"
-			count: 1
-			path: core/Response.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PublicException\\.$#"
-			count: 1
-			path: core/Response.php
-
-		-
 			message: "#^Method spitfire\\\\core\\\\annotations\\\\AnnotationParser\\:\\:parse\\(\\) should return array\\<array\\<array\\<string\\>\\>\\> but returns array\\<string, array\\<int, string\\>\\>\\.$#"
 			count: 1
 			path: core/annotations/AnnotationParser.php

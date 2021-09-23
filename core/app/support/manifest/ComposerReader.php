@@ -3,7 +3,6 @@
 use BadMethodCallException;
 use spitfire\collection\Collection;
 use spitfire\core\app\AppManifest;
-use BadMethodCallException;
 use spitfire\exceptions\NotFoundException;
 
 /* 

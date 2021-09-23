@@ -248,55 +248,6 @@ class Response implements ResponseInterface
 		
 		return new Response($this->body, $this->headers->getStatus(), $headers);
 	}
-
-	/**
-	 * Sends this response to the client computer. It will send both headers and 
-	 * the body. Generating the body first and then sending the headers and body
-	 * to make sure that any errors caused by generation of the body won't affect
-	 * the headers.
-	 */
-	public function send() {
-		$body = $this->getBody();
-
-
-		if ($body instanceof StreamSourceInterface) {
-
-			if (Request::get()->isRange()) {
-				list($start, $end) = Request::get()->getRange();
-				$file = $body->getStreamReader();
-
-				try {
-					$reader = new \spitfire\io\stream\StreamSegment($file, $start, $end ?: min($file->length() - 1, $start + 1.3 * 1024 * 1024));
-				}
-				catch (\spitfire\exceptions\PrivateException$e) {
-					throw new \spitfire\exceptions\PublicException('Invalid range' . $e->getCode(), 416);
-				}
-
-				$out = $reader->read();
-				$length = strlen($out);
-
-				$this->headers->status(206);
-				$this->headers->set('Content-Range', 'bytes ' . strval($start) . '-' . ($start + $length - 1) . '/' . $file->length());
-				$this->headers->set('Content-Length', $length);
-				$this->headers->send();
-
-				echo $out;
-			} else {
-				$this->headers->send();
-				$reader = $body->getStreamReader();
-				while ($s = $reader->read()) {
-					echo $s;
-				}
-			}
-		} elseif ($body instanceof \spitfire\storage\objectStorage\Blob) {
-			$this->headers->contentType($body->mime());
-			$this->headers->send();
-			echo $body->read();
-		} else {
-			$this->headers->send();
-			echo $body;
-		}
-	}
 	
 	/**
 	 * Creates a new response with the provided body. Please note that the response is immutable,
