@@ -34,7 +34,7 @@ interface ForeignKeyInterface extends IndexInterface
 	 * the application to properly define indexes that do only exist for the 
 	 * purpose of linking two tables.
 	 * 
-	 * @return Collection of FieldInterface
+	 * @return Collection<FieldInterface>
 	 */
 	function getReferenced() : Collection;
 }
