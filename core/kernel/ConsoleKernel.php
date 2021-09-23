@@ -1,6 +1,8 @@
 <?php namespace spitfire\core\kernel;
 
 use spitfire\_init\LoadConfiguration;
+use spitfire\_init\ProvidersInit;
+use spitfire\_init\ProvidersRegister;
 use spitfire\cli\arguments\Parser;
 use spitfire\collection\Collection;
 use spitfire\core\kernel\exceptions\CommandNotFoundException;
@@ -129,7 +131,9 @@ class ConsoleKernel implements KernelInterface
 	public function initScripts(): array 
 	{
 		return [
-			LoadConfiguration::class
+			LoadConfiguration::class,
+			ProvidersRegister::class,
+			ProvidersInit::class
 		];
 	}
 }
