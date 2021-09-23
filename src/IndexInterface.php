@@ -42,7 +42,7 @@ interface IndexInterface
 	 * 
 	 * @return Collection <Field>
 	 */
-	function getFields();
+	function getFields() : Collection;
 	
 	/**
 	 * Returns a name for the index. In most DBMS this is optional, but allows 
