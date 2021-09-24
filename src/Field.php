@@ -12,13 +12,15 @@ use spitfire\model\Field as LogicalField;
  */
 class Field
 {
+	
 	/**
-	 * Contains a reference to the logical field that contains information
-	 * relevant to this field.
+	 * The table provides context for where this field belongs. I'm not yet
+	 * 100% satisfied with this, since it means that the data contains circular
+	 * references.
 	 * 
-	 * @var \spitfire\model\Field
+	 * @var Layout
 	 */
-	private $logical;
+	private $table;
 	
 	/**
 	 * Provides a name that the DBMS should use to name this field. Usually
@@ -30,29 +32,18 @@ class Field
 	private $name;
 	
 	/**
-	 * The nullable attribute indicates whether the field can be nulled. This 
-	 * allows the field to have a separate `empty` value or similar.
+	 * The type is the data that this field contains. This is usually referenced
+	 * as a string containing a data type and optionally a colon with metadata
+	 * like
 	 * 
-	 * @var bool
-	 */
-	private $nullable = true;
-	
-	/**
-	 * The type of data this field accepts, generally databases will store some
-	 * variation of int, float, double, string and binary data.
+	 * * int
+	 * * string:4
+	 * * enum:hello,world
 	 * 
+	 * @todo Maybe introduce a type class that allows pushing this data
 	 * @var string
 	 */
 	private $type;
-	
-	/**
-	 * Some data types allow to define the length or size of the data they can
-	 * hold. The database will enforce the maximum length to be shorter than
-	 * the provided length.
-	 * 
-	 * @var int
-	 */
-	private $length;
 	
 	/**
 	 * Most databases allow certain datatypes to be automatically incremented if
@@ -68,14 +59,12 @@ class Field
 	private $autoIncrements = false;
 	
 	/**
-	 * This allows the field to provide information about a field it refers 
-	 * to on another table on the same DBMS. This helps connecting the fields
-	 * and generating links on the DBMS that allow the engine to optimize
-	 * queries that Spitfire generates.
+	 * Indicates whether the field can receive null values. This is important for runtime
+	 * validation, so the system can ensure that data written to the database is not bad.
 	 * 
-	 * @var \spitfire\storage\database\Field
+	 * @var bool
 	 */
-	private $referenced;
+	private $nullable;
 	
 	/**
 	 * Creates a new Database field. This fields provide information about 
@@ -84,15 +73,19 @@ class Field
 	 * requires several DBFields to store, this class creates an adapter
 	 * to easily handle the different objects.
 	 * 
+	 * @param Layout $table
 	 * @param string $name
 	 * @param string $type
-	 * @param int $length
-	 * @param \spitfire\storage\database\Field $references
+	 * @param bool $nullable
+	 * @param bool $autoIncrement
 	 */
-	public function __construct(string $name, string $type, int $length = null) {
-		$this->name = $name;
+	public function __construct(Layout $table, string $name, string $type, bool $nullable, bool $autoIncrement = false) 
+	{
+		$this->table = $table;
 		$this->type = $type;
-		$this->length = $length;
+		$this->nullable = $nullable;
+		$this->name = $name;
+		$this->autoIncrements = $autoIncrement;
 	}
 	
 	/**
@@ -110,23 +103,36 @@ class Field
 		return $this->name;
 	}
 	
-	public function setName($name) {
+	/**
+	 * Set the name of the field. This defines how the DBMS should be addressed
+	 * to locate the field. Please note that not all DBMS's support all names, it's
+	 * therefore recommended to use simple ASCII names whenever possible.
+	 * 
+	 * @param string $name
+	 * @return Field
+	 */
+	public function setName(string $name) : Field
+	{
 		$this->name = $name;
-	}
-	
-	public function getType() : string
-	{
-		return $this->type;
-	}
-	
-	public function getLength() : int
-	{
-		return $this->length;
+		return $this;
 	}
 	
 	public function isAutoIncrement() : bool
 	{
 		return $this->autoIncrements;
+	}
+	
+	/**
+	 * Make this field auto-increment. This means that if written with a null value to the
+	 * DBMS, the DBMS will assign an automatically increasing value.
+	 * 
+	 * @param bool $autoIncrement
+	 * @return Field
+	 */
+	public function setAutoIncrement(bool $autoIncrement) : Field
+	{
+		$this->autoIncrements = $autoIncrement;
+		return $this;
 	}
 	
 	public function isNullable() : bool
@@ -135,48 +141,66 @@ class Field
 	}
 	
 	/**
-	 * Returns the field this one is referencing to. This allows the DBMS to 
-	 * establish relations. In case this field does not reference any other
-	 * it'll return null.
+	 * Set the field to be nullable, or not.
 	 * 
-	 * @return \spitfire\storage\database\Field|null
+	 * @param bool $nullable
+	 * @return Field
 	 */
-	public function getReferencedField() {
-		return $this->referenced;
+	public function setNullable(bool $nullable) : Field
+	{
+		$this->nullable = $nullable;
+		return $this;
 	}
 	
 	/**
-	 * Defines which field is referenced by this one, this allows the DBMS to set
-	 * relations from one field to another and enforce referential integrity.
+	 * Returns true if this field accepts null values when writing to the database.
 	 * 
-	 * @param \spitfire\storage\database\Field $referenced
+	 * @return bool
 	 */
-	public function setReferencedField(Field$referenced) {
-		$this->referenced = $referenced;
+	public function getNullable() : bool
+	{
+		return $this->nullable;
 	}
-
-
+	
+	
 	/**
-	 * Returns the logical field that contains this Physical field. The
-	 * logical field contains relevant data about what data it contains
-	 * and how it relates.
+	 * Set the field's type.
 	 * 
-	 * @deprecated since 0.2
-	 * @return \spitfire\model\Field
+	 * @param string $type
+	 * @return Field
 	 */
-	public function getLogicalField() {
-		return $this->logical;
+	public function setType(string $type) : Field
+	{
+		$this->type = $type;
+		return $this;
 	}
 	
 	/**
-	 * Defines which logical field this belongs to. The logical field is the one 
-	 * in charge to provide data about the field and the data it contains.
+	 * Returns the type of data that this field accepts, this is usually either a simple
+	 * type or a colon separated value that contains some qualifier.
 	 * 
-	 * @deprecated since 0.2
-	 * @param LogicalField $logical
+	 * * int
+	 * * string:4
+	 * * enum:hello,world
+	 * 
+	 * @return string
 	 */
-	public function setLogicalField(LogicalField$logical) {
-		$this->logical = $logical;
+	public function getType() : string
+	{
+		return $this->type;
+	}
+	
+	
+	/**
+	 * Set the field's table.
+	 * 
+	 * @param Layout $table
+	 * @return Field
+	 */
+	public function setTable(Layout $table) : Field
+	{
+		$this->table = $table;
+		return $this;
 	}
 	
 	/**
@@ -185,11 +209,11 @@ class Field
 	 * needing to read all the intermediate layers that compound the logical
 	 * template of the Table.
 	 * 
-	 * @deprecated since 0.2
-	 * @return \spitfire\storage\database\Table
+	 * @return Layout
 	 */
-	public function getTable() {
-		return $this->getLogicalField()->getModel()->getTable();
+	public function getTable() : Layout
+	{
+		return $this->table;
 	}
 	
 }
