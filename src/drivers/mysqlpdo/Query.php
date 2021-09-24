@@ -13,7 +13,7 @@ class Query extends SQLQuery
 {
 	public function execute($fields = null, $offset = null, $max = null) {
 		
-		$this->setAliased(false);
+		$this->getQueryTable()->setAliased(false);
 		
 		
 		#Import tables for restrictions from remote queries
@@ -147,7 +147,7 @@ class Query extends SQLQuery
 	public function delete() {
 		
 		
-		$this->setAliased(false);
+		$this->getQueryTable()->setAliased(false);
 		
 		#Declare vars
 		$selectstt    = 'DELETE';

@@ -14,7 +14,7 @@ class CompositeRestriction
 	public function __construct(RestrictionGroup$parent, Logical$field = null, $value = null, $operator = Restriction::EQUAL_OPERATOR) {
 		
 		if ($value instanceof Model) { $value = $value->getQuery(); }
-		if ($value instanceof Query) { $value->setAliased(true); }
+		if ($value instanceof Query) { $value->getQueryTable()->setAliased(true); }
 		else { throw new BadMethodCallException('Composite restriction requires a query / model as value', 1804201334); }
 		
 		$this->parent = $parent;
