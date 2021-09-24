@@ -58,7 +58,7 @@ class Layout
 	 * The indexes in this relation. This information is used when constructing 
 	 * tables only, and bears no relevance when querying the database.
 	 * 
-	 * @var Collection<Index>
+	 * @var Collection<IndexInterface>
 	 */
 	private $indexes;
 	

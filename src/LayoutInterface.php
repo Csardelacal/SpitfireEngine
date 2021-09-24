@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
+use spitfire\exceptions\NotFoundException;
 
 /* 
  * The MIT License
@@ -31,9 +32,12 @@ use spitfire\collection\Collection;
  * of a relation in a relational database.
  * 
  * A driver can implement this interface to provide common operations on it's 
- * tables for spitfire to run.
+ * tables for spitfire to run. This should generally be avoided, using a generic
+ * layout class for most operations.
  * 
- * @deprecated since 2021.06.08
+ * Since layouts are generally considered immutable (it makes little to no sense
+ * to change the layout during runtime), this interface provides no utilities to 
+ * edit the layout.
  */
 interface LayoutInterface
 {
@@ -47,33 +51,29 @@ interface LayoutInterface
 	function getTableName() : string;
 	
 	/**
+	 * Get a single field by it's name. If the field is not existant, the application
+	 * should throw an exception.
 	 * 
 	 * @param string $name
+	 * @throws NotFoundException
 	 * @return Field
 	 */
-	function getField($name) : Field;
+	function getField(string $name) : Field;
 	
 	/**
+	 * Get the list of fields in this layout. This allows the database driver to
+	 * determine which columns can be used to manage the database.
 	 * 
-	 * @return Field[] The columns in this database table
+	 * @return Collection<Field> The columns in this database table
 	 */
 	function getFields();
 	
 	/**
-	 * This method needs to get the lost of indexes from the logical Schema and 
+	 * This method needs to get the list of indexes from the logical Schema and 
 	 * convert them to physical indexes for the DBMS to manage.
 	 * 
-	 * @return Collection (IndexInterface) The indexes in this layout
+	 * @return Collection<IndexInterface> The indexes in this layout
 	 */
 	function getIndexes();
 	
-	
-	/**
-	 * Creates a table on the DBMS that is capable of holding the Model's data 
-	 * appropriately. This will try to normalize the data as far as possible to 
-	 * create consistent databases.
-	 */
-	function create();
-	function repair();
-	function destroy();
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10b64b85169a34b55eb94ab55f67db40",
+    "content-hash": "2919fccf45dc9d80a6022a4391cc2c6b",
     "packages": [
         {
             "name": "spitfire/caching",
@@ -66,6 +66,37 @@
             ],
             "description": "Provides collections for spitfire/engine",
             "time": "2020-12-31T15:45:09+00:00"
+        },
+        {
+            "name": "spitfire/exception",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://phabricator.magic3w.com/source/spitfire-exception.git",
+                "reference": "02b1d64efe48d8a379013cd341e7865c0768779f"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.71",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\exceptions\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Exception interfaces for spitfire",
+            "time": "2021-02-06T15:12:59+00:00"
         }
     ],
     "packages-dev": [
