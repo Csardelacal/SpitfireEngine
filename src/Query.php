@@ -101,24 +101,15 @@ class Query extends RestrictionGroup
 	}
 	
 	/**
-	 * @todo Add a decent way to sorting fields that doesn't resort to this awful thing.
+	 * Adds an order clause to the result set, this will be appended and therefore
+	 * subordinated to the previously added order clauses.
+	 * 
+	 * @param OrderBy $order
+	 * @return Query
 	 */
-	public function setOrder ($field, $mode) {
-		
-		if ($field instanceof AggregateFunction || $field instanceof Field) {
-			$this->order['field'] = $field;
-		}
-		
-		elseif (is_string($field)) {
-			$this->order['field'] = $this->table->getTable()->getLayout()->getField($field);
-		} 
-		
-		else {
-			$physical = $this->table->getTable()->getModel()->getField($field)->getPhysical();
-			$this->order['field'] = reset($physical);
-		}
-		
-		$this->order['mode'] = $mode;
+	public function putOrder (OrderBy $order) 
+	{
+		$this->order[] = $order;
 		return $this;
 	}
 	

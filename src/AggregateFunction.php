@@ -57,10 +57,10 @@ class AggregateFunction
 	 * @param QueryField $field
 	 * @param string $operation
 	 */
-	public function __construct(QueryField $field, $operation) {
+	public function __construct(QueryField $field, $operation = null) {
 		$this->field = $field;
 		$this->operation = $operation;
-		$this->alias = '__META__' . $field->getField()->getName() . '_' . $operation . rand(0, 10);
+		$this->alias = $operation? $field->getField()->getName() . '_' . $operation : $field->getField()->getName();
 	}
 	
 	public function getField(): QueryField {
