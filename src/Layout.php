@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
-
+use spitfire\exceptions\ApplicationException;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -69,6 +69,7 @@ class Layout
 	public function __construct(string $tablename)
 	{
 		$this->tablename = $tablename;
+		$this->fields = new Collection();
 	}
 	
 	/**
@@ -90,12 +91,17 @@ class Layout
 	 */
 	function getField($name) :? Field
 	{
-		return $this->fields[$name]?? null;
+		if (!$this->fields->has($name)) {
+			throw new ApplicationException(sprintf('Field %s is not available in %s', $name, $this->tablename));
+		}
+		
+		return $this->fields[$name];
 	}
 	
 	/**
 	 * Sets a certain field to a certain value. 
 	 * 
+	 * @deprecated Please avoid this method, since it's able to introduce buggy behaviors.
 	 * @param string $name
 	 * @param Field $field
 	 * @return Layout
@@ -104,6 +110,25 @@ class Layout
 	{
 		$this->fields[$name] = $field;
 		return $this;
+	}
+	
+	/**
+	 * Adds a field to the layout. The database will return this so you can easily
+	 * manipulate fields for indexes or similar purposes.
+	 * 
+	 * @param string $name
+	 * @param string $type
+	 * @param bool $nullable
+	 * @param bool $autoIncrement
+	 * 
+	 * @return Field
+	 */
+	function putField(string $name, string $type, bool $nullable = true, bool $autoIncrement = false) : Field
+	{
+		$field = new Field($this, $name, $type, $nullable, $autoIncrement);
+		$this->fields[$name] = $field;
+		
+		return $field;
 	}
 	
 	/**
