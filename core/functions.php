@@ -66,6 +66,27 @@ function app($name, $namespace) {
 }
 
 /**
+ * A very basic function to dispatch a response to the server environment. This sets the
+ * status code for the response, dispatches the headers that the application set, and finally
+ * emits the body.
+ * 
+ * @param ResponseInterface $message
+ * @return void
+ */
+function emit(ResponseInterface $message) : void
+{
+	http_response_code($message->getStatusCode());
+	
+	foreach ($message->getHeaders() as $name => $values) {
+		foreach ($values as $value) {
+			header(sprintf('%s: %s', $name, $value), false);
+		}
+	}
+	
+	echo $message->getBody();
+}
+
+/**
  * Ths function will boot a kernel, instancing it and executing the necessary scripts to
  * initialize it.
  * 
