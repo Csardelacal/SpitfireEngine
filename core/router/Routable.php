@@ -3,6 +3,8 @@
 use BadMethodCallException;
 use Closure;
 use spitfire\collection\Collection;
+use spitfire\core\http\request\handler\RouterActionRequestHandler;
+use spitfire\core\http\request\handler\RouterClosureRequestHandler;
 
 /**
  * The routable class is the base class for both routers and router servers, 
@@ -139,32 +141,26 @@ abstract class Routable
 	 */
 	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x03) {
 		
+		$match = URIPattern::make($pattern);
+		
 		/**
 		 * We always wrap our target in a function to be invoked if the router
 		 * matched the method. I am not a fan of this way of handling the code,
 		 * since we've wrapped a closure in a closure so it doesn't get executed
 		 * immediately.
+		 * 
+		 * @todo Replace with requesthandlerinterfaces
 		 */
 		if (is_array($target)) {
-			$call = function() use ($target) { return Closure::fromCallable([spitfire()->provider()->get($target[0]), $target[1]]); };
-			$name = sprintf('%s::%s', $target[0], $target[1]);
+			assert(isset($target[0]) && isset($target[1]));
+			$handler = new RouterActionRequestHandler($match, $target[0], $target[1]);
 		}
 		
 		elseif ($target instanceof Closure) {
-			$call = function() use ($target) { return $target; };
-			$name = null;
-		}
-		else {
-			throw new BadMethodCallException('Invalid target');
+			$handler = new RouterClosureRequestHandler($match, $target);
 		}
 		
-		/**
-		 * We create the route and set the appropriate name for it.
-		 */
-		$route = new Route(URIPattern::make($pattern), $call, $method, $protocol);
-		$route->setName($name);
-		
-		return $this->routes->push($route); 
+		return $this->routes->push(new Route($match, $handler, $method, $protocol)); 
 	}
 	
 	public function getRoutes() {

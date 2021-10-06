@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\core\Path;
 use spitfire\core\router\Route;
 use spitfire\core\router\Router;
+use spitfire\core\router\RouterResult;
 
 class RouterNestedTest extends TestCase
 {
@@ -27,11 +28,11 @@ class RouterNestedTest extends TestCase
 	{
 		$this->router->scope('/test', function (Router $router) {
 			$this->assertEquals('/test', $router->getPrefix());
-			$router->request('/hello-world', ['controller' => 'TestController']);
+			$router->request('/hello-world', ['TestController', 'index']);
 		});
 		
 		$rewritten = $this->router->rewrite('/test/hello-world', 'GET', Route::PROTO_HTTP);
-		$this->assertInstanceOf(Path::class, $rewritten);
+		$this->assertInstanceOf(RouterResult::class, $rewritten);
 	}
 	
 	public function testMultipleNested() 
@@ -41,7 +42,7 @@ class RouterNestedTest extends TestCase
 			
 			$router->scope('/test', function (Router $router) {
 				$this->assertEquals('/test/test', $router->getPrefix());
-				$router->request('/hello-world', ['controller' => 'TestController']);
+				$router->request('/hello-world', ['TestController', 'index']);
 			});
 		});
 		

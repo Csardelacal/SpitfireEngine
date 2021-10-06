@@ -86,6 +86,9 @@ class Router extends Routable
 		#Test the routes
 		foreach ($routes as $route) { /*@var $route Route*/
 			
+			#All routes must obviously be a instance of Route
+			assert($route instanceof Route);
+			
 			#Verify whether the route is valid at all
 			if (!$route->test($url, $method, $protocol)) { continue; }
 			
@@ -93,7 +96,7 @@ class Router extends Routable
 			$rewrite = $route->rewrite($url, $method, $protocol, $ext);
 			assert($rewrite !== false);
 
-			if ( $rewrite instanceof Closure) { return $rewrite; }
+			if ( $rewrite instanceof Closure) { return new RouterResult($rewrite); }
 		}
 		
 		/**

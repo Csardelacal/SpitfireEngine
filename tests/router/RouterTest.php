@@ -31,7 +31,7 @@ class RouterTest extends TestCase
 	 */
 	public function testCreateRoute() {
 		
-		$route  = $this->router->get('/test', ['controller' => 'test']);
+		$route  = $this->router->get('/test', ['TestController', 'index']);
 		$this->assertInstanceOf('\spitfire\core\router\Route', $route);
 	}
 	
@@ -53,7 +53,7 @@ class RouterTest extends TestCase
 	}
 	
 	public function testTrailingSlashStringRoute() {
-		$router = new Router();
+		$router = new Router('/');
 		
 		#Create a route with a trailing slash
 		$route1 = $router->get('/this/is/a/test/', [TestController::class, 'index']);
@@ -67,37 +67,14 @@ class RouterTest extends TestCase
 		
 	}
 	
-	public function testTrailingSlashStringRoute2() {
-		$router = new Router();
+	public function testTrailingSlashStringRoute2() 
+	{
+		$router = new Router('/');
 		
 		#Create a route without a trailing slash
-		$route2 = $router->get('/this/is/a/test', ['controller' => 'test']);
+		$route2 = $router->get('/this/is/a/test', ['TestController', 'index']);
 		$this->assertEquals(true, $route2->test('/this/is/a/test/with/more/fragments', 'GET', Route::PROTO_HTTP), 'The route shoud match a route with additional fragments');
 		$this->assertEquals(true, $route2->test('/this/is/a/test/', 'GET', Route::PROTO_HTTP), 'The route shoud match a route with a trailing slash');
-	}
-	
-	public function testArrayRoute() {
-		$router = $this->router;
-		
-		#Rewrite a parameter based URL into an array
-		$route = $router->get('/{param1}/{param2}', Array('controller' => ':param1', 'action' => ':param2'));
-		
-		#Test whether matching works for the array string
-		$this->assertEquals(true, $route->test('/another/test', 'GET', Route::PROTO_HTTP));
-		
-		#Test if the route returns a Path object
-		$this->assertInstanceOf(Closure::class, $route->rewrite('/another/test', 'GET', Route::PROTO_HTTP));
-	}
-	
-	public function testArrayRouteWithStaticFragments() {
-		$router = $this->router;
-		
-		#Rewrite a parameter based URL into an array
-		$router->get('/{param1}/{param2}', Array('controller' => ':param1', 'action' => 'something', 'object' => ':param2'));
-		
-		#Test if the rewriting succeeded and the data was written in the right spot
-		$path  = $router->rewrite('/another/test', 'GET', Route::PROTO_HTTP);
-		$this->assertInstanceOf(Closure::class, $path);
 	}
 	
 	public function testOptionalParameters() {
@@ -116,9 +93,9 @@ class RouterTest extends TestCase
 	public function testMixedURLS() 
 	{
 		$router  = $this->router;
-		$route   = $router->get('/@{param1}', Array('controller' => 'UserController', 'object' => [':param1']));
+		$route   = $router->get('/@{param1}', ['UserController', 'index']);
 		
-		$rewrite = $route->params('/@provided', 'GET', Route::PROTO_HTTP);
+		$rewrite = $route->getSource()->test('/@provided');
 		$this->assertEquals('provided', $rewrite->getParameter('param1'));
 	}
 	
