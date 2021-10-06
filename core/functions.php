@@ -1,9 +1,6 @@
 <?php
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use spitfire\App;
 use spitfire\collection\Collection;
 use spitfire\core\http\URL;
@@ -12,12 +9,14 @@ use spitfire\core\kernel\KernelInterface;
 use spitfire\cli\Console;
 use spitfire\core\Environment;
 use spitfire\core\exceptions\FailureException;
+use spitfire\core\Response;
 use spitfire\exceptions\ApplicationException;
-use spitfire\io\request\Request;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
 use spitfire\io\media\ImagickManipulator;
 use spitfire\io\media\MediaDispatcher;
+use spitfire\io\Stream;
+use spitfire\io\template\View;
 use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
@@ -207,6 +206,55 @@ function db()
 	
 	#If no options were provided we will assume that this is the standard DB handler
 	return $db = $driver;
+}
+
+/**
+ * Creates a view. This function will automatically locate the appropriate file 
+ * containing the template for the view, generate a template and render it to 
+ * generate a response.
+ * 
+ * Right now it does a very simplistic job, intializing a pug engine that will allow
+ * us to generate an output.
+ * 
+ * @todo Future iterations should accept a templating engine other than pug
+ * @todo Future revisions should return the template so changes can be made
+ * 
+ * @param string|null $identifier
+ * @param array $data
+ * @return StreamInterface
+ */
+function view(?string $identifier, array $data) : StreamInterface
+{
+	$file = spitfire()->locations()->resources('views/' . $identifier . '.pug');
+	
+	if ($identifier === null) {
+		return Stream::fromString(json_encode($data));
+	}
+	else {
+		return Stream::fromString((new View($file, $data))->render());
+	}
+}
+
+/**
+ * This function provides a shorthand way of creating a response to a request, this
+ * is very useful in combination with the view() function, allowing you to respond
+ * from a controller with something like this:
+ * 
+ * `return response(view('home'));`
+ * 
+ * Or something along the lines of:
+ * 
+ * `return response(view('notfound'), 404);
+ * 
+ * @param StreamInterface $stream
+ * @param int $code
+ * @param string[][] $headers
+ * 
+ * @return Response
+ */
+function response(StreamInterface $stream, int $code = 200, array $headers = []) : Response
+{
+	return new Response($stream, $code, $headers);
 }
 
 /**
