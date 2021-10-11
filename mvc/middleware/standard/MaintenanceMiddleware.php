@@ -73,32 +73,4 @@ class MaintenanceMiddleware implements MiddlewareInterface
 		
 		return $handler->handle($request);
 	}
-	
-	/**
-	 * 
-	 * @deprecated
-	 * @todo Remove
-	 */
-	public function after(ContextInterface $context, Response $response = null) {
-		//Do nothing, after the request was processed, this can just continue.
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 * @todo Remove
-	 */
-	public function before(ContextInterface $context) 
-	{
-		if (file_exists(spitfire()->locations()->root('.maintenance'))) {
-			try {
-				$error = json_decode(file_get_contents(spitfire()->locations()->root('.maintenance')), false, null, JSON_THROW_ON_ERROR);
-				throw new MaintenanceModeException($error->message, $error->code);
-			}
-			catch (JsonException $e) {
-				throw new MaintenanceModeException(file_get_contents(spitfire()->locations()->root('.maintenance')), 500);
-			}
-		}
-	}
-
 }

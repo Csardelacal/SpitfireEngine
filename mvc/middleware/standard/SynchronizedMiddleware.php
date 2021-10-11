@@ -68,35 +68,4 @@ class SynchronizedMiddleware implements MiddlewareInterface
 		
 		return $result;
 	}
-	
-	/**
-	 * 
-	 * @deprecated
-	 * @todo Remove
-	 */
-	public function before(ContextInterface $context) {
-		
-		if (!array_key_exists('synchronized', $context->annotations)) {
-			return;
-		}
-		
-		if (!file_exists(sprintf('%s/bin/usr/lock/', basedir()))) {
-			mkdir(sprintf('%s/bin/usr/lock/', basedir()));
-		}
-		
-		$file = sprintf('%s/bin/usr/lock/.%s_%s', basedir(), str_replace('\\', '-', get_class($context->director?? $context->controller)), $context->action);
-		$this->fh = fopen($file, file_exists($file)? 'r' : 'w+');
-		
-		flock($this->fh, LOCK_EX);
-	}
-	
-	/**
-	 * 
-	 * @deprecated
-	 * @todo Remove
-	 */
-	public function after(ContextInterface $context, Response $response = null) {
-		$this->fh && flock($this->fh, LOCK_UN);
-	}
-
 }
