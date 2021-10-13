@@ -111,7 +111,7 @@ class Get implements Iterator, ArrayAccess
 	 * that is not recommended and read the data in a way that is not completely
 	 * standard.
 	 * 
-	 * @return \spitfire\io\Get
+	 * @return mixed[]
 	 */
 	public function getRaw() {
 		$_ret = Array();
