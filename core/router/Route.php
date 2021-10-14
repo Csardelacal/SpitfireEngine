@@ -46,7 +46,7 @@ class Route extends RewriteRule
 	 */
 	private $name = null;
 	
-	public function getName() : string
+	public function getName() :? string
 	{
 		return $this->name;
 	}

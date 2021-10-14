@@ -10,6 +10,7 @@ use spitfire\cli\Console;
 use spitfire\core\Environment;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
+use spitfire\core\http\URLBuilder;
 use spitfire\exceptions\ApplicationException;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
@@ -443,46 +444,13 @@ function collect($elements = []) {
 
 
 /**
- * Creates a new URL. Use this class to generate dynamic URLs or to pass
- * URLs as parameters. For consistency (double base prefixes and this
- * kind of misshaps aren't funny) use this object to pass or receive URLs
- * as paramaters.
+ * Returns the URLBuilder that helps you accessing all the functions that you need
+ * to manipulate and generate URLs in Spitfire.
  * 
- * Please note that when passing a URL that contains the URL as a string like
- * "/hello/world?a=b&c=d" you cannot pass any other parameters. It implies that
- * you already have a full URL.
- * 
- * You can pass any amount of parameters to this class,
- * the constructor will try to automatically parse the URL as good as possible.
- * <ul>
- *		<li>Arrays are used as _GET</li>
- * 	<li>App objects are used to identify the namespace</li>
- *		<li>Strings that contain / or ? will be parsed and added to GET and path</li>
- *		<li>The rest of strings will be pushed to the path.</li>
- * </ul>
+ * @return URLBuilder
  */
 function url() {
-	#Get the parameters the first time
-	$params = func_get_args();
-
-	#Get the controller, and the action
-	$controller = null;
-	$action     = null;
-	$object     = Array();
-
-	#Get the object
-	while(!empty($params) && (!is_array(reset($params)) || (!$controller && $app->getControllerLocator()->hasController(reset($params))))) {
-		if     (!$controller) { $controller = array_shift($params); }
-		elseif (!$action)     { $action     = array_shift($params); }
-		else                  { $object[]   = array_shift($params); }
-	}
-	
-	#Get potential environment variables that can be used for additional information
-	#like loccalization
-	$get          = array_shift($params);
-	$environment  = array_shift($params);
-	
-	return new URL($controller, $action, $object, 'php', $get, $environment);
+	return spitfire()->provider()->get(URLBuilder::class);
 }
 
 /**
@@ -604,7 +572,7 @@ function lock($set = null) {
 
 /**
  * 
- * 
+ * @todo Move this code into URLBuilder::asset and invoke it from there.
  * @param string $name
  * @param string $scope A directory to scope this to. If an application builds it's 
  *                      own assets and generates a manifest file, it will be located here.

@@ -202,49 +202,27 @@ class URIPattern
 	 * Takes a parameter list and constructs a string URI from the combination
 	 * of patterns and parameters.
 	 * 
-	 * @param type $parameters
+	 * @param string[] $parameters
 	 * @return string
 	 * @throws PrivateException
 	 */
-	public function reverse($parameters) : string 
+	public function reverse($parameters) 
 	{
-		
-		/*
-		 * If the data we're receiving is a parameters object, then we'll extract
-		 * the raw data from it in order to work with it.
+		/**
+		 * A second, very similar expression, is used to extract the variables that we need.
 		 */
-		$params = $parameters instanceof Parameters? $parameters->getParameters() : $parameters;
-		$add    = $parameters instanceof Parameters? $parameters->getUnparsed() : [];
-		
-		/*
-		 * If there is parameters that exceed the predefined length then we drop
-		 * them if the route does not support them.
-		 */
-		if (!empty($add) && !$this->open) {
-			throw new ApplicationException('This route rejects additional params', 1705221031);
-		}
-		
-		/*
-		 * Prepare a pair of variables we need for the loop. First of all we need
-		 * to ensure that we have an array to write the replacements to, and then
-		 * we need a counter to make sure that all the parameters given were also
-		 * used.
-		 */
-		$url = preg_replace_callback('/\{([^\}]+)\}/', function ($match) use($params) {
-			/**
-			 * Obviously, if the parameter is not provided, we cannot construct a 
-			 * url that directs to the appropriate location. This means we need to
-			 * throw an exception and abort execution.
-			 */
-			if (!isset($params[$match[1]])) { 
-				throw new ApplicationException(sprintf('Missing parameter %s in url %s', $match[1], $this->pattern)); 
+		$fn = function ($match) use ($parameters) {
+			$pieces = explode(':', $match[1], 2);
+			$variable = reset($pieces);
+			
+			if (!array_key_exists($variable, $parameters)) {
+				throw new ApplicationException(sprintf('Undefined URL variable %s in %s', $variable, $this->pattern), 2110141646);
 			}
 			
-			return $params[$match[1]];
-			
-		}, $this->pattern);
+			return $parameters[$variable];
+		};
 		
-		return $add? $url . '/' . implode('/', $add) : $url;
+		return preg_replace_callback('/\{([^\}]+)\}/', $fn, $this->pattern);
 	}
 	
 	public static function make($str) {

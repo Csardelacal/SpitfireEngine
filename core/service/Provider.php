@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\service;
 
+use spitfire\provider\Container;
+
 /* 
  * The MIT License
  *

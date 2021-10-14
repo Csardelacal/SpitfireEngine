@@ -154,13 +154,21 @@ abstract class Routable
 		if (is_array($target)) {
 			assert(isset($target[0]) && isset($target[1]));
 			$handler = new RouterActionRequestHandler($match, $target[0], $target[1]);
+			
+			/**
+			 * For routes that map to a controller, the application should default to
+			 * naming the route Controller:action
+			 */
+			$route = new Route($match, $handler, $method, $protocol);
+			$route->setName(implode(':', $target));
 		}
 		
 		elseif ($target instanceof Closure) {
 			$handler = new RouterClosureRequestHandler($match, $target);
+			$route = new Route($match, $handler, $method, $protocol);
 		}
 		
-		return $this->routes->push(new Route($match, $handler, $method, $protocol)); 
+		return $this->routes->push($route); 
 	}
 	
 	public function getRoutes() {
