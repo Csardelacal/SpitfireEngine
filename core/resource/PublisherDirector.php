@@ -1,7 +1,6 @@
 <?php namespace spitfire\core\resource;
 
-use spitfire\cli\arguments\CLIArguments;
-
+use spitfire\cli\arguments\CLIParameters;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -48,7 +47,7 @@ class PublisherDirector extends \spitfire\mvc\Director
 		];
 	}
 	
-	public function exec(array $parameters, CLIArguments $arguments): int
+	public function exec(array $parameters, CLIParameters $arguments): int
 	{
 		$publisher = spitfire()->publisher();
 		$file      = spitfire()->locations()->root('bin/published.json');

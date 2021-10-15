@@ -6,26 +6,6 @@ parameters:
 			path: App.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Table\\:\\:increment\\(\\)\\.$#"
-			count: 1
-			path: Model.php
-
-		-
-			message: "#^Call to method getFields\\(\\) on an unknown class spitfire\\\\model\\\\Schema\\.$#"
-			count: 2
-			path: Model.php
-
-		-
-			message: "#^Call to method getName\\(\\) on an unknown class spitfire\\\\model\\\\Schema\\.$#"
-			count: 2
-			path: Model.php
-
-		-
-			message: "#^Call to method getPrimary\\(\\) on an unknown class spitfire\\\\model\\\\Schema\\.$#"
-			count: 1
-			path: Model.php
-
-		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
 			count: 2
 			path: Model.php
@@ -104,11 +84,6 @@ parameters:
 			message: "#^Parameter \\$parameters of method spitfire\\\\core\\\\Path\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\Pattern\\.$#"
 			count: 1
 			path: core/Path.php
-
-		-
-			message: "#^Call to static method create\\(\\) on an unknown class spitfire\\\\core\\\\Context\\.$#"
-			count: 1
-			path: core/Request.php
 
 		-
 			message: "#^Call to method getCode\\(\\) on an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
@@ -341,51 +316,6 @@ parameters:
 			path: core/http/URL.php
 
 		-
-			message: "#^Call to method handle\\(\\) on an unknown class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\DecoratingRequestHandler\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Call to method handle\\(\\) on an unknown class spitfire\\\\exceptions\\\\ExceptionHandler\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\StaticResponseRequestHandler does not have a constructor and must be instantiated without any parameters\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Class spitfire\\\\core\\\\router\\\\Router constructor invoked with 0 parameters, 1 required\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\DecoratingRequestHandler not found\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\ExceptionHandler not found\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\mvc\\\\RouterMiddleware not found\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Parameter \\#1 \\$body of class spitfire\\\\core\\\\Response constructor expects Psr\\\\Http\\\\Message\\\\StreamInterface, string given\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$params$#"
 			count: 1
 			path: core/router/Parameters.php
@@ -396,47 +326,12 @@ parameters:
 			path: core/router/RewriteRule.php
 
 		-
-			message: "#^PHPDoc tag @param for parameter \\$pattern with type string is incompatible with native type spitfire\\\\core\\\\router\\\\URIPattern\\.$#"
-			count: 1
-			path: core/router/RewriteRule.php
-
-		-
-			message: "#^Parameter \\#2 \\$target of method spitfire\\\\core\\\\router\\\\Routable\\:\\:addRoute\\(\\) expects array\\<string\\>\\|Closure, string given\\.$#"
-			count: 5
-			path: core/router/Routable.php
-
-		-
 			message: "#^Parameter \\#3 \\$method of class spitfire\\\\core\\\\router\\\\Route constructor expects string, int given\\.$#"
 			count: 1
 			path: core/router/Routable.php
 
 		-
-			message: "#^Variable \\$call might not be defined\\.$#"
-			count: 1
-			path: core/router/Routable.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\router\\\\RewriteRule\\:\\:getTarget\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 1
-			path: core/router/Route.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\router\\\\Route\\:\\:rewrite\\(\\) should return spitfire\\\\core\\\\Path\\|spitfire\\\\core\\\\Response but returns Closure\\.$#"
-			count: 1
-			path: core/router/Route.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\router\\\\Route\\:\\:rewrite\\(\\) should return spitfire\\\\core\\\\Path\\|spitfire\\\\core\\\\Response but returns null\\.$#"
-			count: 1
-			path: core/router/Route.php
-
-		-
 			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: core/router/Router.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\router\\\\Router\\:\\:rewrite\\(\\) should return spitfire\\\\core\\\\router\\\\RouterResult but returns Closure\\.$#"
 			count: 1
 			path: core/router/Router.php
 
@@ -476,17 +371,7 @@ parameters:
 			path: core/router/URIPattern.php
 
 		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
-			count: 2
-			path: core/router/URIPattern.php
-
-		-
 			message: "#^Method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) should return spitfire\\\\core\\\\router\\\\type but returns string\\.$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\core\\\\router\\\\RouteMismatchException\\|spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
 			count: 1
 			path: core/router/URIPattern.php
 
@@ -501,11 +386,6 @@ parameters:
 			path: core/router/URIPattern.php
 
 		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
-			count: 2
-			path: core/router/URIPattern.php
-
-		-
 			message: "#^Parameter \\$container of method spitfire\\\\core\\\\service\\\\Provider\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\service\\\\Container\\.$#"
 			count: 1
 			path: core/service/Provider.php
@@ -514,21 +394,6 @@ parameters:
 			message: "#^Property spitfire\\\\core\\\\service\\\\Provider\\:\\:\\$container has unknown class spitfire\\\\core\\\\service\\\\Container as its type\\.$#"
 			count: 1
 			path: core/service/Provider.php
-
-		-
-			message: "#^Method spitfire\\\\io\\\\CharsetEncoder\\:\\:decode\\(\\) should return string but returns null\\.$#"
-			count: 1
-			path: io/CharsetEncoder.php
-
-		-
-			message: "#^Method spitfire\\\\io\\\\CharsetEncoder\\:\\:encode\\(\\) should return string but returns null\\.$#"
-			count: 1
-			path: io/CharsetEncoder.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
-			count: 2
-			path: io/CharsetEncoder.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\FileNotFoundException not found\\.$#"
@@ -572,11 +437,6 @@ parameters:
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PublicException not found\\.$#"
-			count: 1
-			path: io/Get.php
-
-		-
-			message: "#^Method spitfire\\\\io\\\\Get\\:\\:getRaw\\(\\) should return spitfire\\\\io\\\\Get but returns array\\<int\\|string, mixed\\>\\.$#"
 			count: 1
 			path: io/Get.php
 
@@ -1514,156 +1374,6 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 1
 			path: mvc/Invoke.php
-
-		-
-			message: "#^Method spitfire\\\\mvc\\\\MVC\\:\\:__get\\(\\) should return Controller\\|spitfire\\\\mvc\\\\View but returns false\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^PHPDoc tag @param for parameter \\$context with type spitfire\\\\core\\\\Context is not subtype of native type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\MVC\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\Context\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\MVC\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Property spitfire\\\\mvc\\\\MVC\\:\\:\\$ctx \\(spitfire\\\\core\\\\Context\\) does not accept spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Property spitfire\\\\mvc\\\\MVC\\:\\:\\$ctx has unknown class spitfire\\\\core\\\\Context as its type\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\mvc\\\\MVC\\:\\:__get\\(\\) has invalid type Controller\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\mvc\\\\MVC\\:\\:__get\\(\\) has invalid type spitfire\\\\mvc\\\\View\\.$#"
-			count: 1
-			path: mvc/MVC.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\MiddlewareInterface\\:\\:after\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/MiddlewareInterface.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\MiddlewareInterface\\:\\:before\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/MiddlewareInterface.php
-
-		-
-			message: "#^Access to property \\$annotations on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 2
-			path: mvc/middleware/standard/CacheDurationMiddleware.php
-
-		-
-			message: "#^Access to property \\$response on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/CacheDurationMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\CacheDurationMiddleware\\:\\:after\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/CacheDurationMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\CacheDurationMiddleware\\:\\:before\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/CacheDurationMiddleware.php
-
-		-
-			message: "#^Access to property \\$action on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 2
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Access to property \\$controller on an unknown class spitfire\\\\core\\\\Context\\.$#"
-			count: 2
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Access to property \\$controller on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 2
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Access to property \\$director on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 2
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Access to property \\$object on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 3
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Class spitfire\\\\core\\\\Context not found\\.$#"
-			count: 2
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^PHPDoc tag @param for parameter \\$context with type spitfire\\\\core\\\\Context is not subtype of native type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\ModelMiddleware\\:\\:after\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\ModelMiddleware\\:\\:before\\(\\) has invalid typehint type spitfire\\\\core\\\\Context\\.$#"
-			count: 1
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\ModelMiddleware\\:\\:before\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/ModelMiddleware.php
-
-		-
-			message: "#^Access to property \\$annotations on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 2
-			path: mvc/middleware/standard/RequestMethodMiddleware.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PublicException not found\\.$#"
-			count: 1
-			path: mvc/middleware/standard/RequestMethodMiddleware.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PublicException is not subtype of Throwable$#"
-			count: 1
-			path: mvc/middleware/standard/RequestMethodMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\RequestMethodMiddleware\\:\\:after\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/RequestMethodMiddleware.php
-
-		-
-			message: "#^Parameter \\$context of method spitfire\\\\mvc\\\\middleware\\\\standard\\\\RequestMethodMiddleware\\:\\:before\\(\\) has invalid typehint type spitfire\\\\core\\\\ContextInterface\\.$#"
-			count: 1
-			path: mvc/middleware/standard/RequestMethodMiddleware.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PublicException\\.$#"
-			count: 1
-			path: mvc/middleware/standard/RequestMethodMiddleware.php
 
 		-
 			message: "#^Access to property \\$action on an unknown class spitfire\\\\core\\\\ContextInterface\\.$#"

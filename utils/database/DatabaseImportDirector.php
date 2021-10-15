@@ -1,6 +1,6 @@
 <?php namespace spitfire\utils\database;
 
-use spitfire\cli\arguments\CLIArguments;
+use spitfire\cli\arguments\CLIParameters;
 use spitfire\mvc\Director;
 
 /* 
@@ -71,7 +71,7 @@ class DatabaseImportDirector extends Director
 	 *		templates that removes the need for this glob madness and allows it to cache
 	 *		known locations
 	 */
-	public function exec(array $parameters, CLIArguments $arguments): int
+	public function exec(array $parameters, CLIParameters $arguments): int
 	{
 		
 		$srcdir = $parameters[0];
