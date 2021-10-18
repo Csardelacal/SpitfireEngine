@@ -87,7 +87,7 @@ class SpitFire
 		 * Poorly configured applications can always fall back to guessing the base url.
 		 * This is by no means a good way of handling this.
 		 */
-		$public = explode('/index.php', $_SERVER['PHP_SELF'], 2)[0];
+		$public = explode('/public/index.php', $_SERVER['PHP_SELF'], 2)[0];
 		return dirname($public);
 	}
 	
