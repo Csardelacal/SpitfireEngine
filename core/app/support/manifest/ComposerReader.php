@@ -3,6 +3,8 @@
 use BadMethodCallException;
 use spitfire\collection\Collection;
 use spitfire\core\app\AppManifest;
+use BadMethodCallException;
+use spitfire\exceptions\NotFoundException;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -37,14 +39,24 @@ class ComposerReader
 	 * Reads the contents of a composer.json file and returns the manifest data
 	 * that it contains.
 	 * 
+	 * @throws BadMethodCallException
+	 * @throws NotFoundException
+	 * 
 	 * @param string $file
+	 * @return AppManifest
 	 */
-	public static function read($file) 
+	public static function read($file) : AppManifest
 	{
+		$content = file_get_contents($file);
+		
+		if (!$content) {
+			throw new NotFoundException(sprintf('Contents of %s could not be read', $file));
+		}
+		
 		/*
 		 * Read the contents of the composer file for this package.
 		 */
-		$json = json_decode(file_get_contents($file), null, 512, JSON_THROW_ON_ERROR);
+		$json = json_decode($content, null, 512, JSON_THROW_ON_ERROR);
 		
 		/*
 		 * Some composer files may not contain an extra.spitfire section. If this is
@@ -52,6 +64,14 @@ class ComposerReader
 		 * and we must stop execution.
 		 */
 		if ($json->extra && $json->extra->spitfire) {
+			
+			/**
+			 * Determine the entrypoint of the application (alas the App file) which will
+			 * be used to build the routes and add service providers if the application so
+			 * desires.
+			 */
+			$entrypoint = $json->extra->spitfire->entrypoint?? null;
+			
 			/**
 			 * The process of reading the apps into the system is recursive. Please note that
 			 * the dependency tree terminates the recursion. The application will not be able
@@ -73,7 +93,7 @@ class ComposerReader
 		
 		#TODO: Check the data in extra.spitfire is correctly formatted
 		
-		return new AppManifest($json->name?? '', $apps, $events);
+		return new AppManifest($json->name?? '', $entrypoint, $apps, $events);
 	}
 	
 	/**

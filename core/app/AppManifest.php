@@ -36,7 +36,6 @@ use spitfire\collection\Collection;
  * please execute the appropriate command.
  * 
  * @todo Add an option to add publishing
- * @todo Add an option to add providers
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class AppManifest
@@ -49,6 +48,14 @@ class AppManifest
 	 * @var string
 	 */
 	private $name;
+	
+	/**
+	 * The entrypoint is the name of the class that initializes the application,
+	 * this allows the application to intiailize it's routes.
+	 * 
+	 * @var class-string
+	 */
+	private $entrypoint;
 	
 	/**
 	 * An array of applications that this package provides. These may request 
@@ -73,24 +80,45 @@ class AppManifest
 	 * from an app manifest included in composer.json
 	 * 
 	 * @param string $name
+	 * @param string $entrypoint
 	 * @param Collection<AppManifest> $apps
-	 * @param array $events
+	 * @param string[] $events
 	 */
-	public function __construct(string $name, Collection $apps, array $events) 
+	public function __construct(string $name, string $entrypoint, Collection $apps, array $events) 
 	{
+		assert(class_exists($entrypoint));
+		
 		$this->name = $name;
 		$this->apps = $apps;
 		$this->events = $events;
+		$this->entrypoint = $entrypoint;
 	}
 	
 	public function getName(): string {
 		return $this->name;
 	}
 	
+	/**
+	 * Returns the name of the class that can be used to bootstrap this application, this
+	 * includes the init code for the router, allows the application to initialize itself,
+	 * etc.
+	 * 
+	 * @return class-string
+	 */
+	public function getEntrypoint(): string 
+	{
+		assert(class_exists($this->entrypoint));
+		return $this->entrypoint;
+	}
+	
 	public function getApps(): mixed {
 		return $this->apps;
 	}
 	
+	/**
+	 * 
+	 * @return string[]
+	 */
 	public function getEvents(): array {
 		return $this->events;
 	}
