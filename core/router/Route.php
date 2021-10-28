@@ -1,9 +1,7 @@
 <?php namespace spitfire\core\router;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use spitfire\core\http\request\handler\ClosureResponseRequestHandler;
-use spitfire\core\router\reverser\RouteReverserInterface;
+use spitfire\exceptions\ApplicationException;
 
 /**
  * A route is a class that rewrites a URL path (route) that matches a
@@ -62,11 +60,14 @@ class Route extends RewriteRule
 	
 	/**
 	 * 
-	 * @param ServerRequestInterface $request
-	 * @return RequestHandlerInterface|null
+	 * @param string $URI
+	 * @param string $method
+	 * @param string $protocol
+	 * @param string $extension
+	 * @return void
 	 */
 	public function rewrite(ServerRequestInterface $request) :? Parameters
 	{
-		return $this->getSource()->test($request->getUri());
+		throw new ApplicationException('Deprecated Route::rewrite called, use Route::getTarget to get the requesthandler', 2110281247);
 	}
 }

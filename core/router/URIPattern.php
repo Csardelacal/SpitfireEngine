@@ -203,10 +203,11 @@ class URIPattern
 	 * of patterns and parameters.
 	 * 
 	 * @param type $parameters
-	 * @return type
+	 * @return string
 	 * @throws PrivateException
 	 */
-	public function reverse($parameters) {
+	public function reverse($parameters) : string 
+	{
 		
 		/*
 		 * If the data we're receiving is a parameters object, then we'll extract
@@ -229,73 +230,21 @@ class URIPattern
 		 * we need a counter to make sure that all the parameters given were also
 		 * used.
 		 */
-		$replaced = [];
-		$left     = count($params);
-		
-		/*
-		 * Loop over the patterns and test the parameters. There's one quirk - the
-		 * system assumes that a parameter is never used twice but won't fail
-		 * gracefully if the user ignores that restriction.
-		 */
-		foreach($this->patterns as $p) {
-			
-			#Static URL elements
-			if(!$p->getName()) { 
-				$replaced[] = $p->getPattern()[0]; 
-				continue;
-			}
-			
-			/*
-			 * For non static URL elements we check whether the appropriate parameter
-			 * is defined. Then we test it and if the parameter was defined we will
-			 * accept it.
+		$url = preg_replace_callback('/\{([^\}]+)\}/', function ($match) use($params) {
+			/**
+			 * Obviously, if the parameter is not provided, we cannot construct a 
+			 * url that directs to the appropriate location. This means we need to
+			 * throw an exception and abort execution.
 			 */
-			$defined  = isset($params[$p->getName()])? $params[$p->getName()] : null;
-			$replaced = array_merge($replaced, $p->test($defined));
+			if (!isset($params[$match[1]])) { 
+				throw new ApplicationException(sprintf('Missing parameter %s in url %s', $match[1], $this->pattern)); 
+			}
 			
-			$defined? $left-- : null;
-		}
+			return $params[$match[1]];
+			
+		}, $this->pattern);
 		
-		/*
-		 * After the system has assembled all the parts for the URL, it tries to 
-		 * clean up by removing all components that were provided that are optional
-		 * and set to the default value.
-		 * 
-		 * By making this, I'd expect URL's to gain longevity, since urls like
-		 * <code>/about</code> are more likely to be remembered than <code>/about/index/</code>
-		 */
-		foreach (array_reverse($this->patterns) as $p) {
-			if ($p->isOptional() && $p->getDefault() === end($replaced)) {
-				array_pop($replaced);
-			}
-			/*
-			 * Once we found an element that is either, not optional or not the default
-			 * value, we stop searching. This is because all preceeding parameters
-			 * are needed to override the current value.
-			 * 
-			 * For example, the route /about/:company?m3w/:department?it will be 
-			 * reversed to /about when [company => m3w, department => it] is provided.
-			 * 
-			 * It will also, rather obviously, generate /about/ibm when we provide it
-			 * with [company => ibm, department => it] or just [company => ibm]
-			 * 
-			 * But, it will generate /about/m3w/finance if provided with [department => finance]
-			 * this is, because the URL /about/finance would be ambiguous.
-			 */
-			else {
-				break;
-			}
-		}
-		
-		/*
-		 * Leftover parameters indicate that the system was unable to reverse the 
-		 * route properly
-		 */
-		if ($left) {
-			throw new ApplicationException('Parameter count exceeded pattern count', 1705221044);
-		}
-		
-		return '/' . implode('/', array_merge($replaced, $add)) . '/';
+		return $add? $url . '/' . implode('/', $add) : $url;
 	}
 	
 	public static function make($str) {

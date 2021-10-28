@@ -73,15 +73,4 @@ class URLTest extends TestCase
 		$this->assertEquals('/me/test/?a=3', strval($url));
 	}
 	
-	public function testArrayReverser() {
-		$this->assertEquals('/url/my/',       url('test',  'my', 'url')->stringify());
-		$this->assertEquals('/url/my/',       strval(url('test',  'my', 'url')));
-	}
-	
-	public function testServerReverser2() {
-		$absURL = url('test', 'a', 'a')->absolute();
-		$this->assertEquals('https://localhost/a/a/', $absURL->stringify());
-		$this->assertEquals('https://localhost/a/a/', strval($absURL));
-	}
-	
 }
