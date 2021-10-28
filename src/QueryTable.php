@@ -23,7 +23,7 @@ class QueryTable
 	 * This table provides all the information (metadata and fields) about the table
 	 * being queried.
 	 * 
-	 * @var Table
+	 * @var (Query|Layout)
 	 */
 	private $table;
 	
@@ -58,11 +58,10 @@ class QueryTable
 	 */
 	private $aliased = false;
 	
-	/**
-	 * @param Table $table
-	 */
-	public function __construct(Table $table) 
+	public function __construct($table) 
 	{
+		assert($table instanceof Layout || $table instanceof Query);
+		
 		#In case this table is aliased, the unique alias will be generated using this.
 		$this->id = self::$counter++;
 		$this->table = $table;

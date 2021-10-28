@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database;
 
+use Closure;
 use spitfire\collection\Collection;
 
 /**
@@ -41,7 +42,7 @@ class Query extends RestrictionGroup
 	 * @todo Introduce utility methods for the joins
 	 * @var Collection<Join>
 	 */
-	private $joins = [];
+	private $joins;
 	
 	/**
 	 * This contains an array of aggregation functions that are executed with the 
@@ -89,6 +90,7 @@ class Query extends RestrictionGroup
 		 * @todo Replace this with an actual query table. Removing the need for the factory
 		 */
 		$this->table = new QueryTable($table);
+		$this->joins = new Collection();
 		
 		#Initialize the parent
 		parent::__construct(null, Array());
@@ -97,6 +99,28 @@ class Query extends RestrictionGroup
 	
 	
 	public function getQuery() {
+		return $this;
+	}
+	
+	/**
+	 * Joins a table to the current query.
+	 * 
+	 * You can pass a second, optional argument to customize the join, this is a closure that
+	 * receives the following parameters:
+	 * 
+	 * * Join : The new connection. You can use it to retrieve fields and push connections
+	 * * Query: The query being joined into. You can use this to retrieve the fields from the uplinks.
+	 * 
+	 * @param QueryTable $table
+	 * @param Closure $fn
+	 */
+	public function joinTable(QueryTable $table, Closure $fn = null) : Query
+	{
+		$join = new Join($table);
+		$this->joins[] = $join;
+		
+		$fn !== null && $fn($join, $this);
+		
 		return $this;
 	}
 	
@@ -122,9 +146,9 @@ class Query extends RestrictionGroup
 	 * @todo This now feels like it needs to be moved to the model. Where it makes sense to retrieve
 	 * the data from the query directly.
 	 * 
-	 * @param int $skip
-	 * @param int $amt
-	 * @return Collection
+	 * @param int|null $skip
+	 * @param int|null $amt
+	 * @return Query
 	 */
 	public function range(int $skip = null, int $amt = null) : Query
 	{
@@ -165,10 +189,10 @@ class Query extends RestrictionGroup
 	 * @param QueryField|null $column
 	 * @return Query Description
 	 */
-	public function aggregateBy($column) {
-		if (is_array($column))   { $this->groupBy = $column; }
-		elseif($column === null) { $this->groupBy = null; }
-		else                     { $this->groupBy = Array($column); }
+	public function aggregateBy(QueryField $column = null) 
+	{
+		if($column === null) { $this->groupBy = []; }
+		else                 { $this->groupBy = [$column]; }
 		
 		return $this;
 	}
@@ -196,8 +220,10 @@ class Query extends RestrictionGroup
 		return $this;
 	}
 	
-	public function addCalculatedValue (AggregateFunction $fn) {
+	public function addCalculatedValue (AggregateFunction $fn) : Query
+	{
 		$this->calculated[] = $fn;
+		return $this;
 	}
 	
 	
