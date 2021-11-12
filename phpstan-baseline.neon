@@ -791,36 +791,6 @@ parameters:
 			path: io/stp/StackTracePrinter.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\io\\\\stream\\\\StreamReaderInterface\\:\\:seek\\(\\)\\.$#"
-			count: 1
-			path: io/stream/StreamSegment.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\io\\\\stream\\\\StreamReaderInterface\\:\\:tell\\(\\)\\.$#"
-			count: 2
-			path: io/stream/StreamSegment.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\OutOfBoundsException not found\\.$#"
-			count: 1
-			path: io/stream/StreamSegment.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\OutOfBoundsException is not subtype of Throwable$#"
-			count: 1
-			path: io/stream/StreamSegment.php
-
-		-
-			message: "#^Property spitfire\\\\io\\\\stream\\\\StreamSegment\\:\\:\\$src \\(spitfire\\\\io\\\\stream\\\\StreamReaderInterface\\) does not accept spitfire\\\\io\\\\stream\\\\SeekableStreamInterface\\.$#"
-			count: 1
-			path: io/stream/StreamSegment.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\OutOfBoundsException\\.$#"
-			count: 1
-			path: io/stream/StreamSegment.php
-
-		-
 			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 2
 			path: model/Field.php

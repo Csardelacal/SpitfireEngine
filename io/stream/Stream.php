@@ -281,10 +281,14 @@ class Stream implements StreamInterface
 			throw new RuntimeException('Could not read a detached stream', 2108041120);
 		}
 		
+		if ($length === 0) {
+			return '';
+		}
+		
 		$result = fread($this->handle, $length);
 
 		if ($result === false) {
-			throw new RuntimeException('Cannot write to the stream', 2108041113);
+			throw new RuntimeException(sprintf('Cannot read %d bytes from the stream', $length), 2108041113);
 		}
 
 		return $result;

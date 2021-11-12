@@ -1,6 +1,7 @@
 <?php namespace tests\spitfire\io\stream;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\io\stream\Stream;
 
 /* 
  * The MIT License
@@ -29,34 +30,41 @@ use PHPUnit\Framework\TestCase;
 class StreamSegmentTest extends TestCase
 {
 	
-	private $file;
+	/**
+	 * 
+	 * @var Stream
+	 */
+	private $stream;
 	
-	public function setUp() : void {
-		storage()->register('file', new \spitfire\storage\drive\Driver('/'));
-		$this->file = storage()->retrieve('file://' . sys_get_temp_dir(), 'php' . uniqid());
-		$this->file->write('Hello world!');
+	public function setUp() : void 
+	{
+		$fh = fopen('php://temp', 'r+');
+		$this->stream = new Stream($fh, true, true, true);
+		
+		$this->stream->write('Hello world!');
+		$this->stream->rewind();
 	}
 	
 	public function testSegment() {
-		$segment = new \spitfire\io\stream\StreamSegment($this->file->stream()->reader(), 6, 8);
+		$segment = new \spitfire\io\stream\StreamSegment($this->stream, 6, 8);
 		$read = $segment->read();
 		
 		$this->assertEquals(3, strlen($read));
-		$this->assertEquals(3, $segment->length());
+		$this->assertEquals(3, $segment->getSize());
 		$this->assertEquals('wor', $read);
 	}
 	
 	public function testSegment2() {
-		$segment = new \spitfire\io\stream\StreamSegment($this->file->stream()->reader(), 6);
+		$segment = new \spitfire\io\stream\StreamSegment($this->stream, 6);
 		$read = $segment->read();
 		
 		$this->assertEquals(6, strlen($read));
-		$this->assertEquals(6, $segment->length());
+		$this->assertEquals(6, $segment->getSize());
 		$this->assertEquals('world!', $read);
 	}
 	
 	public function tearDown() : void {
-		$this->file->delete();
+		$this->stream->detach();
 	}
 	
 }
