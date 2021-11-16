@@ -3,10 +3,12 @@
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use ReflectionMethod;
 use spitfire\core\Response;
 use spitfire\core\router\Route;
 use spitfire\core\router\URIPattern;
 use spitfire\exceptions\ApplicationException;
+use spitfire\model\support\ReflectionParameterTransformer;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -71,7 +73,14 @@ class RouterActionRequestHandler implements RequestHandlerInterface
 		$controller = new $this->controller;
 		$action     = $this->action;
 		
-		$response   = spitfire()->provider()->callMethod($controller, $action, $parameters->getParameters());
+		/**
+		 * The router has a special ability, allowing it to convert strings into models
+		 * when the method of the controller expects it to.
+		 */
+		$reflection = new ReflectionMethod($controller, $action);
+		$params     = ReflectionParameterTransformer::transformParameters($reflection, $parameters->getParameters());
+		
+		$response   = spitfire()->provider()->callMethod($controller, $action, $params);
 		
 		if ($response instanceof ResponseInterface) {
 			return $response;

@@ -4,10 +4,12 @@ use Closure;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use ReflectionFunction;
 use spitfire\core\Response;
 use spitfire\core\router\Route;
 use spitfire\core\router\URIPattern;
 use spitfire\exceptions\ApplicationException;
+use spitfire\model\support\ReflectionParameterTransformer;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -52,7 +54,18 @@ class RouterClosureRequestHandler implements RequestHandlerInterface
 	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
 		$parameters = $this->route->test($request->getUri());
-		$response   = spitfire()->provider()->call($this->closure, $parameters->getParameters());
+		
+		/**
+		 * The router has a special ability, allowing it to convert strings into models
+		 * when the method of the controller expects it to.
+		 */
+		$reflection = new ReflectionFunction($this->closure);
+		$params     = ReflectionParameterTransformer::transformParameters($reflection, $parameters->getParameters());
+		
+		/**
+		 * Now we can pass this onto the provider to resolve the remaining types
+		 */
+		$response   = spitfire()->provider()->call($this->closure, $params);
 		
 		if ($response instanceof ResponseInterface) {
 			return $response;
