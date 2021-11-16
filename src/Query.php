@@ -50,7 +50,7 @@ class Query extends RestrictionGroup
 	 * 
 	 * @todo Provide a single output kind of type (something that can either refer to a field or a aggreation)
 	 * @todo Rename to reflect the fact that this is what e expect as output of the query.
-	 * @var (AggregateFunction|QueryField)[]
+	 * @var Output[]
 	 */
 	protected $calculated;
 	
@@ -210,18 +210,17 @@ class Query extends RestrictionGroup
 			$table = $this->getQueryTable();
 		}
 		
-		$this->calculated = array_merge($this->calculated, $table->getFields());
+		$this->calculated = array_merge($this->calculated, $table->getFields()->each(function ($e) { return new Output($e, null); }));
 		return $this;
 	}
 	
 	public function addField(QueryField $field) : Query
 	{
-		$this->calculated[] = $field;
+		$this->calculated[] = new Output($field, null);
 		return $this;
 	}
 	
-	public function addCalculatedValue (AggregateFunction $fn) : Query
-	{
+	public function addOutput (Output $fn) {
 		$this->calculated[] = $fn;
 		return $this;
 	}
