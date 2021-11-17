@@ -30,7 +30,7 @@ use spitfire\exceptions\ApplicationException;
  * Please note that, these are similar to model fields, but not 100% compatible, they
  * are not interchangeable.
  */
-class Layout
+class Layout implements LayoutInterface
 {
 	
 	/**
@@ -89,7 +89,7 @@ class Layout
 	 * @param string $name
 	 * @return Field
 	 */
-	function getField($name) :? Field
+	function getField(string $name) : Field
 	{
 		if (!$this->fields->has($name)) {
 			throw new ApplicationException(sprintf('Field %s is not available in %s', $name, $this->tablename));
