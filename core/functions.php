@@ -1,5 +1,6 @@
 <?php
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use spitfire\App;
 use spitfire\collection\Collection;

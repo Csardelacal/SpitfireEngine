@@ -1,6 +1,6 @@
 <?php namespace spitfire\_init;
 
-use spitfire\core\service\Provider as ServiceProvider;
+use spitfire\core\service\Provider;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -48,7 +48,9 @@ class ProvidersInit implements InitScriptInterface
 		 * to register resources and further services (after all the  service providers
 		 * had a chance to register the services they provide).
 		 */
-		array_walk_recursive(config('app.providers'), function ($name) {
+		$providers = config('app.providers');
+		
+		array_walk_recursive($providers, function ($name) {
 			/**
 			 * @var Provider $provider
 			 */

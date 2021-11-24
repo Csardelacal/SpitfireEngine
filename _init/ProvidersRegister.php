@@ -39,7 +39,9 @@ class ProvidersRegister implements InitScriptInterface
 		 * Instance all the service providers and call the register method, this
 		 * allows them to bind all the services they provide.
 		 */
-		array_walk_recursive(config('app.providers'), function ($name) {
+		$providers = config('app.providers');
+		
+		array_walk_recursive($providers, function ($name) {
 			/**
 			 * @var Provider $provider
 			 */
