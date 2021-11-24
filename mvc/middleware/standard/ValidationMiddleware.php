@@ -1,5 +1,6 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
+use ArrayAccess;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -8,6 +9,7 @@ use spitfire\collection\Collection;
 use spitfire\ast\Scope;
 use spitfire\core\ContextInterface;
 use spitfire\core\Response;
+use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
 use spitfire\validation\ValidationException;
 use spitfire\validation\parser\Parser;
@@ -77,17 +79,18 @@ class ValidationMiddleware implements MiddlewareInterface
 	 */
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
-		$errors = $this->rules->each(function (ValidationRule $rule, string $key) use ($request) {
-			return $rule->test($request->getParsedBody()[$key]?? null);
-		})->filter();
+		$body = $request->getParsedBody()?: [];
 		
 		/**
-		 * We invoke the ViewFactory to set the new defaults for views that are created
-		 * from here on out. This way, whenever the application invokes the view() method,
-		 * we also pass the errors into the new view so the validation can be properly
-		 * displayed.
+		 * Check that the body is actually set and an array or ArrayAccess object. We don't support
+		 * any other mechanism for the validation. Please note that this will not be checked in
+		 * production. Your application needs to work properly when it leaves development.
 		 */
-		$this->container->get(ViewFactory::class)->set('errors', $errors);
+		assert(is_array($body) || $body instanceof ArrayAccess);
+		
+		$errors = $this->rules->each(function (ValidationRule $rule, string $key) {
+			return $rule->test($body[$key]?? null);
+		})->filter();
 		
 		/**
 		 * If there's errors, and there's a special handler defined for error pages, then we 
@@ -96,12 +99,45 @@ class ValidationMiddleware implements MiddlewareInterface
 		 * Here's where I'd recommend introduce a flasher handler that would redirect the user
 		 * to the form page and have the data they sent us resubmitted, allowing it to pretend
 		 * it is a get request, using a "_method" hidden input.
-		 * 
-		 * @todo Introduce flasher handler
 		 */
-		if (!$errors->isEmpty() && $this->response) {
-			return $this->response->handle($request);
-		}
+		if (!$errors->isEmpty()) {
+			
+			/**
+			 * If a response is provided by the developer, we can continue using that.
+			 */
+			if ($this->response) {
+				return $this->response->handle($request);
+			}
+			
+			/**
+			 * If the client expects a json response, we will send a json response with the error validation
+			 */
+			elseif ($request->hasHeader('accept') && $request->getHeader('accept')[0] === 'application/json') {
+				return response(
+					view(null, ['status' => 'failed', 'errors' => $errors]), 
+					200, 
+					['Content-Type' => ['application/json']]
+				);
+			}
+			
+			/**
+			 * If the client is sending the data via post, and is expecting to be redirected, we will send them
+			 * back to the page that delivered them to us.
+			 */
+			elseif ($request->hasHeader('referrer')) {
+				return response(
+					view('_error/validation.html', ['errors' => $errors, 'submitted' => $request->getParsedBody(), 'location' => $request->getHeader('referrer')[0]])
+				);
+			}
+			
+			/**
+			 * Without a referrer we can't reliably redirect the user to a location to retry entering the data 
+			 * properly.
+			 */
+			else {
+				throw new ApplicationException('Validation failed');
+			}
+		} 
 		
 		/**
 		 * If the errors are empty, or we just do want the controller to handle them in an explicit
