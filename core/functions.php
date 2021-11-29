@@ -398,8 +398,17 @@ function storage() {
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
+		$defs = config('storage.engines');
 		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
-		$dispatcher->init();
+		
+		foreach ($defs as $k => $e) 
+		{
+			$class = $e['type'];
+			$settings = $e['settings'];
+			$i = new $class($settings);
+			
+			$dispatcher->register($k, $i);
+		}
 	}
 	
 	return $dispatcher;

@@ -5,6 +5,7 @@ use spitfire\storage\drive\Directory;
 use spitfire\storage\drive\File;
 use spitfire\storage\drive\MountPoint;
 use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\FileInterface;
 use function storage;
 
@@ -41,7 +42,7 @@ class DriveTest extends TestCase
 	public function setUp() : void {
 		parent::setUp();
 		
-		$this->storage = storage();
+		$this->storage = new DriveDispatcher;
 		$this->storage->register('tests', new \spitfire\storage\drive\Driver(sys_get_temp_dir()));
 		
 		$this->storage->retrieve('tests://test/test.txt')->write('Hello');
@@ -56,7 +57,7 @@ class DriveTest extends TestCase
 		 * Test that the path, and URI are exactly the same when we retrieve the file
 		 * via URI and via the object oriented interface
 		 */
-		$this->assertEquals($dir->uri(), storage()->retrieve('tests://test/')->uri());
+		$this->assertEquals($dir->uri(), $this->storage->retrieve('tests://test/')->uri());
 		$this->assertEquals($dir->uri(), 'tests://test/');
 	}
 	
@@ -65,7 +66,7 @@ class DriveTest extends TestCase
 	 * @depends testOpenDrive
 	 */
 	public function testCreateFile() {
-		$file = storage()->retrieve('tests://test.txt');
+		$file = $this->storage->retrieve('tests://test.txt');
 		$this->assertInstanceOf(\spitfire\storage\objectStorage\Blob::class, $file);
 		
 		
@@ -82,7 +83,7 @@ class DriveTest extends TestCase
 	 */
 	public function testReadFile(\spitfire\storage\objectStorage\Blob$file) {
 		$uri  = 'tests://test.txt';
-		$read = storage()->retrieve($uri);
+		$read = $this->storage->retrieve($uri);
 		
 		$this->assertEquals($uri, $read->uri());
 		$this->assertInstanceOf(\spitfire\storage\objectStorage\Blob::class, $read);
@@ -98,7 +99,7 @@ class DriveTest extends TestCase
 	 */
 	public function testDeleteFile(\spitfire\storage\objectStorage\Blob$file) {
 		$file->delete();
-		$this->assertEquals(false, storage()->retrieve('tests://test.txt')->exists());
+		$this->assertEquals(false, $this->storage->retrieve('tests://test.txt')->exists());
 	}
 	
 	/**
@@ -106,9 +107,9 @@ class DriveTest extends TestCase
 	 * @depends testCreateFile
 	 */
 	public function testContains() {
-		$this->assertEquals(false, storage()->retrieve('tests://test/')->exists());
-		$this->assertEquals(true, storage()->retrieve('tests://test/test.txt')->exists());
-		$this->assertEquals(false, storage()->retrieve('tests://test/nada.file')->exists());
+		$this->assertEquals(false, $this->storage->retrieve('tests://test/')->exists());
+		$this->assertEquals(true, $this->storage->retrieve('tests://test/test.txt')->exists());
+		$this->assertEquals(false, $this->storage->retrieve('tests://test/nada.file')->exists());
 	}
 	
 	public function tearDown() : void {

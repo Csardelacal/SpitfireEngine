@@ -1,5 +1,7 @@
 <?php namespace tests\spitfire\io\media;
 
+use spitfire\storage\objectStorage\DriveDispatcher;
+
 /* 
  * The MIT License
  *
@@ -37,10 +39,12 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 {
 	
 	private static $tmpdir = '/tmp';
+	private $storage;
 	private $filename;
 	
 	public function setUp(): void {
-		storage()->register('file', new \spitfire\storage\drive\Driver('/'));
+		$this->storage = new DriveDispatcher;
+		$this->storage->register('file', new \spitfire\storage\drive\Driver('/'));
 		$this->filename = __DIR__ . '/m3w.png';
 	}
 	
@@ -51,8 +55,8 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 * @return type
 	 */
 	public function testOutputWEBP() {
-		$img = media()->load(storage()->retrieve('file:/' . $this->filename));
-		$output = storage()->retrieve('file:/' . self::$tmpdir . '/test.webp');
+		$img = media()->load($this->storage->retrieve('file:/' . $this->filename));
+		$output = $this->storage->retrieve('file:/' . self::$tmpdir . '/test.webp');
 		
 		$img->store($output);
 		$this->assertEquals(true, $output->exists());
@@ -70,8 +74,8 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\spitfire\io\media\GDManipulator::class, $loaded);
 	}
 	
-	public static function tearDownAfterClass() : void {
-		storage()->retrieve('file:/' . self::$tmpdir . '/test.webp')->delete();
+	public function tearDown() : void {
+		//$this->storage->retrieve('file:/' . self::$tmpdir . '/test.webp')->delete();
 	}
 	
 }

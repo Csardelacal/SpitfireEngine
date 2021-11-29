@@ -128,23 +128,4 @@ class DriveDispatcher
 		return new Blob($scheme, $mount, $path);
 	}
 	
-	/**
-	 * Initializes the drives from the definitions in the configurations. Virtual 
-	 * drives provide access to potentially more exotic drivers like object storages
-	 * or similar.
-	 */
-	public function init() 
-	{
-		$defs = config('storage.engines');
-		
-		foreach ($defs as $k => $e) 
-		{
-			$class = $e['type'];
-			$settings = $e['settings'];
-			$i = new $class($settings);
-			
-			$this->register($k, $i);
-		}
-	}
-	
 }

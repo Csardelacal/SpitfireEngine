@@ -100,10 +100,13 @@ class Headers
 	 * the app's settings.
 	 * 
 	 * @param string $str
+	 * @param string|null $encoding
 	 */
-	public function contentType($str) {
+	public function contentType($str, string $encoding = null) {
 		
-		$encoding = config('app.http.encoding', 'utf-8');
+		if ($encoding === null) {
+			$encoding = config('app.http.encoding', 'utf-8');
+		}
 		
 		switch ($str) {
 			case 'php':

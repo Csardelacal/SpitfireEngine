@@ -2,9 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\drive\Directory;
+use spitfire\storage\drive\Driver;
 use spitfire\storage\drive\File;
 use spitfire\storage\drive\MountPoint;
 use spitfire\storage\objectStorage\DirectoryInterface;
+use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\FileInterface;
 use function storage;
 
@@ -40,7 +42,8 @@ class NewDriveTest extends TestCase
 	
 	
 	public function testRead() {
-		$this->storage = storage();
+		$this->storage = new DriveDispatcher;
+		$this->storage->register('file', new Driver('/'));
 		file_put_contents('/tmp/test.txt', 'Hello world');
 		$blob = $this->storage->retrieve('file:///tmp/test.txt');
 		

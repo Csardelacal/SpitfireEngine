@@ -11,17 +11,17 @@ class HeadersTest extends TestCase
 		
 		$t = new Headers();
 		
-		$t->contentType('php');
-		$this->assertEquals('text/html;charset=utf-8', $t->get('Content-type'));
+		$t->contentType('php', 'utf-8');
+		$this->assertEquals('text/html;charset=utf-8', $t->get('Content-type')[0]);
 		
-		$t->contentType('html');
-		$this->assertEquals('text/html;charset=utf-8', $t->get('Content-type'));
+		$t->contentType('html', 'utf-8');
+		$this->assertEquals('text/html;charset=utf-8', $t->get('Content-type')[0]);
 		
-		$t->contentType('json');
-		$this->assertEquals('application/json;charset=utf-8', $t->get('Content-type'));
+		$t->contentType('json', 'utf-8');
+		$this->assertEquals('application/json;charset=utf-8', $t->get('Content-type')[0]);
 		
-		$t->contentType('xml');
-		$this->assertEquals('application/xml;charset=utf-8', $t->get('Content-type'));
+		$t->contentType('xml', 'utf-8');
+		$this->assertEquals('application/xml;charset=utf-8', $t->get('Content-type')[0]);
 		
 	}
 	

@@ -136,7 +136,7 @@ class RouterTest extends TestCase
 	public function testURLReversal() 
 	{
 		$router  = $this->router;
-		$route   = $router->get('/@{param1}', Array('controller' => 'UserController', 'object' => [':param1']));
+		$route   = $router->get('/@{param1}', ['UserController', 'index']);
 		$url     = $route->getSource()->reverse(['param1' => 'hello_world']);
 		
 		$this->assertEquals('/@hello_world', $url);
