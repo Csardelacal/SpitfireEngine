@@ -2,6 +2,8 @@
 
 use spitfire\_init\LoadConfiguration;
 use spitfire\_init\ProvidersInit;
+use spitfire\_init\LoadCluster;
+use spitfire\_init\ProvidersFromManifest;
 use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
@@ -41,6 +43,10 @@ use spitfire\provider\Container;
 class WebKernel implements KernelInterface
 {
 	
+	/**
+	 * 
+	 * @var Router
+	 */
 	private $router;
 	
 	public function __construct(Container $provider) 
@@ -58,12 +64,14 @@ class WebKernel implements KernelInterface
 		 * we prefer.
 		 */
 		else {
-			$this->router = $provider->assemble(Router::class, ['prefix' => '']);
+			$router = $provider->assemble(Router::class, ['prefix' => '']);
+			assert($router instanceof Router);
+			$this->router = $router;
 			$provider->set(Router::class, $this->router);
 		}
 	}
 	
-	public function boot()
+	public function boot() : void
 	{
 	}
 	
@@ -104,7 +112,9 @@ class WebKernel implements KernelInterface
 		return [
 			LoadConfiguration::class,
 			ProvidersRegister::class,
-			ProvidersInit::class
+			ProvidersFromManifest::class,
+			ProvidersInit::class,
+			LoadCluster::class
 		];
 	}
 	

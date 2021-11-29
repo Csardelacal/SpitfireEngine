@@ -1,6 +1,8 @@
 <?php namespace spitfire\core\kernel;
 
+use spitfire\_init\LoadCluster;
 use spitfire\_init\LoadConfiguration;
+use spitfire\_init\ProvidersFromManifest;
 use spitfire\_init\ProvidersInit;
 use spitfire\_init\ProvidersRegister;
 use spitfire\cli\arguments\Parser;
@@ -58,7 +60,7 @@ class ConsoleKernel implements KernelInterface
 	 * execute some initial housekeeping and setup tasks before it starts executing
 	 * the user's command.
 	 */
-	public function boot()
+	public function boot() : void
 	{
 		
 	}
@@ -83,7 +85,7 @@ class ConsoleKernel implements KernelInterface
 	 * 
 	 * @throws CommandNotFoundException
 	 * @param string $command
-	 * @param array $arguments
+	 * @param string[] $arguments
 	 * @return int
 	 */
 	public function exec(string $command, array $arguments) : int
@@ -126,14 +128,16 @@ class ConsoleKernel implements KernelInterface
 	 * The list of init scripts that need to be executed in order for the kernel to
 	 * be usable.
 	 * 
-	 * @return array
+	 * @return string[]
 	 */
 	public function initScripts(): array 
 	{
 		return [
 			LoadConfiguration::class,
 			ProvidersRegister::class,
-			ProvidersInit::class
+			ProvidersFromManifest::class,
+			ProvidersInit::class,
+			LoadCluster::class
 		];
 	}
 }

@@ -361,11 +361,6 @@ parameters:
 			path: core/kernel/WebKernel.php
 
 		-
-			message: "#^Class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\StaticResponseRequestHandler does not have a constructor and must be instantiated without any parameters\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
 			message: "#^Instantiated class spifire\\\\io\\\\Stream not found\\.$#"
 			count: 1
 			path: core/kernel/WebKernel.php

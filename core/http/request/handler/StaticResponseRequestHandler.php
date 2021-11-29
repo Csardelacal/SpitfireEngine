@@ -3,6 +3,7 @@
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use spitfire\core\Response;
 
 class StaticResponseRequestHandler implements RequestHandlerInterface
 {
@@ -12,6 +13,15 @@ class StaticResponseRequestHandler implements RequestHandlerInterface
 	 * @var ResponseInterface
 	 */
 	private $response;
+	
+	/**
+	 * 
+	 * @param Response $response
+	 */
+	public function __construct(Response $response)
+	{
+		$this->response = $response;
+	}
 	
 	/**
 	 * 
