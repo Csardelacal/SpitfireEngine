@@ -1,4 +1,8 @@
 
+
+build:
+  image: default-bionic
+
 checks:
     php:
         code_rating: true

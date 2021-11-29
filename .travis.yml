@@ -17,6 +17,12 @@ before_script:
   - sudo apt-get install -y php$(phpenv version-name)-zip php$(phpenv version-name)-mbstring php$(phpenv version-name)-mysql  php$(phpenv version-name)-memcached
   - sudo apt-get install -y php$(phpenv version-name)-memcache
   
+  # In September 2021, the Let's encrypt root authority certificate expired, this has
+  # caused git to reject our certificates on phabricator.magic3w.com. Updating the certs
+  # should do the trick here.
+  # See: https://stackoverflow.com/questions/35821245/github-server-certificate-verification-failed
+  - sudo apt-get install --reinstall ca-certificates && sudo update-ca-certificates
+  
   # There's a need for a patch in order to make imagewebp work.
   # The script we pulled this from includes a lot of debugging output
   # https://travis-ci.community/t/how-to-enable-webp-image-format-support-in-php-7/3209/19
