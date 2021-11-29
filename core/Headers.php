@@ -157,4 +157,16 @@ class Headers
 		$this->set('Cache-Control', 'no-cache, must-revalidate');
 	}
 	
+	public static function fromGlobals() : Headers
+	{
+		
+		$headers = new Headers();
+		
+		foreach (array_change_key_case(getallheaders(), CASE_LOWER) as $header => $content) {
+			$headers->set($header, $content);
+		}
+		
+		return $headers;
+	}
+	
 }

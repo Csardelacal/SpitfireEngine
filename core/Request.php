@@ -1,11 +1,13 @@
 <?php namespace spitfire\core;
 
+use magic3w\http\url\reflection\URLReflection;
 use spitfire\io\Get;
 use spitfire\exceptions\ApplicationException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use spitfire\io\stream\Stream;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -556,5 +558,96 @@ class Request implements ServerRequestInterface
 			(int)array_shift($pieces),
 			(int)array_shift($pieces)?: null
 		];
+	}
+	
+	/**
+	 * Extract a request object from the current SAPI request. This distills the
+	 * context of the global request into an object that we can manipulate as we
+	 * descent into the middleware and request handler stack.
+	 * 
+	 * @return Request
+	 */
+	public static function fromGlobals() : Request
+	{
+		/**
+		 * Extract the request method from the server. Please note that we allow 
+		 * applications to override the request method by sending a payload to the
+		 * webserver. This fixes a few behavioral issues that we run into when working
+		 * with PHP and REST APIs
+		 * 
+		 * For example, PUT in HTTP and PHP is not intended to parse the request body
+		 * like POST would. But in REST, PUT is basically a POST that overwrites data
+		 * if it already existed.
+		 * 
+		 * For consistency, this method emulates the behavior of Laravel's mechanism
+		 * really closely.
+		 */
+		$method = $_method = strtoupper($_SERVER['REQUEST_METHOD']?? 'GET');
+		
+		if (isset($_POST['_method']) && in_array(strtoupper($_POST['method']), ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])) {
+			$method = $_POST['_method'];
+		}
+		
+		/**
+		 * The headers have their own little helper function that calls the apache_get_all_headers
+		 * function. Counter-intuitively, this function also works in CLI, FastCGI and NginX
+		 */
+		$headers = Headers::fromGlobals();
+		
+		/**
+		 * The URI is assembled by the URLReflection class.
+		 */
+		$uri = URLReflection::fromGlobals();
+		
+		/**
+		 * The PSR strongly suggests that both the cookie and server variable should be directly
+		 * read from the webserver.
+		 */
+		$cookies = $_COOKIE;
+		$serverParams = $_SERVER;
+		
+		/**
+		 * Open the body as a stream. In get requests this stream will contain nothing (obviously),
+		 * but all other requests will be able to read data from this.
+		 * 
+		 * Please note that this doesn't apply to simulated get requests, where the client requested
+		 * the data to be treated as POST.
+		 */
+		$body = new Stream(fopen('php://input', 'r'), true, true, false);
+		
+		$request = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
+		
+		/**
+		 * We default to assuming that the content type is undefined, and then loop over the
+		 * headers to attempt and find a header that overrides this.
+		 */
+		$contentType = null;
+		
+		/**
+		 * Loop over the content-type headers available (spoiler, it's only one) and extract the content
+		 * type. Since the content type can be followed by a semicolon to add boundary information and
+		 * charset information, we just parse the very first bit containing the mime type of the payload.
+		 */
+		foreach ($headers->get('content-type')?: [] as $_h) {
+			$contentType = explode(';', $_h)[0];
+		}
+		
+		/**
+		 * Pay close attention to the _ in the method variable name here. This implies that the request
+		 * gets parsed if the CLIENT sent a POST request, regardless of how the request was overridden,
+		 * it also does this when the method is set to something manually that expects a parsed body.
+		 */
+		if ($_method === 'POST' || $method === 'PUT') {
+			
+			if (in_array($contentType, ['multipart/formdata', 'application/x-www-form-urlencoded'])) {
+				$request->withParsedBody($_POST);
+			}
+			elseif ($contentType === 'application/json') {
+				$request->withParsedBody(json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR));
+			}
+			
+		}
+		
+		return $request;
 	}
 }
