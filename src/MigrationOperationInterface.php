@@ -64,13 +64,13 @@ interface MigrationOperationInterface
 	 * 
 	 * @return void
 	 */
-	public function up(SchemaInterface $schema) : void;
+	public function up(SchemaGrammarInterface $schema) : void;
 	
 	/**
 	 * Downgrade the database to the state below the current migration. This means that
 	 * Spitfire will find the previous highest migration and apply it's version number
 	 * to the database.
 	 */
-	public function down(SchemaInterface $schema) : void;
+	public function down(SchemaGrammarInterface $schema) : void;
 	
 }

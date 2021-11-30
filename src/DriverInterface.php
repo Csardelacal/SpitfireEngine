@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database;
 
+use spitfire\exceptions\ApplicationException;
 
 /**
  * The driver should allow the application to perform the following operations:
@@ -27,8 +28,10 @@ interface DriverInterface
 	/**
 	 * Executes a migration operation on the database. This allows you to create,
 	 * upgrade or downgrade database schemas.
+	 * 
+	 * @throws ApplicationException If the migration could not be applied
 	 */
-	public function migrate(MigrationOperationInterface $migration);
+	public function migrate(MigrationOperationInterface $migration) : void;
 	
 	/**
 	 * Query the database for data. The query needs to encapsulate all the data
