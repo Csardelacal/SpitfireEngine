@@ -115,31 +115,14 @@ abstract class RewriteRule
 		return (bool)($this->method & $method);
 	}
 	
-	/**
-	 * Tests whether the requested protocol (HTTPS or not) is accepted by this
-	 * route. We use once again binary masks to test the protocol. This means that
-	 * we can either use HTTP (01), HTTPS (10) or both (11) which will translate
-	 * into an integer 1, 2 and 3.
-	 *
-	 * This way the user can quickly decide whether he wants to use any or both
-	 * of them to match a route.
-	 * 
-	 * @deprecated We're letting the web server care about https
-	 * @param boolean $protocol
-	 * @return boolean
-	 */
-	public function testProto($protocol) {
-		return true;
-	}
-	
-	public function test($URI, $method) 
+	public function test(ServerRequestInterface $request) 
 	{
 		
-		if ($this->testMethod($method) === false) {
+		if ($this->testMethod($request->getMethod()) === false) {
 			return false;
 		}
 		
-		if ($this->pattern->test($URI) === null) {
+		if ($this->pattern->test($request->getUri()->getPath()) === null) {
 			return false;
 		}
 		

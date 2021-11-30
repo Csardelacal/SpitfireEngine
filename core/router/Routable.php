@@ -141,7 +141,7 @@ abstract class Routable
 	 */
 	public function addRoute($pattern, $target, $method = 0x03, $protocol = 0x03) {
 		
-		$match = URIPattern::make($pattern);
+		$match = URIPattern::make(rtrim($this->prefix, '/') . '/' . ltrim($pattern, '/'));
 		
 		/**
 		 * We always wrap our target in a function to be invoked if the router

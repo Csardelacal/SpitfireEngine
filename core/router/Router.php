@@ -2,6 +2,7 @@
 
 use Closure;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use spitfire\core\Response;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
@@ -70,25 +71,14 @@ class Router extends Routable
 	 * @todo The extension should be passed down to the servers (and therefore 
 	 * the routes) to allow the routes to respond to different requests properly.
 	 * 
-	 * @param string $url
-	 * @param string $method
-	 * @param string $protocol
+	 * @param ServerRequestInterface $request
 	 * @return RouterResult
 	 */
-	public function rewrite ($url, $method, $protocol) : RouterResult
+	public function rewrite (ServerRequestInterface $request) : RouterResult
 	{
 		
 		#Combine routes from the router and server
 		$routes = $this->getRoutes()->toArray();
-		
-		if (\spitfire\utils\Strings::endsWith($url, '/')) {
-			$url     = rtrim(pathinfo($url, PATHINFO_DIRNAME), '/') . '/' . pathinfo($url, PATHINFO_BASENAME);
-			$ext     = 'php';
-		} 
-		else {
-			$ext     = pathinfo($url, PATHINFO_EXTENSION);
-			$url     = rtrim(pathinfo($url, PATHINFO_DIRNAME), '/') . '/' . pathinfo($url, PATHINFO_FILENAME);
-		}
 		
 		#Test the routes
 		foreach ($routes as $route) { /*@var $route Route*/
@@ -97,11 +87,7 @@ class Router extends Routable
 			assert($route instanceof Route);
 			
 			#Verify whether the route is valid at all
-			if (!$route->test($url, $method, $protocol)) { continue; }
-			
-			#Check whether the route can rewrite the request
-			$rewrite = $route->rewrite($url, $method, $protocol, $ext);
-			assert($rewrite instanceof RequestHandlerInterface);
+			if (!$route->test($request)) { continue; }
 			
 			/**
 			 * The middleware is placed around the rewritten route in a
@@ -109,7 +95,7 @@ class Router extends Routable
 			 */
 			return new RouterResult($this->middleware->reverse()->reduce(function (RequestHandlerInterface $handler, MiddlewareInterface $middleware) {
 				return new DecoratingRequestHandler($handler, $middleware);
-			}, $rewrite));
+			}, $route->getTarget()));
 		}
 		
 		/**
@@ -122,7 +108,7 @@ class Router extends Routable
 		 * that a parent route that matches a request will override a child.
 		 */
 		foreach ($this->children as $child) {
-			$_r = $child->rewrite($url, $method, $protocol);
+			$_r = $child->rewrite($request);
 			assert($_r instanceof RouterResult);
 			
 			if ($_r->success()) { 
