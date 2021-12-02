@@ -3,9 +3,18 @@
 use PDO;
 use PDOException;
 use PDOStatement;
+use Psr\Log\LoggerInterface;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
-use spitfire\storage\database\DB;
+use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\io\CharsetEncoder;
+use spitfire\storage\database\MigrationOperationInterface;
+use spitfire\storage\database\Query;
+use spitfire\storage\database\Record;
+use spitfire\storage\database\ResultSetInterface;
+use spitfire\storage\database\Settings;
+
 use function spitfire;
 
 /**
@@ -14,65 +23,87 @@ use function spitfire;
  * when using several JOINs or INs. For this reason the driver has moved from
  * them back to standard querying.
  */
-class Driver extends DB
+class Driver implements DriverInterface
 {
-
-	private $connection    = false;
-	
-	/**@var mixed List of errors the repair() method can fix. This include:
-	 *     <ul>
-	 *     <li>1051 - Unknown table.</li>
-	 *     <li>1054 - Unknown column</li>
-	 *     <li>1146 - No such table</li>
-	 *     </ul>
-	 */
-	private $reparableErrors = Array(1051, 1054, 1146);
-	
 	
 	/**
-	 * Establishes the connection with the database server. This function
-	 * requires no parameters as they're stored by the class already.
 	 * 
-	 * @return boolean
-	 * @throws PrivateException If the database was unable to establish a 
-	 *                          connection because the Server rejected the connection.
+	 * @var LoggerInterface
 	 */
-	protected function connect() {
-		$settings = $this->getSettings();
+	private $logger;
+	
+	/**
+	 * 
+	 * @var Settings
+	 */
+	private $settings;
+	
+	/**
+	 * 
+	 * @var CharsetEncoder
+	 */
+	private $encoder;
+	
+	/**
+	 * 
+	 * @var PDO
+	 */
+	private $connection;
+	
+	
+	public function __construct(Settings $settings, LoggerInterface $logger)
+	{
+		$this->settings = $settings;
+		$this->logger   = $logger;
+		$this->encoder  = new CharsetEncoder(mb_internal_encoding(), $settings->getEncoding());
 		
-		$encoding = ['utf8' => 'utf8mb4'][$this->getEncoder()->getInnerEncoding()];
+		$encoding = ['utf8' => 'utf8mb4'][$this->encoder->getInnerEncoding()];
 		
+		/**
+		 * Generate the DSN for the mysql PDO connection.
+		 */
 		$dsn  = 'mysql:' . http_build_query(array_filter(['dbname' => $settings->getSchema(), 'host' => $settings->getServer(), 'charset' => $encoding]), '', ';');
 		$user = $settings->getUser();
 		$pass = $settings->getPassword();
-
+		
+		/**
+		 * Connect to the database to prepare for incoming queries. That way we can 
+		 * start receiving queries immediately.
+		 */
 		try {
 			$this->connection = new PDO($dsn, $user, $pass);
 			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$this->connection->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_NATURAL);
-			
-			return true;
-		} catch (PDOException $e) {
-			
-			if ($e->errorInfo == null) { //Apparently a error in 
-				throw new FileNotFoundException('Database does not exist', 1709051253);
-			} 
-			
-			spitfire()->log($e->getMessage());
-			throw new PrivateException('DB Error. Connection refused by the server: ' . $e->getMessage());
 		}
-
+		catch (PDOException $e) {
+			$logger->error($e->getMessage());
+			throw new ApplicationException('DB Error. Connection refused by the server: ' . $e->getMessage());
+		}
 	}
-
-	/**
-	 * Checks if a connection to the DB exists and creates it in case it
-	 * does not exist already.
-	 * 
-	 * @return PDO
-	 */
-	public function getConnection() {
-		if (!$this->connection) { $this->connect(); }
-		return $this->connection;
+	
+	public function migrate(MigrationOperationInterface $migration)
+	{
+		
+	}
+	
+	public function query(Query $query): ResultSetInterface
+	{
+		
+	}
+	
+	public function update(Record $record): bool
+	{
+		
+	}
+	
+	public function insert(Record $record): bool
+	{
+		
+	}
+	
+	public function delete(Record $record): bool
+	{
+		
 	}
 	
 	/**
@@ -129,7 +160,7 @@ class Driver extends DB
 		if ($text ===    0)  { return "'0'";  }
 		if ($text === false) { return "'0'";  }
 		
-		$str = $this->getEncoder()->encode($text); //This statement should not be here.
+		$str = $this->encoder->encode($text); //This statement should not be here.
 		//It's not part of the quoting mechanism to encode the data.
 		
 		return $this->getConnection()->quote( $str );

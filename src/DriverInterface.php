@@ -25,15 +25,6 @@ interface DriverInterface
 {
 	
 	/**
-	 * Drivers will receive a series of developer defined settings that will be
-	 * used to determine how the DBMS should behave to satisfy the needs of the
-	 * application.
-	 * 
-	 * @param Settings $settings Parameters passed to the database
-	 */
-	public function __construct(Settings$settings);
-	
-	/**
 	 * Executes a migration operation on the database. This allows you to create,
 	 * upgrade or downgrade database schemas.
 	 */
