@@ -70,6 +70,7 @@ class Layout implements LayoutInterface
 	{
 		$this->tablename = $tablename;
 		$this->fields = new Collection();
+		$this->indexes = new Collection();
 	}
 	
 	/**
@@ -164,6 +165,30 @@ class Layout implements LayoutInterface
 	function getFields() : Collection
 	{
 		return $this->fields;
+	}
+	
+	public function index(...$fields) : Index
+	{
+		$index = new Index('idx_'. rand(), new Collection($fields));
+		$this->indexes->push($index);
+		
+		return $index;
+	}
+	
+	public function unique(...$fields) : Index
+	{
+		$index = new Index('idx_'. rand(), new Collection($fields), true);
+		$this->indexes->push($index);
+		
+		return $index;
+	}
+	
+	public function primary($field) : Index
+	{
+		$index = new Index('idx_'. rand(), new Collection([$field]), true, true);
+		$this->indexes->push($index);
+		
+		return $index;
 	}
 	
 	/**

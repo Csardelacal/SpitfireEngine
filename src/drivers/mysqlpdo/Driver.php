@@ -4,10 +4,12 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use Psr\Log\LoggerInterface;
+use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
 use spitfire\storage\database\io\CharsetEncoder;
 use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
@@ -93,17 +95,35 @@ class Driver implements DriverInterface
 	
 	public function update(Record $record): bool
 	{
+		$grammar = new MySQLRecordGrammar($this->connection);
+		$stmt = $grammar->updateRecord($record);
 		
+		$this->logger->debug($stmt);
+		$result = $this->connection->exec($stmt);
+		
+		return $result !== false;
 	}
 	
 	public function insert(Record $record): bool
 	{
+		$grammar = new MySQLRecordGrammar($this->connection);
+		$stmt = $grammar->insertRecord($record);
 		
+		$this->logger->debug($stmt);
+		$result = $this->connection->exec($stmt);
+		
+		return $result !== false;
 	}
 	
 	public function delete(Record $record): bool
 	{
+		$grammar = new MySQLRecordGrammar($this->connection);
+		$stmt = $grammar->deleteRecord($record);
 		
+		$this->logger->debug($stmt);
+		$result = $this->connection->exec($stmt);
+		
+		return $result !== false;
 	}
 	
 	/**
@@ -163,7 +183,7 @@ class Driver implements DriverInterface
 		$str = $this->encoder->encode($text); //This statement should not be here.
 		//It's not part of the quoting mechanism to encode the data.
 		
-		return $this->getConnection()->quote( $str );
+		return $this->connection->quote( $str );
 	}
 	
 	/**

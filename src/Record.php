@@ -55,6 +55,11 @@ class Record
 		$this->data     = $data;
 	}
 	
+	public function getLayout() : Layout
+	{
+		return $this->layout;
+	}
+	
 	/**
 	 * The value of the primary key, null means that the software expects the
 	 * database to assign this record a primary key on insert.
@@ -64,9 +69,9 @@ class Record
 	 * 
 	 * @var int|string
 	 */
-	public function getPrimary() : mixed
+	public function getPrimary()
 	{
-		return $this->original[$this->layout->getPrimaryKey()->getName()];
+		return $this->original[$this->layout->getPrimaryKey()->getFields()[0]->getName()];
 	}
 	
 	/**
@@ -130,7 +135,7 @@ class Record
 	 * @param mixed $value
 	 * @return Record
 	 */
-	public function set(string $field, mixed $value) : Record
+	public function set(string $field, $value) : Record
 	{
 		/**
 		 * Only when assertions are enabled we perform a check whether this field is actually
