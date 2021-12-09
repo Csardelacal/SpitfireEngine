@@ -154,8 +154,19 @@ class Layout implements LayoutInterface
 	function addFields(Collection $fields) : Layout
 	{
 		assert($fields->containsOnly(Field::class));
-		$this->fields->add($fields);
+		$fields->each(function ($e) { $this->fields[$e->getName()] = $e; });
 		return $this;
+	}
+	
+	/**
+	 * Returns true if the layout contains a certain field. 
+	 * 
+	 * @param string $name
+	 * @return bool
+	 */
+	function hasField(string $name) : bool
+	{
+		return $this->fields->has($name);
 	}
 	
 	/**
@@ -189,6 +200,26 @@ class Layout implements LayoutInterface
 		$this->indexes->push($index);
 		
 		return $index;
+	}
+	
+	/**
+	 * Puts an index onto the table. Please note that the layout must contain the 
+	 * fields that the index is trying to index.
+	 * 
+	 * @param Index $index
+	 */
+	function putIndex(Index $index) : void
+	{
+		/**
+		 * This assertion ensures that the layout contains the fields indexed by the 
+		 * key. Obviously this needs only be checked during development but should
+		 * be safe to be assumed to be the case in production.
+		 */
+		assert($index->getFields()->reduce(function ($c, $e) { 
+			return $c && $this->hasField($e->getName()); 
+		}, true) === true);
+		
+		$this->indexes->push($index);
 	}
 	
 	/**
