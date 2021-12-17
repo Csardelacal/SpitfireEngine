@@ -280,104 +280,6 @@ function response(StreamInterface $stream, int $code = 200, array $headers = [])
 	return new Response($stream, $code, $headers);
 }
 
-/**
- * Escapes quotes from HTML. This will replace both ' and " with &#039; and &quot; 
- * respectively. This does not escape the other HTML entities, for that refer to
- * _e();
- * 
- * Usually you should use this function like _q(_e($str));
- * 
- * @param type $str
- * @return type
- */
-function _q($str) {
-	return \spitfire\utils\Strings::quote($str);
-}
-
-/**
- * Escapes the HTML from a string. This function will not escape the quotes, please
- * refer to the _q wrapper for that.
- * 
- * @see _q()
- * @param string $str
- * @return string
- */
-function _e($str) {
-	return \spitfire\utils\Strings::escape($str);
-}
-
-/**
- * Helper to convert URLs in text to actual links. By default, the application will
- * translate the URL to a pure HTML link, but you can pass a callable to the system
- * to change the output.
- * 
- * @param string $str
- * @param Closure|callable $cb
- * @return string
- */
-function _u($str, $cb = null) {
-	return \spitfire\utils\Strings::urls($str, $cb);
-}
-
-/**
- * Returns HTML escaped string and if desired it adds ellipsis. If the string is
- * numeric it will reduce unnecessary decimals.
- * 
- * @param String $str
- * @param int $maxlength
- * @return String
- */
-function __($str, $maxlength = false) {
-	if ($maxlength) { $str = \spitfire\utils\Strings::ellipsis ($str, $maxlength); }
-	return _u($str);
-}
-
-/**
- * Translation helper.
- * 
- * Depending on the arguments this function receives, it will have one of several
- * behaviors.
- * 
- * If the first argument is a spitfire\locale\Locale and the function receives a
- * optional second parameter, then it will assign the locale to either the global
- * domain / the domain provided in the second parameter.
- * 
- * Otherwise, if the first parameter is a string, it will call the default locale's
- * say method. Which will translate the string using the standard locale.
- * 
- * If no parameters are provided, this function returns a DomainGroup object,
- * which provides access to the currency and date functions as well as the other
- * domains that the system has for translations.
- * 
- * @return string|DomainGroup 
- */
-function _t() {
-	static $domains = null;
-	
-	#If there are no domains we need to set them up first
-	if ($domains === null) { $domains = new DomainGroup(); }
-	
-	#Get the functions arguments afterwards
-	$args = func_get_args();
-	
-	#If the first parameter is a Locale, then we proceed to registering it so it'll
-	#provide translations for the programs
-	if (isset($args[0]) && $args[0] instanceof Locale) {
-		$locale = array_shift($args);
-		$domain = array_shift($args);
-		
-		return $domains->putDomain($domain, new Domain($domain, $locale));
-	}
-	
-	#If the args is empty, then we give return the domains that allow for printing
-	#and localizing of the data.
-	if (empty($args)) {
-		return $domains;
-	}
-	
-	return call_user_func_array(Array($domains->getDefault(), 'say'), $args);
-}
-
 function console() {
 	static $console = null;
 	
@@ -386,30 +288,6 @@ function console() {
 	}
 	
 	return $console;
-}
-
-/**
- * Tests a value against a provided set of rules, if the 
- */
-function validate($value, $rules) : void
-{
-	
-	$messages = collect();
-	
-	collect($rules)
-		->each(function ($e) {
-			if ($e instanceof ValidationRule) { return $e; }
-			if ($e instanceof Closure) { return new ClosureValidationRule($e); }
-			if (is_string($e)) { return new RegexValidationRule($e, 'Invalid format'); }
-			throw new ValidationException('Invalid validation rules');
-		})
-		->each(function (ValidationRule $rule) use ($messages, $value) {
-			$messages->push($rule->test($value));
-		})->filter();
-	
-	if (!$messages->isEmpty()) {
-		throw new ValidationException('Validation failure', 2102011631, $messages->toArray());
-	}
 }
 
 /**
