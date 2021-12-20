@@ -5,15 +5,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use spitfire\collection\Collection;
-use spitfire\ast\Scope;
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator;
 use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
-use spitfire\validation\ValidationException;
-use spitfire\validation\parser\Parser;
-use spitfire\validation\ValidationRule;
 
 /* 
  * The MIT License
@@ -50,25 +45,16 @@ class ValidationMiddleware implements MiddlewareInterface
 	
 	/**
 	 * 
-	 * @var Collection<ValidationRule>
+	 * @var Validator
 	 */
 	private $rules;
 	
-	/**
-	 * The middleware needs access to the container, so that we can interact with
-	 * other components of the system appropriately.
-	 * 
-	 * @var Container
-	 */
-	private $container;
 	
-	public function __construct(Container $container, Collection $rules, ?RequestHandlerInterface $errorpage)
+	public function __construct(Container $container, Validator $rules, ?RequestHandlerInterface $errorpage)
 	{
 		$this->container = $container;
 		$this->rules = $rules;
 		$this->response = $errorpage;
-		
-		assert($rules->containsOnly(ValidationRule::class));
 	}
 	
 	/**
@@ -88,9 +74,14 @@ class ValidationMiddleware implements MiddlewareInterface
 		 */
 		assert(is_array($body) || $body instanceof ArrayAccess);
 		
-		$errors = $this->rules->each(function (ValidationRule $rule, string $key) {
-			return $rule->test($body[$key]?? null);
-		})->filter();
+		/**
+		 * If the validation passes properly, we let the next handler process this request,
+		 * since the application is receiving valid data.
+		 */
+		try {
+			$this->rules->assert($body);
+			return $handler->handle($request);
+		}
 		
 		/**
 		 * If there's errors, and there's a special handler defined for error pages, then we 
@@ -100,44 +91,46 @@ class ValidationMiddleware implements MiddlewareInterface
 		 * to the form page and have the data they sent us resubmitted, allowing it to pretend
 		 * it is a get request, using a "_method" hidden input.
 		 */
-		if (!$errors->isEmpty()) {
+		catch (NestedValidationException $e) {
+			$errors = $e->getMessages();
+		}
+		
 			
-			/**
-			 * If a response is provided by the developer, we can continue using that.
-			 */
-			if ($this->response) {
-				return $this->response->handle($request);
-			}
-			
-			/**
-			 * If the client expects a json response, we will send a json response with the error validation
-			 */
-			elseif ($request->hasHeader('accept') && $request->getHeader('accept')[0] === 'application/json') {
-				return response(
-					view(null, ['status' => 'failed', 'errors' => $errors]), 
-					200, 
-					['Content-Type' => ['application/json']]
-				);
-			}
-			
-			/**
-			 * If the client is sending the data via post, and is expecting to be redirected, we will send them
-			 * back to the page that delivered them to us.
-			 */
-			elseif ($request->hasHeader('referrer')) {
-				return response(
-					view('_error/validation.html', ['errors' => $errors, 'submitted' => $request->getParsedBody(), 'location' => $request->getHeader('referrer')[0]])
-				);
-			}
-			
-			/**
-			 * Without a referrer we can't reliably redirect the user to a location to retry entering the data 
-			 * properly.
-			 */
-			else {
-				throw new ApplicationException('Validation failed');
-			}
-		} 
+		/**
+		 * If a response is provided by the developer, we can continue using that.
+		 */
+		if ($this->response) {
+			return $this->response->handle($request);
+		}
+		
+		/**
+		 * If the client expects a json response, we will send a json response with the error validation
+		 */
+		elseif ($request->hasHeader('accept') && $request->getHeader('accept')[0] === 'application/json') {
+			return response(
+				view(null, ['status' => 'failed', 'errors' => $errors]), 
+				200, 
+				['Content-Type' => ['application/json']]
+			);
+		}
+		
+		/**
+		 * If the client is sending the data via post, and is expecting to be redirected, we will send them
+		 * back to the page that delivered them to us.
+		 */
+		elseif ($request->hasHeader('referrer')) {
+			return response(
+				view('_error/validation.html', ['errors' => $errors, 'submitted' => $request->getParsedBody(), 'location' => $request->getHeader('referrer')[0]])
+			);
+		}
+		
+		/**
+		 * Without a referrer we can't reliably redirect the user to a location to retry entering the data 
+		 * properly.
+		 */
+		else {
+			throw new ApplicationException('Validation failed');
+		}
 		
 		/**
 		 * If the errors are empty, or we just do want the controller to handle them in an explicit

@@ -204,7 +204,7 @@ class URIPattern
 	 * 
 	 * @param string[] $parameters
 	 * @return string
-	 * @throws PrivateException
+	 * @throws ApplicationException
 	 */
 	public function reverse($parameters) 
 	{

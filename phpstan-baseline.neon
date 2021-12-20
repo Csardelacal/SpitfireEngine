@@ -46,22 +46,12 @@ parameters:
 			path: Model.php
 
 		-
-			message: "#^Parameter \\$schema of method spitfire\\\\Model\\:\\:definitions\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: Model.php
-
-		-
 			message: "#^Parameter \\$table of method spitfire\\\\Model\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 2
 			path: Model.php
 
 		-
 			message: "#^Property spitfire\\\\Model\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
-			count: 1
-			path: Model.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\Model\\:\\:definitions\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 1
 			path: Model.php
 
@@ -181,47 +171,12 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Class spitfire\\\\locale\\\\Locale not found\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Class spitfire\\\\validation\\\\ValidationException constructor invoked with 1 parameter, 3 required\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
 			message: "#^Constant APP_DIRECTORY not found\\.$#"
 			count: 1
 			path: core/functions.php
 
 		-
-			message: "#^Default value of the parameter \\#2 \\$maxlength \\(false\\) of function __\\(\\) is incompatible with type int\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Function _e\\(\\) should return string but returns spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
 			message: "#^Function event\\(\\) should return spitfire\\\\core\\\\event\\\\EventDispatcher but returns spitfire\\\\core\\\\event\\\\Event\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Instantiated class ClosureValidationRule not found\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\locale\\\\Domain not found\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\locale\\\\DomainGroup not found\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -236,32 +191,7 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of static method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) expects spitfire\\\\utils\\\\type, string given\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Parameter \\$str of function _q\\(\\) has invalid typehint type type\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Return typehint of function _q\\(\\) has invalid type type\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Return typehint of function _t\\(\\) has invalid type spitfire\\\\locale\\\\DomainGroup\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
 			message: "#^Return typehint of function db\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Undefined variable\\: \\$app$#"
 			count: 1
 			path: core/functions.php
 
@@ -341,11 +271,6 @@ parameters:
 			path: core/router/Routable.php
 
 		-
-			message: "#^Variable \\$handler might not be defined\\.$#"
-			count: 1
-			path: core/router/Routable.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$URI$#"
 			count: 1
 			path: core/router/Route.php
@@ -369,41 +294,6 @@ parameters:
 			message: "#^PHPDoc tag @return with type void is incompatible with native type spitfire\\\\core\\\\router\\\\Parameters\\|null\\.$#"
 			count: 1
 			path: core/router/Route.php
-
-		-
-			message: "#^Access to offset mixed on an unknown class spitfire\\\\core\\\\router\\\\type\\.$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^Call to method getParameters\\(\\) on an unknown class spitfire\\\\core\\\\router\\\\type\\.$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^Call to method getUnparsed\\(\\) on an unknown class spitfire\\\\core\\\\router\\\\type\\.$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^Parameter \\$parameters of method spitfire\\\\core\\\\router\\\\URIPattern\\:\\:reverse\\(\\) has invalid typehint type spitfire\\\\core\\\\router\\\\type\\.$#"
-			count: 1
-			path: core/router/URIPattern.php
-
-		-
-			message: "#^Parameter \\$container of method spitfire\\\\core\\\\service\\\\Provider\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\core\\\\service\\\\Container\\.$#"
-			count: 1
-			path: core/service/Provider.php
-
-		-
-			message: "#^Property spitfire\\\\core\\\\service\\\\Provider\\:\\:\\$container has unknown class spitfire\\\\core\\\\service\\\\Container as its type\\.$#"
-			count: 1
-			path: core/service/Provider.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\FileNotFoundException not found\\.$#"
@@ -681,16 +571,6 @@ parameters:
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Call to method get\\(\\) on an unknown class spitfire\\\\core\\\\service\\\\Container\\.$#"
-			count: 1
-			path: io/session/SessionProvider.php
-
-		-
-			message: "#^Call to method set\\(\\) on an unknown class spitfire\\\\core\\\\service\\\\Container\\.$#"
-			count: 2
-			path: io/session/SessionProvider.php
-
-		-
 			message: "#^Cannot instantiate class spitfire\\\\io\\\\session\\\\Session via protected constructor spitfire\\\\io\\\\session\\\\Session\\:\\:__construct\\(\\)\\.$#"
 			count: 2
 			path: io/session/SessionProvider.php
@@ -721,11 +601,6 @@ parameters:
 			path: io/stream/Stream.php
 
 		-
-			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: model/Field.php
-
-		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: model/Field.php
@@ -736,32 +611,12 @@ parameters:
 			path: model/Field.php
 
 		-
-			message: "#^Parameter \\$model of method spitfire\\\\model\\\\Field\\:\\:setModel\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 1
-			path: model/Field.php
-
-		-
-			message: "#^Parameter \\$schema of method spitfire\\\\model\\\\Field\\:\\:setSchema\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: model/Field.php
-
-		-
 			message: "#^Parameter \\$value of method spitfire\\\\model\\\\Field\\:\\:validate\\(\\) has invalid typehint type spitfire\\\\model\\\\type\\.$#"
 			count: 1
 			path: model/Field.php
 
 		-
-			message: "#^Property spitfire\\\\model\\\\Field\\:\\:\\$schema has unknown class spitfire\\\\storage\\\\database\\\\Schema as its type\\.$#"
-			count: 1
-			path: model/Field.php
-
-		-
 			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: model/Field.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\Field\\:\\:getModel\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 1
 			path: model/Field.php
 
@@ -772,16 +627,6 @@ parameters:
 
 		-
 			message: "#^Method spitfire\\\\model\\\\OTFModel\\:\\:definitions\\(\\) should return spitfire\\\\storage\\\\database\\\\Schema but return statement is missing\\.$#"
-			count: 1
-			path: model/OTFModel.php
-
-		-
-			message: "#^Parameter \\$schema of method spitfire\\\\model\\\\OTFModel\\:\\:definitions\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: model/OTFModel.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\OTFModel\\:\\:definitions\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 1
 			path: model/OTFModel.php
 
@@ -1076,32 +921,7 @@ parameters:
 			path: model/children.php
 
 		-
-			message: "#^Call to method getField\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 3
-			path: model/children.php
-
-		-
-			message: "#^Call to method getFields\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: model/children.php
-
-		-
-			message: "#^Call to method getName\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 1
-			path: model/children.php
-
-		-
-			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 3
-			path: model/children.php
-
-		-
 			message: "#^Call to static method endsWith\\(\\) on an unknown class spitfire\\\\model\\\\fields\\\\spitfire\\\\utils\\\\Strings\\.$#"
-			count: 1
-			path: model/children.php
-
-		-
-			message: "#^Class spitfire\\\\storage\\\\database\\\\Schema not found\\.$#"
 			count: 1
 			path: model/children.php
 
@@ -1131,22 +951,7 @@ parameters:
 			path: model/children.php
 
 		-
-			message: "#^Parameter \\$target of method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 1
-			path: model/children.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:\\$target has unknown class spitfire\\\\storage\\\\database\\\\Schema as its type\\.$#"
-			count: 1
-			path: model/children.php
-
-		-
 			message: "#^Return typehint of method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:findReference\\(\\) has invalid type Reference\\.$#"
-			count: 1
-			path: model/children.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:getTarget\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 1
 			path: model/children.php
 
@@ -1191,27 +996,7 @@ parameters:
 			path: model/fields/Reference.php
 
 		-
-			message: "#^Call to method getName\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Call to method getPrimary\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: model/fields/Reference.php
-
-		-
 			message: "#^Call to static method endsWith\\(\\) on an unknown class spitfire\\\\model\\\\fields\\\\spitfire\\\\utils\\\\Strings\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Class spitfire\\\\storage\\\\database\\\\Schema not found\\.$#"
 			count: 1
 			path: model/fields/Reference.php
 
@@ -1231,32 +1016,7 @@ parameters:
 			path: model/fields/Reference.php
 
 		-
-			message: "#^Parameter \\$target of method spitfire\\\\model\\\\fields\\\\Reference\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Parameter \\$target of method spitfire\\\\model\\\\fields\\\\Reference\\:\\:setTarget\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
-			count: 2
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\fields\\\\Reference\\:\\:\\$target \\(spitfire\\\\storage\\\\database\\\\Schema\\) does not accept string\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\fields\\\\Reference\\:\\:\\$target has unknown class spitfire\\\\storage\\\\database\\\\Schema as its type\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
 			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\fields\\\\Reference\\:\\:getTarget\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Schema\\.$#"
 			count: 1
 			path: model/fields/Reference.php
 
@@ -1579,34 +1339,4 @@ parameters:
 			message: "#^Method spitfire\\\\utils\\\\database\\\\DatabaseInitDirector\\:\\:exec\\(\\) should return int but return statement is missing\\.$#"
 			count: 1
 			path: utils/database/DatabaseInitDirector.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$source$#"
-			count: 1
-			path: validation/rules/EmptyValidationRule.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$source$#"
-			count: 1
-			path: validation/rules/MinLengthValidationRule.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$source$#"
-			count: 1
-			path: validation/rules/PositiveNumberValidationRule.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$source$#"
-			count: 1
-			path: validation/rules/RegexValidationRule.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$source$#"
-			count: 1
-			path: validation/rules/TypeStringValidationRule.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: validation/rules/ValidationRuleGroup.php
 

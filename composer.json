@@ -13,11 +13,11 @@
 		"spitfire/cli": "^0.1.1",
 		"spitfire/database": "dev-master",
 		"spitfire/collection": "^0.1.0",
-		"spitfire/ast": "dev-master",
 		"psr/http-server-middleware": "^1.0",
 		"psr/http-factory": "^1.0",
 		"psr/http-message": "^1.0",
-		"magic3w/url-reflection": "^0.1.4||^0.2"
+		"magic3w/url-reflection": "^0.1.4||^0.2",
+		"respect/validation": "^2.2"
 	},
 
 	"require-dev": {
