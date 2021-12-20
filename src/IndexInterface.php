@@ -40,7 +40,7 @@ interface IndexInterface
 	 * the order on these. The order of the fields may affect query performance
 	 * heavily on a relational model.
 	 * 
-	 * @return Collection <Field>
+	 * @return Collection
 	 */
 	function getFields() : Collection;
 	

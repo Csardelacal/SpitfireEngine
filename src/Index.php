@@ -86,7 +86,7 @@ class Index implements IndexInterface
 	 * Returns the fields affected by this index. These should be fields that are used
 	 * together when searching.
 	 * 
-	 * @return Collection<Field>
+	 * @return Collection
 	 */
 	public function getFields() : Collection
 	{

@@ -4,17 +4,17 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use Psr\Log\LoggerInterface;
-use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\DriverInterface;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\io\CharsetEncoder;
-use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
+use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
 
 use function spitfire;
@@ -83,7 +83,7 @@ class Driver implements DriverInterface
 		}
 	}
 	
-	public function migrate(MigrationOperationInterface $migration) : void
+	public function migrate(Schema $schema) : SchemaMigrationExecutorInterface
 	{
 		
 	}

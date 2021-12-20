@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 
 /**
  * The driver should allow the application to perform the following operations:
@@ -31,7 +32,7 @@ interface DriverInterface
 	 * 
 	 * @throws ApplicationException If the migration could not be applied
 	 */
-	public function migrate(MigrationOperationInterface $migration) : void;
+	public function migrate(Schema $schema) : SchemaMigrationExecutorInterface;
 	
 	/**
 	 * Query the database for data. The query needs to encapsulate all the data
