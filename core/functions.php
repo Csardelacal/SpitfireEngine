@@ -17,7 +17,7 @@ use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
 use spitfire\io\media\ImagickManipulator;
 use spitfire\io\media\MediaDispatcher;
-use spitfire\io\Stream;
+use spitfire\io\stream\Stream;
 use spitfire\io\template\View;
 use spitfire\locale\Domain;
 use spitfire\locale\DomainGroup;
@@ -278,6 +278,52 @@ function view(?string $identifier, array $data) : StreamInterface
 function response(StreamInterface $stream, int $code = 200, array $headers = []) : Response
 {
 	return new Response($stream, $code, $headers);
+}
+
+/**
+ * The redirect function is a helper to quickly issue a response that causes a redirection,
+ * this avoids having to create an explicit redirection response whenever the application
+ * needs to redirect the user.
+ * 
+ * Redirections are a clearly distinct type of response, and naming them in the code makes 
+ * our code more readable and scannable, since the person reading or refactoring the code 
+ * will immediately be familiar with the behavior of the application without the need to 
+ * read into the parameters of the function to understand it's behavior (like they would have 
+ * to with the response function).
+ * 
+ * Note: This function does not perform validation of the URL the user is sent to. Please make
+ * sure to not make the location parameter user controllable.
+ * 
+ * @param string $location
+ * @param int $code
+ * @return Response
+ */
+function redirect(string $location, int $code = 302) : Response
+{
+	/**
+	 * The redirection cannot be performed unless the status code is a valid
+	 * redirection code.
+	 * 
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages
+	 * 
+	 * While 300 is technically a redirection, it's a redirection that requires
+	 * a body to work properly. This is not something this method supports.
+	 * 
+	 * Please note the assertion. In a production environment this test is not
+	 * performed. The status code should not be user controllable.
+	 */
+	assert(in_array($code, [301, 302, 303, 307, 308]));
+	
+	/**
+	 * Create a new redirection response and send it to the user.
+	 */
+	return new Response(
+		Stream::fromString('Redirecting...'),
+		$code,
+		[
+			'location' => $location
+		]
+	);
 }
 
 function console() {
