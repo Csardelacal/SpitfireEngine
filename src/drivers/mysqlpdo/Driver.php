@@ -8,6 +8,7 @@ use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\FileNotFoundException;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\grammar\mysql\MySQLQuoter;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\io\CharsetEncoder;
@@ -95,7 +96,7 @@ class Driver implements DriverInterface
 	
 	public function update(Record $record): bool
 	{
-		$grammar = new MySQLRecordGrammar($this->connection);
+		$grammar = new MySQLRecordGrammar(new MySQLQuoter($this->connection));
 		$stmt = $grammar->updateRecord($record);
 		
 		$this->logger->debug($stmt);
@@ -106,7 +107,7 @@ class Driver implements DriverInterface
 	
 	public function insert(Record $record): bool
 	{
-		$grammar = new MySQLRecordGrammar($this->connection);
+		$grammar = new MySQLRecordGrammar(new MySQLQuoter($this->connection));
 		$stmt = $grammar->insertRecord($record);
 		
 		$this->logger->debug($stmt);
@@ -117,7 +118,7 @@ class Driver implements DriverInterface
 	
 	public function delete(Record $record): bool
 	{
-		$grammar = new MySQLRecordGrammar($this->connection);
+		$grammar = new MySQLRecordGrammar(new MySQLQuoter($this->connection));
 		$stmt = $grammar->deleteRecord($record);
 		
 		$this->logger->debug($stmt);

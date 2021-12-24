@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
+use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\Record;
 
@@ -20,13 +21,7 @@ class MySQLRecordGrammarTest extends TestCase
 	
 	public function setUp() : void
 	{
-		try {
-			$pdo = new PDO('mysql:host=localhost', 'root', 'root');
-			$this->grammar = new MySQLRecordGrammar($pdo);
-		}
-		catch (PDOException $ex) {
-			$this->markTestSkipped('MySQL Connection could not be established for testing');
-		}
+		$this->grammar = new MySQLRecordGrammar(new SlashQuoter());
 	}
 	
 	public function testUpdate()

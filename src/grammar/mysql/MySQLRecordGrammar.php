@@ -2,6 +2,7 @@
 
 use PDO;
 use spitfire\collection\Collection;
+use spitfire\storage\database\QuoterInterface;
 use spitfire\storage\database\Record;
 
 /* 
@@ -30,11 +31,11 @@ use spitfire\storage\database\Record;
 class MySQLRecordGrammar
 {
 	
-	private $connection;
+	private $quoter;
 	
-	public function __construct(PDO $connection)
+	public function __construct(QuoterInterface $quoter)
 	{
-		$this->connection = $connection;
+		$this->quoter = $quoter;
 	}
 	
 	public function updateRecord(Record $record) : string
@@ -119,6 +120,6 @@ class MySQLRecordGrammar
 		if (is_int($text) )  { return strval($text);  }
 		if ($text === false) { return "'0'";  }
 		
-		return $this->connection->quote( $text );
+		return $this->quoter->quote( $text );
 	}
 }
