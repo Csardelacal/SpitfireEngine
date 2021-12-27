@@ -14,8 +14,8 @@ class LayoutTest extends TestCase
 	{
 		$layout = new Layout('testtable');
 		$fields = new Collection([
-			new Field($layout, 'testfield1', 'int', false, true),
-			new Field($layout, 'testfield2', 'string:255', true)
+			new Field('testfield1', 'int', false, true),
+			new Field('testfield2', 'string:255', true)
 		]);
 		
 		$index  = new Index('testidx', $fields, true, false);

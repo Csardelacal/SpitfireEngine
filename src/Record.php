@@ -104,7 +104,9 @@ class Record
 		 */
 		foreach ($this->layout->getFields() as $_field) {
 			$_name = $_field->getName();
-			if ($this->data[$_name]?? null !== $this->original[$_name]?? null) { return true; }
+			$_data = $this->data[$_name]?? null;
+			$_orig = $this->original[$_name]?? null;
+			if ($_data !== $_orig) { return true; }
 		}
 		
 		/**
@@ -121,7 +123,7 @@ class Record
 	 * @param string $field
 	 * @return mixed
 	 */
-	public function get(string $field) : mixed
+	public function get(string $field)
 	{
 		assert(!!$this->layout->getField($field));
 		return $this->data[$field]?? null;
@@ -191,7 +193,7 @@ class Record
 		
 		foreach ($this->layout->getFields() as $_field) {
 			$_name = $_field->getName();
-			if ($this->data[$_name]?? null !== $this->original[$_name]?? null) {
+			if (($this->data[$_name]?? null) !== ($this->original[$_name]?? null)) {
 				$_diff[$_name] = $this->data[$_name];
 			}
 		}

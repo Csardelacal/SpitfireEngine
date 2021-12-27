@@ -14,15 +14,6 @@ class Field
 {
 	
 	/**
-	 * The table provides context for where this field belongs. I'm not yet
-	 * 100% satisfied with this, since it means that the data contains circular
-	 * references.
-	 * 
-	 * @var Layout
-	 */
-	private $table;
-	
-	/**
 	 * Provides a name that the DBMS should use to name this field. Usually
 	 * this will be exactly the same as for the logical field, except for 
 	 * fields that reference others.
@@ -73,15 +64,13 @@ class Field
 	 * requires several DBFields to store, this class creates an adapter
 	 * to easily handle the different objects.
 	 * 
-	 * @param Layout $table
 	 * @param string $name
 	 * @param string $type
 	 * @param bool $nullable
 	 * @param bool $autoIncrement
 	 */
-	public function __construct(Layout $table, string $name, string $type, bool $nullable, bool $autoIncrement = false) 
+	public function __construct(string $name, string $type, bool $nullable, bool $autoIncrement = false) 
 	{
-		$this->table = $table;
 		$this->type = $type;
 		$this->nullable = $nullable;
 		$this->name = $name;
@@ -188,32 +177,6 @@ class Field
 	public function getType() : string
 	{
 		return $this->type;
-	}
-	
-	
-	/**
-	 * Set the field's table.
-	 * 
-	 * @param Layout $table
-	 * @return Field
-	 */
-	public function setTable(Layout $table) : Field
-	{
-		$this->table = $table;
-		return $this;
-	}
-	
-	/**
-	 * This function returns the table this field belongs to. This function 
-	 * is a convenience shortcut that allows retrieving the Table without 
-	 * needing to read all the intermediate layers that compound the logical
-	 * template of the Table.
-	 * 
-	 * @return Layout
-	 */
-	public function getTable() : Layout
-	{
-		return $this->table;
 	}
 	
 }

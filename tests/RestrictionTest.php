@@ -16,7 +16,7 @@ class RestrictionTest extends TestCase
 	public function testNegate()
 	{
 		$layout = new Layout('table');
-		$layout->setField('test', new Field($layout, 'test', 'string:255', true, false));
+		$layout->putField('test', 'string:255', true, false);
 		
 		$table = new QueryTable($layout);
 		$field = new QueryField($table, $layout->getField('test'));

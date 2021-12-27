@@ -32,7 +32,7 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testUpdate()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
+		$field  = new Field('testfield', 'int', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field]));
 		$layout->primary($field);
@@ -51,8 +51,8 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testUpdateOtherField()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
-		$field2  = new Field($layout, 'testfield2', 'int', true, false);
+		$field  = new Field('testfield', 'int', true, false);
+		$field2  = new Field('testfield2', 'int', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
@@ -73,7 +73,7 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testInsertGrammar()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
+		$field  = new Field('testfield', 'int', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field]));
 		$layout->primary($field);
@@ -92,8 +92,8 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testInsertGrammarMultipleFields()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
-		$field2  = new Field($layout, 'testfield2', 'int', true, false);
+		$field  = new Field('testfield', 'int', true, false);
+		$field2  = new Field('testfield2', 'int', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
@@ -113,8 +113,8 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testInsertGrammarMultipleFieldsWithNull()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
-		$field2  = new Field($layout, 'testfield2', 'int', true, false);
+		$field  = new Field('testfield', 'int', true, false);
+		$field2  = new Field('testfield2', 'int', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
@@ -133,8 +133,8 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testInsertGrammarMultipleFieldsWithString()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
-		$field2  = new Field($layout, 'testfield2', 'string:255', true, false);
+		$field  = new Field('testfield', 'int', true, false);
+		$field2  = new Field('testfield2', 'string:255', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
@@ -154,8 +154,8 @@ class MySQLRecordGrammarTest extends TestCase
 	public function testDeleteGrammar()
 	{
 		$layout = new Layout('testtable');
-		$field  = new Field($layout, 'testfield', 'int', true, false);
-		$field2  = new Field($layout, 'testfield2', 'string:255', true, false);
+		$field  = new Field('testfield', 'int', true, false);
+		$field2  = new Field('testfield2', 'string:255', true, false);
 		
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);

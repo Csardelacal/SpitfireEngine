@@ -126,7 +126,7 @@ class Layout implements LayoutInterface
 	 */
 	function putField(string $name, string $type, bool $nullable = true, bool $autoIncrement = false) : Field
 	{
-		$field = new Field($this, $name, $type, $nullable, $autoIncrement);
+		$field = new Field($name, $type, $nullable, $autoIncrement);
 		$this->fields[$name] = $field;
 		
 		return $field;
