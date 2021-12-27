@@ -24,7 +24,8 @@
 		"phpunit/phpunit": "^9.5",
 		"monolog/monolog": "^2.2",
 		"phpstan/phpstan": "^0.12.84",
-		"pug-php/pug": "^3.4"
+		"pug-php/pug": "^3.4",
+		"respect/validation": "^2.2"
 	},
 
 	"suggest": {

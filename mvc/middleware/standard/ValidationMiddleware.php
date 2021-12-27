@@ -50,9 +50,8 @@ class ValidationMiddleware implements MiddlewareInterface
 	private $rules;
 	
 	
-	public function __construct(Container $container, Validator $rules, ?RequestHandlerInterface $errorpage)
+	public function __construct(Validator $rules, ?RequestHandlerInterface $errorpage)
 	{
-		$this->container = $container;
 		$this->rules = $rules;
 		$this->response = $errorpage;
 	}
@@ -82,7 +81,6 @@ class ValidationMiddleware implements MiddlewareInterface
 			$this->rules->assert($body);
 			return $handler->handle($request);
 		}
-		
 		/**
 		 * If there's errors, and there's a special handler defined for error pages, then we 
 		 * send the user to the appropriate page.
@@ -131,11 +129,5 @@ class ValidationMiddleware implements MiddlewareInterface
 		else {
 			throw new ApplicationException('Validation failed');
 		}
-		
-		/**
-		 * If the errors are empty, or we just do want the controller to handle them in an explicit
-		 * manner, we can let the application do so.
-		 */
-		return $handler->handle($request);
 	}
 }

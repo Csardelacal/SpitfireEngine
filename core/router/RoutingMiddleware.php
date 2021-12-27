@@ -63,13 +63,13 @@ class RoutingMiddleware implements MiddlewareInterface
 		 * The router is expected to return a result object that we are going to query whether
 		 * the request can be handled by the router, and if so, how.
 		 */
-		$result = $this->router->rewrite($request->getRequestTarget(), $request->getMethod(), Route::PROTO_HTTPS);
+		$result = $this->router->rewrite($request);
 		
 		/**
 		 * If the router returned a successful match, we will use that match to handle the request.
 		 */
 		if ($result->success()) {
-			return $result->requestHandler()->handle($request);
+			return $result->getHandler()->handle($request);
 		}
 		
 		/**

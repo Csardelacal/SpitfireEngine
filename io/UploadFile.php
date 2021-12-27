@@ -4,13 +4,8 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\FilePermissionsException;
-use spitfire\exceptions\PrivateException;
 use spitfire\io\Filesize;
 use spitfire\io\stream\Stream;
-use spitfire\storage\objectStorage\FileInterface;
-use spitfire\utils\Strings;
-use function storage;
 
 /**
  * This class merges the file Uploads coming from a client into the POST array,
@@ -70,15 +65,15 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Create a new upload based on SAPI file uploads.
 	 * 
-	 * @param string $file
+	 * @param string $tmp
 	 * @param string $name
 	 * @param string $contentType
 	 * @param int $size
 	 * @param int $error
 	 */
-	public function __construct(string $file, string $name, string $contentType, int $size, int $error) 
+	public function __construct(string $tmp, string $name, string $contentType, int $size, int $error) 
 	{
-		$this->file = $file;
+		$this->tmp = $tmp;
 		$this->name = $name;
 		$this->size = $size;
 		$this->error = $error;
@@ -101,7 +96,7 @@ class UploadFile implements UploadedFileInterface
 		}
 		
 		$writable = is_writable($this->tmp);
-		return new Stream(fopen($this->file, $writable? 'r+' : 'r'), true, true, $writable);
+		return new Stream(fopen($this->tmp, $writable? 'r+' : 'r'), true, true, $writable);
 	}
 	
 	
@@ -177,8 +172,8 @@ class UploadFile implements UploadedFileInterface
 		 * Generate a random / time based prefix for the file.
 		 * @todo Look into the issues we used to have with non ASCII filenames
 		 */
-		$time = base_convert(time(), 10, 32);
-		$rand = base_convert(rand(), 10, 32);
+		$time = base_convert((string)time(), 10, 32);
+		$rand = base_convert((string)rand(), 10, 32);
 		
 		$copy = clone $this;
 		$copy->name = sprintf('%s_%s_%s', $time, $rand, $copy->name);

@@ -266,11 +266,6 @@ parameters:
 			path: core/router/RewriteRule.php
 
 		-
-			message: "#^Parameter \\#3 \\$method of class spitfire\\\\core\\\\router\\\\Route constructor expects string, int given\\.$#"
-			count: 1
-			path: core/router/Routable.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$URI$#"
 			count: 1
 			path: core/router/Route.php

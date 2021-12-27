@@ -81,10 +81,10 @@ abstract class RewriteRule
 	 * 
 	 * @param URIPattern $pattern
 	 * @param RequestHandlerInterface $new_route
-	 * @param string $method
+	 * @param int    $method
 	 * @param int    $proto
 	 */
-	public function __construct(URIPattern $pattern, RequestHandlerInterface $new_route, $method, $proto = Route::PROTO_ANY) 
+	public function __construct(URIPattern $pattern, RequestHandlerInterface $new_route, int $method, int $proto = Route::PROTO_ANY) 
 	{
 		$this->pattern   = $pattern;
 		$this->newRoute  = $new_route;

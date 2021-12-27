@@ -168,6 +168,10 @@ abstract class Routable
 			$route = new Route($match, $handler, $method, $protocol);
 		}
 		
+		else {
+			throw new BadMethodCallException('Invalid route', 2112101438);
+		}
+		
 		return $this->routes->push($route); 
 	}
 	
