@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\database;
 
+use spitfire\storage\database\query\OutputObjectInterface;
+use spitfire\storage\database\query\TableObjectInterface;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -27,7 +29,7 @@
  * 
  * SELECT SUM(field) as a, field2 as b FROM ...
  */
-class Output
+class Aggregate implements OutputObjectInterface
 {
 	
 	/**
@@ -48,36 +50,36 @@ class Output
 	 * The field underlying to the output.
 	 * 
 	 * @todo Replace with the underlying class
-	 * @var QueryField|Output
+	 * @var OutputObjectInterface
 	 */
 	private $field;
 	
 	/**
 	 * The operation (if any) to be performed on the resultset before returning it.
 	 * 
-	 * @var string|null
+	 * @var string
 	 */
 	private $operation;
 	
 	/**
 	 * 
-	 * @param QueryField|Output $field
-	 * @param string|null $operation
+	 * @param OutputObjectInterface $field
+	 * @param string $operation
 	 * @todo Replace with the underlying class
 	 */
-	public function __construct($field, string $operation = null)
+	public function __construct($field, string $operation)
 	{
-		$this->alias = null;
+		$this->alias = sprintf('%s_%s_%s', $operation, $field->getTable()->getAlias(), $field->getAlias());
 		$this->field = $field;
 		$this->operation = $operation;
 	}
 	
 	/**
 	 * 
-	 * @return QueryField
+	 * @return OutputObjectInterface
 	 * @todo Replace with the underlying class
 	 */
-	public function getField(): QueryField 
+	public function getInput(): OutputObjectInterface 
 	{
 		return $this->field;
 	}
@@ -94,6 +96,18 @@ class Output
 		return $this->operation;
 	}
 	
+	/**
+	 * Aggregations will always require looking into the underlying table
+	 */
+	function getTable():? TableObjectInterface
+	{
+		return null;
+	}
+	
+	function getName() :? string
+	{
+		return null;
+	}
 	
 	/**
 	 * The alias to be addressing this output as.
@@ -111,7 +125,7 @@ class Output
 	 * @param QueryField $field
 	 * @todo Replace with the underlying class
 	 */
-	public function setField(QueryField $field) 
+	public function setField(QueryField $field) : Aggregate
 	{
 		$this->field = $field;
 		return $this;
@@ -124,7 +138,7 @@ class Output
 	 * @see Output::AGGREGATE_*
 	 * @param string|null $operation
 	 */
-	public function setOperation(string $operation = null)
+	public function setOperation(string $operation = null) : Aggregate
 	{
 		$this->operation = $operation;
 		return $this;
@@ -135,7 +149,7 @@ class Output
 	 * 
 	 * @param string|null $alias
 	 */
-	public function setAlias(string $alias = null) 
+	public function setAlias(string $alias = null) : Aggregate
 	{
 		$this->alias = $alias;
 		return $this;

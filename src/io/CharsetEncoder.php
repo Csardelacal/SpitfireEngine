@@ -16,7 +16,18 @@
 class CharsetEncoder
 {
 	
+	/**
+	 * Name of the DBMS' charset.
+	 * 
+	 * @var string
+	 */
 	private $inner;
+	
+	/**
+	 * Name of the charset the application is using.
+	 * 
+	 * @var string
+	 */
 	private $outer;
 	
 	/**
@@ -27,7 +38,8 @@ class CharsetEncoder
 	 * @param string $outer Name of the outer encoding
 	 * @param string $inner Name of the inner encoding
 	 */
-	public function __construct($outer, $inner) {
+	public function __construct(string $outer, string $inner) 
+	{
 		$this->inner = $inner;
 		$this->outer = $outer;
 	}
@@ -35,10 +47,11 @@ class CharsetEncoder
 	/**
 	 * Converts data from the outer encoding to the inner encoding that you defined.
 	 * 
-	 * @param String $str The string encoded with the database's encoding
-	 * @return String The string encoded with Spitfire's encoding
+	 * @param string|null $str The string encoded with the database's encoding
+	 * @return string|null The string encoded with Spitfire's encoding
 	 */
-	public function encode($str) {
+	public function encode(string $str = null):? string 
+	{
 		if ($str === null)    { return null; }
 		if (is_numeric($str)) { return $str; }
 		return mb_convert_encoding($str, $this->inner, $this->outer);
@@ -48,10 +61,11 @@ class CharsetEncoder
 	/**
 	 * Converts data from the inner encoding to the outer encoding that you defined.
 	 * 
-	 * @param String $str The string encoded with Spitfire's encoding
-	 * @return String The string encoded with the database's encoding
+	 * @param string|null $str The string encoded with Spitfire's encoding
+	 * @return string|null The string encoded with the database's encoding
 	 */
-	public function decode($str) {
+	public function decode(string $str = null) :? string 
+	{
 		if ($str === null)    { return null; }
 		if (is_numeric($str)) { return $str; }
 		return mb_convert_encoding($str, $this->outer, $this->inner);
@@ -63,7 +77,8 @@ class CharsetEncoder
 	 * 
 	 * @return string
 	 */
-	public function getInnerEncoding() {
+	public function getInnerEncoding() : string
+	{
 		return $this->inner;
 	}
 

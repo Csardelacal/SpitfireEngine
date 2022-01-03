@@ -83,7 +83,7 @@ class Driver implements DriverInterface
 		}
 	}
 	
-	public function migrate(MigrationOperationInterface $migration)
+	public function migrate(MigrationOperationInterface $migration) : void
 	{
 		
 	}

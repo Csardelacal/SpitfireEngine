@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
+use spitfire\storage\database\query\TableObjectInterface;
 
 /**
  * The query table wraps a table and provides a consistent aliasing mechanism.
@@ -16,14 +17,14 @@ use spitfire\collection\Collection;
  * And then reference the fields within them as c1.id or c2.id. Otherwise, the DBMS
  * will fail, indicating that the field `id` is ambiguous.
  */
-class QueryTable
+class QueryTable implements TableObjectInterface
 {
 	
 	/**
 	 * This table provides all the information (metadata and fields) about the table
 	 * being queried.
 	 * 
-	 * @var (Query|Layout)
+	 * @var Layout
 	 */
 	private $table;
 	
@@ -58,10 +59,8 @@ class QueryTable
 	 */
 	private $aliased = false;
 	
-	public function __construct($table) 
+	public function __construct(Layout $table) 
 	{
-		assert($table instanceof Layout || $table instanceof Query);
-		
 		#In case this table is aliased, the unique alias will be generated using this.
 		$this->id = self::$counter++;
 		$this->table = $table;
@@ -124,7 +123,7 @@ class QueryTable
 		 * Get the name for the table. We use it to provide a consistent naming
 		 * system that makes it easier for debugging.
 		 */
-		$name = $this->table->getLayout()->getTablename();
+		$name = $this->table->getTablename();
 		
 		return $this->aliased? sprintf('%s_%s', $name, $this->id) : $name;
 	}
@@ -137,7 +136,7 @@ class QueryTable
 	 */
 	public function getField(string $name) : QueryField
 	{
-		return new QueryField($this, $this->table->getLayout()->getField($name));
+		return new QueryField($this, $this->table->getField($name));
 	}
 	
 	/**
@@ -146,11 +145,20 @@ class QueryTable
 	 */
 	public function getFields() : Collection
 	{
-		$fields = $this->table->getLayout()->getFields();
+		$fields = $this->table->getFields();
 		
 		return $fields->each(function ($e) {
 			return new QueryField($this, $e);
 		});
+	}
+	
+	/**
+	 * 
+	 * @return Collection
+	 */
+	public function getOutputs(): Collection
+	{
+		return $this->getFields();
 	}
 	
 	/**

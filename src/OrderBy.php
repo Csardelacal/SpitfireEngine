@@ -1,5 +1,7 @@
 <?php namespace spitfire\storage\database;
 
+use spitfire\storage\database\query\OutputObjectInterface;
+
 /**
  * The order by objects allow queries to indicate by which means they should be 
  * sorted, allowing the application to sort a results set it would retrieve from
@@ -13,7 +15,7 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @var AggregateFunction
+	 * @var OutputObjectInterface
 	 */
 	private $output;
 	
@@ -25,10 +27,10 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @param AggregateFunction $output
+	 * @param OutputObjectInterface $output
 	 * @param string $direction
 	 */
-	public function __construct(AggregateFunction $output, string $direction = OrderBy::ORDER_ASC)
+	public function __construct(OutputObjectInterface $output, string $direction = OrderBy::ORDER_ASC)
 	{	
 		$this->output = $output;
 		$this->direction = $direction;
@@ -36,9 +38,9 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @return AggregateFunction
+	 * @return OutputObjectInterface
 	 */
-	public function getOutput() : AggregateFunction
+	public function getOutput() : OutputObjectInterface
 	{
 		return $this->output;
 	}

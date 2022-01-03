@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\query\OutputObjectInterface;
 
 /**
  * The query field object is a component that allows a Query to wrap a field and
@@ -13,7 +14,7 @@ use spitfire\exceptions\ApplicationException;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class QueryField
+class QueryField implements OutputObjectInterface
 {
 	/** 
 	 * The actual database field.
@@ -52,7 +53,7 @@ class QueryField
 	 * 
 	 * @return QueryTable
 	 */
-	public function getQueryTable() : QueryTable 
+	public function getTable() : QueryTable 
 	{
 		return $this->table;
 	}
@@ -65,6 +66,27 @@ class QueryField
 	public function getField() : Field 
 	{
 		return $this->field;
+	}
+	
+	/**
+	 * Returns the name of the field that underlies the queryfield.
+	 * 
+	 * @return string
+	 */
+	public function getName() : string
+	{
+		return $this->field->getName();
+	}
+	
+	/**
+	 * Fields generally don't need aliases, since we can just reference them by the table
+	 * name and their name and fields cannot be duplicated within a table.
+	 * 
+	 * @return string|null 
+	 */
+	public function getAlias():? string
+	{
+		return null;
 	}
 	
 	/**

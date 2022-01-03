@@ -2,6 +2,8 @@
 
 use Closure;
 use spitfire\collection\Collection;
+use spitfire\storage\database\query\OutputObjectInterface;
+use spitfire\storage\database\query\TableObjectInterface;
 
 /**
  * The query provides a mechanism for assembling restrictions that Spitfire and
@@ -17,7 +19,7 @@ class Query extends RestrictionGroup
 	 * a QueryTable object to ensure that the table can refer back to the query
 	 * when needed.
 	 * 
-	 * @var QueryTable
+	 * @var TableObjectInterface
 	 */
 	protected $table;
 	
@@ -25,7 +27,7 @@ class Query extends RestrictionGroup
 	 *
 	 * @todo We should introduce a class that allows these queries to sort by multiple,
 	 * and even layered (as in, in other queries) columns.
-	 * @var string
+	 * @var OrderBy[]
 	 */
 	protected $order;
 	
@@ -50,7 +52,7 @@ class Query extends RestrictionGroup
 	 * 
 	 * @todo Provide a single output kind of type (something that can either refer to a field or a aggreation)
 	 * @todo Rename to reflect the fact that this is what e expect as output of the query.
-	 * @var Output[]
+	 * @var OutputObjectInterface[]
 	 */
 	protected $calculated;
 	
@@ -82,24 +84,16 @@ class Query extends RestrictionGroup
 
 	/** 
 	 * 
-	 * @param Table $table 
+	 * @param TableObjectInterface $table 
 	 */
-	public function __construct($table) 
+	public function __construct(TableObjectInterface $table) 
 	{
-		/**
-		 * @todo Replace this with an actual query table. Removing the need for the factory
-		 */
-		$this->table = new QueryTable($table);
+		$this->table = $table;
 		$this->joins = new Collection();
 		
 		#Initialize the parent
-		parent::__construct(null, Array());
+		parent::__construct(Array());
 		$this->setType(RestrictionGroup::TYPE_AND);
-	}
-	
-	
-	public function getQuery() {
-		return $this;
 	}
 	
 	/**
@@ -111,10 +105,10 @@ class Query extends RestrictionGroup
 	 * * Join : The new connection. You can use it to retrieve fields and push connections
 	 * * Query: The query being joined into. You can use this to retrieve the fields from the uplinks.
 	 * 
-	 * @param QueryTable $table
+	 * @param TableObjectInterface $table
 	 * @param Closure $fn
 	 */
-	public function joinTable(QueryTable $table, Closure $fn = null) : Query
+	public function joinTable(TableObjectInterface $table, Closure $fn = null) : Query
 	{
 		$join = new Join($table);
 		$this->joins[] = $join;
@@ -210,17 +204,17 @@ class Query extends RestrictionGroup
 			$table = $this->getQueryTable();
 		}
 		
-		$this->calculated = array_merge($this->calculated, $table->getFields()->each(function ($e) { return new Output($e, null); }));
+		$this->calculated = array_merge($this->calculated, $table->getFields());
 		return $this;
 	}
 	
 	public function addField(QueryField $field) : Query
 	{
-		$this->calculated[] = new Output($field, null);
+		$this->calculated[] = $field;
 		return $this;
 	}
 	
-	public function addOutput (Output $fn) {
+	public function addOutput (OutputObjectInterface $fn) {
 		$this->calculated[] = $fn;
 		return $this;
 	}
@@ -241,26 +235,12 @@ class Query extends RestrictionGroup
 	}
 	
 	/**
-	 * 
-	 * @deprecated since v0.2 20210812
-	 */
-	public function cloneQueryTable() {
-		$table = clone $this->table;
-		$table->newId();
-		
-		$this->replaceQueryTable($this->table, $table);
-		
-		$this->table = $table;
-		return $this->table;
-	}
-	
-	/**
 	 * Returns the actual table this query is searching on. 
 	 * 
-	 * @return Table
+	 * @return QueryTable
 	 */
 	public function getTable() {
-		return $this->table->getTable();
+		return $this->table;
 	}
 	
 	public function __toString() {
