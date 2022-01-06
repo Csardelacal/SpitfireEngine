@@ -36,8 +36,6 @@ class StringTest extends TestCase
 	 * Tests some of the most common usages of the camel2underscores function. This
 	 * function is usually helpful when converting class names to environments 
 	 * which are not case-sensitive.
-	 * 
-	 * @covers \Strings::camel2underscores
 	 */
 	public function testCamelCase2UnderscoreConversions() {
 		$this->assertEquals('some_string', Strings::camel2underscores('someString'));
@@ -47,8 +45,6 @@ class StringTest extends TestCase
 	/**
 	 * Tests the function that converts underscore separated names into camel case 
 	 * identifiers.
-	 * 
-	 * @covers \Strings::underscores2camel
 	 */
 	public function testUnderscore2CamelCaseConversions() {
 		$this->assertEquals('SomeString', Strings::underscores2camel('some_string'));
@@ -57,8 +53,6 @@ class StringTest extends TestCase
 	
 	/**
 	 * Tests whether the escape method properly removes unsafe HTML
-	 * 
-	 * @covers \Strings::escape
 	 */
 	public function testEscape() {
 		$this->assertEquals('&lt;strong', Strings::escape('<strong'));
@@ -66,8 +60,6 @@ class StringTest extends TestCase
 	
 	/**
 	 * For HTML tags, we need the system to quote the content too.
-	 * 
-	 * @covers \Strings::quote
 	 */
 	public function testQuote() {
 		$this->assertEquals('&quot;strong', Strings::quote('"strong'));
@@ -75,10 +67,8 @@ class StringTest extends TestCase
 	}
 
 	/**
-    * Replacing URLs in text is actually surprisingly difficult.
-    * 
-    * @covers \Strings::quote
-   */
+	 * Replacing URLs in text is actually surprisingly difficult.
+	 */
 	public function testURL() {
 		$this->assertEquals(
 			'Hello world, checkout <a href="https://magic3w.com/?about=us&team=true">https://magic3w.com/?about=us&amp;team=true</a>',
@@ -92,10 +82,8 @@ class StringTest extends TestCase
 	}
 
 	/**
-    * Replacing URLs in text is actually surprisingly difficult.
-    * 
-    * @covers \spitfire\utils\Strings::urls
-   */
+     * Replacing URLs in text is actually surprisingly difficult.
+	 */
 	public function testURLWithHash() {
 		$this->assertEquals(
 			'Hello world, checkout <a href="https://magic3w.com/about#anchor">https://magic3w.com/about#anchor</a>',

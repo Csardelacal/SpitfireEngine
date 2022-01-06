@@ -15,7 +15,7 @@ before_script:
   - sudo apt-get install -y ffmpeg
   - sudo apt-get install -y php$(phpenv version-name)-cli php$(phpenv version-name)-gd php$(phpenv version-name)-xml php$(phpenv version-name)-curl php$(phpenv version-name)-imagick
   - sudo apt-get install -y php$(phpenv version-name)-zip php$(phpenv version-name)-mbstring php$(phpenv version-name)-mysql  php$(phpenv version-name)-memcached
-  - sudo apt-get install -y php$(phpenv version-name)-memcache
+  - sudo apt-get install -y php$(phpenv version-name)-memcache php$(phpenv version-name)-xdebug
   
   # In September 2021, the Let's encrypt root authority certificate expired, this has
   # caused git to reject our certificates on phabricator.magic3w.com. Updating the certs
@@ -39,7 +39,7 @@ before_script:
   - composer install
   - composer dump-autoload
 
-script: vendor/bin/phpunit --configuration=phpunit.xml tests
+script: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration=phpunit.xml tests
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
