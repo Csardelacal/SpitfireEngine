@@ -4,7 +4,7 @@ use spitfire\model\Field;
 use spitfire\Model;
 use spitfire\model\adapters\ChildrenAdapter;
 use spitfire\exceptions\PrivateException;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 
 /**
  * The children field allows the application to maintain a relationship in the 

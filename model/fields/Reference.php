@@ -3,7 +3,7 @@
 use spitfire\model\Field;
 use spitfire\Model;
 use spitfire\model\adapters\ReferenceAdapter;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 
 /**
  * Elements of this class indicate a connection between two Models, this allows

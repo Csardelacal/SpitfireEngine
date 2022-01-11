@@ -1,7 +1,7 @@
 <?php namespace spitfire\model;
 
 use spitfire\Model;
-use spitfire\storage\database\Schema;
+use spitfire\model\Schema;
 use spitfire\storage\database\Table;
 use spitfire\validation\ValidationError;
 

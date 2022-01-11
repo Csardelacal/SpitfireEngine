@@ -156,11 +156,6 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Call to static method fromString\\(\\) on an unknown class spitfire\\\\io\\\\Stream\\.$#"
-			count: 2
-			path: core/functions.php
-
-		-
 			message: "#^Call to static method import\\(\\) on an unknown class spitfire\\\\core\\\\event\\\\RecipeLoader\\.$#"
 			count: 1
 			path: core/functions.php
@@ -621,11 +616,6 @@ parameters:
 			path: model/Field.php
 
 		-
-			message: "#^Method spitfire\\\\model\\\\OTFModel\\:\\:definitions\\(\\) should return spitfire\\\\storage\\\\database\\\\Schema but return statement is missing\\.$#"
-			count: 1
-			path: model/OTFModel.php
-
-		-
 			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\AdapterInterface\\:\\:getModel\\(\\) has invalid type Model\\.$#"
 			count: 1
 			path: model/adapters/AdapterInterface.php
@@ -977,11 +967,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Field\\:\\:getReferencedField\\(\\)\\.$#"
-			count: 1
-			path: model/fields/Reference.php
-
-		-
-			message: "#^Call to function is_string\\(\\) with spitfire\\\\storage\\\\database\\\\Schema will always evaluate to false\\.$#"
 			count: 1
 			path: model/fields/Reference.php
 
