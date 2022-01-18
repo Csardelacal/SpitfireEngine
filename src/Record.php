@@ -26,7 +26,7 @@ class Record
 	/**
 	 * The layout/table this record fits into.
 	 * 
-	 * @var Layout
+	 * @var LayoutInterface
 	 */
 	private $layout;
 	
@@ -45,17 +45,17 @@ class Record
 	
 	/**
 	 * 
-	 * @param Layout $layout
+	 * @param LayoutInterface $layout
 	 * @param mixed[] $data
 	 */
-	public function __construct(Layout $layout, array $data)
+	public function __construct(LayoutInterface $layout, array $data)
 	{
 		$this->layout   = $layout;
 		$this->original = $data;
 		$this->data     = $data;
 	}
 	
-	public function getLayout() : Layout
+	public function getLayout() : LayoutInterface
 	{
 		return $this->layout;
 	}

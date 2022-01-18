@@ -178,6 +178,13 @@ class Layout implements LayoutInterface
 		return $this->fields;
 	}
 	
+	/**
+	 * Add an index spanning the given fields. Please note that the index will receive
+	 * a random name to ensure it's unique.
+	 * 
+	 * @param Field[] $fields
+	 * @return Index
+	 */
 	public function index(...$fields) : Index
 	{
 		$index = new Index('idx_'. rand(), new Collection($fields));
@@ -186,6 +193,13 @@ class Layout implements LayoutInterface
 		return $index;
 	}
 	
+	/**
+	 * Add a unique index spanning the given fields. Please note that the index will receive
+	 * a random name to ensure it's unique.
+	 * 
+	 * @param Field[] $fields
+	 * @return Index
+	 */
 	public function unique(...$fields) : Index
 	{
 		$index = new Index('idx_'. rand(), new Collection($fields), true);
@@ -194,7 +208,13 @@ class Layout implements LayoutInterface
 		return $index;
 	}
 	
-	public function primary($field) : Index
+	/**
+	 * Set the primary index to a certain field.
+	 * 
+	 * @param Field $field
+	 * @return Index
+	 */
+	public function primary(Field $field) : Index
 	{
 		$index = new Index('idx_'. rand(), new Collection([$field]), true, true);
 		$this->indexes->push($index);

@@ -3,6 +3,10 @@
 use PDO;
 use PDOStatement;
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\io\CharsetEncoder;
+use spitfire\storage\database\LayoutInterface;
+use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
 use spitfire\storage\database\Table;
 
@@ -27,31 +31,58 @@ class ResultSet implements ResultSetInterface
 	 * This is a reference to the table this resultset belongs to. This allows
 	 * Spitfire to retrieve data about the model and the fields the datatype has.
 	 *
-	 * @var Table
+	 * @var LayoutInterface
 	 */
 	private $table;
 	
-	public function __construct(Table$table, $stt) {
+	/**
+	 * An encoder that converts the data from the DB charset, to the internal charset.
+	 * 
+	 * @var CharsetEncoder
+	 */
+	private $encoder;
+	
+	public function __construct(CharsetEncoder $encoder, LayoutInterface $table, PDOStatement $stt) 
+	{
 		$this->result = $stt;
+		$this->encoder = $encoder;
 		$this->table = $table;
 	}
-
-	public function fetch() {
+	
+	/**
+	 * 
+	 * @return Record
+	 */
+	public function fetch() :? Record
+	{
 		$data = $this->result->fetch(PDO::FETCH_ASSOC);
 		#If the data does not contain anything we return a null object
 		if (!$data) { return null; }
-		$_record = array_map( Array($this->table->getDB()->getEncoder(), 'decode'), $data);
+		$_record = array_map( Array($this->encoder, 'decode'), $data);
 		
-		$record = $this->table->newRecord($_record);
+		$record = new Record($this->table, $_record);
 		return $record;
 	}
 
-	public function fetchAll() {
+	/**
+	 * 
+	 * @return Collection<Record>
+	 */
+	public function fetchAll() : Collection
+	{
 		$data = $this->result->fetchAll(PDO::FETCH_ASSOC);
 		
+		/**
+		 * We cannot accept the application being unable to retrieve data from the server.
+		 */
+		if ($data === false) {
+			throw new ApplicationException('DB Error: Could not fetch data', 2101181256);
+		}
+		
 		foreach ($data as &$record) {
-			$record = $this->table->newRecord(
-				array_map( Array($this->table->getDB()->getEncoder(), 'decode'), $record)
+			$record = new Record(
+				$this->table,
+				array_map( Array($this->encoder, 'decode'), $record)
 			);
 		}
 		

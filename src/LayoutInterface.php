@@ -76,4 +76,12 @@ interface LayoutInterface
 	 */
 	function getIndexes();
 	
+	/**
+	 * Get's the table's primary key. This will always return an array
+	 * containing the fields the Primary Key contains.
+	 * 
+	 * @return IndexInterface|null
+	 */
+	public function getPrimaryKey() :? IndexInterface;
+	
 }
