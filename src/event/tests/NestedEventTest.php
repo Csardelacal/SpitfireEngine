@@ -1,6 +1,8 @@
 <?php namespace spitfire\event;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\event\tests\TestEvent;
+use spitfire\event\tests\TestEvent2;
 
 /* 
  * The MIT License
@@ -34,19 +36,19 @@ class NestedEventTest extends TestCase
 		
 		$dispatcher = new EventDispatch();
 		
-		$dispatcher->hook('m3w.test', new Listener(function (Event$e) use ($dispatcher) { 
+		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) use ($dispatcher) { 
 			$e->preventDefault();
-			return 'hello ' . $dispatcher->dispatch(new Event('m3w.test2', $e->payload()), function (Event$e) {
-				return $e->getPayload() . 'a';
+			return 'hello ' . $dispatcher->dispatch(new TestEvent2($e->payload()), function (TestEvent2 $e) {
+				return $e->payload() . 'a';
 			}); 
 		}));
 		
-		$dispatcher->hook('m3w.test2', new Listener(function (Event$e) { 
+		$dispatcher->hook(TestEvent2::class, new Listener(function (TestEvent2 $e) { 
 			$e->preventDefault();
 			return $e->payload() . 's'; 
 		}));
 		
-		$result = $dispatcher->dispatch(new Event('m3w.test', 'world'), function (Event$e) {
+		$result = $dispatcher->dispatch(new TestEvent('world'), function (TestEvent $e) {
 			return 'bye ' . $e->payload();
 		});
 		

@@ -1,6 +1,8 @@
 <?php namespace spitfire\event;
 
-/* 
+use Closure;
+
+/*
  * The MIT License
  *
  * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -27,20 +29,27 @@
 /**
  * This simplified listener allows to use a closure to listen for events instead
  * of defining your own listener class.
- * 
+ *
+ * @template T of Event
+ * @implements ListenerInterface<T>
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class Listener implements ListenerInterface
 {
 	
+	/**
+	 *
+	 * @var Closure
+	 */
 	private $callable;
 	
-	public function __construct($callable) {
+	public function __construct(Closure $callable)
+	{
 		$this->callable = $callable;
 	}
 	
-	public function react(Event $event) {
+	public function react(Event $event)
+	{
 		return ($this->callable)($event);
 	}
-
 }

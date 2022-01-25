@@ -1,6 +1,8 @@
-<?php namespace spitfire\event;
+<?php namespace spitfire\event\tests;
 
-/*
+use spitfire\event\Event;
+
+/* 
  * The MIT License
  *
  * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -25,26 +27,23 @@
  */
 
 /**
- * Classes that implement this interface are allowed to listen for events using
- * spitfire's event mechanism.
- *
- * Whenever the listener gets invoked, your react method will be called and you
- * can handle the event. For the specifics of a particular event, please refer to
- * the vendor's documentation.
- *
- * @template T of Event
+ * An event records that something happened on the system. By nature, events are
+ * immutable. This means that Listeners can subscribe to events and produce side
+ * effects, but the event itself cannot be modified.
+ * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-interface ListenerInterface
+class TestEvent extends Event
 {
+	private $payload;
 	
-	/**
-	 * This method is invoked whenever an event that this listener is registered
-	 * for is fired. Please note that the method may not be invoked if the event
-	 * was earlier cancelled.
-	 *
-	 * @param T $event
-	 * @return mixed
-	 */
-	public function react(Event $event);
+	public function __construct(string $payload)
+	{
+		$this->payload = $payload;
+	}
+	
+	public function payload()
+	{
+		return $this->payload;
+	}
 }

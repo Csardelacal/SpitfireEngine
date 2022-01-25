@@ -1,6 +1,6 @@
 <?php namespace spitfire\event;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -28,30 +28,14 @@
  * An event records that something happened on the system. By nature, events are
  * immutable. This means that Listeners can subscribe to events and produce side
  * effects, but the event itself cannot be modified.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class Event
+abstract class Event
 {
 	
 	/**
-	 * The name of the hook that dispatched this event. This is defined by the vendor
-	 * of the application providing hooks.
-	 *
-	 * @var string
-	 */
-	private $hook;
-	
-	/**
-	 * The payload this event carries. This allows the listener to understand what
-	 * event occurred and how to react to it.
-	 *
-	 * @var mixed
-	 */
-	private $payload;
-	
-	/**
-	 * Whether the event will be raised to a higher dispatcher if the current one 
+	 * Whether the event will be raised to a higher dispatcher if the current one
 	 * did not stop the propagation to higher dispatchers.
 	 *
 	 * @var bool
@@ -68,7 +52,7 @@ class Event
 	/**
 	 * The component dispatching the event can provide a default callable to be executed
 	 * in the event of the hooks not capturing (stopping / preventing) the event.
-	 * 
+	 *
 	 * If this flag is set to true by the time it reaches the default callable, this
 	 * callable will not be executed.
 	 *
@@ -77,61 +61,30 @@ class Event
 	private $preventDefault = false;
 	
 	/**
-	 * Creates a new event, this can be used to pass to the dipatchers `dispatch`
-	 * method, allowing listeners to react to the event.
-	 * 
-	 * @param string $hook
-	 * @param mixed $payload
-	 * @param string[] $options
-	 */
-	public function __construct(string$hook, $payload, $options = []) {
-		$this->hook = $hook;
-		$this->payload = $payload;
-		foreach ($options as $option => $value) { $this->$option = $value; }
-	}
-	
-	/**
-	 * Return the name of the hook that fired this event.
-	 * 
-	 * @return string
-	 */
-	public function hook() {
-		return $this->hook;
-	}
-	
-	/**
-	 * Return the payload that the source provided to this event. Please note that
-	 * the payload is immutable, you are not allowed / supposed to modify it.
-	 * 
-	 * @return mixed
-	 */
-	public function payload() {
-		return $this->payload;
-	}
-	
-	/**
 	 * Returns true if the event is intended to bubble up to higher up dispatchers.
 	 * When using bubbling events please make sure to use very specific naming to prevent
 	 * applications from creating event collisions, these can often be fatal for
 	 * applications.
-	 * 
+	 *
 	 * @return bool
 	 */
-	public function bubbles() : bool {
+	public function bubbles() : bool
+	{
 		return $this->bubbles;
 	}
 	
 	/**
-	 * Returns true if the event was stopped and is not intended to be passed to 
+	 * Returns true if the event was stopped and is not intended to be passed to
 	 * another listener.
-	 * 
-	 * Some listeners may require an event to be stopped from continuing, this is 
+	 *
+	 * Some listeners may require an event to be stopped from continuing, this is
 	 * often the case when dealing with events that, if processed by many listeners,
 	 * could generate a destructive interference.
-	 * 
+	 *
 	 * @return bool
 	 */
-	public function isStopped() : bool {
+	public function isStopped() : bool
+	{
 		return $this->stopped;
 	}
 	
@@ -139,21 +92,23 @@ class Event
 	 * Indicates that this event was prevented from being passed to the default.
 	 * Please note that stopping an event's propagation implies it not being passed
 	 * to the default.
-	 * 
+	 *
 	 * @return bool
 	 */
-	public function isPrevented() : bool {
+	public function isPrevented() : bool
+	{
 		return $this->preventDefault;
 	}
 	
 	/**
 	 * Prevents the event from being passed to the default handler that the source
 	 * provided for handling the event.
-	 * 
+	 *
 	 * @param bool $set
 	 * @return Event
 	 */
-	public function preventDefault(bool$set = true) : Event {
+	public function preventDefault(bool$set = true) : Event
+	{
 		$this->preventDefault = $set;
 		return $this;
 	}
@@ -161,12 +116,26 @@ class Event
 	/**
 	 * Prevents the event from being passed to other listeners, terminating it after
 	 * this listener has concluded executing it's body.
-	 * 
+	 *
 	 * @param bool $set
 	 * @return Event
 	 */
-	public function stopPropagation(bool$set = true) : Event {
+	public function stopPropagation(bool$set = true) : Event
+	{
 		$this->stopped = $set;
+		return $this;
+	}
+	
+	/**
+	 * Determines whether the event is allowed to bubble. Bubbling means that the event
+	 * is passed to a parent dispatcher if the dispatch could not handle it.
+	 *
+	 * @param bool $set
+	 * @return self
+	 */
+	public function preventBubbling(bool $set = true) : self
+	{
+		$this->bubbles = !$set;
 		return $this;
 	}
 }

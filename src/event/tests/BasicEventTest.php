@@ -1,5 +1,7 @@
 <?php namespace spitfire\event;
 
+use spitfire\event\tests\TestEvent;
+
 /* 
  * The MIT License
  *
@@ -34,12 +36,12 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		
 		$dispatcher = new EventDispatch();
 		
-		$dispatcher->hook('m3w.test', new Listener(function (Event$e) { 
+		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			$e->preventDefault();
 			return $e->payload() . ' world'; 
 		}));
 		
-		$result = $dispatcher->dispatch(new Event('m3w.test', 'hello'), function (Event$e) {
+		$result = $dispatcher->dispatch(new TestEvent('hello'), function (TestEvent $e) {
 			return $e->payload() . ' death';
 		});
 		
@@ -50,11 +52,11 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		
 		$dispatcher = new EventDispatch();
 		
-		$dispatcher->hook('m3w.test', new Listener(function (Event$e) { 
+		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			return 'hello ' . $e->payload(); 
 		}));
 		
-		$result = $dispatcher->dispatch(new Event('m3w.test', 'world'), function (Event$e) {
+		$result = $dispatcher->dispatch(new TestEvent('world'), function (TestEvent $e) {
 			return 'bye ' . $e->payload();
 		});
 		
@@ -70,7 +72,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		
 		$dispatcher = new EventDispatch();
 		
-		$dispatcher->hook('m3w.test', new Listener(function (Event$e) { 
+		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			$e->preventDefault();
 			return 'hello ' . $e->payload(); 
 		}));
@@ -79,11 +81,11 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		 * This listener overrides the output from the first, but does not invoke
 		 * preventdefault anew.
 		 */
-		$dispatcher->hook('m3w.test', new Listener(function (Event$e) { 
+		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			return 'stop ' . $e->payload(); 
 		}));
 		
-		$result = $dispatcher->dispatch(new Event('m3w.test', 'world'), function (Event$e) {
+		$result = $dispatcher->dispatch(new TestEvent('world'), function (TestEvent $e) {
 			return 'bye ' . $e->payload();
 		});
 		

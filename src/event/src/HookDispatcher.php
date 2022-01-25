@@ -1,6 +1,6 @@
 <?php namespace spitfire\event;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -27,10 +27,11 @@
 /**
  * A hook dispatcher is just a small collection of listeners that are attached
  * to a certain hook.
- * 
- * This class provides a simple iterator for the dispatch method to alleviate the 
+ *
+ * This class provides a simple iterator for the dispatch method to alleviate the
  * complexity of the EventDispatcher. This is not a public class.
- * 
+ *
+ * @template T of Event
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class HookDispatcher
@@ -40,7 +41,7 @@ class HookDispatcher
 	 * The array containing the listeners to be invoked whenever the hook that this
 	 * dispatcher represents is invoked.
 	 *
-	 * @var ListenerInterface[]
+	 * @var ListenerInterface<T>[]
 	 */
 	private $listeners = [];
 	
@@ -48,11 +49,12 @@ class HookDispatcher
 	 * Push a new listener onto the list. Whenever the system dispatches an event
 	 * with the appropriate hook for this to be executed, the system will invoke
 	 * this listener.
-	 * 
-	 * @param ListenerInterface $listener
+	 *
+	 * @param ListenerInterface<T> $listener
 	 * @return $this
 	 */
-	public function add (ListenerInterface$listener) {
+	public function add(ListenerInterface$listener)
+	{
 		$this->listeners[] = $listener;
 		return $this;
 	}
@@ -61,11 +63,12 @@ class HookDispatcher
 	 * Dispatches the event to the listeners. Listeners have the option to return
 	 * a value that (if not overridden by a later listener) will be returned to the
 	 * source to use.
-	 * 
-	 * @param \spitfire\event\Event $event
+	 *
+	 * @param T $event
 	 * @return mixed
 	 */
-	public function dispatch(Event$event) {
+	public function dispatch(Event $event)
+	{
 		$listeners = $this->listeners;
 		$t = null;
 		

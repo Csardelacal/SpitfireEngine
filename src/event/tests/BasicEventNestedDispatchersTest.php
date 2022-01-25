@@ -1,6 +1,8 @@
 <?php namespace spitfire\event;
 
+use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
+use spitfire\event\tests\TestEvent;
 
 /* 
  * The MIT License
@@ -34,16 +36,16 @@ class BasicEventNestedDispatchersTest extends TestCase
 		$parent = new EventDispatch();
 		$child = new EventDispatch($parent);
 		
-		$child->hook('m3w.test', new Listener(function (Event$e) {
+		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			return 'hello ' . $e->payload();
 		}));
 		
-		$parent->hook('m3w.test', new Listener(function (Event$e) {
+		$parent->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
 			return 'bye ' . $e->payload();
 		}));
 		
-		$result = $child->dispatch(new Event('m3w.test', 'world'), null);
+		$result = $child->dispatch(new TestEvent('world'), null);
 		$this->assertEquals('bye world', $result);
 	}
 	
@@ -52,17 +54,17 @@ class BasicEventNestedDispatchersTest extends TestCase
 		$parent = new EventDispatch();
 		$child = new EventDispatch($parent);
 		
-		$child->hook('m3w.test', new Listener(function (Event$e) {
+		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
 			return 'hello ' . $e->payload();
 		}));
 		
-		$parent->hook('m3w.test', new Listener(function (Event$e) {
+		$parent->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
 			return 'bye ' . $e->payload();
 		}));
 		
-		$result = $child->dispatch(new Event('m3w.test', 'world'), null);
+		$result = $child->dispatch(new TestEvent('world'), null);
 		$this->assertEquals('hello world', $result);
 	}
 	
@@ -71,16 +73,16 @@ class BasicEventNestedDispatchersTest extends TestCase
 		$parent = new EventDispatch();
 		$child = new EventDispatch($parent);
 		
-		$child->hook('m3w.test', new Listener(function (Event$e) {
+		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			return 'hello ' . $e->payload();
 		}));
 		
-		$parent->hook('m3w.test', new Listener(function (Event$e) {
+		$parent->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
 			return 'bye ' . $e->payload();
 		}));
 		
-		$result = $child->dispatch(new Event('m3w.test', 'world', ['bubbles' => false]), null);
+		$result = $child->dispatch((new TestEvent('world'))->preventBubbling(), null);
 		$this->assertEquals('hello world', $result);
 	}
 }
