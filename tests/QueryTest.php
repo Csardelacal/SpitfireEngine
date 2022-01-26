@@ -6,6 +6,7 @@ use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\QueryTable;
 use spitfire\storage\database\Table;
+use spitfire\storage\database\TableReference;
 
 class QueryTest extends TestCase
 {
@@ -26,29 +27,28 @@ class QueryTest extends TestCase
 	public function testAssembly()
 	{
 		$layout = new Layout('test');
-		$query  = new Query(new QueryTable($layout));
+		$query  = new Query($layout->getTableReference());
 		
-		$this->assertInstanceOf(QueryTable::class, $query->getTable());
-		$this->assertInstanceOf(LayoutInterface::class, $query->getTable()->getTable());
+		$this->assertInstanceOf(TableReference::class, $query->getTable());
 	}
 	
 	public function testAssemblyDisambiguation()
 	{
 		$layout = new Layout('test');
-		$querya = new Query(new QueryTable($layout));
-		$queryb = new Query(new QueryTable($layout));
+		$querya = new Query($layout->getTableReference());
+		$queryb = new Query($layout->getTableReference());
 		
-		$this->assertInstanceOf(QueryTable::class, $querya->getQueryTable());
-		$this->assertInstanceOf(QueryTable::class, $queryb->getQueryTable());
+		$this->assertInstanceOf(TableReference::class, $querya->getTable());
+		$this->assertInstanceOf(TableReference::class, $queryb->getTable());
 		
 		/**
 		 * Our queries reference the same layout, but both use different querytables,
 		 * this allows us to uniquely reference each query when working with them.
 		 */
-		$this->assertEquals($querya->getTable()->getTable(), $queryb->getTable()->getTable());
+		$this->assertEquals($querya->getTable()->getName(), $queryb->getTable()->getName());
 		
-		$this->assertNotEquals($querya->getQueryTable(), $queryb->getQueryTable());
-		$this->assertNotEquals($querya->getQueryTable()->getId(), $queryb->getQueryTable()->getId());
+		$this->assertNotEquals($querya->getFrom()->output(), $queryb->getFrom()->output());
+		$this->assertNotEquals($querya->getFrom()->output()->getName(), $queryb->getFrom()->output()->getName());
 	}
 	
 }

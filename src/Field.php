@@ -1,7 +1,5 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\model\Field as LogicalField;
-
 /**
  * The 'database field' class is an adapter used to connect logical fields 
  * (advanced fields that can contain complex data) to simplified versions 
@@ -88,7 +86,8 @@ class Field
 	 * 
 	 * @return string
 	 */
-	public function getName() {
+	public function getName() : string
+	{
 		return $this->name;
 	}
 	

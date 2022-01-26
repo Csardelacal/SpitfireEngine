@@ -26,8 +26,6 @@ use spitfire\collection\Collection;
  * THE SOFTWARE.
  */
 
-use spitfire\Model;
-
 /**
  * The result set interface defines how the end user application and queries can
  * interact with result sets. The drivers can use this to provide a mechanism to 
@@ -39,30 +37,22 @@ use spitfire\Model;
 interface ResultSetInterface
 {
 	/**
-	 * Fetches data from a driver's resultset. This returns a record and advances 
-	 * the cursor in the database.
-	 * 
-	 * @return Model|null A record of a database, or null if the result is exhausted
-	 */
-	public function fetch();
-	
-	/**
 	 * Returns a raw result, this will usually provide access to the raw data that
 	 * the driver is reading from the Database to build models from.
 	 * 
 	 * This method is usually extremely valuable when retrieving aggregates, since
 	 * these methods do not fit into models.
 	 * 
-	 * @return mixed[]
+	 * @return mixed[]|null A record of a database, or null if the result is exhausted
 	 */
-	public function fetchArray();
+	public function fetch() :? array;
 	
 	/**
 	 * Returns an array containing all the values from the database's result. This
 	 * allows your application to loop over the records instead of while-ing over
 	 * them.
 	 * 
-	 * @return Collection All the models the driver read from the database.
+	 * @return mixed[][] All the models the driver read from the database.
 	 */
 	public function fetchAll();
 }

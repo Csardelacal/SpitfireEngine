@@ -15,7 +15,7 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @var OutputObjectInterface
+	 * @var FieldReference
 	 */
 	private $output;
 	
@@ -27,10 +27,10 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @param OutputObjectInterface $output
+	 * @param FieldReference $output
 	 * @param string $direction
 	 */
-	public function __construct(OutputObjectInterface $output, string $direction = OrderBy::ORDER_ASC)
+	public function __construct(FieldReference $output, string $direction = OrderBy::ORDER_ASC)
 	{	
 		$this->output = $output;
 		$this->direction = $direction;
@@ -38,9 +38,9 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @return OutputObjectInterface
+	 * @return FieldReference
 	 */
-	public function getOutput() : OutputObjectInterface
+	public function getOutput() : FieldReference
 	{
 		return $this->output;
 	}

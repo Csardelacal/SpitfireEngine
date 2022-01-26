@@ -2,7 +2,6 @@
 
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\query\TableObjectInterface;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -40,7 +39,7 @@ class Join
 	
 	/**
 	 * 
-	 * @var TableObjectInterface
+	 * @var TableReference
 	 */
 	private $table;
 	
@@ -51,12 +50,12 @@ class Join
 	private $on;
 	
 	/**
-	 * Instance a new join. This takes a TableObjectInterface (which may connect a physical table or a 
+	 * Instance a new join. This takes a TableReference (which may connect a physical table or a 
 	 * temorary table / query).
 	 * 
-	 * @param TableObjectInterface $table
+	 * @param TableReference $table
 	 */
-	public function __construct(TableObjectInterface $table)
+	public function __construct(TableReference $table)
 	{
 		$this->table = $table;
 	}
@@ -83,7 +82,7 @@ class Join
 			throw new ApplicationException('Invalid argument count', 2109271126);
 		}
 		
-		assert($field instanceof QueryField);
+		assert($field instanceof FieldReference);
 		
 		$this->on->push(new Restriction($field, $operator, $operand));
 		return $this;
@@ -104,7 +103,7 @@ class Join
 	}
 	
 	/**
-	 * Returns the list of restrictions used to join the two TableObjectInterfaces, please note that the query
+	 * Returns the list of restrictions used to join the two TableReferences, please note that the query
 	 * table itself may be a query with restrictions.
 	 * 
 	 * Spitfire defaults to avoiding subqueries with restrictions, since it's very common for these 
@@ -122,9 +121,9 @@ class Join
 	 * The query table that is used as a source. Please note that a query table can contain a query returning
 	 * a temp table that is used to retrieve a subset of the original relation.
 	 * 
-	 * @return TableObjectInterface
+	 * @return TableReference
 	 */
-	public function getTable() : TableObjectInterface
+	public function getTable() : TableReference
 	{
 		return $this->table;
 	}

@@ -1,7 +1,6 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
 
 /**
  * A restriction indicates a condition a record in a database's relation must 
@@ -19,7 +18,7 @@ class Restriction
 	 * The field that this restriction is searching on. This lets the application
 	 * know which table, field and alias to use to refer to when assembling a query.
 	 *
-	 * @var QueryField
+	 * @var FieldReference
 	 */
 	private $field;
 	
@@ -45,11 +44,11 @@ class Restriction
 	/**
 	 * Instances a new restriction.
 	 * 
-	 * @param QueryField $field
+	 * @param FieldReference $field
 	 * @param mixed $value
 	 * @param string $operator
 	 */
-	public function __construct(QueryField $field, $value, $operator = self::EQUAL_OPERATOR) 
+	public function __construct(FieldReference $field, $value, $operator = self::EQUAL_OPERATOR) 
 	{
 		$this->field    = $field;
 		$this->value    = $value;
@@ -59,9 +58,9 @@ class Restriction
 	/**
 	 * Returns the field we're querying for the value of the restriction.
 	 * 
-	 * @return QueryField
+	 * @return FieldReference
 	 */
-	public function getField() : QueryField
+	public function getField() : FieldReference
 	{
 		return $this->field;
 	}

@@ -2,8 +2,8 @@
 
 use Closure;
 use spitfire\collection\Collection;
-use spitfire\storage\database\query\OutputObjectInterface;
-use spitfire\storage\database\query\TableObjectInterface;
+use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\query\Alias;
 
 /**
  * The query provides a mechanism for assembling restrictions that Spitfire and
@@ -19,9 +19,9 @@ class Query extends RestrictionGroup
 	 * a QueryTable object to ensure that the table can refer back to the query
 	 * when needed.
 	 * 
-	 * @var TableObjectInterface
+	 * @var Alias
 	 */
-	protected $table;
+	protected $from;
 	
 	/**
 	 *
@@ -40,7 +40,6 @@ class Query extends RestrictionGroup
 	 * the query with the subquery (this needs to be performed by the developer or the
 	 * model system).
 	 * 
-	 * @todo Introduce Join class
 	 * @todo Introduce utility methods for the joins
 	 * @var Collection<Join>
 	 */
@@ -52,7 +51,7 @@ class Query extends RestrictionGroup
 	 * 
 	 * @todo Provide a single output kind of type (something that can either refer to a field or a aggreation)
 	 * @todo Rename to reflect the fact that this is what e expect as output of the query.
-	 * @var OutputObjectInterface[]
+	 * @var Collection<FieldReference|Aggregate>
 	 */
 	protected $calculated;
 	
@@ -64,7 +63,7 @@ class Query extends RestrictionGroup
 	 * * Fields that are part of the groupby
 	 * * Computed fields that reduce the result to a single record (like max or count)
 	 *
-	 * @var QueryField[]
+	 * @var FieldReference[]
 	 */
 	protected $groupBy = null;
 	
@@ -84,12 +83,13 @@ class Query extends RestrictionGroup
 
 	/** 
 	 * 
-	 * @param TableObjectInterface $table 
+	 * @param TableReference $table 
 	 */
-	public function __construct(TableObjectInterface $table) 
+	public function __construct(TableReference $table) 
 	{
-		$this->table = $table;
+		$this->from = new Alias($table, $table->withAlias());
 		$this->joins = new Collection();
+		$this->calculated = new Collection();
 		
 		#Initialize the parent
 		parent::__construct(Array());
@@ -105,10 +105,10 @@ class Query extends RestrictionGroup
 	 * * Join : The new connection. You can use it to retrieve fields and push connections
 	 * * Query: The query being joined into. You can use this to retrieve the fields from the uplinks.
 	 * 
-	 * @param TableObjectInterface $table
+	 * @param TableReference $table
 	 * @param Closure $fn
 	 */
-	public function joinTable(TableObjectInterface $table, Closure $fn = null) : Query
+	public function joinTable(TableReference $table, Closure $fn = null) : Query
 	{
 		$join = new Join($table);
 		$this->joins[] = $join;
@@ -180,10 +180,10 @@ class Query extends RestrictionGroup
 	 * @todo When adding aggregation, the system should automatically use the aggregation for extraction
 	 * @todo Currently the system only supports grouping and not aggregation, this is a bit of a strange situation that needs resolution
 	 * 
-	 * @param QueryField|null $column
+	 * @param FieldReference|null $column
 	 * @return Query Description
 	 */
-	public function aggregateBy(QueryField $column = null) 
+	public function aggregateBy(FieldReference $column = null) 
 	{
 		if($column === null) { $this->groupBy = []; }
 		else                 { $this->groupBy = [$column]; }
@@ -195,55 +195,76 @@ class Query extends RestrictionGroup
 	 * Add all the fields of a table (implied to be the current query table if null is
 	 * passed).
 	 * 
-	 * @param QueryTable $table
+	 * @param TableReference $table
 	 * @return Query
 	 */
-	public function addAllFields(QueryTable $table = null) : Query
+	public function selectAll(TableReference $table = null) : Query
 	{
-		if (!$table) {
-			$table = $this->getQueryTable();
-		}
-		
-		$this->calculated = array_merge($this->calculated, $table->getFields());
+		$_t = $table !== null? $table : $this->from->output();
+		$this->calculated->add($_t->getOutputs());
 		return $this;
 	}
 	
-	public function addField(QueryField $field) : Query
+	public function select(string $name, TableReference $table = null) : Query
 	{
-		$this->calculated[] = $field;
+		$field = ($table?: $this->from->output())->getOutput($name);
+		$this->calculated->push($field);
 		return $this;
 	}
 	
-	public function addOutput (OutputObjectInterface $fn) {
-		$this->calculated[] = $fn;
+	public function aggregate (Aggregate $fn) : Query
+	{
+		$this->calculated->push($fn);
 		return $this;
 	}
 	
+	public function getOutputs() : Collection
+	{
+		return (new Collection($this->calculated))->each(function ($e) {
+			/*
+			 * We only accept aggregates and field references here. Everything else should
+			 * have been converted
+			 */
+			assert($e instanceof Aggregate || $e instanceof FieldReference);
+			
+			if ($e instanceof Aggregate) { return $e->getOutput(); }
+			if ($e instanceof FieldReference) { return $e->getName(); }
+		});
+	}
 	
-	public function getOrder() {
+	/**
+	 * 
+	 * @return OrderBy[]
+	 */
+	public function getOrder() : array
+	{
 		return $this->order;
 	}
 	
 	/**
-	 * Returns the current 'query table'. This is an object that allows the query
-	 * to alias it's table if needed.
 	 * 
-	 * @return QueryTable
+	 * @return Alias
 	 */
-	public function getQueryTable() {
-		return $this->table;
+	public function getFrom() : Alias
+	{
+		return $this->from;
 	}
 	
 	/**
 	 * Returns the actual table this query is searching on. 
 	 * 
-	 * @return QueryTable
+	 * @return TableReference
 	 */
 	public function getTable() {
-		return $this->table;
+		return $this->from->input();
 	}
 	
 	public function __toString() {
-		return $this->getTable()->getLayout()->getTableName() . implode(',', $this->toArray());
+		return sprintf(
+			'%s(%s) {%s}',
+			$this->from->input()->getName(),
+			$this->from->output()->getName(),
+			implode(',', $this->toArray())
+		);
 	}
 }

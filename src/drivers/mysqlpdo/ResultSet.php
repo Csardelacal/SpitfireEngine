@@ -51,21 +51,6 @@ class ResultSet implements ResultSetInterface
 	
 	/**
 	 * 
-	 * @return Record
-	 */
-	public function fetch() :? Record
-	{
-		$data = $this->result->fetch(PDO::FETCH_ASSOC);
-		#If the data does not contain anything we return a null object
-		if (!$data) { return null; }
-		$_record = array_map( Array($this->encoder, 'decode'), $data);
-		
-		$record = new Record($this->table, $_record);
-		return $record;
-	}
-
-	/**
-	 * 
 	 * @return Collection<Record>
 	 */
 	public function fetchAll() : Collection
@@ -95,7 +80,8 @@ class ResultSet implements ResultSetInterface
 	 * 
 	 * @return mixed
 	 */
-	public function fetchArray() {
+	public function fetch(): ?array
+	{
 		return $this->result->fetch(PDO::FETCH_ASSOC);
 	}
 	

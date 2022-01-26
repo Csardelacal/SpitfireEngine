@@ -16,7 +16,7 @@ class RecordTest extends TestCase
 	public function setUp() : void
 	{
 		$this->layout = new Layout('test');
-		$this->table  = new QueryTable($this->layout);
+		$this->table  = $this->layout->getTableReference();
 		
 		/**
 		 * Add a primary key

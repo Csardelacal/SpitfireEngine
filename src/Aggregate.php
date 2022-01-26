@@ -1,8 +1,5 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\storage\database\query\OutputObjectInterface;
-use spitfire\storage\database\query\TableObjectInterface;
-
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
@@ -29,7 +26,7 @@ use spitfire\storage\database\query\TableObjectInterface;
  * 
  * SELECT SUM(field) as a, field2 as b FROM ...
  */
-class Aggregate implements OutputObjectInterface
+class Aggregate
 {
 	
 	/**
@@ -42,15 +39,15 @@ class Aggregate implements OutputObjectInterface
 	 * This is also the name by which the components depending on the return must
 	 * address this field.
 	 * 
-	 * @var string|null
+	 * @var string
 	 */
-	private $alias;
+	private $output;
 	
 	/**
 	 * The field underlying to the output.
 	 * 
 	 * @todo Replace with the underlying class
-	 * @var OutputObjectInterface
+	 * @var FieldReference
 	 */
 	private $field;
 	
@@ -63,23 +60,22 @@ class Aggregate implements OutputObjectInterface
 	
 	/**
 	 * 
-	 * @param OutputObjectInterface $field
+	 * @param FieldReference $input
 	 * @param string $operation
 	 * @todo Replace with the underlying class
 	 */
-	public function __construct($field, string $operation)
+	public function __construct(FieldReference $input, string $operation, string $output)
 	{
-		$this->alias = sprintf('%s_%s_%s', $operation, $field->getTable()->getAlias(), $field->getAlias());
-		$this->field = $field;
+		$this->output = $output;
+		$this->field = $input;
 		$this->operation = $operation;
 	}
 	
 	/**
 	 * 
-	 * @return OutputObjectInterface
-	 * @todo Replace with the underlying class
+	 * @return FieldReference
 	 */
-	public function getInput(): OutputObjectInterface 
+	public function getInput(): FieldReference 
 	{
 		return $this->field;
 	}
@@ -88,44 +84,31 @@ class Aggregate implements OutputObjectInterface
 	 * The operation to be performing on the field before returning it to the
 	 * output.
 	 * 
-	 * @see Output::AGGREGATE_*
-	 * @return string|null
+	 * @see Aggregate::AGGREGATE_*
+	 * @return string
 	 */
-	public function getOperation() :? string
+	public function getOperation() : string
 	{
 		return $this->operation;
 	}
 	
 	/**
-	 * Aggregations will always require looking into the underlying table
-	 */
-	function getTable():? TableObjectInterface
-	{
-		return null;
-	}
-	
-	function getName() :? string
-	{
-		return null;
-	}
-	
-	/**
 	 * The alias to be addressing this output as.
 	 * 
-	 * @return string|null
+	 * @return string
 	 */
-	public function getAlias() :? string 
+	public function getOutput() : string 
 	{
-		return $this->alias;
+		return $this->output;
 	}
 	
 	/**
 	 * Sets the field to retrieve data from to be serving it to the output.
 	 * 
-	 * @param QueryField $field
+	 * @param FieldReference $field
 	 * @todo Replace with the underlying class
 	 */
-	public function setField(QueryField $field) : Aggregate
+	public function setField(FieldReference $field) : Aggregate
 	{
 		$this->field = $field;
 		return $this;
@@ -135,10 +118,10 @@ class Aggregate implements OutputObjectInterface
 	 * The operation to be performing on the field before returning it to the
 	 * output.
 	 * 
-	 * @see Output::AGGREGATE_*
-	 * @param string|null $operation
+	 * @see Aggregate::AGGREGATE_*
+	 * @param string $operation
 	 */
-	public function setOperation(string $operation = null) : Aggregate
+	public function setOperation(string $operation) : Aggregate
 	{
 		$this->operation = $operation;
 		return $this;
@@ -147,11 +130,11 @@ class Aggregate implements OutputObjectInterface
 	/**
 	 * The alias to be addressing this output as.
 	 * 
-	 * @param string|null $alias
+	 * @param string $alias
 	 */
-	public function setAlias(string $alias = null) : Aggregate
+	public function setOutput(string $alias) : Aggregate
 	{
-		$this->alias = $alias;
+		$this->output = $alias;
 		return $this;
 	}
 	

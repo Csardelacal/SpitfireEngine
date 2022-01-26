@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database\query;
 
-use spitfire\collection\Collection;
+use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\TableReference;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -22,33 +23,36 @@ use spitfire\collection\Collection;
  */
 
 /**
- * This interface represents objects in the database that can be used within
- * the context of queries
+ * 
  */
-interface OutputObjectInterface
+class Alias
 {
 	
 	/**
-	 * Returns the table this is a part of. This can be null if the item is anonymous (
-	 * see Aggregation)
 	 * 
-	 * @return TableObjectInterface
+	 * @var TableReference
 	 */
-	function getTable() :? TableObjectInterface;
+	private $input;
 	
 	/**
-	 * Returns the name of the object within the table context, this can be null in the
-	 * event that the item is anonymous (like aggregation functions)
 	 * 
-	 * @return string|null
+	 * @var TableReference
 	 */
-	function getName() :? string;
+	private $output;
 	
-	/**
-	 * Returns the name of the item when using it in context. This can be null if the
-	 * item is not being aliased
-	 * 
-	 * @return string|null
-	 */
-	function getAlias() :? string;
+	public function __construct(TableReference $input, TableReference $output)
+	{
+		$this->input = $input;
+		$this->output = $output;
+	}
+	
+	public function input() : TableReference
+	{
+		return $this->input;
+	}
+	
+	public function output() : TableReference
+	{
+		return $this->output;
+	}
 }

@@ -85,6 +85,17 @@ class Layout implements LayoutInterface
 	}
 	
 	/**
+	 * Returns the name the DBMS should use to name this table. The implementing
+	 * class should respect user configuration including db_table_prefix
+	 * 
+	 * @return string
+	 */
+	function getName() : string
+	{
+		return $this->tablename;
+	}
+	
+	/**
 	 * Gets a certain field from the layout. 
 	 * 
 	 * @param string $name
@@ -274,6 +285,11 @@ class Layout implements LayoutInterface
 	{
 		$fields = $this->fields;
 		return $fields->filter(function (Field $i) { return $i->isAutoIncrement(); })->rewind();
+	}
+	
+	public function getTableReference() : TableReference
+	{
+		return new TableReference($this->getName(), $this->fields->each(function (Field $e) { return $e->getName(); }));
 	}
 	
 	
