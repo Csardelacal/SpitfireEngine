@@ -30,4 +30,3 @@ class EncoderUnavailableException extends ApplicationException
 {
 	
 }
- 

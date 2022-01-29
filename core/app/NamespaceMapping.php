@@ -52,7 +52,8 @@ class NamespaceMapping
 	 * @param string $URISpace The URI name-space it 'owns'
 	 * @param string $namespace The class name-space it 'owns'
 	 */
-	public function __construct($basedir, $URISpace, $namespace) {
+	public function __construct($basedir, $URISpace, $namespace)
+	{
 		$this->basedir  = $basedir;
 		$this->URISpace = $URISpace;
 		$this->namespace = $namespace;
@@ -62,7 +63,8 @@ class NamespaceMapping
 	 * 
 	 * @return string
 	 */
-	public function getBaseDir() : string {
+	public function getBaseDir() : string
+	{
 		return $this->basedir;
 	}
 	
@@ -70,7 +72,8 @@ class NamespaceMapping
 	 * 
 	 * @return string|null
 	 */
-	public function getURISpace() {
+	public function getURISpace()
+	{
 		return $this->URISpace;
 	}
 	
@@ -78,7 +81,8 @@ class NamespaceMapping
 	 * 
 	 * @return string|null
 	 */
-	public function getNameSpace() {
+	public function getNameSpace()
+	{
 		return $this->namespace;
 	}
 }

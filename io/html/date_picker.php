@@ -4,32 +4,41 @@ namespace spitfire\io\html;
 
 class dateTimePicker extends HTMLSpan
 {
-
+	
 	private $timestamp;
 	private $inputname;
 	
-	public static $months = Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+	public static $months = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 	
-	public function __construct($timestamp) {
+	public function __construct($timestamp)
+	{
 		
-		if     (!$timestamp)            $this->timestamp = time();
-		elseif (is_numeric($timestamp)) $this->timestamp = $timestamp;
-		elseif (is_array($timestamp))   $this->timestamp = $this->readPostData($timestamp);
-		else                            $this->timestamp = strtotime($timestamp);
+		if (!$timestamp) {
+			$this->timestamp = time();
+		} elseif (is_numeric($timestamp)) {
+			$this->timestamp = $timestamp;
+		} elseif (is_array($timestamp)) {
+			$this->timestamp = $this->readPostData($timestamp);
+		} else {
+			$this->timestamp = strtotime($timestamp);
+		}
 		
 		$this->setParameter('class', "dateTimePicker");
 	}
 	
-	public function getTimestamp() {
+	public function getTimestamp()
+	{
 		return $this->timestamp;
 	}
 	
-	public function setInputName($name) {
+	public function setInputName($name)
+	{
 		$this->inputname = $name;
 		$this->setParameter('id', "field_$name");
 	}
 	
-	public function getChildren() {
+	public function getChildren()
+	{
 		
 		#Days
 		$days = new HTMLSelect($this->inputname . '[day]', date('d', $this->timestamp));
@@ -51,10 +60,9 @@ class dateTimePicker extends HTMLSpan
 		}
 		
 		#Hours and minutes
-		$hours   = new HTMLInput('number', $this->inputname . '[hours]',   date('H', $this->timestamp));
+		$hours   = new HTMLInput('number', $this->inputname . '[hours]', date('H', $this->timestamp));
 		$minutes = new HTMLInput('number', $this->inputname . '[minutes]', date('i', $this->timestamp));
 		
-		return Array($days, $months, $years, $hours, $minutes);
+		return array($days, $months, $years, $hours, $minutes);
 	}
-	
 }

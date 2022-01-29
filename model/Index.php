@@ -76,7 +76,8 @@ class Index
 	 * 
 	 * @param Collection<Field> $fields
 	 */
-	public function __construct($fields = null) {
+	public function __construct($fields = null)
+	{
 		$this->fields = new Collection($fields);
 	}
 	
@@ -85,7 +86,8 @@ class Index
 	 * 
 	 * @return Collection containing the <code>Field</code>s in this index
 	 */
-	public function getFields() {
+	public function getFields()
+	{
 		return $this->fields;
 	}
 	
@@ -96,7 +98,8 @@ class Index
 	 * @param \spitfire\model\Field $f
 	 * @return bool
 	 */
-	public function contains(Field$f) {
+	public function contains(Field$f)
+	{
 		return $this->fields->contains($f);
 	}
 	
@@ -108,11 +111,14 @@ class Index
 	 * 
 	 * @return string
 	 */
-	public function getName() {
+	public function getName()
+	{
 		/*
 		 * If the index already has a name we roll with that.
 		 */
-		if(!empty($this->name)) { return $this->name; }
+		if (!empty($this->name)) {
+			return $this->name; 
+		}
 		
 		/*
 		 * Get the table name, this way we can generate a meaningful index name
@@ -137,34 +143,41 @@ class Index
 		return $this->name = 'idx_' . $tablename . '_' . $imploded;
 	}
 	
-	public function isUnique() {
+	public function isUnique()
+	{
 		return $this->unique || $this->primary;
 	}
 	
-	public function isPrimary() {
+	public function isPrimary()
+	{
 		return $this->primary;
 	}
 	
-	public function setFields($fields) {
+	public function setFields($fields)
+	{
 		$this->fields = $fields;
 		return $this;
 	}
 	
-	public function putField(Field$field) {
+	public function putField(Field$field)
+	{
 		$this->fields->push($field);
 	}
 	
-	public function setName($name) {
+	public function setName($name)
+	{
 		$this->name = $name;
 		return $this;
 	}
 	
-	public function unique($unique = true) {
+	public function unique($unique = true)
+	{
 		$this->unique = $unique;
 		return $this;
 	}
 	
-	public function setPrimary($isPrimary) {
+	public function setPrimary($isPrimary)
+	{
 		$this->primary = $isPrimary;
 		return $this;
 	}

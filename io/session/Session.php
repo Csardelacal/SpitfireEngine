@@ -34,78 +34,98 @@ class Session
 	 * 
 	 * @param SessionHandler $handler
 	 */
-	protected function __construct(SessionHandler$handler = null) {
+	protected function __construct(SessionHandler$handler = null)
+	{
 		$lifetime = 2592000;
 		
-		if (!$handler) { $handler = new FileSessionHandler(realpath(session_save_path()), $lifetime); }
+		if (!$handler) {
+			$handler = new FileSessionHandler(realpath(session_save_path()), $lifetime); 
+		}
 		
 		$this->handler = $handler;
 	}
 	
-	public function getHandler() {
+	public function getHandler()
+	{
 		return $this->handler;
 	}
 	
-	public function setHandler($handler) {
+	public function setHandler($handler)
+	{
 		$this->handler = $handler;
 		$this->handler->attach();
 		return $this;
 	}
-		
-	public function set($key, $value, $app = null) {
-		if ($app === null) {$app = current_context()->app;}
+	
+	public function set($key, $value, $app = null)
+	{
+		if ($app === null) {
+			$app = current_context()->app;
+		}
 		/* @var $app App */
 		$namespace = ($app->getMapping()->getNameSpace())? $app->getMapping()->getNameSpace() : '*';
-
-		if (!self::sessionId()) { $this->start(); }
+		
+		if (!self::sessionId()) {
+			$this->start(); 
+		}
 		$_SESSION[$namespace][$key] = $value;
-
 	}
-
-	public function get($key, $app = null) {
-		if ($app === null) {$app = current_context()->app;}
+	
+	public function get($key, $app = null)
+	{
+		if ($app === null) {
+			$app = current_context()->app;
+		}
 		/* @var $app App */
 		$namespace = $app && $app->getMapping()->getNameSpace()? $app->getMapping()->getNameSpace() : '*';
-
-		if (!isset($_COOKIE[session_name()])) { return null; }
-		if (!self::sessionId()) { $this->start(); }
+		
+		if (!isset($_COOKIE[session_name()])) {
+			return null; 
+		}
+		if (!self::sessionId()) {
+			$this->start(); 
+		}
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
-
 	}
-
-	public function lock($userdata, App$app = null) {
-
-		$user = Array();
+	
+	public function lock($userdata, App$app = null)
+	{
+		
+		$user = array();
 		$user['ip']       = $_SERVER['REMOTE_ADDR'];
 		$user['userdata'] = $userdata;
 		$user['secure']   = true;
-
+		
 		$this->set('_SF_Auth', $user, $app);
-
 	}
-
-	public function isSafe(App$app = null) {
-
+	
+	public function isSafe(App$app = null)
+	{
+		
 		$user = $this->get('_SF_Auth', $app);
 		if ($user) {
 			$user['secure'] = $user['secure'] && ($user['ip'] == $_SERVER['REMOTE_ADDR']);
-
+			
 			$this->set('_SF_Auth', $user, $app);
 			return $user['secure'];
 		}
-		else return false;
-
+		else {
+			return false;
+		}
 	}
-
-	public function getUser(App$app = null) {
-
+	
+	public function getUser(App$app = null)
+	{
+		
 		$user = $this->get('_SF_Auth', $app);
 		return $user? $user['userdata'] : null;
-
 	}
-
-	public function start() {
-		if (self::sessionId()) { return; }
+	
+	public function start()
+	{
+		if (self::sessionId()) {
+			return; 
+		}
 		$this->handler->attach();
 		session_start();
 		
@@ -145,7 +165,7 @@ class Session
 		
 		return session_destroy();
 	}
-
+	
 	/**
 	 * This class requires to be managed in "singleton" mode, since there can only
 	 * be one session handler for the system.
@@ -153,10 +173,13 @@ class Session
 	 * @staticvar Session $instance
 	 * @return Session
 	 */
-	public static function getInstance() {
+	public static function getInstance()
+	{
 		static $instance = null;
-
-		if ($instance !== null) { return $instance; }
+		
+		if ($instance !== null) {
+			return $instance; 
+		}
 		return $instance = spitfire()->provider()->get(self::class);
 	}
 	
@@ -175,7 +198,8 @@ class Session
 	 * @return boolean
 	 * @throws \Exception
 	 */
-	public static function sessionId($allowRegen = true){
+	public static function sessionId($allowRegen = true)
+	{
 		
 		#Get the session_id the system is using.
 		$sid = session_id();

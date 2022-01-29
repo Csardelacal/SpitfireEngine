@@ -11,21 +11,24 @@ class BridgeAdapter
 	private $leftValue;
 	private $rightValue;
 	
-	public function __construct(ManyToManyField$parentField, $value1, $value2) {
+	public function __construct(ManyToManyField$parentField, $value1, $value2)
+	{
 		$this->parentField = $parentField;
 		$this->makeFields();
 		$this->addValue($value1);
 		$this->addValue($value2);
 	}
 	
-	public function makeFields() {
+	public function makeFields()
+	{
 		$bridge = $this->parentField->getBridge();
 		$fields = $bridge->getFields();
 		$this->leftField = reset($fields);
 		$this->rightField = end($fields);
 	}
 	
-	public function addValue(Model$value) {
+	public function addValue(Model$value)
+	{
 		$schema = $value->getTable()->getModel();
 		if ($this->leftField->getTarget() === $schema && !$this->leftValue) {
 			$this->leftValue = $value;
@@ -35,7 +38,8 @@ class BridgeAdapter
 		}
 	}
 	
-	public function makeRecord() {
+	public function makeRecord()
+	{
 		$bridge = $this->parentField->getBridge()->getTable();
 		$record = $bridge->getCollection()->newRecord();
 		$record->{$this->leftField} = $this->leftValue;

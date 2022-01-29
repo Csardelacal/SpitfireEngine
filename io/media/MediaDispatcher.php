@@ -41,7 +41,8 @@ class MediaDispatcher
 	 * @param MediaManipulatorInterface $manipulator
 	 * @return void
 	 */
-	public function register($mime, MediaManipulatorInterface$manipulator) {
+	public function register($mime, MediaManipulatorInterface$manipulator)
+	{
 		
 		if (!$manipulator->supports($mime)) {
 			throw new ApplicationException('Invalid association', 1805301139);
@@ -57,14 +58,17 @@ class MediaDispatcher
 	 * @param Blob $object
 	 * @return MediaManipulatorInterface
 	 */
-	public function load(\spitfire\storage\objectStorage\Blob$object) : MediaManipulatorInterface {
+	public function load(\spitfire\storage\objectStorage\Blob$object) : MediaManipulatorInterface
+	{
 		if (isset($this->associations[$object->mime()])) {
 			$copy = clone $this->associations[$object->mime()];
 			$copy->load($object);
 			return $copy;
 		}
 		
-		throw new EncoderUnavailableException(sprintf('No manipulator found for %s(%s)', $object->uri(), $object->mime()), 1805301140);
+		throw new EncoderUnavailableException(
+			sprintf('No manipulator found for %s(%s)', $object->uri(), $object->mime()), 
+			1805301140
+		);
 	}
-	
 }

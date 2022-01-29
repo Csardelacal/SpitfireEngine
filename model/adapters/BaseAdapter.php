@@ -55,7 +55,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * @param \spitfire\model\Field $field
 	 * @param \Model $model
 	 */
-	public function __construct(Field$field, Model$model) {
+	public function __construct(Field$field, Model$model)
+	{
 		$this->field = $field;
 		$this->model = $model;
 	}
@@ -67,8 +68,9 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return mixed
 	 */
-	public function dbGetData() {
-		return Array($this->field->getName() => $this->data);
+	public function dbGetData()
+	{
+		return array($this->field->getName() => $this->data);
 	}
 	
 	/**
@@ -79,7 +81,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @param mixed $data
 	 */
-	public function dbSetData($data) {
+	public function dbSetData($data)
+	{
 		$this->data = reset($data);
 		$this->src  = reset($data);
 	}
@@ -90,7 +93,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return \spitfire\model\Field
 	 */
-	public function getField() {
+	public function getField()
+	{
 		return $this->field;
 	}
 	
@@ -100,7 +104,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return \Model
 	 */
-	public function getModel() {
+	public function getModel()
+	{
 		return $this->model;
 	}
 	
@@ -111,7 +116,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return boolean
 	 */
-	public function isSynced() {
+	public function isSynced()
+	{
 		return $this->data === $this->src;
 	}
 	
@@ -121,7 +127,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return mixed
 	 */
-	public function usrGetData() {
+	public function usrGetData()
+	{
 		return $this->data;
 	}
 	
@@ -134,7 +141,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return mixed Data to be delivered to the programmer
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		$this->data = $data;
 	}
 	
@@ -142,7 +150,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * Sets the data as stored to the database and therefore as synced. After 
 	 * committing, rolling back will return the current value.
 	 */
-	public function commit() {
+	public function commit()
+	{
 		$this->src = $this->data;
 	}
 	
@@ -150,7 +159,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * Resets the data to the status the database holds. This is especially 
 	 * interesting if you want to undo certain changes.
 	 */
-	public function rollback() {
+	public function rollback()
+	{
 		$this->data = $this->src;
 	}
 	
@@ -160,8 +170,8 @@ abstract class BaseAdapter implements AdapterInterface
 	 * 
 	 * @return \spitfire\validation\ValidationResult
 	 */
-	public function validate() {
+	public function validate()
+	{
 		return $this->field->validate($this->data);
 	}
-
 }

@@ -16,7 +16,8 @@ class BooleanAdapter extends BaseAdapter
 	 * 
 	 * @param boolean $data
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		parent::usrSetData(!!$data);
 	}
 }

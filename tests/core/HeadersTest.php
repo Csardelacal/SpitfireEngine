@@ -7,7 +7,8 @@ use spitfire\core\Headers;
 class HeadersTest extends TestCase
 {
 	
-	public function testContentType() {
+	public function testContentType()
+	{
 		
 		$t = new Headers();
 		
@@ -22,17 +23,15 @@ class HeadersTest extends TestCase
 		
 		$t->contentType('xml', 'utf-8');
 		$this->assertEquals('application/xml;charset=utf-8', $t->get('Content-type')[0]);
-		
 	}
 	
 	/**
 	 */
-	public function testInvalidStatus() {
+	public function testInvalidStatus()
+	{
 		$t = new Headers();
 		
 		$this->expectException(BadMethodCallException::class);
 		$t->status('22');
 	}
-	
 }
-

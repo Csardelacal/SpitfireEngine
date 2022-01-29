@@ -94,7 +94,8 @@ class AppManifest
 		$this->entrypoint = $entrypoint;
 	}
 	
-	public function getName(): string {
+	public function getName(): string
+	{
 		return $this->name;
 	}
 	
@@ -111,7 +112,8 @@ class AppManifest
 		return $this->entrypoint;
 	}
 	
-	public function getApps(): mixed {
+	public function getApps(): mixed
+	{
 		return $this->apps;
 	}
 	
@@ -119,8 +121,8 @@ class AppManifest
 	 * 
 	 * @return string[]
 	 */
-	public function getEvents(): array {
+	public function getEvents(): array
+	{
 		return $this->events;
 	}
-	
 }

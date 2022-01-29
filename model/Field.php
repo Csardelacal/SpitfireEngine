@@ -124,7 +124,8 @@ abstract class Field
 	 * 
 	 * @param \spitfire\storage\database\Field|\spitfire\storage\database\Field[] $physical
 	 */
-	public function setPhysical($physical) {
+	public function setPhysical($physical)
+	{
 		$this->physical = $physical;
 	}
 	
@@ -133,7 +134,8 @@ abstract class Field
 	 * this is done in a separate method from the contructor to ease 
 	 * overriding of this logic.
 	 */
-	public function makePhysical() {
+	public function makePhysical()
+	{
 		#The instancing is redirected to the table
 		$table = $this->getModel()->getTable();
 		return $table->getDb()->getObjectFactory()->getFieldInstance($this, $this->getName());
@@ -146,11 +148,18 @@ abstract class Field
 	 * 
 	 * @return \spitfire\storage\database\Field[]
 	 */
-	public function getPhysical() {
-		if ($this->physical === null) { $this->physical = $this->makePhysical(); }
+	public function getPhysical()
+	{
+		if ($this->physical === null) {
+			$this->physical = $this->makePhysical(); 
+		}
 		
-		if (is_array($this->physical)) { return $this->physical; }
-		else { return Array($this->physical); }
+		if (is_array($this->physical)) {
+			return $this->physical; 
+		}
+		else {
+			return array($this->physical); 
+		}
 	}
 	
 	/**
@@ -160,10 +169,11 @@ abstract class Field
 	 * 
 	 * @return boolean
 	 */
-	public function isAutoIncrement() {
+	public function isAutoIncrement()
+	{
 		return $this->auto_increment;
 	}
-
+	
 	/**
 	 * Defines whether the field is used as autoincrement field. This setting
 	 * will have no effect on any field that is not an integer field.
@@ -172,7 +182,8 @@ abstract class Field
 	 *
 	 * @return self
 	 */
-	public function setAutoIncrement($ai) {
+	public function setAutoIncrement($ai)
+	{
 		$this->auto_increment = !!$ai;
 		return $this;
 	}
@@ -183,7 +194,8 @@ abstract class Field
 	 * 
 	 * @return string
 	 */
-	public function getName() {
+	public function getName()
+	{
 		return $this->name;
 	}
 	
@@ -194,33 +206,39 @@ abstract class Field
 	 * @param string $name New name of the field.
 	 * @return \spitfire\model\Field The field, for method chaining
 	 */
-	public function setName($name) {
+	public function setName($name)
+	{
 		$this->name = $name;
 		return $this;
 	}
 	
 	#@TODO: Document
-	public function setNullable($nullable) {
+	public function setNullable($nullable)
+	{
 		$this->nullable = $nullable;
 	}
 	
-	public function getNullable() {
+	public function getNullable()
+	{
 		return $this->nullable;
 	}
 	
-	public function getDefault() {
+	public function getDefault()
+	{
 		return $this->default;
 	}
 	
-	public function setDefault($default) {
+	public function setDefault($default)
+	{
 		$this->default = $default;
 		return $this;
 	}
 	
-	public function getSchema() {
+	public function getSchema()
+	{
 		return $this->schema;
 	}
-
+	
 	
 	/**
 	 * Gets the parent model for this field. This allows the field to 
@@ -229,7 +247,8 @@ abstract class Field
 	 * 
 	 * @return Schema
 	 */
-	public function getModel() {
+	public function getModel()
+	{
 		return $this->schema;
 	}
 	
@@ -241,7 +260,8 @@ abstract class Field
 	 * @deprecated since version 0.1-dev 201710131759
 	 * @param Schema $model
 	 */
-	public function setModel($model) {
+	public function setModel($model)
+	{
 		trigger_error('Field::setModel has been deprecated', E_USER_DEPRECATED);
 		return $this->setSchema($model);
 	}
@@ -253,7 +273,8 @@ abstract class Field
 	 * 
 	 * @param Schema $schema
 	 */
-	public function setSchema(Schema$schema) {
+	public function setSchema(Schema$schema)
+	{
 		$this->schema = $schema;
 	}
 	
@@ -263,7 +284,8 @@ abstract class Field
 	 * 
 	 * @return Table
 	 */
-	public function getTable() {
+	public function getTable()
+	{
 		return $this->schema->getTable();
 	}
 	
@@ -274,7 +296,8 @@ abstract class Field
 	 * @deprecated since version 0.1-dev 20170804
 	 * @return boolean
 	 */
-	public function isPrimary() {
+	public function isPrimary()
+	{
 		return $this->primary || $this->auto_increment;
 	}
 	
@@ -286,7 +309,8 @@ abstract class Field
 	 * @param boolean $primary
 	 * @return self
 	 */
-	public function setPrimary($primary) {
+	public function setPrimary($primary)
+	{
 		$this->primary = !!$primary;
 		return $this;
 	}
@@ -301,7 +325,8 @@ abstract class Field
 	 * @deprecated since version 0.1-dev 20170804
 	 * @return boolean
 	 */
-	public function isUnique() {
+	public function isUnique()
+	{
 		//TODO: BUG, requires revision for multi field primaries if ($this->primary) return true;
 		return $this->unique;
 	}
@@ -316,7 +341,8 @@ abstract class Field
 	 * @param boolean $unique
 	 * @return self
 	 */
-	public function setUnique($unique) {
+	public function setUnique($unique)
+	{
 		$this->unique = $unique;
 		return $this;
 	}
@@ -333,7 +359,8 @@ abstract class Field
 	 * @deprecated since version 0.1-dev 20170804
 	 * @return boolean
 	 */
-	public function isIndexed() {
+	public function isIndexed()
+	{
 		return ($this->primary || $this->unique);
 	}
 	
@@ -347,7 +374,8 @@ abstract class Field
 	 * @param string      $caption
 	 * @return Field|null
 	 */
-	public function getBeanField($bean, $field, $caption) {
+	public function getBeanField($bean, $field, $caption)
+	{
 		return null;
 	}
 	
@@ -358,8 +386,11 @@ abstract class Field
 	 * @param type $value
 	 * @return boolean|ValidationError
 	 */
-	public function validate($value) {
-		if (!$this->nullable && !$value) return new ValidationError(_t('err_field_null'));
+	public function validate($value)
+	{
+		if (!$this->nullable && !$value) {
+			return new ValidationError(_t('err_field_null'));
+		}
 		return false;
 	}
 	
@@ -375,7 +406,7 @@ abstract class Field
 	 * @return adapters\AdapterInterface The new adapter
 	 */
 	abstract public function getAdapter(Model$model);
-
+	
 	/**
 	 * This method informs the system what primary datatype the overriding 
 	 * Field class uses. You can define custom classes that store data into
@@ -393,8 +424,8 @@ abstract class Field
 	 * 
 	 * @return string
 	 */
-	public function __toString() {
+	public function __toString()
+	{
 		return $this->name;
 	}
-	
 }

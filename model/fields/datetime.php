@@ -6,17 +6,19 @@ use spitfire\model\adapters\DateTimeAdapter;
 
 class DatetimeField extends Field
 {
-
-	public function getDataType() {
+	
+	public function getDataType()
+	{
 		return Field::TYPE_DATETIME;
 	}
-
-	public function getAdapter(Model $model) {
+	
+	public function getAdapter(Model $model)
+	{
 		return new DateTimeAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		return Array();
+	
+	public function getConnectorQueries(\spitfire\storage\database\Query $parent)
+	{
+		return array();
 	}
-
 }

@@ -1,6 +1,6 @@
 <?php 
 
- trigger_error('Using deprecated environment', E_USER_DEPRECATED);
+trigger_error('Using deprecated environment', E_USER_DEPRECATED);
 
 /**
  * Environments are a way to store multiple settings for a single application

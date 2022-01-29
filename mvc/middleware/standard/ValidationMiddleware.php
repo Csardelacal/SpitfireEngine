@@ -93,7 +93,7 @@ class ValidationMiddleware implements MiddlewareInterface
 			$errors = $e->getMessages();
 		}
 		
-			
+		
 		/**
 		 * If a response is provided by the developer, we can continue using that.
 		 */

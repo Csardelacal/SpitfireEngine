@@ -28,7 +28,8 @@ class ReferenceAdapter extends BaseAdapter
 	 */
 	private $local;
 	
-	private function resolve() {
+	private function resolve()
+	{
 		/*
 		 * If we already have a model, we do no longer need to fetch it.
 		 */
@@ -62,7 +63,8 @@ class ReferenceAdapter extends BaseAdapter
 	 * @param mixed[] $data
 	 * @return void
 	 */
-	public function dbSetData($data) {
+	public function dbSetData($data)
+	{
 		$this->remote = $this->local = $data;
 	}
 	
@@ -72,7 +74,8 @@ class ReferenceAdapter extends BaseAdapter
 	 * @return type
 	 * @throws PrivateException
 	 */
-	public function dbGetData() {
+	public function dbGetData()
+	{
 		$field = $this->getField();
 		$physical = $field->getPhysical();
 		$_return = array();
@@ -113,12 +116,14 @@ class ReferenceAdapter extends BaseAdapter
 		return $_return;
 	}
 	
-	public function usrGetData() {
+	public function usrGetData()
+	{
 		$this->resolve();
 		return $this->local;
 	}
 	
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		//Check if the incoming data is an int
 		if (!$data instanceof Model && !is_null($data)) {
 			throw new PrivateException('This adapter only accepts models');
@@ -127,7 +132,8 @@ class ReferenceAdapter extends BaseAdapter
 		$this->local = $data;
 	}
 	
-	public function isSynced() {
+	public function isSynced()
+	{
 		/*
 		 * If the data is still an array, it's impossible that the user has edited
 		 * it.
@@ -158,7 +164,8 @@ class ReferenceAdapter extends BaseAdapter
 	 * Sets the data as stored to the database and therefore as synced. After
 	 * committing, rolling back will return the current value.
 	 */
-	public function commit() {
+	public function commit()
+	{
 		#Now we can safely say that the data stored on the remote and local sets
 		#is equal. Therefore we can replace the old remote value.
 		$this->remote = $this->local;
@@ -168,7 +175,8 @@ class ReferenceAdapter extends BaseAdapter
 	 * Resets the data to the status the database holds. This is especially
 	 * interesting if you want to undo certain changes.
 	 */
-	public function rollback() {
+	public function rollback()
+	{
 		$this->local = $this->remote;
 	}
 }

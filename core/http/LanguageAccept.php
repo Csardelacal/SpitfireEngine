@@ -74,7 +74,8 @@ class LanguageAccept
 	 * @param string $str
 	 * @return mixed
 	 */
-	public function __construct($str = null) {
+	public function __construct($str = null)
+	{
 		
 		/*
 		 * If the string had no valid format, which can happen since this is user
@@ -106,7 +107,8 @@ class LanguageAccept
 	 * 
 	 * @return string
 	 */
-	public function getLanguage() {
+	public function getLanguage()
+	{
 		return $this->language;
 	}
 	
@@ -117,7 +119,8 @@ class LanguageAccept
 	 * 
 	 * @return string
 	 */
-	public function getLocale() {
+	public function getLocale()
+	{
 		return $this->locale;
 	}
 	
@@ -131,7 +134,8 @@ class LanguageAccept
 	 * 
 	 * @return float
 	 */
-	public function getPriority() {
+	public function getPriority()
+	{
 		return $this->priority;
 	}
 	
@@ -146,7 +150,8 @@ class LanguageAccept
 	 * @param string $str
 	 * @return boolean
 	 */
-	protected function validateFormat($str) {
+	protected function validateFormat($str)
+	{
 		return !!preg_match('/^[A-Za-z]{2}(\-[A-Za-z]{2})?(;q\=[\d\.]+)?$/', $str);
 	}
 	
@@ -161,7 +166,8 @@ class LanguageAccept
 	 * @param string $priority
 	 * @return float
 	 */
-	protected function makePriority($priority) {
+	protected function makePriority($priority)
+	{
 		return $priority && preg_match('/q\=([\d\.]+)/', $priority, $m)? ((float)$m[1]) : 1.0;
 	}
 	
@@ -173,7 +179,8 @@ class LanguageAccept
 	 * @param string $localeStr
 	 * @return string[]
 	 */
-	protected function makeLocales($localeStr) {
+	protected function makeLocales($localeStr)
+	{
 		/*
 		 * The language needs to always be defined, due to the nature of the format
 		 * that these headers need to comply with.
@@ -187,10 +194,14 @@ class LanguageAccept
 		 * settings than just the basic language or find a dialect that the user
 		 * may speak.
 		 */
-		if (strstr($localeStr, '-')) { $locale = explode('-', $localeStr)[1]; }
-		else                         { $locale = null; }
+		if (strstr($localeStr, '-')) {
+			$locale = explode('-', $localeStr)[1]; 
+		}
+		else {
+			$locale = null; 
+		}
 		
-		return Array(
+		return array(
 			strtolower($lang),    //Language
 			strtolower($locale)   //Locale
 		);

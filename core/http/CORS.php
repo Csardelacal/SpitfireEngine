@@ -2,7 +2,6 @@
 
 use spitfire\core\Headers;
 
-
 /* 
  * The MIT License
  *
@@ -35,7 +34,7 @@ use spitfire\core\Headers;
  * 
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class CORS 
+class CORS
 {
 	
 	/**
@@ -54,7 +53,8 @@ class CORS
 	 * 
 	 * @param Headers $headers
 	 */
-	public function __construct(Headers$headers) {
+	public function __construct(Headers$headers)
+	{
 		$this->headers = $headers;
 	}
 	
@@ -69,10 +69,17 @@ class CORS
 	 * @param bool|string $origin
 	 * @return CORS
 	 */
-	public function origin($origin) {
-		if ($origin === true)      { $this->headers->set('Access-Control-Allow-Origin', '*'); }
-		elseif ($origin === false) { $this->headers->set('Access-Control-Allow-Origin', 'null'); }
-		else                       { $this->headers->set('Access-Control-Allow-Origin', $origin); }
+	public function origin($origin)
+	{
+		if ($origin === true) {
+			$this->headers->set('Access-Control-Allow-Origin', '*'); 
+		}
+		elseif ($origin === false) {
+			$this->headers->set('Access-Control-Allow-Origin', 'null'); 
+		}
+		else {
+			$this->headers->set('Access-Control-Allow-Origin', $origin); 
+		}
 		
 		return $this;
 	}
@@ -85,10 +92,15 @@ class CORS
 	 * @param string[]|true $headers
 	 * @return CORS
 	 */
-	public function headers($headers) {
+	public function headers($headers)
+	{
 		
-		if ($headers === true) { $this->headers->set('Access-Control-Allow-Headers', '*'); } 
-		else { $this->headers->set('Access-Control-Allow-Headers', collect($headers)->join(', ')); }
+		if ($headers === true) {
+			$this->headers->set('Access-Control-Allow-Headers', '*'); 
+		} 
+		else {
+			$this->headers->set('Access-Control-Allow-Headers', collect($headers)->join(', ')); 
+		}
 		
 		return $this;
 	}
@@ -103,10 +115,15 @@ class CORS
 	 * @param string[]|true $methods
 	 * @return CORS
 	 */
-	public function methods($methods) {
+	public function methods($methods)
+	{
 		
-		if ($methods === true) { $this->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS, CONNECT, TRACE, PATCH'); } 
-		else { $this->headers->set('Access-Control-Allow-Methods', collect($methods)->join(', ')); }
+		if ($methods === true) {
+			$this->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS, CONNECT, TRACE, PATCH'); 
+		} 
+		else {
+			$this->headers->set('Access-Control-Allow-Methods', collect($methods)->join(', ')); 
+		}
 		
 		return $this;
 	}
@@ -118,9 +135,14 @@ class CORS
 	 * 
 	 * @param bool $allow
 	 */
-	public function credentials($allow = true) {
-		if ($allow) { $this->headers->set('Access-Control-Allow-Credentials', 'true'); }
-		else        { $this->headers->unset('Access-Control-Allow-Credentials'); }
+	public function credentials($allow = true)
+	{
+		if ($allow) {
+			$this->headers->set('Access-Control-Allow-Credentials', 'true'); 
+		}
+		else {
+			$this->headers->unset('Access-Control-Allow-Credentials'); 
+		}
 	}
 	
 	/**
@@ -131,10 +153,17 @@ class CORS
 	 * @param array|boolean $headers
 	 * @return $this
 	 */
-	public function expose($headers) {
-		if ($headers === true) { $this->headers->set('Access-Control-Expose-Headers', '*'); } 
-		elseif ($headers === false) { $this->headers->unset('Access-Control-Expose-Headers'); }
-		else { $this->headers->set('Access-Control-Expose-Headers', collect($headers)->join(', ')); }
+	public function expose($headers)
+	{
+		if ($headers === true) {
+			$this->headers->set('Access-Control-Expose-Headers', '*'); 
+		} 
+		elseif ($headers === false) {
+			$this->headers->unset('Access-Control-Expose-Headers'); 
+		}
+		else {
+			$this->headers->set('Access-Control-Expose-Headers', collect($headers)->join(', ')); 
+		}
 		
 		return $this;
 	}
@@ -148,12 +177,15 @@ class CORS
 	 * @param int|false $seconds
 	 * @return $this
 	 */
-	public function cache($seconds) {
-		if ($seconds === false) { $this->headers->unset('Access-Control-Max-Age', '-1'); }
-		else { $this->headers->set('Access-Control-Max-Age', $seconds); }
+	public function cache($seconds)
+	{
+		if ($seconds === false) {
+			$this->headers->unset('Access-Control-Max-Age', '-1'); 
+		}
+		else {
+			$this->headers->set('Access-Control-Max-Age', $seconds); 
+		}
 		
 		return $this;
 	}
-	
 }
-

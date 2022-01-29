@@ -50,7 +50,8 @@ class Environment
 	 * @param string $key The name of the setting
 	 * @param string $value The value of the parameter.
 	 */
-	public function set ($key, $value) {
+	public function set($key, $value)
+	{
 		$low = strtolower($key);
 		$this->settings[$low] = $value;
 	}
@@ -61,9 +62,14 @@ class Environment
 	 * @param string $key The key to be returned.
 	 * @return mixed
 	 */
-	public function read($key) {
-		if (isset( $this->settings[$key] )) { return $this->settings[$key]; }
-		else { return getenv($key); }
+	public function read($key)
+	{
+		if (isset($this->settings[$key])) {
+			return $this->settings[$key]; 
+		}
+		else {
+			return getenv($key); 
+		}
 	}
 	
 	/**
@@ -74,12 +80,15 @@ class Environment
 	 * @deprecated since 0.2-dev
 	 * @see https://phabricator.magic3w.com/T69 for further notes
 	 */
-	public function subtree($namespace) {
+	public function subtree($namespace)
+	{
 		$_return = [];
 		
 		foreach ($this->settings as $key => $entry) {
 			# Obviously, if the key is not part of the namespace we just skip it.
-			if (!\spitfire\utils\Strings::startsWith($key, $namespace)) { continue; }
+			if (!\spitfire\utils\Strings::startsWith($key, $namespace)) {
+				continue; 
+			}
 			
 			# Otherwise we will trim the key so that only the non-obvious part of
 			# it is left, and add it to the return.
@@ -97,8 +106,8 @@ class Environment
 	 * @param string $key The key to be returned.
 	 * @return string|Environment
 	 */
-	public static function get($key = null) {
+	public static function get($key = null)
+	{
 		throw new BadMethodCallException('Environment::get is deprecated');
 	}
-	
 }

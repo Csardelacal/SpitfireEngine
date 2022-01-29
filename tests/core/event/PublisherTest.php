@@ -34,7 +34,8 @@ class PublisherTest extends TestCase
 	
 	private $plugins;
 	
-	public function setUp() : void {
+	public function setUp() : void
+	{
 		$this->plugins = new EventDispatcher();
 		
 		$this->plugins->on('test')->do(function (Event$e) { 
@@ -48,7 +49,8 @@ class PublisherTest extends TestCase
 		parent::setUp();
 	}
 	
-	public function testTarget() {
+	public function testTarget()
+	{
 		$payload = collect();
 		
 		$this->plugins->dispatch(new Event('test', $payload));
@@ -56,7 +58,5 @@ class PublisherTest extends TestCase
 		
 		$this->plugins->dispatch(new Event('test.n1.before', $payload));
 		$this->assertEquals(2, $payload->count());
-		
 	}
-	
 }

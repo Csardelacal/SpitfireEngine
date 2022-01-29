@@ -49,5 +49,4 @@ class ProvidersRegister implements InitScriptInterface
 			$provider->register();
 		});
 	}
-
 }

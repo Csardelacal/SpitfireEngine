@@ -1,6 +1,5 @@
 <?php namespace spitfire\mvc;
 
-
 /**
  * This class will autoinclude functions the application needs to run and return
  * the result
@@ -16,14 +15,17 @@ class Invoke
 	 * @return mixed Result of the called function
 	 * @throws \spitfire\exceptions\PrivateException
 	 */
-	public function __call($function_name, $arguments) {
-		if ( !is_callable($function_name) ) {
+	public function __call($function_name, $arguments)
+	{
+		if (!is_callable($function_name)) {
 			$file = 'bin/functions/'.$function_name.'.php';
-			if (file_exists($file)) include $file;
-			else throw new \spitfire\exceptions\PrivateException('Undefined function: '. $function_name);
+			if (file_exists($file)) {
+				include $file;
+			} else {
+				throw new \spitfire\exceptions\PrivateException('Undefined function: '. $function_name);
+			}
 		}
 		
 		return call_user_func_array($function_name, $arguments);
-		
 	}
 }

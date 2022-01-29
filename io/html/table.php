@@ -6,27 +6,33 @@ class HTMLTable extends HTMLElement
 {
 	private $rows;
 	
-	public function setHeaders() {
+	public function setHeaders()
+	{
 		$row = new HTMLTableRow();
 		$headers = func_get_args();
-		foreach ($headers as $h) {$row->putCell($h);}
+		foreach ($headers as $h) {
+			$row->putCell($h);
+		}
 		$this->putRow($row);
 	}
-
-	public function putRow($row) {
+	
+	public function putRow($row)
+	{
 		$this->rows[] = $row;
 	}
-
-	public function getChildren() {
+	
+	public function getChildren()
+	{
 		return  $this->rows;
 	}
-
-	public function getParams() {
-		return Array('cellspacing' => 0);
-	}
-
-	public function getTag() {
-		return 'table';
+	
+	public function getParams()
+	{
+		return array('cellspacing' => 0);
 	}
 	
+	public function getTag()
+	{
+		return 'table';
+	}
 }

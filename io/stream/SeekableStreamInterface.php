@@ -35,5 +35,4 @@ interface SeekableStreamInterface extends StreamInterface
 	 * @return int
 	 */
 	function tell() : int;
-	
 }

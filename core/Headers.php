@@ -14,13 +14,13 @@ class Headers
 	
 	private $status = 200;
 	
-	private $headers = Array(
-	    'Content-type' => ['text/html;charset=utf-8'],
-	    'x-Powered-By' => ['Spitfire'],
-	    'x-version'    => ['0.1 Beta']
+	private $headers = array(
+		'Content-type' => ['text/html;charset=utf-8'],
+		'x-Powered-By' => ['Spitfire'],
+		'x-version'    => ['0.1 Beta']
 	);
 	
-	private $states = Array(
+	private $states = array(
 		 200 => '200 OK',
 		 201 => '201 Created',
 		 202 => '202 Accepted',
@@ -44,7 +44,8 @@ class Headers
 		 503 => '503 Service Unavailable'
 	);
 	
-	public function set ($header, $value) {
+	public function set($header, $value)
+	{
 		$this->headers[$header] = (array)$value;
 		return $this;
 	}
@@ -58,8 +59,11 @@ class Headers
 	 * @param type $header
 	 * @return $this
 	 */
-	public function unset ($header) {
-		if (array_key_exists($header, $this->headers)) { unset($this->headers[$header]); }
+	public function unset($header)
+	{
+		if (array_key_exists($header, $this->headers)) {
+			unset($this->headers[$header]); 
+		}
 		return $this;
 	}
 	
@@ -85,7 +89,8 @@ class Headers
 	 * Usually Spitfire will buffer all the output, so this should usually not be
 	 * an issue.
 	 */
-	public function send () {
+	public function send()
+	{
 		http_response_code((int)$this->status);
 		
 		foreach ($this->headers as $header => $value) {
@@ -102,7 +107,8 @@ class Headers
 	 * @param string $str
 	 * @param string|null $encoding
 	 */
-	public function contentType($str, string $encoding = null) {
+	public function contentType($str, string $encoding = null)
+	{
 		
 		if ($encoding === null) {
 			$encoding = config('app.http.encoding', 'utf-8');
@@ -131,14 +137,20 @@ class Headers
 	 * 
 	 * @return CORS
 	 */
-	public function cors() {
+	public function cors()
+	{
 		return new CORS($this);
 	}
 	
-	public function status($code= 200) {
+	public function status($code = 200)
+	{
 		#Check if the call was valid
-		if (!is_numeric($code)) { throw new BadMethodCallException('Invalid argument. Requires a number', 1509031352); }
-		if (!isset($this->states[$code])) { throw new BadMethodCallException('Invalid status code', 1509031353); }
+		if (!is_numeric($code)) {
+			throw new BadMethodCallException('Invalid argument. Requires a number', 1509031352); 
+		}
+		if (!isset($this->states[$code])) {
+			throw new BadMethodCallException('Invalid status code', 1509031353); 
+		}
 		
 		$this->status = $code;
 	}
@@ -153,7 +165,8 @@ class Headers
 		return $this->states[$this->status];
 	}
 	
-	public function redirect($location, $status = 302) {
+	public function redirect($location, $status = 302)
+	{
 		$this->status($status);
 		$this->set('Location', $location);
 		$this->set('Expires', date("r", time()));
@@ -171,5 +184,4 @@ class Headers
 		
 		return $headers;
 	}
-	
 }

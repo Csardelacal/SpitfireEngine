@@ -30,7 +30,7 @@ use spitfire\exceptions\ApplicationException;
  */
 class Stream implements StreamInterface
 {
-
+	
 	/**
 	 * The handle used to manipulate the stream. This class basically is a PSR7
 	 * conforming wrapper around this stream.
@@ -56,7 +56,7 @@ class Stream implements StreamInterface
 	 * @var bool
 	 */
 	private $readable;
-
+	
 	/**
 	 * List of modes that are either readable or writable, or both.
 	 */
@@ -77,7 +77,7 @@ class Stream implements StreamInterface
 		$this->writable = $writable;
 		$this->readable = $readable;
 	}
-
+	
 	/**
 	 * Closes the stream. After this method has been invoked, the stream will no longer
 	 * be usable.
@@ -92,11 +92,11 @@ class Stream implements StreamInterface
 		if ($this->handle === null) {
 			return;
 		}
-
+		
 		fclose($this->handle);
 		$this->detach();
 	}
-
+	
 	/**
 	 * Detaches the stream from the underlying stream. Please note that this does not
 	 * free the underlying resource.
@@ -106,15 +106,15 @@ class Stream implements StreamInterface
 	public function detach()
 	{
 		$handle = $this->handle;
-
+		
 		$this->handle = null;
 		$this->readable = false;
 		$this->writable = false;
 		$this->seekable = false;
-
+		
 		return $handle;
 	}
-
+	
 	/**
 	 * Returns the size (in bytes) of the stream. If the data is not available, the method
 	 * returns a null value.
@@ -126,10 +126,10 @@ class Stream implements StreamInterface
 		if (!$this->handle) {
 			return null;
 		}
-
+		
 		return fstat($this->handle)['size'] ?? null;
 	}
-
+	
 	/**
 	 * Tells the current position of the seeking cursor on the stream. If the stream is not seekable 
 	 * this will fail with a runtime exception.
@@ -142,16 +142,16 @@ class Stream implements StreamInterface
 		if (!$this->handle) {
 			throw new RuntimeException('Could not tell on detached stream', 2108041124);
 		}
-
+		
 		$result = ftell($this->handle);
-
+		
 		if ($result === false) {
 			throw new RuntimeException('Could not tell the stream', 2108041101);
 		}
-
+		
 		return $result;
 	}
-
+	
 	/**
 	 * Returns true if we hit the end of the stream or whether the stream can continue to be 
 	 * read from.
@@ -163,14 +163,14 @@ class Stream implements StreamInterface
 	 */
 	public function eof(): bool
 	{
-
+		
 		if (!$this->handle) {
 			return true;
 		}
-
+		
 		return feof($this->handle);
 	}
-
+	
 	/**
 	 * Returns true if the stream allows being seeked through. Detached streams are implied to not
 	 * be seekable (since they do not exist)
@@ -181,7 +181,7 @@ class Stream implements StreamInterface
 	{
 		return $this->handle && $this->seekable;
 	}
-
+	
 	/**
 	 * Seek to a position in the stream.
 	 *
@@ -201,12 +201,12 @@ class Stream implements StreamInterface
 		if (!$this->handle) {
 			throw new RuntimeException('Could not seek a detached stream', 2108041108);
 		}
-
+		
 		if (fseek($this->handle, $offset, $whence) === -1) {
 			throw new RuntimeException('Error seeking', 2108041109);
 		}
 	}
-
+	
 	/**
 	 * Seek to the beginning of the stream.
 	 *
@@ -223,7 +223,7 @@ class Stream implements StreamInterface
 	{
 		$this->seek(0);
 	}
-
+	
 	/**
 	 * If the stream can be written to, this method will return true.
 	 * 
@@ -233,7 +233,7 @@ class Stream implements StreamInterface
 	{
 		return $this->handle && $this->writable;
 	}
-
+	
 	/**
 	 * Write data to the stream.
 	 *
@@ -245,14 +245,14 @@ class Stream implements StreamInterface
 	public function write($string): int
 	{
 		$result = fwrite($this->handle, $string);
-
+		
 		if ($result === false) {
 			throw new RuntimeException('Cannot write to the stream', 2108041113);
 		}
-
+		
 		return $result;
 	}
-
+	
 	/**
 	 * If the stream can be read from, this method will return true.
 	 * 
@@ -262,7 +262,7 @@ class Stream implements StreamInterface
 	{
 		return $this->handle && $this->readable;
 	}
-
+	
 	/**
 	 * Read data from the stream. Please note that this will read from the position
 	 * of the seek cursor onward.
@@ -286,11 +286,11 @@ class Stream implements StreamInterface
 		}
 		
 		$result = fread($this->handle, $length);
-
+		
 		if ($result === false) {
 			throw new RuntimeException(sprintf('Cannot read %d bytes from the stream', $length), 2108041113);
 		}
-
+		
 		return $result;
 	}
 	
@@ -314,7 +314,7 @@ class Stream implements StreamInterface
 		return $result;
 	}
 	
-    /**
+	/**
 	 * Get stream metadata as an associative array or retrieve a specific key.
 	 *
 	 * The keys returned are identical to the keys returned from PHP's
@@ -345,7 +345,7 @@ class Stream implements StreamInterface
 		
 		return $meta;
 	}
-
+	
 	/**
 	 * This is a convenience method to allow the printing of streams directly to the
 	 * output, making it more convenient.
@@ -361,7 +361,7 @@ class Stream implements StreamInterface
 		 */
 		$this->seek(0);
 		$result = stream_get_contents($this->handle);
-
+		
 		/**
 		 * In case the stream was not readable, we will stop the application from doing
 		 * so. This prevents PHP from throwing a cryptic (not a string) kind of error
@@ -370,10 +370,10 @@ class Stream implements StreamInterface
 		if ($result === false) {
 			throw new ApplicationException('Stream could not be read', 2108041023);
 		}
-
+		
 		return $result;
 	}
-
+	
 	/**
 	 * 
 	 * @param string|StreamInterface $str
@@ -385,7 +385,7 @@ class Stream implements StreamInterface
 		 * We require the input to this to either be a string, or a Stream already.
 		 */
 		assert($str instanceof StreamInterface || is_string($str));
-
+		
 		/**
 		 * We already have a stream implementing the stream interface, why convert it to
 		 * another stream? Please note here that this may or may not be an instance of
@@ -394,7 +394,7 @@ class Stream implements StreamInterface
 		if ($str instanceof StreamInterface) {
 			return $str;
 		}
-
+		
 		/**
 		 * We create a handle to a temporary stream. Please note that we have a small modification 
 		 * to prevent PHP from prematurely writing to a temp-file. By default, PHP will write
@@ -412,7 +412,7 @@ class Stream implements StreamInterface
 		}
 		
 		$meta = stream_get_meta_data($handle);
-
+		
 		/**
 		 * Instance the new stream.
 		 */

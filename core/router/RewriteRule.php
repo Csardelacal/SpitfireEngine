@@ -101,15 +101,28 @@ abstract class RewriteRule
 	 * @param string|int $method
 	 * @return boolean
 	 */
-	public function testMethod($method) {
+	public function testMethod($method)
+	{
 		if (!is_numeric($method)) {
-			switch ($method){
-				case 'GET' :    $method = self::METHOD_GET; break;
-				case 'POST':    $method = self::METHOD_POST; break;
-				case 'HEAD':    $method = self::METHOD_HEAD; break;
-				case 'PUT' :    $method = self::METHOD_PUT; break;
-				case 'DELETE':  $method = self::METHOD_DELETE; break;
-				case 'OPTIONS': $method = self::METHOD_OPTIONS; break;
+			switch ($method) {
+				case 'GET':    
+					$method = self::METHOD_GET;
+					break;
+				case 'POST':    
+					$method = self::METHOD_POST;
+					break;
+				case 'HEAD':    
+					$method = self::METHOD_HEAD;
+					break;
+				case 'PUT':    
+					$method = self::METHOD_PUT;
+					break;
+				case 'DELETE':  
+					$method = self::METHOD_DELETE;
+					break;
+				case 'OPTIONS': 
+					$method = self::METHOD_OPTIONS;
+					break;
 			}
 		}
 		return (bool)($this->method & $method);
@@ -142,7 +155,8 @@ abstract class RewriteRule
 	 * 
 	 * @return URIPattern
 	 */
-	public function getSource() {
+	public function getSource()
+	{
 		return $this->pattern;
 	}
 	

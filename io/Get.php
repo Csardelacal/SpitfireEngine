@@ -47,9 +47,10 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @param mixed $data
 	 */
-	public function __construct($data) {
-		$this->data = array_map(Array($this, 'make'), $data);
-		$this->used = Array();
+	public function __construct($data)
+	{
+		$this->data = array_map(array($this, 'make'), $data);
+		$this->used = array();
 	}
 	
 	/**
@@ -62,10 +63,17 @@ class Get implements Iterator, ArrayAccess
 	 * @param  \spitfire\io\Get|string $value
 	 * @return string|\spitfire\io\Get
 	 */
-	public function make($value) {
-		if     ($value instanceof Get) { return new self($value->getRaw()); }
-		elseif (is_array($value))      { return new self($value); }
-		else                           { return $value; }
+	public function make($value)
+	{
+		if ($value instanceof Get) {
+			return new self($value->getRaw()); 
+		}
+		elseif (is_array($value)) {
+			return new self($value); 
+		}
+		else {
+			return $value; 
+		}
 	}
 	
 	/**
@@ -77,27 +85,36 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @return mixed
 	 */
-	public function getCanonical() {
-		$_ret = Array();
+	public function getCanonical()
+	{
+		$_ret = array();
 		
 		foreach ($this->used as $key) {
 			$value = $this->data[$key];
 			#Check whether the object is another Get.
-			if ($value instanceof Get) { $_ret[$key] = $value->getCanonical(); }
+			if ($value instanceof Get) {
+				$_ret[$key] = $value->getCanonical(); 
+			}
 			
 			#Check if the object is set at all. 
-			elseif (isset($value))     { $_ret[$key] = $value; }
+			elseif (isset($value)) {
+				$_ret[$key] = $value; 
+			}
 		}
 		
 		return $_ret;
 	}
 	
-	public function toString($key) {
-		if (!is_string($this->data[$key])) { throw new \spitfire\exceptions\PublicException('Invalid GET data', 400); }
+	public function toString($key)
+	{
+		if (!is_string($this->data[$key])) {
+			throw new \spitfire\exceptions\PublicException('Invalid GET data', 400); 
+		}
 		return $this->data[$key];
 	}
 	
-	public function toArray($key) {
+	public function toArray($key)
+	{
 		return $this->data[$key] instanceof Get? $this->data[$key]->getRaw() : (array)$this->data[$key];
 	}
 	
@@ -113,15 +130,20 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @return mixed[]
 	 */
-	public function getRaw() {
-		$_ret = Array();
+	public function getRaw()
+	{
+		$_ret = array();
 		$data =&$this->data;
 		
 		foreach ($data as $key => $value) {
 			#Check whether the object is another Get.
-			if ($value instanceof Get) { $_ret[$key] = $value->getRaw(); }
+			if ($value instanceof Get) {
+				$_ret[$key] = $value->getRaw(); 
+			}
 			#Check if the object is set at all. 
-			else { $_ret[$key] = $value; }
+			else {
+				$_ret[$key] = $value; 
+			}
 		}
 		
 		return $_ret;
@@ -132,7 +154,8 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @return mixed
 	 */
-	public function current() {
+	public function current()
+	{
 		return current($this->data);
 	}
 	
@@ -142,7 +165,8 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @return int|string
 	 */
-	public function key() {
+	public function key()
+	{
 		return key($this->data);
 	}
 	
@@ -152,7 +176,8 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @return mixed
 	 */
-	public function next() {
+	public function next()
+	{
 		return next($this->data);
 	}
 	
@@ -164,7 +189,8 @@ class Get implements Iterator, ArrayAccess
 	 * @param string $offset
 	 * @return mixed
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists($offset)
+	{
 		return array_key_exists($offset, $this->data);
 	}
 	
@@ -175,7 +201,8 @@ class Get implements Iterator, ArrayAccess
 	 * @param string $offset
 	 * @return mixed
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet($offset)
+	{
 		#If the key is found include into the array of used data.
 		#This allows Spitfire to generate canonicals for you adequately.
 		if (isset($this->data[$offset]) && !in_array($offset, $this->used)) {	
@@ -192,8 +219,11 @@ class Get implements Iterator, ArrayAccess
 	 * @param string $offset
 	 * @param mixed $value
 	 */
-	public function offsetSet($offset, $value) {
-		if (is_array($value)) { $value = new Get($value); }
+	public function offsetSet($offset, $value)
+	{
+		if (is_array($value)) {
+			$value = new Get($value); 
+		}
 		$this->data[$offset] = $value;
 	}
 	
@@ -203,7 +233,8 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @param string $offset
 	 */
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset)
+	{
 		if (array_key_exists($this->data[$offset])) {
 			unset($this->data[$offset]);
 		}
@@ -213,7 +244,8 @@ class Get implements Iterator, ArrayAccess
 	 * Rewinds the array and does not return anything. Just required by the iterator,
 	 * so here it is.
 	 */
-	public function rewind() {
+	public function rewind()
+	{
 		reset($this->data);
 	}
 	
@@ -224,7 +256,8 @@ class Get implements Iterator, ArrayAccess
 	 * 
 	 * @return boolean
 	 */
-	public function valid() {
+	public function valid()
+	{
 		return key($this->data) !== null;
 	}
 	
@@ -235,7 +268,8 @@ class Get implements Iterator, ArrayAccess
 	 * @param string $name
 	 * @return boolean
 	 */
-	public function __isset($name) {
+	public function __isset($name)
+	{
 		return array_key_exists($name, $this->data);
 	}
 	
@@ -245,7 +279,8 @@ class Get implements Iterator, ArrayAccess
 	 * @param string $name
 	 * @return mixed The content of the get variable on that index
 	 */
-	public function __get($name) {
+	public function __get($name)
+	{
 		return $this->offsetGet($name);
 	}
 	
@@ -256,7 +291,8 @@ class Get implements Iterator, ArrayAccess
 	 * @param mixed  $value
 	 * @return mixed The content of the get variable on that index
 	 */
-	public function __set($name, $value) {
+	public function __set($name, $value)
+	{
 		return $this->offsetSet($name, $value);
 	}
 	
@@ -264,14 +300,17 @@ class Get implements Iterator, ArrayAccess
 	 * Clones the data in case the Get element is cloned. This prevents editions
 	 * to the object to be made global if this is desired.
 	 */
-	public function __clone() {
+	public function __clone()
+	{
 		foreach ($this->data as &$f) { 
-			if ($f instanceof Get) { $f = clone $f; } 
+			if ($f instanceof Get) {
+				$f = clone $f; 
+			} 
 		}
 	}
-
-	public function __toString(){
+	
+	public function __toString()
+	{
 		return http_build_query($this->data);
 	}
-
 }

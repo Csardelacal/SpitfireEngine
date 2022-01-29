@@ -28,7 +28,7 @@ class FailureException extends Exception implements PublicExceptionInterface
 	 * @param int $code
 	 * @param \Throwable $previous
 	 */
-	public function __construct(string $message = "", int $code = 500, \Throwable $previous = NULL) 
+	public function __construct(string $message = "", int $code = 500, \Throwable $previous = null) 
 	{
 		parent::__construct($message, $code, $previous);
 	}

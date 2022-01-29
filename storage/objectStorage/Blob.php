@@ -36,50 +36,60 @@ class Blob
 	private $scheme;
 	
 	
-	public function __construct($scheme, $mount, $key) {
+	public function __construct($scheme, $mount, $key)
+	{
 		$this->scheme = $scheme;
 		$this->mount = $mount;
 		$this->key = $key;
 	}
 	
-	public function exists() {
+	public function exists()
+	{
 		return $this->mount->contains($this->key);
 	}
 	
-	public function read() {
+	public function read()
+	{
 		return $this->mount->read($this->key);
 	}
 	
-	public function write($content) {
+	public function write($content)
+	{
 		return $this->mount->write($this->key, $content);
 	}
 	
-	public function delete() {
+	public function delete()
+	{
 		return $this->mount->delete($this->key);
 	}
 	
-	public function uri() {
+	public function uri()
+	{
 		return $this->scheme . '://' . $this->key;
 	}
 	
-	public function publicURL($ttl = null) {
+	public function publicURL($ttl = null)
+	{
 		return $this->mount->url($this->key, $ttl);
 	}
 	
-	public function mime() {
+	public function mime()
+	{
 		return $this->mount->mime($this->key);
 	}
 	
-	public function length() {
+	public function length()
+	{
 		return $this->mount->length($this->key);
 	}
 	
-	public function stream() {
+	public function stream()
+	{
 		return $this->mount->stream($this->key);
 	}
 	
-	public function isWritable() {
+	public function isWritable()
+	{
 		return !$this->mount->readonly($this->key);
 	}
-
 }

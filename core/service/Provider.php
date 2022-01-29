@@ -44,7 +44,8 @@ abstract class Provider
 	 */
 	protected $container;
 	
-	public function __construct(Container $container) {
+	public function __construct(Container $container)
+	{
 		$this->$container = $container;
 	}
 	
@@ -60,5 +61,4 @@ abstract class Provider
 	 * 
 	 */
 	abstract public function init();
-	
 }

@@ -57,15 +57,18 @@ class MutableEvent extends Event
 	
 	private $override = null;
 	
-	public function getBody() {
+	public function getBody()
+	{
 		return $this->override?? parent::getBody();
 	}
 	
-	public function getOriginal() {
+	public function getOriginal()
+	{
 		return parent::getBody();
 	}
 	
-	public function setBody($value) {
+	public function setBody($value)
+	{
 		return $this->override = $value;
 	}
 }

@@ -47,7 +47,8 @@ class FileStreamReader implements StreamReaderInterface, SeekableStreamInterface
 	 * Instance a new FileStreamReader. This allows the application to read chunks
 	 * of a file to memory and process them in batch.
 	 */
-	public function __construct($path) {
+	public function __construct($path)
+	{
 		$this->path = $path;
 		$this->fh = fopen($path, 'r');
 	}
@@ -62,7 +63,8 @@ class FileStreamReader implements StreamReaderInterface, SeekableStreamInterface
 	 * @throws FilePermissionsException
 	 * @return string
 	 */
-	public function read($length = null) {
+	public function read($length = null)
+	{
 		
 		if ($this->fh === false) {
 			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
@@ -79,7 +81,8 @@ class FileStreamReader implements StreamReaderInterface, SeekableStreamInterface
 	 * @return StreamInterface
 	 * @throws FilePermissionsException
 	 */
-	public function seek($position): StreamInterface {
+	public function seek($position): StreamInterface
+	{
 		
 		if ($this->fh === false) {
 			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
@@ -90,13 +93,13 @@ class FileStreamReader implements StreamReaderInterface, SeekableStreamInterface
 	}
 	
 	
-	public function tell(): int {
+	public function tell(): int
+	{
 		return ftell($this->fh);
 	}
 	
-	public function length(): int {
+	public function length(): int
+	{
 		return filesize($this->path);
 	}
-
-
 }

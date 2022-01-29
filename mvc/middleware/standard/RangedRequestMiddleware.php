@@ -45,8 +45,7 @@ class RangedRequestMiddleware implements MiddlewareInterface
 		$response = $handler->handle($request);
 		$sent     = $request->getHeader('Range')[0];
 		
-		if ($sent)
-		{
+		if ($sent) {
 			/**
 			 * If the request defines a range that is not in bytes, we will deny processing
 			 * it.

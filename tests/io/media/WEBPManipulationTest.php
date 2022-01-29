@@ -42,7 +42,8 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	private $storage;
 	private $filename;
 	
-	public function setUp(): void {
+	public function setUp(): void
+	{
 		$this->storage = new DriveDispatcher;
 		$this->storage->register('file', new \spitfire\storage\drive\Driver('/'));
 		$this->filename = __DIR__ . '/m3w.png';
@@ -54,7 +55,8 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 * 
 	 * @return type
 	 */
-	public function testOutputWEBP() {
+	public function testOutputWEBP()
+	{
 		$img = media()->load($this->storage->retrieve('file:/' . $this->filename));
 		$output = $this->storage->retrieve('file:/' . self::$tmpdir . '/test.webp');
 		
@@ -69,13 +71,14 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 * 
 	 * @depends testOutputWEBP
 	 */
-	public function testInputWEBP($output) {
+	public function testInputWEBP($output)
+	{
 		$loaded = media()->load($output);
 		$this->assertInstanceOf(\spitfire\io\media\GDManipulator::class, $loaded);
 	}
 	
-	public function tearDown() : void {
+	public function tearDown() : void
+	{
 		//$this->storage->retrieve('file:/' . self::$tmpdir . '/test.webp')->delete();
 	}
-	
 }

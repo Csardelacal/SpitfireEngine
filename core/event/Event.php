@@ -36,17 +36,19 @@ class Event
 	private $action;
 	private $body;
 	
-	public function __construct($action, $body) {
+	public function __construct($action, $body)
+	{
 		$this->action = $action;
 		$this->body = $body;
 	}
 	
-	public function getAction() {
+	public function getAction()
+	{
 		return $this->action;
 	}
-
-	public function getBody() {
+	
+	public function getBody()
+	{
 		return $this->body;
 	}
-
 }

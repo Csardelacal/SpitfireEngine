@@ -73,7 +73,8 @@ class URIPattern
 	 * 
 	 * @param string $pattern
 	 */
-	public function __construct($pattern) {
+	public function __construct($pattern)
+	{
 		
 		if (!Strings::startsWith($pattern, '/')) {
 			$pattern = sprintf('/%s', $pattern);
@@ -107,8 +108,8 @@ class URIPattern
 		$this->expression  = sprintf($template, preg_replace(
 			['/\//', '/\{([^\}]+)\}/'],   # In this case, expressions containing a colon, will get replaced by
 			['(?:/|$)', '([a-zA-Z0-9-_]*)'], # a capturing group that accepts an empty string
-			$pattern)
-		);
+			$pattern
+		));
 		
 		/**
 		 * A second, very similar expression, is used to extract the variables that we need.
@@ -166,7 +167,9 @@ class URIPattern
 		 * 
 		 * @var string[]
 		 */
-		$matches = array_map(function ($e) { return $e[0]; }, $raw);
+		$matches = array_map(function ($e) {
+			return $e[0];
+		}, $raw);
 		
 		$params = new Parameters();
 		
@@ -225,10 +228,16 @@ class URIPattern
 		return preg_replace_callback('/\{([^\}]+)\}/', $fn, $this->pattern);
 	}
 	
-	public static function make($str) {
-		if ($str instanceof URIPattern) { return $str; }
-		elseif (is_string($str)) { return new URIPattern($str); }
-		else { throw new \InvalidArgumentException('Invalid pattern for URIPattern::make', 1706091621); }
+	public static function make($str)
+	{
+		if ($str instanceof URIPattern) {
+			return $str; 
+		}
+		elseif (is_string($str)) {
+			return new URIPattern($str); 
+		}
+		else {
+			throw new \InvalidArgumentException('Invalid pattern for URIPattern::make', 1706091621); 
+		}
 	}
-	
 }

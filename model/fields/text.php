@@ -25,7 +25,8 @@ class TextField extends Field
 	 * 
 	 * @return string
 	 */
-	public function getDataType() {
+	public function getDataType()
+	{
 		return Field::TYPE_TEXT;
 	}
 	
@@ -38,12 +39,13 @@ class TextField extends Field
 	 * @param Model $model
 	 * @return \spitfire\model\adapters\StringAdapter
 	 */
-	public function getAdapter(Model $model) {
+	public function getAdapter(Model $model)
+	{
 		return new StringAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		return Array();
+	
+	public function getConnectorQueries(\spitfire\storage\database\Query $parent)
+	{
+		return array();
 	}
-
 }

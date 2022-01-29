@@ -40,27 +40,32 @@ class Driver implements DriverInterface
 	 */
 	private $path;
 	
-	public function __construct($dsn) {
+	public function __construct($dsn)
+	{
 		$this->path = rtrim($dsn, '\/') . DIRECTORY_SEPARATOR;
 		
 		if (\spitfire\utils\Strings::startsWith($this->path, '@')) {
 			$this->path = spitfire()->locations()->storage(substr($this->path, 1), '\/');
 		}
 	}
-
-	public function atime($key) {
+	
+	public function atime($key)
+	{
 		return fileatime($this->path . $key);
 	}
-
-	public function contains($key) {
+	
+	public function contains($key)
+	{
 		return file_exists($this->path . $key) && !is_dir($this->path . $key);
 	}
-
-	public function delete($key) {
+	
+	public function delete($key)
+	{
 		return unlink($this->path . $key);
 	}
-
-	public function mime($key) {
+	
+	public function mime($key)
+	{
 		return mime($this->path . $key);
 	}
 	
@@ -71,27 +76,33 @@ class Driver implements DriverInterface
 	 * @param string $key
 	 * @return int
 	 */
-	public function length($key) {
+	public function length($key)
+	{
 		return filesize($this->path . $key);
 	}
-
-	public function mtime($key) {
+	
+	public function mtime($key)
+	{
 		return filemtime($this->path . $key);
 	}
-
-	public function read($key) {
+	
+	public function read($key)
+	{
 		return file_get_contents($this->path . $key);
 	}
-
-	public function stream($key): IOStream {
+	
+	public function stream($key): IOStream
+	{
 		return new IOStream(new FileStreamReader($this->path . $key), new FileStreamWriter($this->path . $key));
 	}
-
-	public function url($key, $ttl) {
+	
+	public function url($key, $ttl)
+	{
 		throw new BadMethodCallException();
 	}
-
-	public function write($key, $contents, $ttl = null) {
+	
+	public function write($key, $contents, $ttl = null)
+	{
 		$full = $this->path . $key;
 		$dir = dirname($full);
 		
@@ -101,9 +112,9 @@ class Driver implements DriverInterface
 		
 		return file_put_contents($full, $contents);
 	}
-
-	public function readonly($key) {
+	
+	public function readonly($key)
+	{
 		return !((!file_exists($this->path . $key) && is_writable($this->path . dirname($key))) || is_writable($this->path . $key));
 	}
-
 }

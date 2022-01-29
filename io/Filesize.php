@@ -2,7 +2,7 @@
 
 use spitfire\exceptions\PrivateException;
 
-class Filesize 
+class Filesize
 {
 	/** 
 	 * The length of the data in bytes.
@@ -12,21 +12,23 @@ class Filesize
 	private $bytes;
 	
 	
-	public static $units = Array('', 'K', 'M', 'G', 'T');
-
+	public static $units = array('', 'K', 'M', 'G', 'T');
+	
 	/**
 	 * Creates the formatter with the passed value
 	 *
 	 * @param int $value
 	 */
-	public function __construct($value){
+	public function __construct($value)
+	{
 		$this->bytes = $value;
 	}
 	
-	public function getSize() {
+	public function getSize()
+	{
 		return $this->bytes;
 	}
-
+	
 	/**
 	 * Parses the size provided as a string and returns a Filesize instance or 
 	 * throws on failure.
@@ -36,7 +38,8 @@ class Filesize
 	 * @return Filesize
 	 * @throws PrivateException
 	 */
-	static function parse($str){
+	public static function parse($str)
+	{
 		if (!preg_match('/^(\d+)\s*([TGMK])b?$/i', $str, $matches)) {
 			throw new PrivateException("Unable to parse file size ($str)");
 		}
@@ -44,13 +47,16 @@ class Filesize
 		$unit = $matches[2];
 		$value = intval($matches[1], 10);
 		
-		switch(strtoupper($unit)){
+		switch (strtoupper($unit)) {
 			case 'T':
 				$value *= 1024;
+				//no break
 			case 'G':
 				$value *= 1024;
+				//no break
 			case 'M':
 				$value *= 1024;
+				//no break
 			case 'K':
 				$value *= 1024;
 		}
@@ -58,7 +64,8 @@ class Filesize
 		return new Filesize($value);
 	}
 	
-	function __toString() {
+	public function __toString()
+	{
 		$bytes = $this->bytes;
 		$units = 0;
 		

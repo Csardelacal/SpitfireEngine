@@ -17,13 +17,13 @@ class IntegerAdapter extends BaseAdapter
 	 * @param int $data
 	 * @throws PrivateException
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		//Check if the incoming data is an int
-		if ( $data !== null && (int)$data != $data && !is_int($data) ) {
+		if ($data !== null && (int)$data != $data && !is_int($data)) {
 			throw new PrivateException('This adapter only accepts integers and nulls');
 		}
 		//Make sure the finally stored data is an integer.
 		parent::usrSetData($data === null? null : (int)$data);
 	}
 }
-

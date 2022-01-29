@@ -38,7 +38,8 @@ abstract class StackTracePrinter
 	 * 
 	 * @param Exception $e
 	 */
-	public function __construct($e) {
+	public function __construct($e)
+	{
 		if (!$e instanceof \Exception && !$e instanceof \Throwable) {
 			throw new InvalidArgumentException('Stack Trace Printer requires throwable to be passed, received ' . get_class($e), 1806031136);
 		}
@@ -54,13 +55,14 @@ abstract class StackTracePrinter
 	 * @todo Handle the behavior when the stack trace is unpopulated.
 	 * @return string
 	 */
-	public function iterateTrace() {
+	public function iterateTrace()
+	{
 		#Get the trace and init the string we're gonna be using to collect results
 		$trace = $this->makeTrace();
 		$_ret  = '';
 		
 		#Loop over the trace and collect the results into _ret
-		foreach($trace as $entry) {
+		foreach ($trace as $entry) {
 			$_ret.= $this->stringifyEntry($entry);
 		}
 		
@@ -68,7 +70,8 @@ abstract class StackTracePrinter
 		return $_ret;
 	}
 	
-	public function stringifyEntry($entry) {
+	public function stringifyEntry($entry)
+	{
 		$_ret = '';
 		$_ret.= $this->wrapMethodSignature($this->printMethodSignature(isset($entry['class'])? $entry['class'] . $entry['type'] . $entry['function'] : $entry['function'], $entry['args']));
 		
@@ -81,48 +84,64 @@ abstract class StackTracePrinter
 		return $_ret;
 	}
 	
-	public function stringifyArgs($args) {
-		$_ret = Array();
+	public function stringifyArgs($args)
+	{
+		$_ret = array();
 		
 		foreach ($args as $arg) {
-			if     (is_object($arg)) { $_ret[]= get_class($arg); }
-			elseif (is_array($arg))  { $_ret[]= sprintf('Array(%s)', count($arg)); }
-			elseif (is_int($arg))    { $_ret[]= sprintf('Integer(%s)', $arg); }
-			elseif (is_double($arg)) { $_ret[]= sprintf('Double(%s)', $arg); }
-			elseif (is_string($arg)) { $_ret[]= sprintf('String(%s)', strlen($arg) > 30? strlen($arg) : $arg); }
+			if (is_object($arg)) {
+				$_ret[]= get_class($arg); 
+			}
+			elseif (is_array($arg)) {
+				$_ret[]= sprintf('Array(%s)', count($arg)); 
+			}
+			elseif (is_int($arg)) {
+				$_ret[]= sprintf('Integer(%s)', $arg); 
+			}
+			elseif (is_double($arg)) {
+				$_ret[]= sprintf('Double(%s)', $arg); 
+			}
+			elseif (is_string($arg)) {
+				$_ret[]= sprintf('String(%s)', strlen($arg) > 30? strlen($arg) : $arg); 
+			}
 		}
 		
 		return implode(', ', $_ret);
 	}
 	
-	public function makeExcerpt($file, $line) {
+	public function makeExcerpt($file, $line)
+	{
 		$line    = $line - 1; //Compensate for the fact that the file is an array now
 		$content = file($file);
-		$_ret    = Array();
+		$_ret    = array();
 		
 		for ($i = $line - 7; $i < $line; $i++) {
-			if ($i > 0) {$_ret[] = $this->printLine($content[$i]); }
+			if ($i > 0) {
+				$_ret[] = $this->printLine($content[$i]); 
+			}
 		}
 		
 		#The affected line displays the error source
 		$_ret[] = $this->printLine($content[$line], self::LINE_TYPE_ERROR);
 		
 		for ($i = $line + 1; $i < $line + 4; $i++) {
-			if (isset($content[$i])) {$_ret[] = $this->printLine($content[$i]); }
+			if (isset($content[$i])) {
+				$_ret[] = $this->printLine($content[$i]); 
+			}
 		}
 		
 		return $this->wrapExcerpt(implode('', $_ret), $line + 1);
 	}
 	
-	public function makeTrace() {
+	public function makeTrace()
+	{
 		$trace = $this->exception->getTrace();
 		$count = count($trace) + 1;
 		
 		array_unshift($trace, [
 			'line' => $this->exception->getLine(), 
 			'file' => $this->exception->getFile()
-			]
-		);
+			]);
 		
 		for ($i = 0; $i < $count; $i++) {
 			if (!isset($trace[$i + 1])) {
@@ -137,8 +156,11 @@ abstract class StackTracePrinter
 		return $trace;
 	}
 	
-	public function __toString() {
-		if (php_sapi_name() === 'cli') { return $this->exception->getTraceAsString(); }
+	public function __toString()
+	{
+		if (php_sapi_name() === 'cli') {
+			return $this->exception->getTraceAsString(); 
+		}
 		
 		return $this->wrapStackTrace($this->iterateTrace(), sprintf('Stack trace for "%s"', $this->exception->getMessage()));
 	}
@@ -150,5 +172,4 @@ abstract class StackTracePrinter
 	abstract public function printLine($line, $type = StackTracePrinter::LINE_TYPE_NORMAL);
 	abstract public function wrapExcerpt($html, $startLine);
 	abstract public function makeCSS();
-	
 }

@@ -38,7 +38,8 @@ use spitfire\validation\ValidationRule;
  * @staticvar type $sf
  * @return \spitfire\SpitFire
  */
-function spitfire() {
+function spitfire()
+{
 	static $sf = null;
 	
 	if ($sf !== null) { 
@@ -60,7 +61,8 @@ function spitfire() {
  * @return App The App created by the system, use this to pass parameters and 
  *             configuration to the application.
  */
-function app($name, $namespace) {
+function app($name, $namespace)
+{
 	$appName = $name . 'App';
 	$app = new $appName(APP_DIRECTORY . $name . DIRECTORY_SEPARATOR, $namespace);
 	spitfire()->registerApp($app, $namespace);
@@ -162,7 +164,9 @@ function assume(bool $condition, $failure) : void
 	 * If the condition is met, the function doesn't do anything. It just returns and allows
 	 * the application to continue.
 	 */
-	if ($condition) { return; }
+	if ($condition) {
+		return; 
+	}
 	
 	/**
 	 * Otherwise, we need to stop the execution. This should be done in the closure, but if the
@@ -176,7 +180,9 @@ function assume(bool $condition, $failure) : void
 	/**
 	 * If the user provided an exception instance, we throw the provided exception.
 	 */
-	if ($failure instanceof Exception) { throw $failure; }
+	if ($failure instanceof Exception) {
+		throw $failure; 
+	}
 	
 	/**
 	 * The last case (if the failure code was a string) will instance a new exception without message,
@@ -217,7 +223,9 @@ function db()
 	static $db = null;
 	
 	#If we're requesting the standard driver and have it cached, we use this
-	if ($db !== null) { return $db; }
+	if ($db !== null) {
+		return $db; 
+	}
 	
 	#If no options were passed, we try to fetch them from the configuration
 	$driver   = config('storage.database.driver', 'mysqlpdo');
@@ -326,7 +334,8 @@ function redirect(string $location, int $code = 302) : Response
 	);
 }
 
-function console() {
+function console()
+{
 	static $console = null;
 	
 	if ($console === null) {
@@ -343,15 +352,21 @@ function console() {
  * @see http://www.spitfirephp.com/wiki/index.php/NgiNX_Configuration For NGiNX setup
  * @return string
  */
-function getPathInfo() {
+function getPathInfo()
+{
 	$base_url = spitfire()->baseUrl();
 	list($path) = explode('?', substr($_SERVER['REQUEST_URI'], strlen($base_url)));
 	
-	if (strlen($path) !== 0) { return $path; }
-	else                     { return  '/';  }
+	if (strlen($path) !== 0) {
+		return $path; 
+	}
+	else {
+		return  '/';  
+	}
 }
 
-function _def(&$a, $b) {
+function _def(&$a, $b)
+{
 	return ($a)? $a : $b;
 }
 
@@ -363,7 +378,8 @@ function _def(&$a, $b) {
  * @param mixed $elements
  * @return Collection
  */
-function collect($elements = []) {
+function collect($elements = [])
+{
 	return new Collection($elements);
 }
 
@@ -374,7 +390,8 @@ function collect($elements = []) {
  * 
  * @return URLBuilder
  */
-function url() {
+function url()
+{
 	return spitfire()->provider()->get(URLBuilder::class);
 }
 
@@ -395,7 +412,8 @@ function url() {
  * @param number $max
  * @return number
  */
-function clamp($min, $bias, $max) {
+function clamp($min, $bias, $max)
+{
 	return min(max($min, $bias), $max);
 }
 
@@ -409,12 +427,14 @@ function clamp($min, $bias, $max) {
  * @param number $max
  * @return number
  */
-function within($min, $val, $max) {
+function within($min, $val, $max)
+{
 	trigger_error('Function within() is deprecated, rename it to clamp()', E_USER_DEPRECATED);
 	return clamp($min, $val, $max);
 }
 
-function media() {
+function media()
+{
 	static $dispatcher = null;
 	
 	if (!$dispatcher) {
@@ -439,7 +459,8 @@ function media() {
  * @param type $uri
  * @return DriveDispatcher|NodeInterface
  */
-function storage() {
+function storage()
+{
 	
 	static $dispatcher = null;
 	
@@ -447,8 +468,7 @@ function storage() {
 		$defs = config('storage.engines');
 		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
 		
-		foreach ($defs as $k => $e) 
-		{
+		foreach ($defs as $k => $e) {
 			$class = $e['type'];
 			$settings = $e['settings'];
 			$i = new $class($settings);
@@ -460,9 +480,14 @@ function storage() {
 	return $dispatcher;
 }
 
-function mime($file) {
-	if (function_exists('mime_content_type')) { return mime_content_type($file); }
-	else { return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0]; }
+function mime($file)
+{
+	if (function_exists('mime_content_type')) {
+		return mime_content_type($file); 
+	}
+	else {
+		return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0]; 
+	}
 }
 
 /**
@@ -473,7 +498,8 @@ function mime($file) {
  * @staticvar \spitfire\core\event\EventDispatcher $dispatcher
  * @return \spitfire\core\event\EventDispatcher
  */
-function event(\spitfire\core\event\Event$event = null) {
+function event(\spitfire\core\event\Event$event = null)
+{
 	static $dispatcher = null;
 	
 	if ($dispatcher === null) {
@@ -495,11 +521,16 @@ function event(\spitfire\core\event\Event$event = null) {
  * @param \spitfire\io\lock\FileLockFactory $set
  * @return \spitfire\io\lock\FileLockFactory
  */
-function lock($set = null) {
+function lock($set = null)
+{
 	static $handler;
 	
-	if ($set) { $handler = $set; }
-	if (!$handler) { $handler = new \spitfire\io\lock\FileLockFactory(dirname(dirname(__FILE__)) . '/bin/usr/lock'); }
+	if ($set) {
+		$handler = $set; 
+	}
+	if (!$handler) {
+		$handler = new \spitfire\io\lock\FileLockFactory(dirname(dirname(__FILE__)) . '/bin/usr/lock'); 
+	}
 	
 	return $handler;
 }
@@ -533,7 +564,9 @@ function asset(string $name, string $scope = 'assets/') : string
 		 * as the alue for that entry. But sometimes it contains disambiguations.
 		 */
 		$manifest = spitfire()->locations()->public(rtrim($scope, '\/') . DIRECTORY_SEPARATOR . 'mix-manifest.json');
-		if (!file_exists($manifest)) { throw new \spitfire\exceptions\ApplicationException(sprintf('No asset manifest for %s', $scope)); }
+		if (!file_exists($manifest)) {
+			throw new \spitfire\exceptions\ApplicationException(sprintf('No asset manifest for %s', $scope)); 
+		}
 		
 		/*
 		 * If the key exists, we generate a manifest object.
@@ -565,8 +598,7 @@ function asset(string $name, string $scope = 'assets/') : string
 			trim($base, '/'),
 			trim($scope?? '', '/'),
 			trim($asset, '/')
-		])
-	);
+		]));
 }
 
 /**

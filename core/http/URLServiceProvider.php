@@ -27,6 +27,5 @@ class URLServiceProvider extends Provider
 	
 	public function init()
 	{
-		
 	}
 }

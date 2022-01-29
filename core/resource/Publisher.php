@@ -69,7 +69,9 @@ class Publisher
 	 */
 	public function publish(string $tag, string $from, string $to) 
 	{
-		if (!array_key_exists($tag, $this->publishes)) { $this->publishes[$tag] = []; }
+		if (!array_key_exists($tag, $this->publishes)) {
+			$this->publishes[$tag] = []; 
+		}
 		$this->publishes[$tag][] = [$from, $to];
 	}
 	
@@ -103,5 +105,4 @@ class Publisher
 	{
 		return array_keys($this->publishes);
 	}
-	
 }

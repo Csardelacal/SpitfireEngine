@@ -21,13 +21,14 @@ class Post
 	 * read several different formats and parse them to make the integration across
 	 * apps seamless.
 	 */
-	public static function init() {
+	public static function init()
+	{
 		
 		/*
 		 * Switch the content type between the possible admitted options that
 		 * Spitfire admits and properly parses.
 		 */
-		switch(_def($_SERVER['CONTENT_TYPE'], null)) {
+		switch (_def($_SERVER['CONTENT_TYPE'], null)) {
 			/*
 			 * To parse JSON we check whether the proper type was set and parse it.
 			 * In the event of a JSON parse failure it will return null, which would
@@ -46,12 +47,13 @@ class Post
 				$doc  = new DOMDocument;
 				
 				#Load the XML file. If the data is not okay, we stop right there
-				if (!$doc->loadXML(file_get_contents('php://input'))) 
-					{ throw new PublicException('Request error', 400); }
+				if (!$doc->loadXML(file_get_contents('php://input'))) {
+					throw new PublicException('Request error', 400); 
+				}
 				
 				$post = json_decode(json_encode(simplexml_import_dom($doc)), 1);
 				break;
-				
+			
 			/*
 			 * All other cases are handled by the standard post mechanism in PHP.
 			 */
@@ -59,6 +61,6 @@ class Post
 				$post = $_POST; //PHP will parse this by default
 		}
 		
-		return $post?: Array();
+		return $post?: array();
 	}
 }

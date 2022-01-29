@@ -34,16 +34,19 @@ class IOStream
 	private $reader;
 	private $writer;
 	
-	public function __construct(StreamReaderInterface$reader, StreamWriterInterface$writer = null) {
+	public function __construct(StreamReaderInterface$reader, StreamWriterInterface$writer = null)
+	{
 		$this->reader = $reader;
 		$this->writer = $writer;
 	}
-
-	public function reader() : StreamReaderInterface {
+	
+	public function reader() : StreamReaderInterface
+	{
 		return $this->reader;
 	}
-
-	public function writer() : StreamWriterInterface {
+	
+	public function writer() : StreamWriterInterface
+	{
 		if (!$this->writer) {
 			throw new FilePermissionsException('No writable stream', 2001161650);
 		}

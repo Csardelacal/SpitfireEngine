@@ -35,5 +35,4 @@ class FailTest extends TestCase
 		$this->expectExceptionCode(404);
 		fail(404, 'User not found');
 	}
-	
 }

@@ -34,7 +34,7 @@ use TextField;
  */
 class Schema
 {
-
+	
 	/**
 	 * Contains a list of the fields that this model uses t ostore data. 
 	 * Fields are stored in a FILO way, so the earlier you register a field
@@ -80,7 +80,8 @@ class Schema
 	 * @param string $name
 	 * @param Table  $table
 	 */
-	public final function __construct($name, Table$table = null) {
+	final public function __construct($name, Table$table = null)
+	{
 		#Define the Model's table as the one just received
 		$this->table   = $table;
 		$this->name    = strtolower($name);
@@ -96,20 +97,21 @@ class Schema
 		#Create the index collection
 		$this->indexes = new Collection([$pk]);
 	}
-
+	
 	/**
 	 * Imports a set of fields. This allows to back them up in case they're 
 	 * needed. Please note that the parent setting for them will be rewritten.
 	 * 
 	 * @param Field[] $fields
 	 */
-	public function setFields($fields) {
+	public function setFields($fields)
+	{
 		#Loop through the fields to import them
-		foreach($fields as $field) {
+		foreach ($fields as $field) {
 			$this->{$field->getName()} = $field; #This triggers the setter
 		}
 	}
-	     
+	
 	/**
 	 * Returns a logical field for this model. "Logical field" refers to fields
 	 * that can also contain complex datatypes aka References. 
@@ -120,9 +122,14 @@ class Schema
 	 * @param string $name
 	 * @return Field|null
 	 */
-	public function getField($name) {
-		if (isset($this->fields[$name])) { return $this->fields[$name]; }
-		else                             { return null; }
+	public function getField($name)
+	{
+		if (isset($this->fields[$name])) {
+			return $this->fields[$name]; 
+		}
+		else {
+			return null; 
+		}
 	}
 	
 	/**
@@ -253,7 +260,8 @@ class Schema
 	 * 
 	 * @return Field[]
 	 */
-	public function getFields() {
+	public function getFields()
+	{
 		return $this->fields;
 	}
 	
@@ -270,7 +278,8 @@ class Schema
 	 * @staticvar string $name
 	 * @return string
 	 */
-	public final function getName() {
+	final public function getName()
+	{
 		return $this->name;
 	}
 	
@@ -285,7 +294,8 @@ class Schema
 	 * 
 	 * @return string
 	 */
-	public function getTableName() {
+	public function getTableName()
+	{
 		return trim(str_replace('\\', '-', $this->getName()), '-_ ');
 	}
 	
@@ -297,7 +307,8 @@ class Schema
 	 * 
 	 * @return Table
 	 */
-	public function getTable() {
+	public function getTable()
+	{
 		return $this->table;
 	}
 	
@@ -307,7 +318,8 @@ class Schema
 	 * 
 	 * @param Table $table
 	 */
-	public function setTable($table) {
+	public function setTable($table)
+	{
 		$this->table = $table;
 	}
 	
@@ -325,11 +337,13 @@ class Schema
 	 * @param Query $query The query that is being prepared to be executed.
 	 * @return type
 	 */
-	public function getBaseRestrictions(Query$query) {
+	public function getBaseRestrictions(Query$query)
+	{
 		//Do nothing, this is meant for overriding
 	}
 	
-	public function index() {
+	public function index()
+	{
 		$fields = func_get_args();
 		$index = new Index($fields);
 		
@@ -342,7 +356,8 @@ class Schema
 	 * 
 	 * @return Collection <Index>
 	 */
-	public function getIndexes() {
+	public function getIndexes()
+	{
 		return $this->indexes;
 	}
 	
@@ -352,13 +367,16 @@ class Schema
 	 * 
 	 * @return Index
 	 */
-	public function getPrimary() {
+	public function getPrimary()
+	{
 		#Fetch the field list
 		$indexes = $this->indexes;
 		
 		#Loop over the indexes and get the primary one
 		foreach ($indexes as $index) {
-			if ($index->isPrimary()) { return $index; }
+			if ($index->isPrimary()) {
+				return $index; 
+			}
 		}
 		
 		#If there was no index, then return a null value
@@ -391,9 +409,14 @@ class Schema
 	 * @throws PrivateException
 	 * @return Field
 	 */
-	public function __get($name) {
-		if (isset($this->fields[$name])) { return $this->fields[$name]; }
-		else { throw new PrivateException('Schema: No field ' . $name . ' found'); }
+	public function __get($name)
+	{
+		if (isset($this->fields[$name])) {
+			return $this->fields[$name]; 
+		}
+		else {
+			throw new PrivateException('Schema: No field ' . $name . ' found'); 
+		}
 	}
 	
 	/**
@@ -404,7 +427,8 @@ class Schema
 	 * @param string $name
 	 * @throws PrivateException
 	 */
-	public function __unset($name) {
+	public function __unset($name)
+	{
 		#Check if the field actually exists.
 		if (!isset($this->fields[$name])) {
 			throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found');
@@ -413,11 +437,10 @@ class Schema
 		#Get the field
 		$f = $this->fields[$name];
 		unset($this->fields[$name]);
-
+		
 		#Find an index that may contain the field and remove it too
 		$this->indexes = $this->indexes->filter(function ($e) use ($f) {
 			return !$e->contains($f);
 		});
 	}
-	
 }

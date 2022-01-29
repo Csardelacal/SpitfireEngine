@@ -28,5 +28,4 @@ interface MountPointInterface extends DirectoryInterface
 {
 	
 	public function scheme();
-	
 }

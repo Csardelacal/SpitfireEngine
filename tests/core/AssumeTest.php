@@ -35,8 +35,12 @@ class AssumeTest extends TestCase
 	{
 		$raised = false;
 		
-		try { assume(true === true, Exception::class); }
-		catch (Exception $ex) { $raised = true; }
+		try {
+			assume(true === true, Exception::class); 
+		}
+		catch (Exception $ex) {
+			$raised = true; 
+		}
 		
 		$this->assertFalse($raised);
 	}

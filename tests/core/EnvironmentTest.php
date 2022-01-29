@@ -31,7 +31,8 @@ class EnvironmentTest extends TestCase
 {
 	private $env;
 	
-	public function setUp() : void {
+	public function setUp() : void
+	{
 		$this->env = new \spitfire\core\Environment('tests/core/sample.environment.ini');
 	}
 	
@@ -39,5 +40,4 @@ class EnvironmentTest extends TestCase
 	{
 		$this->assertEquals('Hello world', $this->env->read('EXAMPLE'));
 	}
-	
 }

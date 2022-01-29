@@ -15,8 +15,9 @@ class GetTest extends TestCase
 	 * 
 	 * @covers \spitfire\io\Get::__isset
 	 */
-	public function testIsset() {
-		$get = new \spitfire\io\Get(Array('a' => 123, 'c' => null));
+	public function testIsset()
+	{
+		$get = new \spitfire\io\Get(array('a' => 123, 'c' => null));
 		
 		$this->assertEquals(false, isset($get->b));
 		$this->assertEquals(false, isset($get['b']));
@@ -35,8 +36,9 @@ class GetTest extends TestCase
 	 * @covers \spitfire\io\Get::offsetExists
 	 * @covers \spitfire\io\Get::offsetGet
 	 */
-	public function testEmpty() {
-		$get = new \spitfire\io\Get(Array('a' => 123, 'c' => null));
+	public function testEmpty()
+	{
+		$get = new \spitfire\io\Get(array('a' => 123, 'c' => null));
 		
 		$this->assertEquals(true, empty($get->b));
 		$this->assertEquals(true, empty($get['b']));
@@ -47,5 +49,4 @@ class GetTest extends TestCase
 		$this->assertEquals(false, empty($get->a));
 		$this->assertEquals(false, empty($get['a']));
 	}
-	
 }

@@ -37,51 +37,65 @@ class File implements FileInterface, StreamSourceInterface, \spitfire\io\stream\
 	
 	private $path;
 	
-	public function __construct($_1, $_2 = null) {
+	public function __construct($_1, $_2 = null)
+	{
 		$this->parent = $_2 === null? null : $_1;
 		$this->path = $_2 === null? $_1 : $_2;
 	}
 	
-	public function delete(): bool {
+	public function delete(): bool
+	{
 		return unlink($this->getPath());
 	}
 	
-	public function getPath() {
+	public function getPath()
+	{
 		return $this->up()->getPath() . $this->path;
 	}
-
-	public function up(): NodeInterface {
+	
+	public function up(): NodeInterface
+	{
 		return $this->parent;
 	}
-
-	public function isWritable(): bool {
+	
+	public function isWritable(): bool
+	{
 		return (file_exists($this->getPath()) && is_writable($this->getPath())) || $this->up()->isWritable();
 	}
-
-	public function move(DirectoryInterface $to, string $name): FileInterface {
+	
+	public function move(DirectoryInterface $to, string $name): FileInterface
+	{
 		/*
 		 * If the target is a directory we can directly move the file on the drive,
 		 * therefore we don't have to get the file from the drive a second time.
 		 */
-		if ($to instanceof Directory) { rename($this->getPath(), $to->get($name)->getPath()); }
-		else                          { $to->get($name)->write($this->read()); }
+		if ($to instanceof Directory) {
+			rename($this->getPath(), $to->get($name)->getPath()); 
+		}
+		else {
+			$to->get($name)->write($this->read()); 
+		}
 		
 		return $to->get($name);
 	}
 	
-	public function read(): string {
+	public function read(): string
+	{
 		return file_get_contents($this->getPath());
 	}
 	
-	public function write(string $data): bool {
+	public function write(string $data): bool
+	{
 		return file_put_contents($this->getPath(), $data);
 	}
-
-	public function uri() : string {
+	
+	public function uri() : string
+	{
 		return $this->up()->uri() . $this->path;
 	}
-
-	public function mime(): string {
+	
+	public function mime(): string
+	{
 		
 		$lib = [
 			'jpeg' => 'image/jpeg',
@@ -94,21 +108,24 @@ class File implements FileInterface, StreamSourceInterface, \spitfire\io\stream\
 		
 		return mime($this->getPath())? : $lib[pathinfo($this->getPath(), PATHINFO_EXTENSION)];
 	}
-
-	public function basename(): string {
+	
+	public function basename(): string
+	{
 		return pathinfo($this->getPath(), PATHINFO_BASENAME);
 	}
-
-	public function filename(): string {
+	
+	public function filename(): string
+	{
 		return pathinfo($this->getPath(), PATHINFO_FILENAME);
 	}
-
-	public function getStreamReader(): \spitfire\io\stream\StreamReaderInterface {
+	
+	public function getStreamReader(): \spitfire\io\stream\StreamReaderInterface
+	{
 		return new FileStreamReader($this->getPath());
 	}
-
-	public function getStreamWriter() : \spitfire\io\stream\StreamWriterInterface {
+	
+	public function getStreamWriter() : \spitfire\io\stream\StreamWriterInterface
+	{
 		return new FileStreamWriter($this->getPath());
 	}
-
 }

@@ -7,7 +7,5 @@ class TestController
 	
 	public function index()
 	{
-		
 	}
-	
 }

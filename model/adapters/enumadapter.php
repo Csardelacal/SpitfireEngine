@@ -16,16 +16,17 @@ class EnumAdapter extends BaseAdapter
 	 * @param string $data
 	 * @throws \spitfire\exceptions\PrivateException
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		$field   = $this->getField();
 		
-		if ( !$field instanceof EnumField) {
+		if (!$field instanceof EnumField) {
 			throw new \spitfire\exceptions\PrivateException('An enum field is required for this adapter');
 		}
 		
 		$options = $field->getOptions();
 		
-		if ( !in_array($data, $options) ) {
+		if (!in_array($data, $options)) {
 			$error = $field . ' only accepts the values ' . implode(', ', $options) ;
 			throw new \spitfire\exceptions\PrivateException($error);
 		}
@@ -33,4 +34,3 @@ class EnumAdapter extends BaseAdapter
 		parent::usrSetData($data);
 	}
 }
-

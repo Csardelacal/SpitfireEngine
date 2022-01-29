@@ -117,7 +117,7 @@ class Request implements ServerRequestInterface
 	 * @var Headers
 	 */
 	private $headers;
-
+	
 	/** 
 	 * The HTTP verb that is used to indicate what the server should do with the data
 	 * it receives from the client application. This allows us to specifically route 
@@ -284,7 +284,7 @@ class Request implements ServerRequestInterface
 	{
 		return $this->cookie;
 	}
-
+	
 	/**
 	 * Returns the content that is to be sent with the body. This is a string your
 	 * application has to set beforehand.
@@ -305,8 +305,9 @@ class Request implements ServerRequestInterface
 		$copy->body = $body;
 		return $copy;
 	}
-
-	public function getHeaders() {
+	
+	public function getHeaders()
+	{
 		return $this->headers->all();
 	}
 	
@@ -317,8 +318,7 @@ class Request implements ServerRequestInterface
 	 */
 	public function withUri(UriInterface $uri, $preserveHost = false)
 	{
-		if ($preserveHost)
-		{
+		if ($preserveHost) {
 			if (!$this->hasHeader('Host') && $uri->getHost()) {
 				$copy = $this->withHeader('Host', $uri->getHost());
 			}
@@ -326,8 +326,7 @@ class Request implements ServerRequestInterface
 				$copy = clone $this;
 			}
 		} 
-		else 
-		{
+		else {
 			$copy = $this->withHeader('Host', $uri->getHost());
 		}
 		
@@ -424,8 +423,12 @@ class Request implements ServerRequestInterface
 	{
 		$header = $this->headers->get($name);
 		
-		if (empty($header)) { return implode(',', $header); }
-		else                { return ''; }
+		if (empty($header)) {
+			return implode(',', $header); 
+		}
+		else {
+			return ''; 
+		}
 	}
 	
 	/**
@@ -638,14 +641,12 @@ class Request implements ServerRequestInterface
 		 * it also does this when the method is set to something manually that expects a parsed body.
 		 */
 		if ($_method === 'POST' || $method === 'PUT') {
-			
 			if (in_array($contentType, ['multipart/formdata', 'application/x-www-form-urlencoded'])) {
 				$request->withParsedBody($_POST);
 			}
 			elseif ($contentType === 'application/json') {
 				$request->withParsedBody(json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR));
 			}
-			
 		}
 		
 		return $request;

@@ -5,25 +5,29 @@ namespace spitfire\io\html;
 class HTMLTableRow extends HTMLElement
 {
 	private $cells;
-
-	public function putCell($cell) {
+	
+	public function putCell($cell)
+	{
 		$this->cells[] = $cell;
 	}
-
-	public function getContent() {
+	
+	public function getContent()
+	{
 		return '<td>' . implode('</td><td>', $this->cells) . '</td>';
 	}
-
-	public function getChildren() {
+	
+	public function getChildren()
+	{
 		return  $this->cells;
 	}
-
-	public function getParams() {
-		return Array();
-	}
-
-	public function getTag() {
-		return 'tr';
+	
+	public function getParams()
+	{
+		return array();
 	}
 	
+	public function getTag()
+	{
+		return 'tr';
+	}
 }

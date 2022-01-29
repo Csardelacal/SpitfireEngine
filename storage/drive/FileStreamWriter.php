@@ -40,15 +40,18 @@ class FileStreamWriter implements \spitfire\io\stream\StreamWriterInterface
 	 */
 	private $fh;
 	
-	public function __construct($path) {
+	public function __construct($path)
+	{
 		$this->path = $path;
 	}
 	
-	public function open() {
+	public function open()
+	{
 		return $this->fh?: $this->fh = fopen($this->path, 'w+');
 	}
-
-	public function seek($position): \spitfire\io\stream\StreamInterface {
+	
+	public function seek($position): \spitfire\io\stream\StreamInterface
+	{
 		
 		if ($this->open() === false) {
 			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
@@ -57,8 +60,9 @@ class FileStreamWriter implements \spitfire\io\stream\StreamWriterInterface
 		fseek($this->open(), $position);
 		return $this;
 	}
-
-	public function write($string) {
+	
+	public function write($string)
+	{
 		
 		if ($this->open() === false) {
 			throw new FilePermissionsException('Cannot read file to stream', 1810020915);
@@ -67,9 +71,9 @@ class FileStreamWriter implements \spitfire\io\stream\StreamWriterInterface
 		return fwrite($this->open(), $string);
 	}
 	
-	public function close() {
+	public function close()
+	{
 		$this->fh && fclose($this->fh);
 		return $this;
 	}
-
 }

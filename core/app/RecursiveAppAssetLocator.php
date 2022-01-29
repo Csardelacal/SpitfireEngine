@@ -46,7 +46,8 @@ class RecursiveAppAssetLocator implements AppAssetsInterface
 	
 	private $basedir;
 	
-	public function __construct($basedir) {
+	public function __construct($basedir)
+	{
 		$this->basedir = rtrim($basedir, '\/') . DIRECTORY_SEPARATOR;
 	}
 	
@@ -56,7 +57,8 @@ class RecursiveAppAssetLocator implements AppAssetsInterface
 	 * 
 	 * @return Collection
 	 */
-	public function all(): Collection {
+	public function all(): Collection
+	{
 		$_ret = collect();
 		
 		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->basedir, FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
@@ -88,8 +90,8 @@ class RecursiveAppAssetLocator implements AppAssetsInterface
 	 * @param string $asset
 	 * @return string
 	 */
-	public function map(string $asset): string {
+	public function map(string $asset): string
+	{
 		return $this->basedir . $asset;
 	}
-
 }

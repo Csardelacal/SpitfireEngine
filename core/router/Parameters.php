@@ -14,7 +14,7 @@ class Parameters
 	 * 
 	 * @var string[]
 	 */
-	private $parameters = Array();
+	private $parameters = array();
 	
 	/**
 	 * Some components are greedy (this means, they accept incomplete routes or 
@@ -26,7 +26,7 @@ class Parameters
 	 *
 	 * @var string[]
 	 */
-	private $unparsed   = Array();
+	private $unparsed   = array();
 	
 	/**
 	 * Imports a set of parameters parsed by the router. Usually, this will be a
@@ -34,7 +34,8 @@ class Parameters
 	 * 
 	 * @param string[] $params
 	 */
-	public function addParameters($params) {
+	public function addParameters($params)
+	{
 		$this->parameters = array_merge($this->parameters, $params);
 		return $this;
 	}
@@ -45,7 +46,8 @@ class Parameters
 	 * 
 	 * @param string[] $params
 	 */
-	public function addParameter($key, $value) {
+	public function addParameter($key, $value)
+	{
 		$this->parameters[$key] = $value;
 		return $this;
 	}
@@ -59,7 +61,8 @@ class Parameters
 	 * @param string $name
 	 * @return string
 	 */
-	public function getParameter($name) {
+	public function getParameter($name)
+	{
 		return (isset($this->parameters[$name]))? $this->parameters[$name] : false;
 	}
 	
@@ -69,7 +72,8 @@ class Parameters
 	 * 
 	 * @return string[]
 	 */
-	public function getParameters() {
+	public function getParameters()
+	{
 		return $this->parameters;
 	}
 	
@@ -80,7 +84,8 @@ class Parameters
 	 * 
 	 * @return string[]
 	 */
-	public function getUnparsed() {
+	public function getUnparsed()
+	{
 		return $this->unparsed;
 	}
 	
@@ -90,7 +95,8 @@ class Parameters
 	 * 
 	 * @param string[] $parameters
 	 */
-	public function setParameters($parameters) {
+	public function setParameters($parameters)
+	{
 		$this->parameters = $parameters;
 	}
 	
@@ -103,11 +109,12 @@ class Parameters
 	 * 
 	 * @param string[] $unparsed
 	 */
-	public function setUnparsed($unparsed) {
+	public function setUnparsed($unparsed)
+	{
 		$this->unparsed = $unparsed;
 		return $this;
 	}
-
+	
 	/**
 	 * Replaces the parameters contained in this object in a string. This will
 	 * look for prefixed versions of a kez and replace them with the key's value
@@ -115,18 +122,19 @@ class Parameters
 	 * 
 	 * @param string $string The string to search for matches and replace
 	 */
-	public function replaceInString($string) {
+	public function replaceInString($string)
+	{
 		foreach ($this->parameters as $key => $val) {
 			$string = str_replace(':'.$key, $val, $string);
 		}
-
+		
 		return $string;
 	}
-
-	public function merge($with) {
+	
+	public function merge($with)
+	{
 		$_return = new Parameters();
 		$_return->setParameters(array_merge($this->getParameters(), $with->getParameters()));
 		return $_return;
 	}
-
 }

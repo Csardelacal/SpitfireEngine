@@ -123,5 +123,4 @@ class DatabaseExportDirector extends Director
 		
 		return 0;
 	}
-	
 }

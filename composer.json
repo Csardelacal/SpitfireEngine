@@ -25,7 +25,8 @@
 		"monolog/monolog": "^2.2",
 		"phpstan/phpstan": "^0.12.84",
 		"pug-php/pug": "^3.4",
-		"respect/validation": "^2.2"
+		"respect/validation": "^2.2",
+		"squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
 	},
 
 	"suggest": {
@@ -47,11 +48,26 @@
 	
 	"scripts" : {
 		"test" : [
+			"./vendor/bin/phpcs . -s",
 			"./vendor/bin/phpstan analyse --level 5 .",
 			"./vendor/bin/phpunit tests/"
 		],
 		"baseline" : [
 			"./vendor/bin/phpstan analyse --generate-baseline --level 5 ."
 		]
-	}
+	},
+	
+	"config": {
+		"allow-plugins": {
+			"nodejs-php-fallback/nodejs-php-fallback": false
+		}
+	},
+
+	"repositories":
+    [
+            {
+                "type": "vcs",
+                "url": "https://github.com/Csardelacal/PHP_Codesniffer"
+            }
+    ]
 }

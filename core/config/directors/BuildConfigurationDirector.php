@@ -73,5 +73,4 @@ class BuildConfigurationDirector extends Director
 	{
 		return [];
 	}
-
 }

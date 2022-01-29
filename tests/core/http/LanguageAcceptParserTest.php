@@ -36,7 +36,8 @@ class LanguageAcceptParserTest extends TestCase
 	 * @covers \spitfire\core\http\LanguageAccept::makeLocales()
 	 * @covers \spitfire\core\http\LanguageAccept::makePriority()
 	 */
-	public function testParser() {
+	public function testParser()
+	{
 		$parser = new \spitfire\core\http\LanguageAcceptParser('ru', 'da, en-gb;q=0.8, en;q=0.7');
 		$res    = $parser->parse();
 		

@@ -10,39 +10,45 @@ class MemcachedSessionHandler extends SessionHandler
 	 */
 	private $memcached;
 	
-	public function __construct(MemcachedAdapter$memcached, $timeout = null) {
+	public function __construct(MemcachedAdapter$memcached, $timeout = null)
+	{
 		$this->memcached = $memcached;
 		$this->memcached->setTimeout($timeout);
 		parent::__construct($timeout);
 	}
 	
-	public function close() {
+	public function close()
+	{
 		return true;
 	}
 	
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		$key = sprintf('sf_sess_%s', $id);
 		$this->memcached->delete($key);
 		
 		return true;
 	}
 	
-	public function gc($maxlifetime) {
+	public function gc($maxlifetime)
+	{
 		return true;
 	}
 	
-	public function open($savePath, $sessionName) {
+	public function open($savePath, $sessionName)
+	{
 		return true;
 	}
 	
-	public function read($id) {
+	public function read($id)
+	{
 		$key = sprintf('sf_sess_%s', $id);
 		return (string)$this->memcached->get($key);
 	}
 	
-	public function write($id, $data) {
+	public function write($id, $data)
+	{
 		$key = sprintf('sf_sess_%s', $id);
 		return $this->memcached->set($key, $data);
 	}
-
 }

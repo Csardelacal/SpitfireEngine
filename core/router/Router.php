@@ -74,7 +74,7 @@ class Router extends Routable
 	 * @param ServerRequestInterface $request
 	 * @return RouterResult
 	 */
-	public function rewrite (ServerRequestInterface $request) : RouterResult
+	public function rewrite(ServerRequestInterface $request) : RouterResult
 	{
 		
 		#Combine routes from the router and server
@@ -82,12 +82,13 @@ class Router extends Routable
 		
 		#Test the routes
 		foreach ($routes as $route) { /*@var $route Route*/
-			
 			#All routes must obviously be a instance of Route
 			assert($route instanceof Route);
 			
 			#Verify whether the route is valid at all
-			if (!$route->test($request)) { continue; }
+			if (!$route->test($request)) {
+				continue; 
+			}
 			
 			/**
 			 * The middleware is placed around the rewritten route in a
@@ -186,7 +187,9 @@ class Router extends Routable
 			 * If the child does find a matching route, we stop there.
 			 */
 			$result = $child->findByName($name);
-			if ($result) { return $result; }
+			if ($result) {
+				return $result; 
+			}
 		}
 		
 		
@@ -196,5 +199,4 @@ class Router extends Routable
 		 */
 		return null;
 	}
-
 }

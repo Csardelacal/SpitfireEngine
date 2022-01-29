@@ -45,6 +45,5 @@ class ProvidersFromManifest implements InitScriptInterface
 		assert($config instanceof Configuration);
 		
 		$config->set('app.providers._composer', $providers);
-		
 	}
 }

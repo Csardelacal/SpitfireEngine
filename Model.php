@@ -48,7 +48,8 @@ abstract class Model implements Serializable, JsonSerializable
 	 *                       used by the system. To create a new record, leave
 	 *                       empty and use setData.
 	 */
-	public function __construct(Table$table = null, $data = null) {
+	public function __construct(Table$table = null, $data = null)
+	{
 		
 		$this->table   = $table;
 		$this->new     = empty($data);
@@ -56,7 +57,7 @@ abstract class Model implements Serializable, JsonSerializable
 		$this->makeAdapters();
 		$this->populateAdapters($data);
 	}
-
+	
 	/**
 	 * This method is used to generate the 'template' for the table that allows
 	 * spitfire to automatically generate tables and allows it to check the types
@@ -66,7 +67,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 * @return Schema
 	 * @abstract
 	 */
-	public abstract function definitions(Schema$schema);
+	abstract public function definitions(Schema$schema);
 	
 	/**
 	 * Returns the data this record currently contains as associative array.
@@ -75,7 +76,8 @@ abstract class Model implements Serializable, JsonSerializable
 	 * 
 	 * @return mixed
 	 */
-	public function getData() {
+	public function getData()
+	{
 		return $this->data;
 	}
 	
@@ -86,7 +88,8 @@ abstract class Model implements Serializable, JsonSerializable
 	 * 
 	 * @throws PrivateException
 	 */
-	public function store() {
+	public function store()
+	{
 		$this->onbeforesave();
 		
 		#Decide whether to insert or update depending on the Model
@@ -98,7 +101,7 @@ abstract class Model implements Serializable, JsonSerializable
 			
 			#If the autoincrement field is empty set the new DB given id
 			if ($ai && !reset($ad)) {
-				$this->data[$ai->getName()]->dbSetData(Array($ai->getName() => $id));
+				$this->data[$ai->getName()]->dbSetData(array($ai->getName() => $id));
 			}
 		}
 		else { 
@@ -107,7 +110,7 @@ abstract class Model implements Serializable, JsonSerializable
 		
 		$this->new = false;
 		
-		foreach($this->data as $value) {
+		foreach ($this->data as $value) {
 			$value->commit();
 		}
 	}
@@ -116,7 +119,8 @@ abstract class Model implements Serializable, JsonSerializable
 	 * 
 	 * @deprecated since version 0.1-dev 20190611
 	 */
-	public function write() {
+	public function write()
+	{
 		#Decide whether to insert or update depending on the Model
 		if ($this->new) { 
 			#Get the autoincrement field
@@ -126,7 +130,7 @@ abstract class Model implements Serializable, JsonSerializable
 			
 			#If the autoincrement field is empty set the new DB given id
 			if ($ai && !reset($ad)) {
-				$this->data[$ai->getName()]->dbSetData(Array($ai->getName() => $id));
+				$this->data[$ai->getName()]->dbSetData(array($ai->getName() => $id));
 			}
 		}
 		else { 
@@ -135,11 +139,11 @@ abstract class Model implements Serializable, JsonSerializable
 		
 		$this->new = false;
 		
-		foreach($this->data as $value) {
+		foreach ($this->data as $value) {
 			$value->commit();
 		}
 	}
-        
+	
 	/**
 	 * Returns the values of the fields included in this records primary
 	 * fields
@@ -147,19 +151,21 @@ abstract class Model implements Serializable, JsonSerializable
 	 * @todo Find better function name
 	 * @return array
 	 */
-	public function getPrimaryData() {
+	public function getPrimaryData()
+	{
 		$primaryFields = $this->table->getPrimaryKey()->getFields();
-		$ret = Array();
-	    
+		$ret = array();
+		
 		foreach ($primaryFields as $field) {
 			$logical = $field->getLogicalField();
 			$ret = array_merge($ret, $this->data[$logical->getName()]->dbGetData());
-	    }
-	    
-	    return $ret;
+		}
+		
+		return $ret;
 	}
 	
-	public function getQuery() {
+	public function getQuery()
+	{
 		$query     = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTable());
 		$primaries = $this->table->getModel()->getPrimary()->getFields();
 		
@@ -176,11 +182,13 @@ abstract class Model implements Serializable, JsonSerializable
 	 * 
 	 * @return \spitfire\storage\database\Table
 	 */
-	public function getTable() {
+	public function getTable()
+	{
 		return $this->table;
 	}
-
-	public function __set($field, $value) {
+	
+	public function __set($field, $value)
+	{
 		
 		if (!isset($this->data[$field])) {
 			throw new PrivateException("Setting non existent field: " . $field);
@@ -189,7 +197,8 @@ abstract class Model implements Serializable, JsonSerializable
 		$this->data[$field]->usrSetData($value);
 	}
 	
-	public function __get($field) {
+	public function __get($field)
+	{
 		#If the field is in the record we return it's contents
 		if (isset($this->data[$field])) {
 			return $this->data[$field]->usrGetData();
@@ -199,26 +208,31 @@ abstract class Model implements Serializable, JsonSerializable
 		}
 	}
 	
-	public function __isset($name) {
+	public function __isset($name)
+	{
 		return (array_key_exists($name, $this->data));
 	}
 	
 	//TODO: This now breaks due to the adapters
-	public function serialize() {
+	public function serialize()
+	{
 		$data = array();
-		foreach($this->data as $adapter) {
-			if (! $adapter->isSynced()) throw new PrivateException("Database record cannot be serialized out of sync");
+		foreach ($this->data as $adapter) {
+			if (! $adapter->isSynced()) {
+				throw new PrivateException("Database record cannot be serialized out of sync");
+			}
 			$data = array_merge($data, $adapter->dbGetData());
 		}
 		
-		$output = Array();
+		$output = array();
 		$output['model'] = $this->table->getModel()->getName();
 		$output['data']  = $data;
 		
 		return serialize($output);
 	}
 	
-	public function unserialize($serialized) {
+	public function unserialize($serialized)
+	{
 		
 		$input = unserialize($serialized);
 		$this->table = db()->table($input['model']);
@@ -227,11 +241,13 @@ abstract class Model implements Serializable, JsonSerializable
 		$this->populateAdapters($input['data']);
 	}
 	
-	public function __toString() {
-		return sprintf('%s(%s)', $this->getTable()->getModel()->getName(), implode(',', $this->getPrimaryData()) );
+	public function __toString()
+	{
+		return sprintf('%s(%s)', $this->getTable()->getModel()->getName(), implode(',', $this->getPrimaryData()));
 	}
 	
-	public function delete() {
+	public function delete()
+	{
 		$this->table->getCollection()->delete($this);
 	}
 	
@@ -244,13 +260,17 @@ abstract class Model implements Serializable, JsonSerializable
 	 * @param int|float $diff
 	 * @throws PrivateException
 	 */
-	public function increment($key, $diff = 1) {
+	public function increment($key, $diff = 1)
+	{
 		$this->table->increment($this, $key, $diff);
 	}
 	
-	protected function makeAdapters() {
+	protected function makeAdapters()
+	{
 		#If there is no table defined there is no need to create adapters
-		if ($this->table === null) { return; }
+		if ($this->table === null) {
+			return; 
+		}
 		
 		$fields = $this->getTable()->getModel()->getFields();
 		foreach ($fields as $field) {
@@ -258,9 +278,12 @@ abstract class Model implements Serializable, JsonSerializable
 		}
 	}
 	
-	protected function populateAdapters($data) {
+	protected function populateAdapters($data)
+	{
 		#If the set carries no data, why bother reading?
-		if (empty($data)) { return; }
+		if (empty($data)) {
+			return; 
+		}
 		
 		#Retrieves the full list of fields this adapter needs to populate
 		$fields = $this->getTable()->getModel()->getFields();
@@ -268,7 +291,7 @@ abstract class Model implements Serializable, JsonSerializable
 		#Loops through the fields retrieving the physical fields
 		foreach ($fields as $field) {
 			$physical = $field->getPhysical();
-			$current  = Array();
+			$current  = array();
 			
 			#The physical fields are matched to the content and it is assigned.
 			foreach ($physical as $p) {
@@ -285,7 +308,8 @@ abstract class Model implements Serializable, JsonSerializable
 	 * @deprecated since version 0.1-dev 20190611
 	 * @return Collection
 	 */
-	public function getDependencies() {
+	public function getDependencies()
+	{
 		
 		$dependencies = collect($this->data)
 			->each(function ($e) {
@@ -297,7 +321,8 @@ abstract class Model implements Serializable, JsonSerializable
 		return $dependencies;
 	}
 	
-	public function isNew() {
+	public function isNew()
+	{
 		return $this->new;
 	}
 	
@@ -330,6 +355,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 * 
 	 * @return void This method does not return
 	 */
-	public function onbeforesave() {}
-
+	public function onbeforesave()
+	{
+	}
 }

@@ -64,7 +64,6 @@ class DotNotationAccessorTest extends TestCase
 		
 		$array['foo'] = ['bar' => 'Bye world'];
 		$this->assertEquals('Bye world', $interface->get('foo.bar'));
-		
 	}
 	
 	/**
@@ -91,7 +90,6 @@ class DotNotationAccessorTest extends TestCase
 		
 		$interface->set('foo', ['bar' => 'Bye world']);
 		$this->assertEquals('Bye world', $array['foo']['bar']);
-		
 	}
 	
 	public function testFlags()
@@ -108,5 +106,4 @@ class DotNotationAccessorTest extends TestCase
 		$this->assertEquals(null, $interface->get('foo'));
 		$this->assertArrayHasKey('bar', $interface->get('foo', DotNotationAccessor::ALLOW_ARRAY_RETURN));
 	}
-	
 }

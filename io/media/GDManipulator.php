@@ -35,12 +35,14 @@ class GDManipulator implements MediaManipulatorInterface
 	private $meta;
 	private $compression = 8;
 	
-	public function blur(): MediaManipulatorInterface {
+	public function blur(): MediaManipulatorInterface
+	{
 		imagefilter($this->img, IMG_FILTER_SELECTIVE_BLUR);
 		return $this;
 	}
-
-	public function fit($x, $y): MediaManipulatorInterface {
+	
+	public function fit($x, $y): MediaManipulatorInterface
+	{
 		$wider = ($this->meta[0] / $x) > ($this->meta[1] / $y);
 		
 		if ($wider) {
@@ -53,14 +55,14 @@ class GDManipulator implements MediaManipulatorInterface
 			$offset_y = ($this->meta[1] - $y * $ratio) / 2;
 			$offset_x = 0;
 		}
-
-		if ($offset_x == 0 && $offset_y == 0){
+		
+		if ($offset_x == 0 && $offset_y == 0) {
 			$x = min($this->meta[0], $x);
 			$y = min($this->meta[1], $y);
 		}
 		
 		$img = imagecreatetruecolor($x, $y);
-		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));
+		imagecolortransparent($img, imagecolorallocatealpha($img, 255, 255, 255, 127));
 		imagealphablending($img, false);
 		imagesavealpha($img, true);
 		imagecopyresampled($img, $this->img, 0, 0, $offset_x, $offset_y, $x, $y, $this->meta[0]-2*$offset_x, $this->meta[1]-2*$offset_y);
@@ -71,13 +73,15 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		return $this;
 	}
-
-	public function grayscale(): MediaManipulatorInterface {
+	
+	public function grayscale(): MediaManipulatorInterface
+	{
 		imagefilter($this->img, IMG_FILTER_GRAYSCALE);
 		return $this;
 	}
-
-	public function load(Blob $blob): MediaManipulatorInterface {
+	
+	public function load(Blob $blob): MediaManipulatorInterface
+	{
 		
 		if ($this->tmp) {
 			unlink($this->tmp);
@@ -86,14 +90,14 @@ class GDManipulator implements MediaManipulatorInterface
 		$this->tmp = '/tmp/' . rand();
 		file_put_contents($this->tmp, $blob->read());
 		
-
+		
 		$this->meta = getimagesize($this->tmp);
-
+		
 		if (!function_exists('imagecreatefrompng')) {
 			throw new PrivateException("GD is not installed.", 1805301100);
 		}
 		
-		switch($this->meta[2]) {
+		switch ($this->meta[2]) {
 			case IMAGETYPE_PNG: 
 				$this->img = imagecreatefrompng($this->tmp);
 				imagealphablending($this->img, false);
@@ -121,21 +125,24 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		return $this;
 	}
-
-	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
+	
+	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface
+	{
 		//TODO: Implement
 		return $this;
 	}
 	
-	public function at($x, $y) {
+	public function at($x, $y)
+	{
 		return imagecolorat($this->img, $x, $y);
 	}
 	
-	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
+	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface
+	{
 		
 		
 		$img = imagecreatetruecolor($this->meta[0], $this->meta[1]);
-		imagecolortransparent($img , imagecolorallocatealpha($img , 255, 255, 255, 127));
+		imagecolortransparent($img, imagecolorallocatealpha($img, 255, 255, 255, 127));
 		imagealphablending($img, true);
 		imagesavealpha($img, true);
 		
@@ -147,8 +154,9 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		return $this;
 	}
-
-	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
+	
+	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface
+	{
 		
 		
 		if ($side === MediaManipulatorInterface::HEIGHT) {
@@ -162,7 +170,7 @@ class GDManipulator implements MediaManipulatorInterface
 		}
 		
 		$img = imagecreatetruecolor($width, $height);
-		imagecolortransparent($img , imagecolorallocatealpha($img , 0, 0, 0, 127));
+		imagecolortransparent($img, imagecolorallocatealpha($img, 0, 0, 0, 127));
 		imagealphablending($img, false);
 		imagesavealpha($img, true);
 		imagecopyresampled($img, $this->img, 0, 0, 0, 0, $width, $height, $this->meta[0], $this->meta[1]);
@@ -173,8 +181,9 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		return $this;
 	}
-
-	public function store(Blob $location): Blob {
+	
+	public function store(Blob $location): Blob
+	{
 		
 		if (!$location->isWritable()) {
 			throw new PrivateException('Cannot write to target', 1805301104);
@@ -201,8 +210,12 @@ class GDManipulator implements MediaManipulatorInterface
 			default:
 				imagepng($this->img, $this->tmp, $this->compression);
 				
-				try { PNGQuant::compress($this->tmp, $this->tmp); }
-				catch (Exception$e) { /*If PNGQuant is not installed, we do nothing*/ }
+				try {
+					PNGQuant::compress($this->tmp, $this->tmp); 
+				}
+				catch (Exception$e) {
+/*If PNGQuant is not installed, we do nothing*/ 
+				}
 		}
 		
 		$location->write(file_get_contents($this->tmp));
@@ -210,10 +223,11 @@ class GDManipulator implements MediaManipulatorInterface
 		
 		return $location;
 	}
-
-	public function supports(string $mime): bool {
+	
+	public function supports(string $mime): bool
+	{
 		
-		switch($mime) {
+		switch ($mime) {
 			case 'image/jpeg':
 			case 'image/jpg':
 			case 'image/png':
@@ -224,13 +238,14 @@ class GDManipulator implements MediaManipulatorInterface
 				return false;
 		}
 	}
-
-	public function poster(): MediaManipulatorInterface {
+	
+	public function poster(): MediaManipulatorInterface
+	{
 		return $this;
 	}
-
-	public function dimensions() {
-		return Array($this->meta[0], $this->meta[1]);
+	
+	public function dimensions()
+	{
+		return array($this->meta[0], $this->meta[1]);
 	}
-
 }

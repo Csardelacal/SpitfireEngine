@@ -74,5 +74,4 @@ class View
 			'cache_dir' => spitfire()->locations()->storage('cache/views/')
 		]);
 	}
-	
 }

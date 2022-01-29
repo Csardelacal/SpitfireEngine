@@ -39,7 +39,8 @@ class DriveTest extends TestCase
 	private $storage;
 	private $string = 'Hello world';
 	
-	public function setUp() : void {
+	public function setUp() : void
+	{
 		parent::setUp();
 		
 		$this->storage = new DriveDispatcher;
@@ -48,7 +49,8 @@ class DriveTest extends TestCase
 		$this->storage->retrieve('tests://test/test.txt')->write('Hello');
 	}
 	
-	public function testOpenDrive() {
+	public function testOpenDrive()
+	{
 		$dir = $this->storage->retrieve('tests://test/');
 		
 		$this->assertInstanceOf(\spitfire\storage\objectStorage\Blob::class, $dir);
@@ -65,7 +67,8 @@ class DriveTest extends TestCase
 	 * 
 	 * @depends testOpenDrive
 	 */
-	public function testCreateFile() {
+	public function testCreateFile()
+	{
 		$file = $this->storage->retrieve('tests://test.txt');
 		$this->assertInstanceOf(\spitfire\storage\objectStorage\Blob::class, $file);
 		
@@ -81,7 +84,8 @@ class DriveTest extends TestCase
 	 * @depends testCreateFile
 	 * @param File $file
 	 */
-	public function testReadFile(\spitfire\storage\objectStorage\Blob$file) {
+	public function testReadFile(\spitfire\storage\objectStorage\Blob$file)
+	{
 		$uri  = 'tests://test.txt';
 		$read = $this->storage->retrieve($uri);
 		
@@ -97,7 +101,8 @@ class DriveTest extends TestCase
 	 * @depends testReadFile
 	 * @param File $file
 	 */
-	public function testDeleteFile(\spitfire\storage\objectStorage\Blob$file) {
+	public function testDeleteFile(\spitfire\storage\objectStorage\Blob$file)
+	{
 		$file->delete();
 		$this->assertEquals(false, $this->storage->retrieve('tests://test.txt')->exists());
 	}
@@ -106,13 +111,15 @@ class DriveTest extends TestCase
 	 * 
 	 * @depends testCreateFile
 	 */
-	public function testContains() {
+	public function testContains()
+	{
 		$this->assertEquals(false, $this->storage->retrieve('tests://test/')->exists());
 		$this->assertEquals(true, $this->storage->retrieve('tests://test/test.txt')->exists());
 		$this->assertEquals(false, $this->storage->retrieve('tests://test/nada.file')->exists());
 	}
 	
-	public function tearDown() : void {
+	public function tearDown() : void
+	{
 		parent::tearDown();
 		
 		$this->storage->unregister('tests://');

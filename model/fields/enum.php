@@ -8,28 +8,33 @@ class EnumField extends Field
 {
 	private $options;
 	
-	public function __construct() {
+	public function __construct()
+	{
 		$this->options = func_get_args();
 	}
 	
-	public function getOptions() {
+	public function getOptions()
+	{
 		return $this->options;
 	}
 	
-	public function getLength() {
+	public function getLength()
+	{
 		return 20;
 	}
 	
-	public function getDataType() {
+	public function getDataType()
+	{
 		return Field::TYPE_STRING;
 	}
-
-	public function getAdapter(Model $model) {
+	
+	public function getAdapter(Model $model)
+	{
 		return new EnumAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		return Array();
+	
+	public function getConnectorQueries(\spitfire\storage\database\Query $parent)
+	{
+		return array();
 	}
-
 }

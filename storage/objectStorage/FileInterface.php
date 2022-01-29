@@ -38,5 +38,4 @@ interface FileInterface extends NodeInterface
 	public function filename() : string;
 	
 	public function move(DirectoryInterface$to, string$name) : FileInterface;
-	
 }

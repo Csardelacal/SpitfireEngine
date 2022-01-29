@@ -77,7 +77,9 @@ class ComposerReader
 			 * to work with circular dependencies.
 			 */
 			$apps = (new Collection((array)($json->extra->spitfire->apps?? [])))
-				->each(function ($app) { $this->read(spitfire()->locations()->root('vendor/' . $app . '/composer.json')); });
+				->each(function ($app) {
+					$this->read(spitfire()->locations()->root('vendor/' . $app . '/composer.json'));
+				});
 			
 			/**
 			 * Extract the events that this application is listening for
@@ -122,9 +124,15 @@ class ComposerReader
 			 * The service providers are written to the `extra` key inside a package's spec, if
 			 * the extra key is missing, the application is not registering any.
 			 */
-			if (!isset($package->extra)) { continue; }
-			if (!isset($package->extra->spitfire)) { continue; }
-			if (!isset($package->extra->spitfire->providers)) { continue; }
+			if (!isset($package->extra)) {
+				continue; 
+			}
+			if (!isset($package->extra->spitfire)) {
+				continue; 
+			}
+			if (!isset($package->extra->spitfire->providers)) {
+				continue; 
+			}
 			
 			/**
 			 * Ensure that the data we're receiving is an array, otherwise we're guaranteed to

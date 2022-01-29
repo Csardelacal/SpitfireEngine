@@ -42,7 +42,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	
 	private $discarded = [];
 	
-	public function __construct(ChildrenField$field, Model$model, $data = null) {
+	public function __construct(ChildrenField$field, Model$model, $data = null)
+	{
 		$this->field  = $field;
 		$this->parent = $model;
 		$this->children = $data;
@@ -54,13 +55,13 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @return Query
 	 */
-	public function getQuery() {
+	public function getQuery()
+	{
 		
 		$query = $this->field->getTable()->getDb()->getObjectFactory()
 				  ->queryInstance($this->field->getTarget()->getTable());
-				
-		return $query->where($this->field->getReferencedField()->getName(), $this->parent->getQuery());
 		
+		return $query->where($this->field->getReferencedField()->getName(), $this->parent->getQuery());
 	}
 	
 	/**
@@ -68,14 +69,20 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @deprecated since version 0.1-dev 20190919
 	 * @return Model
 	 */
-	public function pluck() {
-		if ($this->children !== null) { return reset($this->children); }
+	public function pluck()
+	{
+		if ($this->children !== null) {
+			return reset($this->children); 
+		}
 		
 		return $this->getQuery()->fetch();
 	}
 	
-	public function toArray() {
-		if ($this->children !== null) { return $this->children; }
+	public function toArray()
+	{
+		if ($this->children !== null) {
+			return $this->children; 
+		}
 		
 		/*
 		 * Inform the children that the parent being worked on is this
@@ -94,50 +101,61 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		
 		return $this->children;
 	}
-
-	public function current() {
+	
+	public function current()
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return current($this->children);
 	}
-
-	public function key() {
+	
+	public function key()
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return key($this->children);
 	}
-
-	public function next() {
+	
+	public function next()
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return next($this->children);
 	}
-
-	public function rewind() {
+	
+	public function rewind()
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return reset($this->children);
 	}
-
-	public function valid() {
+	
+	public function valid()
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return !!current($this->children);
 	}
-
-	public function offsetExists($offset) {
+	
+	public function offsetExists($offset)
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return isset($this->children[$offset]);
-		
 	}
-
-	public function offsetGet($offset) {
+	
+	public function offsetGet($offset)
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		return $this->children[$offset];
 	}
-
-	public function offsetSet($offset, $value) {
+	
+	public function offsetSet($offset, $value)
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		
 		$previous = isset($this->children[$offset])? $this->children[$offset] : null;
 		
-		if ($offset === null) { $this->children[] = $value; }
-		else                  { $this->children[$offset] = $value; }
+		if ($offset === null) {
+			$this->children[] = $value; 
+		}
+		else {
+			$this->children[$offset] = $value; 
+		}
 		
 		#Commit the changes to the database.
 		$role  = $this->getField()->getRole();
@@ -151,8 +169,9 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 			$this->discarded[] = $previous;
 		}
 	}
-
-	public function offsetUnset($offset) {
+	
+	public function offsetUnset($offset)
+	{
 		$this->children !== null? $this->children : $this->toArray();
 		unset($this->children[$offset]);
 	}
@@ -162,7 +181,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @return type
 	 */
-	public function commit() {
+	public function commit()
+	{
 		collect($this->discarded)->each(function ($e) {
 			$e->store();
 		});
@@ -171,9 +191,10 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 			$e->store();
 		});
 	}
-
-	public function dbGetData() {
-		return Array();
+	
+	public function dbGetData()
+	{
+		return array();
 	}
 	
 	/**
@@ -182,7 +203,8 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @param mixed $data
 	 */
-	public function dbSetData($data) {
+	public function dbSetData($data)
+	{
 		return;
 	}
 	
@@ -192,19 +214,23 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @return \Model
 	 */
-	public function getModel() {
+	public function getModel()
+	{
 		return $this->parent;
 	}
 	
-	public function isSynced() {
+	public function isSynced()
+	{
 		return true;
 	}
-
-	public function rollback() {
+	
+	public function rollback()
+	{
 		return true;
 	}
-
-	public function usrGetData() {
+	
+	public function usrGetData()
+	{
 		return $this;
 	}
 	
@@ -218,14 +244,15 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @todo Fix to allow for user input
 	 * @throws PrivateException
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		if ($data === $this) {
 			return;
 		}
 		
 		foreach ($this->children as $child) {
 			$role  = $this->getField()->getRole();
-
+			
 			#We set the value but do not yet commit it, this will happen whenever the 
 			#parent model is written.
 			$child->{$role} = null;
@@ -241,18 +268,20 @@ class ChildrenAdapter implements ArrayAccess, Iterator, AdapterInterface
 		
 		foreach ($this->children as $child) {
 			$role  = $this->getField()->getRole();
-
+			
 			#We set the value but do not yet commit it, this will happen whenever the 
 			#parent model is written.
 			$child->{$role} = $this->getModel();
 		}
 	}
-
-	public function getField() {
+	
+	public function getField()
+	{
 		return $this->field;
 	}
 	
-	public function __toString() {
+	public function __toString()
+	{
 		return "Array()";
 	}
 }

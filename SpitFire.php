@@ -40,8 +40,9 @@ class SpitFire
 	 */
 	private $apps;
 	
-	public function __construct() {
-
+	public function __construct()
+	{
+		
 		$this->apps = new Cluster();
 		$this->publisher = new Publisher();
 		$this->locations = new Locations();
@@ -60,7 +61,8 @@ class SpitFire
 	 * 
 	 * @return Cluster
 	 */
-	public function apps() {
+	public function apps()
+	{
 		return $this->apps;
 	}
 	
@@ -95,7 +97,8 @@ class SpitFire
 	 * 
 	 * @return Locations
 	 */
-	public function locations() {
+	public function locations()
+	{
 		return $this->locations;
 	}
 	
@@ -105,7 +108,8 @@ class SpitFire
 	 * 
 	 * @return Container
 	 */
-	public function provider() {
+	public function provider()
+	{
 		return $this->provider;
 	}
 	
@@ -115,8 +119,8 @@ class SpitFire
 	 * 
 	 * @return Publisher
 	 */
-	public function publisher() {
+	public function publisher()
+	{
 		return $this->publisher;
 	}
-
 }

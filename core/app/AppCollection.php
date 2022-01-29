@@ -37,59 +37,67 @@ use spitfire\utils\Strings;
  */
 class AppCollection extends DefinedCollection
 {
-
-    /**
-     * Returns the application attached to the path in question.
-     * 
-     * @param string $url
-     * @return App|null
+	
+	/**
+	 * Returns the application attached to the path in question.
+	 * 
+	 * @param string $url
+	 * @return App|null
 	 * @todo Introduce AppNotFound exception
-     */
-    public function byUrl(string $url) {
-
-        /*
-         * URL namespaces must be delimited by slashes. This means that
-         * paths are only valid if they start and end with a slash. This
-         * prevents the system from performing fuzzy matching.
-         * 
-         * This rule also applies to "/", which starts and ends with a 
-         * single slash.
-         */
-        if (!Strings::startsWith($url, '/')) { $url = '/' . $url; }
-        if (!Strings::endsWith($url, '/')) { $url.= '/'; }
-
-        /**
-         * Search the list of applications for one that matches the given path.
-         */
-		return $this->filter(function ($e) use ($url) { return $e->url() == $url; })->rewind();
-    }
-
-    /**
-     * When passing a class name to this function, the system must return a class that
-     * this correlates with.
-     * 
-     * @param string|object $name
-     * @return App|null
+	 */
+	public function byUrl(string $url)
+	{
+		
+		/*
+		 * URL namespaces must be delimited by slashes. This means that
+		 * paths are only valid if they start and end with a slash. This
+		 * prevents the system from performing fuzzy matching.
+		 * 
+		 * This rule also applies to "/", which starts and ends with a 
+		 * single slash.
+		 */
+		if (!Strings::startsWith($url, '/')) {
+			$url = '/' . $url; 
+		}
+		if (!Strings::endsWith($url, '/')) {
+			$url.= '/'; 
+		}
+		
+		/**
+		 * Search the list of applications for one that matches the given path.
+		 */
+		return $this->filter(function ($e) use ($url) {
+			return $e->url() == $url;
+		})->rewind();
+	}
+	
+	/**
+	 * When passing a class name to this function, the system must return a class that
+	 * this correlates with.
+	 * 
+	 * @param string|object $name
+	 * @return App|null
 	 * @todo Introduce AppNotFound exception
-     * @todo Deal with special class types like controllers and directors
-     */
-    public function byClassName($name) {
-
-        if (!is_string($name)) {
-            $name = get_class($name);
-        }
-
+	 * @todo Deal with special class types like controllers and directors
+	 */
+	public function byClassName($name)
+	{
+		
+		if (!is_string($name)) {
+			$name = get_class($name);
+		}
+		
 		if (empty($this->apps)) {
 			return $this;
 		}
 		
 		/*@var $app App*/
-		foreach($this->apps as $app) {
+		foreach ($this->apps as $app) {
 			if (Strings::startsWith($name, $app->namespace())) {
 				return $app;
 			}
-        }
-        
-        return false;
-    }
+		}
+		
+		return false;
+	}
 }

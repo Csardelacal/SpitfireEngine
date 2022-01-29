@@ -39,7 +39,8 @@ class DriveDispatcher
 	 * 
 	 * @param DriveInterface $drive
 	 */
-	public function register($scheme, $drive) {
+	public function register($scheme, $drive)
+	{
 		$this->drives[$scheme] = $drive;
 	}
 	
@@ -49,7 +50,8 @@ class DriveDispatcher
 	 * 
 	 * @param \spitfire\storage\drive\MountPoint|string $drive
 	 */
-	public function unregister($drive) {
+	public function unregister($drive)
+	{
 		if ($drive instanceof DriveInterface) {
 			$drive = $drive->scheme();
 		}
@@ -65,16 +67,17 @@ class DriveDispatcher
 	 * @param string $location
 	 * @return \spitfire\storage\objectStorage\Blob
 	 */
-	public function get($location) : NodeInterface {
+	public function get($location) : NodeInterface
+	{
 		$pieces = explode('://', $location, 2);
 		
-		if(!isset($pieces[1])) {
+		if (!isset($pieces[1])) {
 			throw new PrivateException('Invalid URI provided', 1805301529);
 		}
 		
 		list($scheme, $path) = $pieces;
 		
-		if(!isset($this->drives[$scheme])) {
+		if (!isset($this->drives[$scheme])) {
 			throw new PrivateException('Scheme ' . $scheme . ' cannot be handled', 1805301529);
 		}
 		
@@ -88,7 +91,6 @@ class DriveDispatcher
 		$resource = $mount;
 		
 		foreach ($pieces as $piece) {
-			
 			if (!$resource instanceof DirectoryInterface) {
 				throw new FileNotFoundException('Trying to recurse into a file', 1808111144);
 			}
@@ -105,21 +107,24 @@ class DriveDispatcher
 	 * @return \spitfire\storage\objectStorage\Blob
 	 * @throws PrivateException
 	 */
-	public function retrieve($location) {
+	public function retrieve($location)
+	{
 		$args = array_reduce(func_get_args(), function ($c, $e) {
-			if (empty($c)) { return $e; }
+			if (empty($c)) {
+				return $e; 
+			}
 			return rtrim($c, '\/') . DIRECTORY_SEPARATOR . ltrim($e, '\/');
 		}, null);
 		
 		$pieces = explode('://', $args, 2);
 		
-		if(!isset($pieces[1])) {
+		if (!isset($pieces[1])) {
 			throw new ApplicationException('Invalid URI provided', 1805301529);
 		}
 		
 		list($scheme, $path) = $pieces;
 		
-		if(!isset($this->drives[$scheme])) {
+		if (!isset($this->drives[$scheme])) {
 			throw new ApplicationException('Scheme ' . $scheme . ' cannot be handled', 1805301529);
 		}
 		
@@ -127,5 +132,4 @@ class DriveDispatcher
 		
 		return new Blob($scheme, $mount, $path);
 	}
-	
 }

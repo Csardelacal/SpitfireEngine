@@ -78,5 +78,4 @@ class CheckStoragePermissionsDirector extends Director
 	{
 		return [];
 	}
-
 }

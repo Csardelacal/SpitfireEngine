@@ -39,7 +39,8 @@ class Reference extends Field
 	 * 
 	 * @param Schema|string $target
 	 */
-	public function __construct($target) {
+	public function __construct($target)
+	{
 		$this->target = $target;
 	}
 	
@@ -50,7 +51,8 @@ class Reference extends Field
 	 * 
 	 * @param Schema $target
 	 */
-	public function setTarget(Schema$target) {
+	public function setTarget(Schema$target)
+	{
 		$this->target = $target;
 	}
 	
@@ -60,10 +62,11 @@ class Reference extends Field
 	 * 
 	 * @return Schema
 	 */
-	public function getTarget() {
+	public function getTarget()
+	{
 		#If the target is actually a class name.
 		if (is_string($this->target) && spitfire\utils\Strings::endsWith($this->target, 'Model')) {
-			$this->target = trim(substr($this->target, 0,  0 - strlen('Model')), '\/');
+			$this->target = trim(substr($this->target, 0, 0 - strlen('Model')), '\/');
 		}
 		
 		#Check if the passed argument already is a model
@@ -89,15 +92,17 @@ class Reference extends Field
 	 * 
 	 * @return Field[]
 	 */
-	public function makePhysical() {
+	public function makePhysical()
+	{
 		$fields   = $this->getTarget()->getPrimary()->getFields()->toArray();
-		$physical = Array();
-		$_return  = Array();
+		$physical = array();
+		$_return  = array();
 		
 		foreach ($fields as $field) {
 			$children = $field->getPhysical();
-			foreach ($children as $child)
+			foreach ($children as $child) {
 				$physical[] = $child;
+			}
 		}
 		
 		foreach ($physical as $remote_field) {
@@ -110,21 +115,24 @@ class Reference extends Field
 		
 		return $_return;
 	}
-
+	
 	/**
 	 * Defines this field and all of it's children as reference fields.
 	 * 
 	 * @return string
 	 */
-	public function getDataType() {
+	public function getDataType()
+	{
 		return Field::TYPE_REFERENCE;
 	}
-
-	public function getAdapter(Model $model) {
+	
+	public function getAdapter(Model $model)
+	{
 		return new ReferenceAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
+	
+	public function getConnectorQueries(\spitfire\storage\database\Query $parent)
+	{
 		$of    = $this->getTable()->getDb()->getObjectFactory();
 		$query = $of->queryInstance($this->getTarget()->getTable());
 		$query->setAliased(true);
@@ -151,7 +159,6 @@ class Reference extends Field
 			$query->where($local, $remote);
 		}
 		
-		return Array($query);
+		return array($query);
 	}
-
 }

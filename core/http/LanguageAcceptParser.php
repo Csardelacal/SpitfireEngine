@@ -34,7 +34,7 @@
  *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class LanguageAcceptParser 
+class LanguageAcceptParser
 {
 	
 	/**
@@ -66,7 +66,8 @@ class LanguageAcceptParser
 	 * @param string $default Provides a default language in case there was none.
 	 * @param string $header
 	 */
-	public function __construct($default, $header = null) {
+	public function __construct($default, $header = null)
+	{
 		
 		#Sometimes we wanna set a custom header (for testing, for example)
 		if (!$header) { 
@@ -76,7 +77,7 @@ class LanguageAcceptParser
 		$this->default = $default;
 		$this->header  = $header;
 	}
-		
+	
 	/**
 	 * Parses the Accept Language header and returns a list of locales that it 
 	 * extracted.
@@ -86,22 +87,27 @@ class LanguageAcceptParser
 	 * 
 	 * @return LanguageAccept[]
 	 */
-	public function parse() {
+	public function parse()
+	{
 		
 		#We do do no validation at this point, even though it may be interesting to
 		#do it here and not loop over the components later.
 		$pieces = explode(',', $this->header);
-		array_walk($pieces, function (&$e) { $e = new LanguageAccept($e); });
+		array_walk($pieces, function (&$e) {
+			$e = new LanguageAccept($e);
+		});
 		
 		#Data gets sorted by priority. Even if usually the browser will do this for us.
 		usort($pieces, function ($a, $b) {
 			$pa = $a->getPriority();
 			$pb = $b->getPriority();
 			
-			if ($pa === $pb) { return 0; }
+			if ($pa === $pb) {
+				return 0; 
+			}
 			return $pa > $pb? -1 : 1;
 		});
 		
-		return array_merge($pieces, Array(new LanguageAccept($this->default)));
+		return array_merge($pieces, array(new LanguageAccept($this->default)));
 	}
 }

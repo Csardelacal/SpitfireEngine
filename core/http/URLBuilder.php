@@ -105,7 +105,7 @@ class URLBuilder
 		 * Check if there is a named route that matches our search. Since
 		 * this is the prefered mechanism for creating routes.
 		 */
-		foreach($this->routes as $route) {
+		foreach ($this->routes as $route) {
 			if ($route->getName() === $path) {
 				return rtrim($this->root, '/') . '/' . ltrim($route->getSource()->reverse($params), '/') . ($query? '?' . http_build_query($query) : '');
 			}
@@ -166,6 +166,4 @@ class URLBuilder
 		
 		throw new ApplicationException('Could not detemine the hostname for an absolute url', 2104181221);
 	}
-	
-	
 }

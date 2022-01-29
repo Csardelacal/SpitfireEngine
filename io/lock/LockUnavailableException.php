@@ -2,7 +2,6 @@
 
 use spitfire\exceptions\PermissionsException;
 
-
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *

@@ -134,7 +134,7 @@ class Cluster
 	 */
 	public function findByNamespace(string $namespace) :? App
 	{
-		foreach($this->apps as $app) {
+		foreach ($this->apps as $app) {
 			if (Strings::startsWith($namespace, $app->namespace())) {
 				return $app;
 			}

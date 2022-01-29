@@ -36,7 +36,8 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 	/**
 	 * @throws EncoderUnavailableException
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		
 		/*
 		 * If MMPEG happens to be unavailable, we do not want the system to fail with
@@ -48,12 +49,14 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		}
 	}
 	
-	public function blur(): MediaManipulatorInterface {
+	public function blur(): MediaManipulatorInterface
+	{
 		$this->operations['blur'] = "boxblur=5:1";
 		return $this;
 	}
-
-	public function fit($x, $y): MediaManipulatorInterface {
+	
+	public function fit($x, $y): MediaManipulatorInterface
+	{
 		$w = ((int)($x/2)) * 2;
 		$h = ((int)($y/2)) * 2;
 		
@@ -62,25 +65,29 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		
 		return $this;
 	}
-
-	public function grayscale(): MediaManipulatorInterface {
+	
+	public function grayscale(): MediaManipulatorInterface
+	{
 		$this->operations['gray'] = "hue=s=0";
 		return $this;
 	}
-
-	public function load(\spitfire\storage\objectStorage\Blob $blob): MediaManipulatorInterface {
+	
+	public function load(\spitfire\storage\objectStorage\Blob $blob): MediaManipulatorInterface
+	{
 		$this->src = $blob;
 		$this->operations = [];
 		
 		return $this;
 	}
-
-	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface {
+	
+	public function quality($target = MediaManipulatorInterface::QUALITY_VERYHIGH): MediaManipulatorInterface
+	{
 		//Ignore this for now
 		return $this;
 	}
-
-	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
+	
+	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface
+	{
 		if ($side === self::WIDTH) {
 			$w = $target;
 			$h = -2;
@@ -93,8 +100,9 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		$this->operations['scale'] = "scale={$w}:{$h}";
 		return $this;
 	}
-
-	public function downscale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface {
+	
+	public function downscale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface
+	{
 		if ($side === self::WIDTH) {
 			$w = sprintf("'min(%s,floor(iw/2)*2)'", $target);
 			$h = -2;
@@ -107,16 +115,22 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		$this->operations['scale'] = "scale={$w}:{$h}";
 		return $this;
 	}
-
-	public function store(\spitfire\storage\objectStorage\Blob $location): \spitfire\storage\objectStorage\Blob {
+	
+	public function store(\spitfire\storage\objectStorage\Blob $location): \spitfire\storage\objectStorage\Blob
+	{
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.mp4';
-				
+		
 		file_put_contents($tmpi, $this->src->read());
-		exec(sprintf('ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -r ntsc -crf 26 -vf "%s" %s 2>&1', $tmpi, implode(',', $this->operations), $tmpo));
+		exec(sprintf(
+			'ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -r ntsc -crf 26 -vf "%s" %s 2>&1', 
+			$tmpi, 
+			implode(',', $this->operations), 
+			$tmpo
+		));
 		
 		console()->info('Filesize is ' . new \spitfire\io\Filesize(filesize($tmpo)))->ln();
-
+		
 		$location->write(file_get_contents($tmpo));
 		
 		unlink($tmpi);
@@ -124,8 +138,9 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		
 		return $location;
 	}
-
-	public function supports(string $mime): bool {
+	
+	public function supports(string $mime): bool
+	{
 		switch ($mime) {
 			case 'image/gif':
 			case 'video/mp4':
@@ -135,12 +150,14 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 				return false;
 		}
 	}
-
-	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface {
+	
+	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface
+	{
 		return $this;
 	}
-
-	public function poster(): MediaManipulatorInterface {
+	
+	public function poster(): MediaManipulatorInterface
+	{
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.png';
 		
@@ -149,8 +166,9 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		
 		return media()->load(storage()->retrieve('file://' . $tmpo));
 	}
-
-	public function dimensions() {
+	
+	public function dimensions()
+	{
 		$tmpi = '/tmp/' . rand();
 		
 		file_put_contents($tmpi, $this->src->read());
@@ -159,7 +177,8 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return explode('x', $ret);
 	}
 	
-	public function hasAudio() {
+	public function hasAudio()
+	{
 		$tmpi = '/tmp/' . rand();
 		$output = [];
 		
@@ -168,5 +187,4 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		
 		return false !== array_search('audio', $output);
 	}
-
 }

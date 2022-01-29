@@ -73,5 +73,4 @@ class LoadConfiguration implements InitScriptInterface
 		$walk(spitfire()->locations()->config(), '');
 		spitfire()->provider()->set(Configuration::class, $config);
 	}
-
 }

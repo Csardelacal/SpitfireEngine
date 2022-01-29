@@ -69,11 +69,9 @@ class PublisherDirector extends \spitfire\mvc\Director
 			list($from, $to) = $publication;
 			
 			$publishing = array_merge($publishing, $this->calculateChanges($from, $to));
-			
 		}
 		
 		foreach ($published as $existing => $meta) {
-			
 			if (!file_exists($existing)) {
 				#If the file has not yet been created we can create it without issue
 				continue;
@@ -97,9 +95,7 @@ class PublisherDirector extends \spitfire\mvc\Director
 		}
 		
 		foreach ($publishing as $target => $meta) {
-			
 			if (!isset($published[$target]) && file_exists($target)) {
-				
 				#In this scenario, the file does exist on the drive, but the 
 				#publishing file is unaware of it's existence. Making it impossible to
 				#override safely, since we didn't put it there.
@@ -124,7 +120,6 @@ class PublisherDirector extends \spitfire\mvc\Director
 		 * Loop over our publications and create the files or replace them as necessary.
 		 */
 		foreach ($publishing as $replace => $meta) {
-			
 			if (is_dir($meta['src']) && !file_exists($replace)) {
 				mkdir($replace);
 			}
@@ -154,8 +149,12 @@ class PublisherDirector extends \spitfire\mvc\Director
 			$_ret = [];
 			
 			while ($file = $dir->read()) {
-				if ($file == '.') { continue; }
-				if ($file == '..') { continue; }
+				if ($file == '.') {
+					continue; 
+				}
+				if ($file == '..') {
+					continue; 
+				}
 				
 				$_ret[$to] = ['md5' => null, 'src' => $from];
 				$_ret = array_merge($_ret, $this->calculateChanges($from . DIRECTORY_SEPARATOR . $file, $to . DIRECTORY_SEPARATOR . $file));
@@ -172,6 +171,4 @@ class PublisherDirector extends \spitfire\mvc\Director
 			];
 		}
 	}
-	
 }
-

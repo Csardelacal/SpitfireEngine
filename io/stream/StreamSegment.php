@@ -134,7 +134,6 @@ class StreamSegment implements StreamInterface
 		$end = $this->end? $this->end : $this->src->getSize() - 1;
 		$max = $end - $this->src->tell() + 1;
 		return $this->src->read($length? clamp(0, $length, $max) : $max);
-		
 	}
 	
 	/**
@@ -298,5 +297,4 @@ class StreamSegment implements StreamInterface
 		 */
 		return $this->end? $this->end : $this->start + $this->getSize() - 1;
 	}
-
 }

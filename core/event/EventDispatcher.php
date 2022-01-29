@@ -51,7 +51,8 @@ class EventDispatcher
 	 * @param Closure|callable $fn
 	 * @return \spitfire\core\event\Listener
 	 */
-	public function on(string $for): Listener {
+	public function on(string $for): Listener
+	{
 		
 		if (!isset($this->listeners[$for])) {
 			$this->listeners[$for] = new Listener();
@@ -66,7 +67,8 @@ class EventDispatcher
 	 * @param \spitfire\core\event\Event $event
 	 * @return type
 	 */
-	public function dispatch(Event$event) {
+	public function dispatch(Event$event)
+	{
 		
 		if (!isset($this->listeners[$event->getAction()])) {
 			return;
@@ -74,5 +76,4 @@ class EventDispatcher
 		
 		$this->listeners[$event->getAction()]->handle($event);
 	}
-	
 }

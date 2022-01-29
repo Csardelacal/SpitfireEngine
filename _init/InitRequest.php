@@ -41,5 +41,4 @@ class InitRequest implements InitScriptInterface
 		spitfire()->provider()->set(ServerRequestInterface::class, $request);
 		spitfire()->provider()->set(Request::class, $request);
 	}
-	
 }

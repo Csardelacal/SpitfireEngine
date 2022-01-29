@@ -100,7 +100,7 @@ class Locations
 	 * @param string $path
 	 * @return string
 	 */
-	public function public (string $path = '') : string
+	public function public(string $path = '') : string
 	{
 		return $this->root('public/' . ltrim($path, '\/'));
 	}
@@ -112,7 +112,7 @@ class Locations
 	 * @param string $path
 	 * @return string
 	 */
-	public function resources (string $path = '') : string
+	public function resources(string $path = '') : string
 	{
 		return $this->root('resources/' . ltrim($path, '\/'));
 	}
@@ -125,7 +125,7 @@ class Locations
 	 * @param string|null $path
 	 * @return string
 	 */
-	public function storage (string $path = '') : string
+	public function storage(string $path = '') : string
 	{
 		#Right now, for compatibility, I'm using this out-of-character location within
 		#bin to locate uploads. Moving it to another location is a potentially breaking
@@ -141,7 +141,7 @@ class Locations
 	 * @param string|null $path
 	 * @return string
 	 */
-	public function publicStorage (string $path = '') : string
+	public function publicStorage(string $path = '') : string
 	{
 		return $this->public('storage/' . ltrim($path, '\/'));
 	}

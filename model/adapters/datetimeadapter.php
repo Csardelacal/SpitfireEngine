@@ -14,12 +14,13 @@ class DateTimeAdapter extends BaseAdapter
 	 * 
 	 * @return string
 	 */
-	public function dbGetData() {
+	public function dbGetData()
+	{
 		
 		/* @var $datetime DateTime */
 		$datetime = parent::dbGetData();
 		
-		return Array(key($datetime) => current($datetime)->format('Y-m-d H:i:s'));
+		return array(key($datetime) => current($datetime)->format('Y-m-d H:i:s'));
 	}
 	
 	/**
@@ -29,12 +30,16 @@ class DateTimeAdapter extends BaseAdapter
 	 * 
 	 * @param string $data
 	 */
-	public function dbSetData($data) {
-		parent::dbSetData(Array(key($data) => new DateTime(current($data))));
+	public function dbSetData($data)
+	{
+		parent::dbSetData(array(key($data) => new DateTime(current($data))));
 	}
 	
-	public function usrSetData($data) {
-		if (!$data instanceof DateTime) { $data = new DateTime($data);}
+	public function usrSetData($data)
+	{
+		if (!$data instanceof DateTime) {
+			$data = new DateTime($data);
+		}
 		return parent::usrSetData($data);
 	}
 }

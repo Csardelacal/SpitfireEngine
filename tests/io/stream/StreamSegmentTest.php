@@ -45,7 +45,8 @@ class StreamSegmentTest extends TestCase
 		$this->stream->rewind();
 	}
 	
-	public function testSegment() {
+	public function testSegment()
+	{
 		$segment = new \spitfire\io\stream\StreamSegment($this->stream, 6, 8);
 		$read = $segment->read();
 		
@@ -54,7 +55,8 @@ class StreamSegmentTest extends TestCase
 		$this->assertEquals('wor', $read);
 	}
 	
-	public function testSegment2() {
+	public function testSegment2()
+	{
 		$segment = new \spitfire\io\stream\StreamSegment($this->stream, 6);
 		$read = $segment->read();
 		
@@ -63,8 +65,8 @@ class StreamSegmentTest extends TestCase
 		$this->assertEquals('world!', $read);
 	}
 	
-	public function tearDown() : void {
+	public function tearDown() : void
+	{
 		$this->stream->detach();
 	}
-	
 }

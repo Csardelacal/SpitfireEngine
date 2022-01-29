@@ -57,7 +57,5 @@ class ProvidersInit implements InitScriptInterface
 			$provider = spitfire()->provider()->get($name);
 			$provider->init();
 		});
-		
 	}
-
 }

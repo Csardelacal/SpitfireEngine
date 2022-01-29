@@ -32,5 +32,4 @@ class StaticResponseRequestHandler implements RequestHandlerInterface
 	{
 		return $this->response;
 	}
-
 }

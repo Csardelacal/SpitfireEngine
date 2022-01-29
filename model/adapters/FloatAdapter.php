@@ -17,13 +17,13 @@ class FloatAdapter extends BaseAdapter
 	 * @param int $data
 	 * @throws PrivateException
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		//Check if the incoming data is an int
-		if ( $data !== null && !is_numeric($data) ) {
+		if ($data !== null && !is_numeric($data)) {
 			throw new PrivateException('This adapter only accepts floats and nulls');
 		}
 		//Make sure the finally stored data is an integer.
 		parent::usrSetData($data === null? null : (float)$data);
 	}
 }
-

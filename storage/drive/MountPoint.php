@@ -64,7 +64,8 @@ class MountPoint extends Directory implements MountPointInterface
 	 * @param string $scheme
 	 * @param string $root
 	 */
-	public function __construct($scheme, $root) {
+	public function __construct($scheme, $root)
+	{
 		if (!is_dir($root)) {
 			throw new FileNotFoundException('Mount point does not exist', 1808121224);
 		}
@@ -81,16 +82,18 @@ class MountPoint extends Directory implements MountPointInterface
 	 * 
 	 * @return string
 	 */
-	public function scheme() {
+	public function scheme()
+	{
 		return $this->scheme;
 	}
 	
-	public function uri(): string {
+	public function uri(): string
+	{
 		return trim($this->scheme, ':/') . '://';
 	}
 	
-	public function getPath() {
+	public function getPath()
+	{
 		return $this->root;
 	}
-
 }

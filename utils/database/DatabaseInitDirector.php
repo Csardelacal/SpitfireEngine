@@ -112,5 +112,4 @@ class DatabaseInitDirector extends Director
 		
 		$walk($dir, '');
 	}
-	
 }

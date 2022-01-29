@@ -50,32 +50,37 @@ class URLTest extends TestCase
 		$this->builder = new URLBuilder($request, $router->getRoutes());
 	}
 	
-	public function testPrerequisiteBaseURL() {
+	public function testPrerequisiteBaseURL()
+	{
 		$this->assertEquals('/', $this->builder->to('/'));
 	}
 	
-	public function testBlankSerializer() {
+	public function testBlankSerializer()
+	{
 		$this->assertEquals('', $this->builder->to(''));
 	}
 	
-	public function testBlankSerializer2() {
+	public function testBlankSerializer2()
+	{
 		$url = $this->builder->to(['HomeController', 'index']);
 		$this->assertEquals('/', $url);
 	}
 	
-	public function testAnotherSerializer() {
+	public function testAnotherSerializer()
+	{
 		$url = $this->builder->to(['AccountController', 'test'], ['b' => 'test']);
 		$this->assertEquals('/me/test', $url);
 	}
 	
-	public function testAnotherSerializerWithParams() {
+	public function testAnotherSerializerWithParams()
+	{
 		$url = $this->builder->to(['AccountController', 'test'], ['b' => 'test'], ['a' => 3]);
 		$this->assertEquals('/me/test?a=3', $url);
 	}
 	
-	public function testArrayReverser() {
+	public function testArrayReverser()
+	{
 		$url = $this->builder->to(['TestController', 'index'], ['a' => 'my', 'b' => 'url']);
 		$this->assertEquals('/my/url', $url);
 	}
-	
 }

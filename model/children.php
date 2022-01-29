@@ -19,12 +19,13 @@ class ChildrenField extends Field
 	protected $role;
 	/** @var string|Schema|Model */
 	protected $target;
-
+	
 	/**
 	 * @param string|Schema|Model $target
 	 * @param string              $role
 	 */
-	public function __construct($target, $role) {
+	public function __construct($target, $role)
+	{
 		$this->target = $target;
 		$this->role   = $role;
 	}
@@ -35,7 +36,8 @@ class ChildrenField extends Field
 	 * 
 	 * @return Schema
 	 */
-	public function getTarget() {
+	public function getTarget()
+	{
 		
 		#If the target is actually a class name.
 		if (is_string($this->target) && spitfire\utils\Strings::endsWith($this->target, 'Model')) {
@@ -66,7 +68,8 @@ class ChildrenField extends Field
 	 * @return Reference
 	 * @throws PrivateException
 	 */
-	public function getReferencedField() {
+	public function getReferencedField()
+	{
 		if (!empty($this->role)) {
 			#If a role is predefined, we already know what to get
 			return $this->getTarget()->getField($this->role);
@@ -90,12 +93,14 @@ class ChildrenField extends Field
 		}
 	}
 	
-	public function getRole() {
+	public function getRole()
+	{
 		return $this->role;
 	}
 	
-	public function getPhysical() {
-		return Array();
+	public function getPhysical()
+	{
+		return array();
 	}
 	
 	/*
@@ -103,7 +108,8 @@ class ChildrenField extends Field
 	 * what kind of physical fields we're gonna need to store the data for this
 	 * type.
 	 */
-	public function getDataType() {
+	public function getDataType()
+	{
 		return Field::TYPE_CHILDREN;
 	}
 	
@@ -114,24 +120,29 @@ class ChildrenField extends Field
 	 * @deprecated since version 0.1-dev 20160905
 	 * @return \Reference
 	 */
-	public function findReference() {
+	public function findReference()
+	{
 		$model = $this->getTarget();
 		
-		if ($model->getField($this->getRole())) return $model->getField($this->getRole());
-		else {
+		if ($model->getField($this->getRole())) {
+			return $model->getField($this->getRole());
+		} else {
 			$fields = $model->getFields();
 			foreach ($fields as $field) {
-				if ($field instanceof Reference && $field->getTarget() === $this->getModel()) 
+				if ($field instanceof Reference && $field->getTarget() === $this->getModel()) { 
 					return $field;
+				}
 			}
 		}
 	}
-
-	public function getAdapter(Model $model) {
+	
+	public function getAdapter(Model $model)
+	{
 		return new ChildrenAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
+	
+	public function getConnectorQueries(\spitfire\storage\database\Query $parent)
+	{
 		$query = $this->getTarget()->getTable()->getCollection()->getAll();
 		$of    = $this->getTarget()->getTable()->getDb()->getObjectFactory();
 		$query->setAliased(true);
@@ -140,7 +151,6 @@ class ChildrenField extends Field
 			$query->addRestriction($of->queryFieldInstance($parent->getQueryTable(), $p->getReferencedField()), $of->queryFieldInstance($query->getQueryTable(), $p));
 		}
 		
-		return Array($query);
+		return array($query);
 	}
-
 }

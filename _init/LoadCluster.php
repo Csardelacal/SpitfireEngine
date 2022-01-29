@@ -78,9 +78,8 @@ class LoadCluster implements InitScriptInterface
 			
 			/**
 			 * @todo Spitfire should load the providers list from a method within the app, this allows us
-		 	 * to define the providers wherever we want (like configuration or something)
+			 * to define the providers wherever we want (like configuration or something)
 			 */
 		}
-		
 	}
 }

@@ -41,7 +41,8 @@ class NewDriveTest extends TestCase
 	private $string = 'Hello world';
 	
 	
-	public function testRead() {
+	public function testRead()
+	{
 		$this->storage = new DriveDispatcher;
 		$this->storage->register('file', new Driver('/'));
 		file_put_contents('/tmp/test.txt', 'Hello world');

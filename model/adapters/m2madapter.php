@@ -48,7 +48,8 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @param Model $model
 	 * @param void $data - deprecated. Should no longer be used.
 	 */
-	public function __construct(ManyToManyField$field, Model$model, $data = null) {
+	public function __construct(ManyToManyField$field, Model$model, $data = null)
+	{
 		$this->field  = $field;
 		$this->parent = $model;
 		
@@ -64,7 +65,8 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @return \spitfire\storage\database\Query
 	 */
-	public function getQuery() {
+	public function getQuery()
+	{
 		$table  = $this->field->getTarget()->getTable();
 		$fields = $table->getModel()->getFields();
 		$found  = null;
@@ -77,26 +79,28 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 		}
 		
 		return $table->getDB()->getObjectFactory()->queryInstance($table)->addRestriction($found->getName(), $this->parent->getQuery());
-		
 	}
 	
-	public function getBridgeRecordsQuery() {
+	public function getBridgeRecordsQuery()
+	{
 		#Get the fields in the Bridge table
 		$bridge_fields = $this->field->getBridge()->getFields();
-
+		
 		#Prepare a query for the records that are connected by this field
 		$bridge = $this->field->getBridge()->getTable();
 		$query  = $bridge->getDB()->getObjectFactory()->queryInstance($bridge);
-
+		
 		#We create a group to handle many to many connections that connect to the same model
 		$group = $query->group();
-
+		
 		#Write the query
-		foreach($bridge_fields as $f) {
+		foreach ($bridge_fields as $f) {
 			$pk = $this->parent->getPrimaryData();
 			$sg = $group->group(RestrictionGroup::TYPE_AND);
 			if ($f->getTarget() === $this->field->getModel()) {
-				foreach($f->getPhysical() as $p) {$sg->addRestriction($p, array_shift($pk));}
+				foreach ($f->getPhysical() as $p) {
+					$sg->addRestriction($p, array_shift($pk));
+				}
 			}
 		}
 		return $query;
@@ -105,14 +109,17 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	/**
 	 * @deprecated since version 0.1-dev
 	 */
-	public function store() {
+	public function store()
+	{
 		$bridge_records = $this->getBridgeRecordsQuery()->fetchAll();
-
-		foreach($bridge_records as $r) $r->delete();
-
+		
+		foreach ($bridge_records as $r) {
+			$r->delete();
+		}
+		
 		//@todo: Change for definitive.
 		$value = $this->toArray();
-		foreach($value as $child) {
+		foreach ($value as $child) {
 			$insert = new BridgeAdapter($this->field, $this->parent, $child);
 			$insert->makeRecord()->store();
 		}
@@ -124,79 +131,115 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @return \ManyToManyField
 	 */
-	public function getField() {
+	public function getField()
+	{
 		return $this->field;
 	}
 	
-	public function toArray() {
-		if ($this->children) return $this->children;
+	public function toArray()
+	{
+		if ($this->children) {
+			return $this->children;
+		}
 		$this->children = $this->getQuery()->fetchAll()->toArray();
 		return $this->children;
 	}
-
-	public function current() {
-		if (!$this->children) $this->toArray();
+	
+	public function current()
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return current($this->children);
 	}
-
-	public function key() {
-		if (!$this->children) $this->toArray();
+	
+	public function key()
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return key($this->children);
 	}
-
-	public function next() {
-		if (!$this->children) $this->toArray();
+	
+	public function next()
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return next($this->children);
 	}
-
-	public function rewind() {
-		if (!$this->children) $this->toArray();
+	
+	public function rewind()
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return reset($this->children);
 	}
-
-	public function valid() {
-		if (!$this->children) $this->toArray();
+	
+	public function valid()
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return !!current($this->children);
 	}
-
-	public function offsetExists($offset) {
-		if (!$this->children) $this->toArray();
+	
+	public function offsetExists($offset)
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return isset($this->children[$offset]);
-		
 	}
-
-	public function offsetGet($offset) {
-		if (!$this->children) $this->toArray();
+	
+	public function offsetGet($offset)
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		return $this->children[$offset];
 	}
-
-	public function offsetSet($offset, $value) {
-		if (!$this->children) $this->toArray();
+	
+	public function offsetSet($offset, $value)
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		$this->children[$offset] = $value;
 	}
-
-	public function offsetUnset($offset) {
-		if (!$this->children) $this->toArray();
+	
+	public function offsetUnset($offset)
+	{
+		if (!$this->children) {
+			$this->toArray();
+		}
 		unset($this->children[$offset]);
 	}
-
-	public function commit() {
+	
+	public function commit()
+	{
 		
-		if ($this->children === null) { return; }
+		if ($this->children === null) {
+			return; 
+		}
 		
 		$value = $this->children;
 		
-		$this->getBridgeRecordsQuery()->all()->each(function ($e) { $e->delete(); });
-
+		$this->getBridgeRecordsQuery()->all()->each(function ($e) {
+			$e->delete();
+		});
+		
 		//@todo: Change for definitive.
-		foreach($value as $child) {
+		foreach ($value as $child) {
 			$insert = new BridgeAdapter($this->field, $this->parent, $child);
 			$insert->makeRecord()->store();
 		}
 	}
-
-	public function dbGetData() {
-		return Array();
+	
+	public function dbGetData()
+	{
+		return array();
 	}
 	
 	/**
@@ -205,7 +248,8 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @param mixed $data
 	 */
-	public function dbSetData($data) {
+	public function dbSetData($data)
+	{
 		return;
 	}
 	
@@ -215,19 +259,23 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * 
 	 * @return \spitfire\Model
 	 */
-	public function getModel() {
+	public function getModel()
+	{
 		return $this->parent;
 	}
 	
-	public function isSynced() {
+	public function isSynced()
+	{
 		return true;
 	}
-
-	public function rollback() {
+	
+	public function rollback()
+	{
 		return true;
 	}
-
-	public function usrGetData() {
+	
+	public function usrGetData()
+	{
 		return $this;
 	}
 	
@@ -240,7 +288,8 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 	 * @param \spitfire\model\adapters\ManyToManyAdapter|Model[] $data
 	 * @throws \spitfire\exceptions\PrivateException
 	 */
-	public function usrSetData($data) {
+	public function usrSetData($data)
+	{
 		if ($data === $this) {
 			return;
 		}
@@ -254,9 +303,9 @@ class ManyToManyAdapter implements ArrayAccess, Iterator, AdapterInterface
 		}
 	}
 	
-	public function getDependencies() {
+	public function getDependencies()
+	{
 		//TODO: Needs to allow for versioning like children adapter does
 		return collect();
 	}
-
 }

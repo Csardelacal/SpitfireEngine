@@ -41,5 +41,4 @@ interface DirectoryInterface extends NodeInterface
 	public function mkdir($name) : NodeInterface;
 	
 	public function contains($name) : int;
-	
 }

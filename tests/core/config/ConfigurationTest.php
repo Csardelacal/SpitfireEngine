@@ -59,5 +59,4 @@ class ConfigurationTest extends TestCase
 		$this->assertArrayHasKey('world', $config->get('hello'));
 		$this->assertEquals('hello world', $config->get('hello.world'));
 	}
-	
 }

@@ -100,14 +100,13 @@ class WebKernel implements KernelInterface
 			$handler = new ExceptionHandler();
 			return $handler->handle($e);
 		}
-		
 	}
 	
 	public function router() : Router
 	{
 		return $this->router;
 	}
-
+	
 	public function initScripts(): array 
 	{
 		return [
@@ -119,5 +118,4 @@ class WebKernel implements KernelInterface
 			InitRequest::class
 		];
 	}
-	
 }

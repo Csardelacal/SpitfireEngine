@@ -33,7 +33,7 @@ class UploadFile implements UploadedFileInterface
 	 * Contains the error code for the upload. This may be 0 if no error was generated
 	 * or any of the UPLOAD_ERR_XXX constants.
 	 * 
-     * @see http://php.net/manual/en/features.file-upload.errors.php
+	 * @see http://php.net/manual/en/features.file-upload.errors.php
 	 * @var int
 	 */
 	private $error;
@@ -180,7 +180,7 @@ class UploadFile implements UploadedFileInterface
 		
 		return $copy;
 	}
-
+	
 	/**
 	 * Returns the maximum uploadable file size
 	 *
@@ -189,19 +189,20 @@ class UploadFile implements UploadedFileInterface
 	 *
 	 * @return Filesize
 	 */
-	static function getMaxUploadSize($sizes = null) {
+	static function getMaxUploadSize($sizes = null)
+	{
 		if (!isset($sizes)) {
 			$sizes = [
 				Filesize::parse(ini_get('post_max_size')),
 				Filesize::parse(ini_get('upload_max_filesize')),
 			];
 		}
-
+		
 		// Sort ascending based on bytes
-		uasort($sizes, function(Filesize$a, Filesize$b){
+		uasort($sizes, function (Filesize$a, Filesize$b) {
 			return $a->getSize() <=> $b->getSize();
 		});
-
+		
 		return $sizes[0];
 	}
 }

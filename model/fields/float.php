@@ -12,30 +12,39 @@ class FloatField extends Field
 	protected $unsigned;
 	
 	
-	public function __construct( $unsigned = false) {
+	public function __construct($unsigned = false)
+	{
 		$this->datatype = Field::TYPE_FLOAT;
 		$this->unsigned = $unsigned;
 	}
 	
-	public function isUnsigned() {
+	public function isUnsigned()
+	{
 		return $this->unsigned;
 	}
-
-	public function getDataType() {
+	
+	public function getDataType()
+	{
 		return Field::TYPE_FLOAT;
 	}
 	
-	public function validate($value) {
-		if (!is_numeric($value)) { return new ValidationError(_t('err_not_numeric', $this->length)); }
-		else { return parent::validate($value); }
+	public function validate($value)
+	{
+		if (!is_numeric($value)) {
+			return new ValidationError(_t('err_not_numeric', $this->length)); 
+		}
+		else {
+			return parent::validate($value); 
+		}
 	}
-
-	public function getAdapter(Model $model) {
+	
+	public function getAdapter(Model $model)
+	{
 		return new FloatAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(Query $parent) {
-		return Array();
+	
+	public function getConnectorQueries(Query $parent)
+	{
+		return array();
 	}
-
 }

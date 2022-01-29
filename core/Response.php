@@ -19,9 +19,9 @@ use spitfire\storage\objectStorage\FileInterface;
  * Response should look for an "onsuccess" GET parameter and send the user to
  * that endpoint.
  */
-class Response implements ResponseInterface 
+class Response implements ResponseInterface
 {
-
+	
 	/**
 	 * The headers this response should be sent with. This includes anything from
 	 * the status code, to redirections and even debugging messages.
@@ -32,7 +32,7 @@ class Response implements ResponseInterface
 	 * @var Headers
 	 */
 	private $headers;
-
+	
 	/**
 	 * Contains the Body of the response. Usually HTML. You can put any kind of 
 	 * data in the response body as long as it can be encoded properly with the
@@ -41,7 +41,7 @@ class Response implements ResponseInterface
 	 * @var StreamInterface
 	 */
 	private $body;
-
+	
 	/**
 	 * Instantiates a new Response element. This element allows you application to
 	 * generate several potential responses to a certain request and then pick the
@@ -54,11 +54,12 @@ class Response implements ResponseInterface
 	 * @param int             $status
 	 * @param mixed           $headers
 	 */
-	public function __construct(StreamInterface $body, $status = 200, $headers = null) {
+	public function __construct(StreamInterface $body, $status = 200, $headers = null)
+	{
 		$this->body = $body;
 		$this->headers = new Headers();
 		$this->headers->status($status);
-
+		
 		if ($headers) {
 			foreach ($headers as $header => $content) {
 				$this->headers->set($header, $content);
@@ -141,7 +142,7 @@ class Response implements ResponseInterface
 	{
 		return $this->headers->all();
 	}
-
+	
 	/**
 	 * Returns the content that is to be sent with the body. This is a string your
 	 * application has to set beforehand.
@@ -188,10 +189,14 @@ class Response implements ResponseInterface
 	{
 		$header = $this->headers->get($name);
 		
-		if (empty($header)) { return implode(',', $header); }
-		else                { return ''; }
+		if (empty($header)) {
+			return implode(',', $header); 
+		}
+		else {
+			return ''; 
+		}
 	}
-
+	
 	/**
 	 * Changes the headers object. This allows your application to quickly change
 	 * all headers and replace everything the way you want it.
@@ -199,7 +204,8 @@ class Response implements ResponseInterface
 	 * @param Headers $headers
 	 * @return Response
 	 */
-	public function setHeaders(Headers $headers) {
+	public function setHeaders(Headers $headers)
+	{
 		$this->headers = $headers;
 		return $this;
 	}
@@ -265,5 +271,4 @@ class Response implements ResponseInterface
 	{
 		return new Response($body, $this->getStatusCode(), $this->getHeaders());
 	}
-
 }

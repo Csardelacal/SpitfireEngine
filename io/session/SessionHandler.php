@@ -1,15 +1,19 @@
 <?php namespace spitfire\io\session;
 
+use SessionHandlerInterface;
+
 abstract class SessionHandler implements SessionHandlerInterface
 {
-
+	
 	private $timeout = null;
-
-	public function __construct($timeout) {
+	
+	public function __construct($timeout)
+	{
 		$this->timeout = $timeout;
 	}
-
-	public function attach() {
+	
+	public function attach()
+	{
 		if ($this instanceof \SessionHandlerInterface) {
 			session_set_save_handler($this);
 		}
@@ -24,18 +28,21 @@ abstract class SessionHandler implements SessionHandlerInterface
 			);
 		}
 	}
-
-	public function getTimeout() {
+	
+	public function getTimeout()
+	{
 		return $this->timeout;
 	}
-
-	public function setTimeout($timeout) {
+	
+	public function setTimeout($timeout)
+	{
 		$this->timeout = $timeout;
 		return $this;
 	}
-
-	public function start($savePath, $sessionName) {
-
+	
+	public function start($savePath, $sessionName)
+	{
+		
 		/**
 		 * Open the session. The start method is kinda special, since we need to
 		 * set the cookies right after opening it. So we register this hook that
@@ -43,13 +50,11 @@ abstract class SessionHandler implements SessionHandlerInterface
 		 */
 		$this->open($savePath, $sessionName);
 	}
-		
+	
 	abstract public function open($savePath, $sessionName);
 	abstract public function close();
 	abstract public function read($id);
 	abstract public function write($id, $data);
 	abstract public function destroy($id);
 	abstract public function gc($maxlifetime);
-	
 }
-

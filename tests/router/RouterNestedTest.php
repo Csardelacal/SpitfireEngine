@@ -24,7 +24,8 @@ class RouterNestedTest extends TestCase
 	 */
 	private $router;
 	
-	public function setUp() : void {
+	public function setUp() : void
+	{
 		$this->router = new Router('/');
 	}
 	
@@ -84,5 +85,4 @@ class RouterNestedTest extends TestCase
 		$r2 = $this->router->rewrite($request2);
 		$this->assertEquals(false, $r2->success());
 	}
-	
 }

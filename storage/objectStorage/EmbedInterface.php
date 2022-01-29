@@ -28,5 +28,4 @@ interface EmbedInterface extends FileInterface
 {
 	
 	function publicURI();
-	
 }

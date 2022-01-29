@@ -62,7 +62,6 @@ class ConsoleKernel implements KernelInterface
 	 */
 	public function boot() : void
 	{
-		
 	}
 	
 	/**

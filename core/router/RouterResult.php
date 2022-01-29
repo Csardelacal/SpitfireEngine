@@ -69,5 +69,4 @@ class RouterResult
 		
 		return $this->handler;
 	}
-	
 }

@@ -24,12 +24,13 @@ class FileLockFactory implements LockFactoryInterface
 	
 	private $dir;
 	
-	public function __construct($dir) {
+	public function __construct($dir)
+	{
 		$this->dir = rtrim($dir, '\/') . DIRECTORY_SEPARATOR;
 	}
 	
-	public function get($key): LockInterface {
+	public function get($key): LockInterface
+	{
 		return new FileLock($this->dir . ltrim($key, '\/'));
 	}
-
 }

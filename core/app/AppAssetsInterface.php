@@ -64,5 +64,4 @@ interface AppAssetsInterface
 	 * @return string
 	 */
 	public function map(string$asset) : string;
-	
 }

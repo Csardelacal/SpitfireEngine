@@ -17,7 +17,8 @@ class BooleanField extends Field
 	 * 
 	 * @return string
 	 */
-	public function getDataType() {
+	public function getDataType()
+	{
 		return Field::TYPE_BOOLEAN;
 	}
 	
@@ -28,12 +29,13 @@ class BooleanField extends Field
 	 * @param Model $model
 	 * @return \spitfire\model\adapters\BooleanAdapter
 	 */
-	public function getAdapter(Model $model) {
+	public function getAdapter(Model $model)
+	{
 		return new BooleanAdapter($this, $model);
 	}
-
-	public function getConnectorQueries(\spitfire\storage\database\Query $parent) {
-		return Array();
+	
+	public function getConnectorQueries(\spitfire\storage\database\Query $parent)
+	{
+		return array();
 	}
-
 }

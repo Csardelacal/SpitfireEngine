@@ -45,7 +45,7 @@ abstract class Director
 	 * 
 	 * @return array
 	 */
-	public abstract function parameters() : array;
+	abstract public function parameters() : array;
 	
 	/**
 	 * Executes the director, handling control to the application implementing it.
@@ -54,6 +54,5 @@ abstract class Director
 	 * @param CLIParameters $arguments The raw arguments read from the process
 	 * @return int The return code
 	 */
-	public abstract function exec(array $parameters, CLIParameters $arguments): int;
-	
+	abstract public function exec(array $parameters, CLIParameters $arguments): int;
 }

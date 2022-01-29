@@ -10,15 +10,21 @@ class DataURI
 	private $mimetype;
 	private $charset;
 	
-	public function __construct($content, $mimetype, $charset = null) {
+	public function __construct($content, $mimetype, $charset = null)
+	{
 		$this->content = $content;
 		$this->mimetype = $mimetype;
 		$this->charset = $charset? $charset : mb_internal_encoding();
 	}
 	
-	public function __toString() {
-		return sprintf('data:%s;%s;base64,%s', 
-			$this->mimetype, $this->charset, base64_encode($this->content));
+	public function __toString()
+	{
+		return sprintf(
+			'data:%s;%s;base64,%s', 
+			$this->mimetype,
+			$this->charset,
+			base64_encode($this->content)
+		);
 	}
 	
 	/**
@@ -36,9 +42,12 @@ class DataURI
 	 * @return DataURI
 	 * @throws FileNotFoundException
 	 */
-	public static function fromFile($file) {
+	public static function fromFile($file)
+	{
 		#Check if the file exists in the first place
-		if (!file_exists($file)) { throw new FileNotFoundException($file . ' does not exist'); }
+		if (!file_exists($file)) {
+			throw new FileNotFoundException($file . ' does not exist'); 
+		}
 		
 		#Retrieve the mime type
 		$finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -46,6 +55,4 @@ class DataURI
 		
 		return new DataURI(file_get_contents($file), $mimetype);
 	}
-	
 }
-

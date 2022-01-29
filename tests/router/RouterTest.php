@@ -25,7 +25,8 @@ class RouterTest extends TestCase
 	 */
 	private $router;
 	
-	public function setUp() : void {
+	public function setUp() : void
+	{
 		$this->router = new Router('/');
 	}
 	
@@ -34,7 +35,8 @@ class RouterTest extends TestCase
 	 * a route and verify that the returned value is a Route and not something 
 	 * else.
 	 */
-	public function testCreateRoute() {
+	public function testCreateRoute()
+	{
 		
 		$route  = $this->router->get('/test', ['TestController', 'index']);
 		$this->assertInstanceOf('\spitfire\core\router\Route', $route);
@@ -44,7 +46,8 @@ class RouterTest extends TestCase
 	 * This method tests the different string rewriting options that Spitfire 
 	 * will provide you with when creating routes.
 	 */
-	public function testStringRoute() {
+	public function testStringRoute()
+	{
 		
 		$router = $this->router;
 		$request = new Request(
@@ -61,10 +64,10 @@ class RouterTest extends TestCase
 		$this->assertEquals(true, $route->test($request));
 		$this->assertEquals(false, $route->test($request->withMethod('POST')));
 			//> This last test should fail because we're sending a POST request to a GET route
-		
 	}
 	
-	public function testTrailingSlashStringRoute() {
+	public function testTrailingSlashStringRoute()
+	{
 		$router = new Router('/');
 		$request = new Request(
 			'GET', 
@@ -81,7 +84,6 @@ class RouterTest extends TestCase
 		$this->assertEquals(true, $route1->test($request), 'The route should match a route without trailing slash');
 		$this->assertEquals(true, $route1->test($request->withUri(URLReflection::fromURL('https://localhost/this/is/a/test/'))), 'The route should match a route with a trailing slash');
 		$this->assertEquals(false, $route1->test($request->withUri(URLReflection::fromURL('https://localhost/this/is/a/test/with/more'))), 'The route should not match excessive content');
-		
 	}
 	
 	public function testTrailingSlashStringRoute2() 
@@ -102,7 +104,8 @@ class RouterTest extends TestCase
 		$this->assertEquals(true, $route2->test($request), 'The route shoud match a route with a trailing slash');
 	}
 	
-	public function testOptionalParameters() {
+	public function testOptionalParameters()
+	{
 		$router = $this->router;
 		$router->get('/test/{param1}', [TestController::class, 'index']);
 		
@@ -141,5 +144,4 @@ class RouterTest extends TestCase
 		
 		$this->assertEquals('/@hello_world', $url);
 	}
-	
 }

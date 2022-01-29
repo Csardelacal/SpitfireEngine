@@ -8,11 +8,13 @@ class XSSToken
 	
 	private $timeout;
 	
-	public function __construct($timeout = 600) {
+	public function __construct($timeout = 600)
+	{
 		$this->timeout = $timeout;
 	}
 	
-	public function getValue() {
+	public function getValue()
+	{
 		$session = Session::getInstance();
 		
 		if (false == $xss_token = $session->get('_XSS_')) {
@@ -27,7 +29,8 @@ class XSSToken
 		return implode(':', [$expires, $salt, $hash]);
 	}
 	
-	public function verify($token) {
+	public function verify($token)
+	{
 		$session = Session::getInstance();
 		
 		if (false == $xss_token = $session->get('_XSS_')) {
@@ -52,8 +55,8 @@ class XSSToken
 		return $hash === $check;
 	}
 	
-	public function __toString() {
+	public function __toString()
+	{
 		return $this->getValue();
 	}
-
 }

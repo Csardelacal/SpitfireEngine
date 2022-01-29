@@ -3,8 +3,7 @@
 class OTFModel extends \spitfire\Model
 {
 	
-	public function definitions(\spitfire\model\Schema $schema) {
-		
+	public function definitions(\spitfire\model\Schema $schema)
+	{
 	}
-
 }

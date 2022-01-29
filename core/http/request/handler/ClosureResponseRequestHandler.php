@@ -46,5 +46,4 @@ class ClosureResponseRequestHandler implements RequestHandlerInterface
 		 */
 		return ($this->response)(...$this->params);
 	}
-
 }

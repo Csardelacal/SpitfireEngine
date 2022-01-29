@@ -36,14 +36,15 @@ use spitfire\collection\DefinedCollection;
 class Listener extends DefinedCollection
 {
 	
-	public function do($smthg) {
+	public function do($smthg)
+	{
 		parent::push($smthg);
 	}
 	
-	public function handle(Event$event) {
+	public function handle(Event$event)
+	{
 		$this->each(function ($call) use ($event) {
 			$call($event);
 		});
 	}
-	
 }

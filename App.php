@@ -32,7 +32,8 @@ abstract class App
 	 * @param Router $router A scoped router for this application to write it's routes
 	 * to.
 	 */
-	public function __construct($router) { 
+	public function __construct($router)
+	{ 
 		$this->router = $router; 
 	}
 	
@@ -43,7 +44,10 @@ abstract class App
 	 * 
 	 * @return string
 	 */
-	public function url() { return $this->router->getPrefix(); }
+	public function url()
+	{
+		return $this->router->getPrefix(); 
+	}
 	
 	/**
 	 * Returns the directory this application is watching.
@@ -57,5 +61,4 @@ abstract class App
 	 * spitfire will look for controllers, models etc for this application.
 	 */
 	abstract public function namespace();
-	
 }
