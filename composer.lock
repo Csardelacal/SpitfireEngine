@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19b153ad41d24e1f9a6b9a698ad234cd",
+    "content-hash": "fee9db5f2b1eaf117044de0cba4481b4",
     "packages": [
         {
             "name": "magic3w/url-reflection",
@@ -249,6 +249,41 @@
                 }
             ],
             "time": "2020-11-10T18:47:58+00:00"
+        },
+        {
+            "name": "magic3w/php-coding-standard",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magic3W/php-coding-standard.git",
+                "reference": "a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magic3W/php-coding-standard/zipball/a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a",
+                "reference": "a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a",
+                "shasum": ""
+            },
+            "require": {
+                "squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Magic3W Coding standard for PHP projects.",
+            "support": {
+                "issues": "https://github.com/Magic3W/php-coding-standard/issues",
+                "source": "https://github.com/Magic3W/php-coding-standard/tree/1.0.0"
+            },
+            "time": "2022-02-01T12:46:42+00:00"
         },
         {
             "name": "myclabs/deep-copy",

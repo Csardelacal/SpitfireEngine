@@ -61,6 +61,14 @@ interface LayoutInterface
 	function getField(string $name) : Field;
 	
 	/**
+	 * Returns true if the layout contains a certain field. 
+	 * 
+	 * @param string $name
+	 * @return bool
+	 */
+	function hasField(string $name) : bool;
+	
+	/**
 	 * Get the list of fields in this layout. This allows the database driver to
 	 * determine which columns can be used to manage the database.
 	 * 

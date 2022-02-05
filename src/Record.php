@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database;
 
+use spitfire\exceptions\ApplicationException;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -67,11 +68,17 @@ class Record
 	 * When editing the primary key value this will ALWAYS return the data that 
 	 * the system assumes to be in the database.
 	 * 
-	 * @var int|string
+	 * @return int|string
 	 */
 	public function getPrimary()
 	{
-		return $this->original[$this->layout->getPrimaryKey()->getFields()[0]->getName()];
+		$fields = $this->layout->getPrimaryKey()->getFields();
+		
+		if ($fields->isEmpty()) {
+			throw new ApplicationException('Record has no primary key', 2101181306); 
+		}
+		
+		return $this->original[$fields[0]->getName()];
 	}
 	
 	/**
@@ -88,7 +95,7 @@ class Record
 		 * be caught during development, and therefore we consider an assertion sufficient
 		 * here.
 		 */
-		assert($field === null || $this->layout->getField($field));
+		assert($field === null || $this->layout->hasField($field));
 		
 		/**
 		 * If the user determined which field has to be checked, then we just check that the
@@ -125,7 +132,7 @@ class Record
 	 */
 	public function get(string $field)
 	{
-		assert(!!$this->layout->getField($field));
+		assert(!!$this->layout->hasField($field));
 		return $this->data[$field]?? null;
 	}
 	
@@ -143,7 +150,7 @@ class Record
 		 * Only when assertions are enabled we perform a check whether this field is actually
 		 * intended to be written at all.
 		 */
-		assert(!!$this->layout->getField($field));
+		assert(!!$this->layout->hasField($field));
 		
 		$this->data[$field] = $value;
 		return $this;
@@ -157,7 +164,7 @@ class Record
 	 */
 	public function original(string $field) : mixed
 	{
-		assert(!!$this->layout->getField($field));
+		assert(!!$this->layout->hasField($field));
 		return $this->original[$field]?? null;
 	}
 	

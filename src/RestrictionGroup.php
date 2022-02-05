@@ -44,7 +44,7 @@ class RestrictionGroup extends Collection
 	 *
 	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 *
-	 * @param QueryField $field
+	 * @param FieldReference $field
 	 * @param mixed  $value
 	 * @param string $_
 	 * @return RestrictionGroup

@@ -30,9 +30,18 @@ interface DriverInterface
 	 * Executes a migration operation on the database. This allows you to create,
 	 * upgrade or downgrade database schemas.
 	 * 
+	 * @param MigrationOperationInterface $migration
 	 * @throws ApplicationException If the migration could not be applied
 	 */
-	public function migrate(Schema $schema) : SchemaMigrationExecutorInterface;
+	public function apply(MigrationOperationInterface $migration) : void;
+	
+	/**
+	 * Rolls a migration back. Undoing it's changes to the schema.
+	 * 
+	 * @param MigrationOperationInterface $migration
+	 * @throws ApplicationException If the migration could not be applied
+	 */
+	public function rollback(MigrationOperationInterface $migration) : void;
 	
 	/**
 	 * Query the database for data. The query needs to encapsulate all the data

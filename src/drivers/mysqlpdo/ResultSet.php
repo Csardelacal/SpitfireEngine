@@ -51,7 +51,7 @@ class ResultSet implements ResultSetInterface
 	
 	/**
 	 * 
-	 * @return Collection<Record>
+	 * @return Collection<mixed[]>
 	 */
 	public function fetchAll() : Collection
 	{
@@ -78,7 +78,7 @@ class ResultSet implements ResultSetInterface
 	 * Returns the data the way any associative adapter would return it. This allows
 	 * your app to withdraw raw data without it being treated by the framework.
 	 * 
-	 * @return mixed
+	 * @return mixed[]
 	 */
 	public function fetch(): ?array
 	{

@@ -52,7 +52,7 @@ interface ResultSetInterface
 	 * allows your application to loop over the records instead of while-ing over
 	 * them.
 	 * 
-	 * @return mixed[][] All the models the driver read from the database.
+	 * @return Collection<mixed[]> All the models the driver read from the database.
 	 */
 	public function fetchAll();
 }

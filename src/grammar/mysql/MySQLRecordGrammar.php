@@ -31,6 +31,10 @@ use spitfire\storage\database\Record;
 class MySQLRecordGrammar
 {
 	
+	/**
+	 * 
+	 * @var QuoterInterface
+	 */
 	private $quoter;
 	
 	public function __construct(QuoterInterface $quoter)
@@ -112,13 +116,14 @@ class MySQLRecordGrammar
 	 * Escapes a string to be used in a SQL statement. PDO offers this
 	 * functionality out of the box so there's nothing to do.
 	 * 
-	 * @param string $text
+	 * @param string|int|bool|null $text
 	 * @return string Quoted and escaped string
 	 */
 	public function quote($text) {
 		if ($text === null)  { return 'null'; }
-		if (is_int($text) )  { return strval($text);  }
+		if (is_int($text) )  { return sprintf('\'%s\'', strval($text)); }
 		if ($text === false) { return "'0'";  }
+		if ($text === true)  { return "'1'";  }
 		
 		return $this->quoter->quote( $text );
 	}

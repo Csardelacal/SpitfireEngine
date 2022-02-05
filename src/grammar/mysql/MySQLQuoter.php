@@ -1,9 +1,7 @@
 <?php namespace spitfire\storage\database\grammar\mysql;
 
 use PDO;
-use spitfire\collection\Collection;
 use spitfire\storage\database\QuoterInterface;
-use spitfire\storage\database\Record;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -42,13 +40,8 @@ class MySQLQuoter implements QuoterInterface
 		$this->pdo = $pdo;
 	}
 	
-	public function quote(?string $str = null): string
+	public function quote(string $str = null): string
 	{
-		
-		if ($str === null)  { return 'null'; }
-		if (is_int($str) )  { return strval($str);  }
-		if ($str === false) { return "'0'";  }
-		
 		return $this->pdo->quote($str);
 	}
 }

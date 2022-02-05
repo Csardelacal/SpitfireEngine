@@ -6,19 +6,15 @@ use PDOStatement;
 use Psr\Log\LoggerInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\FileNotFoundException;
-use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\DriverInterface;
 use spitfire\storage\database\grammar\mysql\MySQLQuoter;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
-use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\io\CharsetEncoder;
+use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
-use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
-
-use function spitfire;
 
 /**
  * MySQL driver via PDO. This driver does <b>not</b> make use of prepared 
@@ -84,7 +80,12 @@ class Driver implements DriverInterface
 		}
 	}
 	
-	public function migrate(Schema $schema) : SchemaMigrationExecutorInterface
+	public function apply(MigrationOperationInterface $migration) : void
+	{
+		
+	}
+	
+	public function rollback(MigrationOperationInterface $migration) : void
 	{
 		
 	}
@@ -127,75 +128,6 @@ class Driver implements DriverInterface
 		return $result !== false;
 	}
 	
-	/**
-	 * Sends a query to the database server and returns the handle for the
-	 * resultset the server / native driver returned.
-	 * 
-	 * @param string $statement SQL to be executed by the server.
-	 * @param boolean $attemptrepair Defines whether the server should try
-	 *                    to repair any model inconsistencies the server 
-	 *                    encounters.
-	 * @return PDOStatement
-	 * @throws PrivateException In case the query fails for another reason
-	 *                     than the ones the system manages to fix.
-	 */
-	public function execute($statement, $parameters = Array(), $attemptrepair = true) {
-		#Connect to the database and prepare the statement
-		$con = $this->getConnection();
-		
-		try {
-			spitfire()->log("DB: " . $statement);
-			#Execute the query
-			$stt = $con->prepare($statement);
-			$stt->execute();
-			
-			return $stt;
-		
-		} catch(PDOException $e) {
-			#Log the error that happened.
-			spitfire()->log("Captured: {$e->getCode()} - {$e->getMessage()}");
-			#Recover from exception, make error readable. Re-throw
-			$code = $e->getCode();
-			$err  = $e->errorInfo;
-			$msg  = $err[2]? $err[2] : 'Unknown error';
-			
-			#If the error is not repairable or the system is blocking repairs throw an exception
-			if (!in_array($err[1], $this->reparableErrors) || !$attemptrepair) 
-				{ throw new PrivateException("Error {$code} [{$msg}] captured. Not repairable", 1511081930, $e); }
-			
-			#Try to solve the error by checking integrity and repeat
-			$this->repair();
-			return $this->execute($statement, $parameters, false);
-		}
-	}
-	
-	/**
-	 * Escapes a string to be used in a SQL statement. PDO offers this
-	 * functionality out of the box so there's nothing to do.
-	 * 
-	 * @param string $text
-	 * @return string Quoted and escaped string
-	 */
-	public function quote($text) {
-		if ($text === null)  { return 'null'; }
-		if ($text ===    0)  { return "'0'";  }
-		if ($text === false) { return "'0'";  }
-		
-		$str = $this->encoder->encode($text); //This statement should not be here.
-		//It's not part of the quoting mechanism to encode the data.
-		
-		return $this->connection->quote( $str );
-	}
-	
-	/**
-	 * 
-	 * @staticvar \storage\database\drivers\mysqlpdo\ObjectFactory $factory
-	 * @return  ObjectFactory
-	 */
-	public function getObjectFactory() {
-		static $factory;
-		return $factory? : $factory = new ObjectFactory();
-	}
 
 	/**
 	 * Creates a database on MySQL's side where data can be stored on behalf of
@@ -206,8 +138,8 @@ class Driver implements DriverInterface
 	public function create(): bool {
 		
 		try {
-			$this->execute(sprintf('CREATE DATABASE `%s`', $this->getSettings()->getSchema()));
-			$this->execute(sprintf('use `%s`;', $this->getSettings()->getSchema()));
+			$this->connection->exec(sprintf('CREATE DATABASE `%s`', $this->settings->getSchema()));
+			$this->connection->exec(sprintf('use `%s`;', $this->settings->getSchema()));
 			return true;
 		} 
 		/*
@@ -218,22 +150,10 @@ class Driver implements DriverInterface
 		 * In this event we create a new connection that ignores the schema setting,
 		 * therefore allowing to connect to the database properly.
 		 */
-		catch (FileNotFoundException$e) {
-			#Modify the connection settings, removing the schema.
-			$settings = clone $this->getSettings();
-			$settings->setSchema('');
-			
-			#Establish the new connection
-			$db = new Driver($settings);
-			$db->getConnection();
-			
-			#Set the schema and run a retry
-			$settings->setSchema($this->getSettings()->getSchema());
-			$db->create();
-			return true;
+		catch (PDOException $e) {
+			return false;
 		}
 		
-		return false;
 	}
 	
 	/**
@@ -242,7 +162,7 @@ class Driver implements DriverInterface
 	 * @return bool
 	 */
 	public function destroy(): bool {
-		$this->execute(sprintf('DROP DATABASE `%s`', $this->getSettings()->getSchema()));
+		$this->connection->exec(sprintf('DROP DATABASE `%s`', $this->settings->getSchema()));
 		return true;
 	}
 
