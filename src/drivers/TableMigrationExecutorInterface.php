@@ -2,6 +2,7 @@
 
 use Closure;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\Field;
 use spitfire\storage\database\Layout;
 
 /* 
