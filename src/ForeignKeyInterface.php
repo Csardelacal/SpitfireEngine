@@ -2,7 +2,7 @@
 
 use spitfire\collection\Collection;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -30,11 +30,20 @@ interface ForeignKeyInterface extends IndexInterface
 {
 	
 	/**
-	 * Returns a collection of fields that the index is referencing. This allows
-	 * the application to properly define indexes that do only exist for the 
-	 * purpose of linking two tables.
-	 * 
-	 * @return Collection<Field>
+	 * Returns a the table that the foreign key is referencing to. Please note
+	 * that a foreign key may span multiple fields, but they must all belong to
+	 * the same table.
+	 *
+	 * @return TableReference
 	 */
-	function getReferenced() : Collection;
+	public function getReferencedTable() : TableReference;
+	
+	/**
+	 * Returns a collection of fields that the index is referencing. This allows
+	 * the application to properly define indexes that do only exist for the
+	 * purpose of linking two tables.
+	 *
+	 * @return Collection<FieldReference>
+	 */
+	public function getReferencedField() : Collection;
 }

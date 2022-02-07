@@ -5,7 +5,7 @@ use spitfire\collection\Collection;
 use spitfire\storage\database\QuoterInterface;
 use spitfire\storage\database\Record;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ class MySQLRecordGrammar
 {
 	
 	/**
-	 * 
+	 *
 	 * @var QuoterInterface
 	 */
 	private $quoter;
@@ -48,8 +48,10 @@ class MySQLRecordGrammar
 		$fields  = $layout->getFields();
 		$diff    = $record->diff();
 		
-		$payload = $fields->each(function($e) use ($diff) {
-			if (!array_key_exists($e->getName(), $diff)) { return null; }
+		$payload = $fields->each(function ($e) use ($diff) {
+			if (!array_key_exists($e->getName(), $diff)) {
+				return null;
+			}
 			return sprintf('`%s` = %s', $e->getName(), $this->quote($diff[$e->getName()]));
 		})->filter();
 		
@@ -61,7 +63,7 @@ class MySQLRecordGrammar
 			'WHERE',
 			sprintf('`%s`', $layout->getPrimaryKey()->getFields()[0]->getName()),
 			'=',
-			$record->getPrimary()
+			$this->quote($record->getPrimary())
 		]))->join(' ');
 		
 		return $stmt;
@@ -73,14 +75,18 @@ class MySQLRecordGrammar
 		$fields  = $layout->getFields();
 		$raw     = $record->raw();
 		
-		$payload = $fields->each(function($e) use ($raw) {
+		$payload = $fields->each(function ($e) use ($raw) {
 			return $this->quote(array_key_exists($e->getName(), $raw)? $raw[$e->getName()] : null);
 		})->filter();
+		
+		$_fields = $fields->each(function ($e) {
+			return sprintf('`%s`', $e->getName());
+		})->join(', ');
 		
 		$stmt = (new Collection([
 			'INSERT INTO',
 			$layout->getTableName(),
-			'(', $fields->each(function ($e) {return sprintf('`%s`', $e->getName()); })->join(', '), ')',
+			'(', $_fields, ')',
 			'VALUES',
 			'(', $payload->join(', '), ')'
 		]))->join(' ');
@@ -90,9 +96,9 @@ class MySQLRecordGrammar
 	
 	/**
 	 * Generates a valid SQL statement to delete the provided record from the database.
-	 * Note that since SF 2020 we do no longer support compound primary keys, which means 
+	 * Note that since SF 2020 we do no longer support compound primary keys, which means
 	 * that primary keys with more than one field will cause issues.
-	 * 
+	 *
 	 * @param Record $record
 	 * @return string
 	 */
@@ -115,16 +121,25 @@ class MySQLRecordGrammar
 	/**
 	 * Escapes a string to be used in a SQL statement. PDO offers this
 	 * functionality out of the box so there's nothing to do.
-	 * 
+	 *
 	 * @param string|int|bool|null $text
 	 * @return string Quoted and escaped string
 	 */
-	public function quote($text) {
-		if ($text === null)  { return 'null'; }
-		if (is_int($text) )  { return sprintf('\'%s\'', strval($text)); }
-		if ($text === false) { return "'0'";  }
-		if ($text === true)  { return "'1'";  }
+	public function quote($text)
+	{
+		if ($text === null) {
+			return 'null';
+		}
+		if (is_int($text)) {
+			return sprintf('\'%s\'', strval($text));
+		}
+		if ($text === false) {
+			return "'0'";
+		}
+		if ($text === true) {
+			return "'1'";
+		}
 		
-		return $this->quoter->quote( $text );
+		return $this->quoter->quote($text);
 	}
 }

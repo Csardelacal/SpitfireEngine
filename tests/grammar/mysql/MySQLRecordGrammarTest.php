@@ -14,7 +14,7 @@ class MySQLRecordGrammarTest extends TestCase
 {
 	
 	/**
-	 * 
+	 *
 	 * @var MySQLRecordGrammar
 	 */
 	private $grammar;
@@ -40,7 +40,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$statement = $this->grammar->updateRecord($record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
-		$this->assertStringContainsString('`testfield` = 1', $statement);
+		$this->assertStringContainsString("`testfield` = '1'", $statement);
 	}
 	
 	public function testUpdateOtherField()
@@ -61,8 +61,8 @@ class MySQLRecordGrammarTest extends TestCase
 		$statement = $this->grammar->updateRecord($record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
-		$this->assertStringContainsString('`testfield2` = 3', $statement);
-		$this->assertStringContainsString('`testfield` = 1', $statement);
+		$this->assertStringContainsString("`testfield2` = '3'", $statement);
+		$this->assertStringContainsString("`testfield` = '1'", $statement);
 	}
 	
 	public function testInsertGrammar()
@@ -81,7 +81,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$statement = $this->grammar->insertRecord($record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
-		$this->assertStringContainsString('VALUES ( 3 )', $statement);
+		$this->assertStringContainsString("VALUES ( '3' )", $statement);
 	}
 	
 	public function testInsertGrammarMultipleFields()
@@ -102,7 +102,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$statement = $this->grammar->insertRecord($record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield`, `testfield2', $statement);
-		$this->assertStringContainsString('VALUES ( 3, 4 )', $statement);
+		$this->assertStringContainsString("VALUES ( '3', '4' )", $statement);
 	}
 	
 	public function testInsertGrammarMultipleFieldsWithNull()
@@ -122,7 +122,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$statement = $this->grammar->insertRecord($record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield`, `testfield2', $statement);
-		$this->assertStringContainsString('VALUES ( 3, null )', $statement);
+		$this->assertStringContainsString("VALUES ( '3', null )", $statement);
 	}
 	
 	public function testInsertGrammarMultipleFieldsWithString()
@@ -143,7 +143,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$statement = $this->grammar->insertRecord($record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield`, `testfield2', $statement);
-		$this->assertStringContainsString("VALUES ( 3, 'hello' )", $statement);
+		$this->assertStringContainsString("VALUES ( '3', 'hello' )", $statement);
 	}
 	
 	public function testDeleteGrammar()
