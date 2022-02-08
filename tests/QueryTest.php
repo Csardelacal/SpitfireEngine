@@ -2,9 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\Layout;
-use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Query;
-use spitfire\storage\database\QueryTable;
 use spitfire\storage\database\Table;
 use spitfire\storage\database\TableReference;
 
@@ -45,7 +43,7 @@ class QueryTest extends TestCase
 		 * Our queries reference the same layout, but both use different querytables,
 		 * this allows us to uniquely reference each query when working with them.
 		 */
-		$this->assertEquals($querya->getTable()->getName(), $queryb->getTable()->getName());
+		$this->assertEquals($querya->getFrom()->input()->getName(), $queryb->getFrom()->input()->getName());
 		
 		$this->assertNotEquals($querya->getFrom()->output(), $queryb->getFrom()->output());
 		$this->assertNotEquals($querya->getFrom()->output()->getName(), $queryb->getFrom()->output()->getName());

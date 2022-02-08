@@ -1,17 +1,22 @@
 <?php namespace spitfire\storage\database;
 
+use BadMethodCallException;
 use Closure;
 use spitfire\collection\Collection;
-use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\query\Alias;
+use spitfire\storage\database\query\Join;
+use spitfire\storage\database\query\JoinTable;
+use spitfire\storage\database\query\Restriction;
+use spitfire\storage\database\query\RestrictionGroup;
 
 /**
  * The query provides a mechanism for assembling restrictions that Spitfire and
  * the DBMS driver can then convert into a SQL query (or similar, for NoSQL).
  * 
  * @todo The properties are protected, when they should actually be private
+ * @mixin RestrictionGroup
  */
-class Query extends RestrictionGroup
+class Query
 {
 	
 	/** 
@@ -25,9 +30,7 @@ class Query extends RestrictionGroup
 	
 	/**
 	 *
-	 * @todo We should introduce a class that allows these queries to sort by multiple,
-	 * and even layered (as in, in other queries) columns.
-	 * @var OrderBy[]
+	 * @var Collection<OrderBy>
 	 */
 	protected $order;
 	
@@ -44,6 +47,12 @@ class Query extends RestrictionGroup
 	 * @var Collection<Join>
 	 */
 	private $joins;
+	
+	/**
+	 * 
+	 * @var RestrictionGroup
+	 */
+	private $restrictions;
 	
 	/**
 	 * This contains an array of aggregation functions that are executed with the 
@@ -63,9 +72,9 @@ class Query extends RestrictionGroup
 	 * * Fields that are part of the groupby
 	 * * Computed fields that reduce the result to a single record (like max or count)
 	 *
-	 * @var FieldReference[]
+	 * @var Collection<FieldReference>
 	 */
-	protected $groupBy = null;
+	protected $groupBy;
 	
 	/**
 	 * The number of records that should be skipped when working with the query's resultset.
@@ -89,11 +98,10 @@ class Query extends RestrictionGroup
 	{
 		$this->from = new Alias($table, $table->withAlias());
 		$this->joins = new Collection();
+		$this->restrictions = new RestrictionGroup();
 		$this->calculated = new Collection();
-		
-		#Initialize the parent
-		parent::__construct(Array());
-		$this->setType(RestrictionGroup::TYPE_AND);
+		$this->groupBy = new Collection();
+		$this->order = new Collection();
 	}
 	
 	/**
@@ -110,12 +118,26 @@ class Query extends RestrictionGroup
 	 */
 	public function joinTable(TableReference $table, Closure $fn = null) : Query
 	{
-		$join = new Join($table);
+		$join = new JoinTable(new Alias($table, $table->withAlias()));
 		$this->joins[] = $join;
 		
 		$fn !== null && $fn($join, $this);
 		
 		return $this;
+	}
+	
+	/**
+	 * 
+	 * @return Collection<Join>
+	 */
+	public function getJoined() : Collection
+	{
+		return $this->joins;
+	}
+	
+	public function getRestrictions() : RestrictionGroup
+	{
+		return $this->restrictions;
 	}
 	
 	/**
@@ -180,15 +202,23 @@ class Query extends RestrictionGroup
 	 * @todo When adding aggregation, the system should automatically use the aggregation for extraction
 	 * @todo Currently the system only supports grouping and not aggregation, this is a bit of a strange situation that needs resolution
 	 * 
-	 * @param FieldReference|null $column
+	 * @param FieldReference[] $columns
 	 * @return Query Description
 	 */
-	public function aggregateBy(FieldReference $column = null) 
+	public function groupBy(array $columns = []) 
 	{
-		if($column === null) { $this->groupBy = []; }
-		else                 { $this->groupBy = [$column]; }
-		
+		$this->groupBy = $columns;
 		return $this;
+	}
+	
+	/**
+	 * Returns the fields this query is grouped by.
+	 * 
+	 * @return Collection<FieldReference>
+	 */
+	public function getGroupBy() : Collection
+	{
+		return $this->groupBy;
 	}
 	
 	/**
@@ -212,6 +242,24 @@ class Query extends RestrictionGroup
 		return $this;
 	}
 	
+	/**
+	 * Adds a restriction to the current query. Restraining the data a field
+	 * in it can contain.
+	 *
+	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
+	 *
+	 * @param Closure $generator
+	 * @return RestrictionGroup
+	 */
+	public function whereExists(Closure $generator) : Query
+	{
+		$value = $generator($this);
+		assert($value instanceof Query);
+		
+		$this->restrictions->push(new Restriction(null, Restriction::EQUAL_OPERATOR, $value));
+		return $this;
+	}
+	
 	public function aggregate (Aggregate $fn) : Query
 	{
 		$this->calculated->push($fn);
@@ -232,11 +280,16 @@ class Query extends RestrictionGroup
 		});
 	}
 	
+	public function getOutputsRaw() : Collection
+	{
+		return $this->calculated;
+	}
+	
 	/**
 	 * 
-	 * @return OrderBy[]
+	 * @return Collection<OrderBy>
 	 */
-	public function getOrder() : array
+	public function getOrder() : Collection
 	{
 		return $this->order;
 	}
@@ -256,7 +309,22 @@ class Query extends RestrictionGroup
 	 * @return TableReference
 	 */
 	public function getTable() {
-		return $this->from->input();
+		return $this->from->output();
+	}
+	
+	/**
+	 * 
+	 * @param string $name
+	 * @param mixed $arguments
+	 * @return mixed
+	 */
+	public function __call($name, $arguments)
+	{
+		if (method_exists($this->restrictions, $name)) {
+			return $this->restrictions->$name(...$arguments);
+		}
+		
+		throw new BadMethodCallException(sprintf('Undefined method Query::%s', $name));
 	}
 	
 	public function __toString() {
@@ -264,7 +332,7 @@ class Query extends RestrictionGroup
 			'%s(%s) {%s}',
 			$this->from->input()->getName(),
 			$this->from->output()->getName(),
-			implode(',', $this->toArray())
+			implode(',', $this->restrictions->toArray())
 		);
 	}
 }

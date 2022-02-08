@@ -1,7 +1,7 @@
 <?php namespace tests\spitfire\storage\db;
 
 use PHPUnit\Framework\TestCase;
-use spitfire\storage\database\RestrictionGroup;
+use spitfire\storage\database\query\RestrictionGroup;
 
 class RestrictionGroupTest extends TestCase
 {

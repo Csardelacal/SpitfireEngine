@@ -1,9 +1,11 @@
-<?php namespace spitfire\storage\database;
+<?php namespace spitfire\storage\database\query;
 
+use Closure;
 use InvalidArgumentException;
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
+use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\Query;
 
 /**
  * A restriction group contains a set of restrictions (or restriction groups)

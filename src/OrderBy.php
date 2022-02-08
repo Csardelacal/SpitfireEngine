@@ -15,7 +15,7 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @var FieldReference
+	 * @var FieldReference|string
 	 */
 	private $output;
 	
@@ -27,20 +27,20 @@ class OrderBy
 	
 	/**
 	 * 
-	 * @param FieldReference $output
+	 * @param FieldReference|string $output
 	 * @param string $direction
 	 */
-	public function __construct(FieldReference $output, string $direction = OrderBy::ORDER_ASC)
-	{	
+	public function __construct($output, string $direction = OrderBy::ORDER_ASC)
+	{
 		$this->output = $output;
 		$this->direction = $direction;
 	}
 	
 	/**
 	 * 
-	 * @return FieldReference
+	 * @return FieldReference|string
 	 */
-	public function getOutput() : FieldReference
+	public function getOutput()
 	{
 		return $this->output;
 	}

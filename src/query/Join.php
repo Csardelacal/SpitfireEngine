@@ -1,7 +1,8 @@
-<?php namespace spitfire\storage\database;
+<?php namespace spitfire\storage\database\query;
 
-use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\TableReference;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -26,7 +27,7 @@ use spitfire\exceptions\ApplicationException;
  * be filtered. Allowing the application to retrieve more specific data from
  * the server without the need to perform multiple trips to the DBMS.
  */
-class Join
+abstract class Join
 {
 	
 	/**
@@ -45,19 +46,17 @@ class Join
 	
 	/**
 	 * 
-	 * @var Collection<Restriction>
+	 * @var RestrictionGroup
 	 */
 	private $on;
 	
 	/**
 	 * Instance a new join. This takes a TableReference (which may connect a physical table or a 
 	 * temorary table / query).
-	 * 
-	 * @param TableReference $table
 	 */
-	public function __construct(TableReference $table)
+	public function __construct()
 	{
-		$this->table = $table;
+		$this->on = new RestrictionGroup();
 	}
 	
 	/**
@@ -110,21 +109,10 @@ class Join
 	 * operations to be executed against a temporary table that needs disk access. So any use of these
 	 * will slow down the system in environments where many queries are executed.
 	 * 
-	 * @return Collection<Restriction>
+	 * @return RestrictionGroup
 	 */
-	public function getRestrictions() : Collection
+	public function getRestrictions() : RestrictionGroup
 	{
 		return $this->on;
-	}
-	
-	/**
-	 * The query table that is used as a source. Please note that a query table can contain a query returning
-	 * a temp table that is used to retrieve a subset of the original relation.
-	 * 
-	 * @return TableReference
-	 */
-	public function getTable() : TableReference
-	{
-		return $this->table;
 	}
 }

@@ -2,8 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\Layout;
-use spitfire\storage\database\Restriction;
-use spitfire\storage\database\QueryField;
+use spitfire\storage\database\query\Restriction;
 
 class RestrictionTest extends TestCase
 {
@@ -18,7 +17,7 @@ class RestrictionTest extends TestCase
 		
 		$table = $layout->getTableReference();
 		$field = $table->getOutput('test');
-		$restriction = new Restriction($field, 'test', Restriction::EQUAL_OPERATOR);
+		$restriction = new Restriction($field, Restriction::EQUAL_OPERATOR, 'test');
 		
 		$this->assertEquals('<>', $restriction->negate());
 		$this->assertEquals('<>', $restriction->getOperator());

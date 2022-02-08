@@ -153,25 +153,26 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * convenient for an application to use the migrations.
 	 *
 	 * @param string $name
-	 * @param TableMigrationExecutorInterface $layout
+	 * @param TableMigrationExecutorInterface $table
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function foreign(string $name, TableMigrationExecutorInterface $layout): TableMigrationExecutorInterface
+	public function foreign(string $name, TableMigrationExecutorInterface $table): TableMigrationExecutorInterface
 	{
 		/**
 		 * If the referenced layout does not have a primary key the code cannot
 		 * continue.
 		 */
-		assert($layout->layout()->getPrimaryKey() !== null);
+		$layout = $table->layout();
+		assert($layout->getPrimaryKey() !== null);
 		
 		/**
 		 * Create a field to host the data for the referenced field. Rename the field
 		 * to prefix it with the name we want to assign to this field.
 		 */
-		$reference = $layout->layout()->getPrimaryKey()->getFields()[0];
+		$reference = $layout->getPrimaryKey()->getFields()[0];
 		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), $reference->isNullable(), false);
 		
-		$index = new ForeignKey($name, $field, ($layout)->layout()->getTableReference()->getOutput($layout->getPrimaryKey()->getName()));
+		$index = new ForeignKey($name, $field, ($layout)->getTableReference()->getOutput($layout->getPrimaryKey()->getName()));
 		$this->table->putIndex($index);
 		
 		return $this;
