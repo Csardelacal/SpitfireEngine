@@ -4,10 +4,12 @@ use Closure;
 use PDO;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use spitfire\storage\database\drivers\internal\TableMigrationExecutor as GenericTableMigrationExecutor;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
 use spitfire\storage\database\Layout;
+use spitfire\storage\database\Schema;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -34,14 +36,21 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var PDO
 	 */
 	private $pdo;
 	
-	public function __construct(PDO $pdo)
+	/**
+	 *
+	 * @var Schema
+	 */
+	private $schema;
+	
+	public function __construct(PDO $pdo, Schema $schema)
 	{
 		$this->pdo = $pdo;
+		$this->schema = $schema;
 	}
 	
 	public function add(string $name, Closure $fn): SchemaMigrationExecutorInterface
@@ -49,8 +58,8 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		/**
 		 * Create a layout and a generic migration executor so we can apply the migration
 		 * to the table in a nested way before committing it to the DBMS.
-		 * 
-		 * @todo This depends on the generic migration system, since it is required to 
+		 *
+		 * @todo This depends on the generic migration system, since it is required to
 		 * perform all the table operations before the table is created. Passing a blank
 		 * table will provide a mechanism to create the table
 		 */
@@ -75,7 +84,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	/**
 	 * Renames a table within the current schema. Please note that Spitfire doesn't support moving
 	 * tables between schemas.
-	 * 
+	 *
 	 * @param string $from
 	 * @param string $to
 	 * @return SchemaMigrationExecutorInterface
@@ -91,7 +100,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	/**
 	 * Drops the table from the database. Please note that this operation is not reversible, deleting
 	 * a table will lead to all the data in it being deleted.
-	 * 
+	 *
 	 * @param string $name
 	 * @return SchemaMigrationExecutorInterface
 	 */
@@ -104,31 +113,31 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	}
 	
 	/**
-	 * This method allows the application to perform operations on a table within the schema. By 
+	 * This method allows the application to perform operations on a table within the schema. By
 	 * providing this namespaced object we reduce the complexity of the migration executors and
 	 * make the code to write table changes more readable and less verbose.
-	 * 
+	 *
 	 * @param string $name
 	 * @return TableMigrationExecutorInterface
 	 */
 	public function table(string $name): TableMigrationExecutorInterface
 	{
-		return new TableMigrationExecutor($this->pdo, $name);
+		return new TableMigrationExecutor($this->pdo, $this->schema->getLayoutByName($name));
 	}
 	
 	/**
 	 * Executes an SQL statement on the server. This allows for granular control and server specific
 	 * syntax. But it requires your application to implement the specific code for each driver like
 	 * this
-	 * 
+	 *
 	 * ```
-	 * if ($migrator instanceof \spitfire\database\drivers\mysqlpdo\SchemaMigrationExecutor) { 
-	 *   $migrator->execute($customSQL); 
+	 * if ($migrator instanceof \spitfire\database\drivers\mysqlpdo\SchemaMigrationExecutor) {
+	 *   $migrator->execute($customSQL);
 	 * }
 	 * ```
-	 * 
+	 *
 	 * This method should be avoided whenever possible.
-	 * 
+	 *
 	 * @param string $sql
 	 * @return SchemaMigrationExecutorInterface
 	 */

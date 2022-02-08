@@ -4,6 +4,7 @@ use Closure;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\Layout;
+use spitfire\storage\database\LayoutInterface;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -58,7 +59,7 @@ interface TableMigrationExecutorInterface
 	 */
 	function index(string $name, array $fields) : TableMigrationExecutorInterface;
 	
-	function foreign(string $name, Layout $layout) : TableMigrationExecutorInterface;
+	function foreign(string $name, TableMigrationExecutorInterface $layout) : TableMigrationExecutorInterface;
 	
 	/**
 	 * Adds a unique index to the fields.
@@ -80,4 +81,11 @@ interface TableMigrationExecutorInterface
 	function drop(string $name) : TableMigrationExecutorInterface;
 	
 	function dropIndex(string $name) : TableMigrationExecutorInterface;
+	
+	/**
+	 * Returns the underlying layout. This contains the current state of the schema.
+	 * 
+	 * @return LayoutInterface
+	 */
+	function layout() : LayoutInterface;
 }

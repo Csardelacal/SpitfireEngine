@@ -218,16 +218,16 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * The referenced layout must have a primary key for the method to work.
 	 *
 	 * @param string $name
-	 * @param Layout $layout
+	 * @param TableMigrationExecutorInterface $layout
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function foreign(string $name, Layout $layout): TableMigrationExecutorInterface
+	public function foreign(string $name, TableMigrationExecutorInterface $layout): TableMigrationExecutorInterface
 	{
 		/**
 		 * If the referenced layout does not have a primary key the code cannot
 		 * continue.
 		 */
-		assert($layout->getPrimaryKey() !== null);
+		assert($layout->layout()->getPrimaryKey() !== null);
 		
 		$grammar = new MySQLTableGrammar();
 		
@@ -235,10 +235,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * Create a field to host the data for the referenced field. Rename the field
 		 * to prefix it with the name we want to assign to this field.
 		 */
-		$field = clone $layout->getPrimaryKey()->getFields()[0];
-		$field->setName($name . $field->getName());
+		$reference = $layout->layout()->getPrimaryKey()->getFields()[0];
+		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), $reference->isNullable(), false);
 		
-		$index = new ForeignKey($name, $field, ($layout)->getTableReference()->getOutput($layout->getPrimaryKey()->getName()));
+		$index = new ForeignKey($name, $field, ($layout)->layout()->getTableReference()->getOutput($layout->layout()->getPrimaryKey()->getName()));
 		
 		$this->pdo->exec($grammar->alterTable(
 			$this->table->getTableName(),
@@ -393,7 +393,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 */
 		$index = $this->table->getIndexes()->filter(function (IndexInterface $index) use ($name) {
 			return $index->getName() === $name;
-		})->rewind();
+		})->first();
 		
 		assert($index !== null);
 		
@@ -403,5 +403,15 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		));
 		
 		return $this;
+	}
+	
+	/**
+	 * Get the layout the driver is working with.
+	 *
+	 * @return LayoutInterface
+	 */
+	public function layout(): LayoutInterface
+	{
+		return $this->table;
 	}
 }

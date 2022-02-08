@@ -21,7 +21,7 @@ class MySQLSchemaGrammarTest extends TestCase
 		
 		$layout->addFields(new Collection(['testfield' => $field, 'testfiel2' => $field2]));
 		$layout->primary($field);
-		$layout->index($field2);
+		$layout->index('testidx', $field2);
 		
 		$grammar = new MySQLSchemaGrammar();
 		$sql = $grammar->createTable($layout);

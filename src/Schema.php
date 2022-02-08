@@ -88,6 +88,17 @@ class Schema
 	}
 	
 	/**
+	 * Checks whether the schema contains a layout with a certain name. This is generally used for testing
+	 * 
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasLayoutByName(string $name) : bool
+	{
+		return $this->layouts->has($name);
+	}
+	
+	/**
 	 * Returns the list of layouts.
 	 * 
 	 * @return Collection<Layout>
@@ -119,6 +130,18 @@ class Schema
 	public function putLayout(Layout $layout) : Schema
 	{
 		$this->layouts[$layout->getTableName()] = $layout;
+		return $this;
+	}
+	
+	/**
+	 * Removes a Layout from the Schema.
+	 * 
+	 * @param Layout $layout
+	 * @return Schema
+	 */
+	public function removeLayout(Layout $layout) : Schema
+	{
+		unset($this->layouts[$layout->getTableName()]);
 		return $this;
 	}
 	

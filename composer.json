@@ -23,14 +23,17 @@
 			"./vendor/bin/phpunit tests"
 		],
 		"sniff":
-			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')"
+			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')",
+		"style":
+			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')"
 	},
 	"require": {
 		"spitfire/caching": "^0.1.0",
 		"spitfire/collection": "^0.1.1",
 		"spitfire/exception": "^0.1.1",
 		"magic3w/url-reflection": "^0.1.3",
-		"psr/log": "^1.1"
+		"psr/log": "^1.1",
+		"spitfire/event": "^0.1.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.5",
