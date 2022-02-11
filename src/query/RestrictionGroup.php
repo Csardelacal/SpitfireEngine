@@ -14,8 +14,10 @@ use spitfire\storage\database\Query;
  * This groups can be different of two different types, they can be 'OR' or 'AND',
  * changing the behavior of the group by making it more or less restrictive. This
  * OR and AND types are known from most DBMS.
+ * 
+ * @extends Collection<RestrictionInterface>
  */
-class RestrictionGroup extends Collection
+class RestrictionGroup extends Collection implements RestrictionInterface
 {
 	const TYPE_OR  = 'OR';
 	const TYPE_AND = 'AND';

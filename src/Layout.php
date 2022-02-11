@@ -169,7 +169,7 @@ class Layout implements LayoutInterface
 	 * Adds the fields we received from a collection, this is specially useful since
 	 * logical fields will return collections when generating physical fields.
 	 *
-	 * @param Collection $fields
+	 * @param Collection<Field> $fields
 	 * @return Layout
 	 */
 	public function addFields(Collection $fields) : Layout

@@ -12,8 +12,9 @@ use spitfire\storage\database\query\JoinTable;
 use spitfire\storage\database\QuoterInterface;
 use spitfire\storage\database\query\Restriction;
 use spitfire\storage\database\query\RestrictionGroup;
+use spitfire\storage\database\query\SelectExpression;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -40,13 +41,13 @@ class MySQLQueryGrammar
 {
 	
 	/**
-	 * 
+	 *
 	 * @var QuoterInterface
 	 */
 	private $quoter;
 	
 	/**
-	 * 
+	 *
 	 * @var MySQLObjectGrammar
 	 */
 	private $object;
@@ -59,7 +60,7 @@ class MySQLQueryGrammar
 	
 	/**
 	 * Stringify a SQL query for MySQL.
-	 * 
+	 *
 	 * @param Query $query
 	 * @return string
 	 */
@@ -83,21 +84,19 @@ class MySQLQueryGrammar
 	
 	/**
 	 * Generate the select expression for the query.
-	 * 
+	 *
 	 * @param Query $query
 	 * @return string
 	 */
 	public function selectExpression(Query $query) : string
 	{
-		$select = $query->getOutputsRaw();
+		$select = $query->getOutputs();
 		$_return = [];
 		
+		assert($select->containsOnly(SelectExpression::class));
+		
 		foreach ($select as $output) {
-			
-			assert($output instanceof Aggregate || $output instanceof FieldReference);
-			
-			if ($output instanceof FieldReference) { $_return[] = $this->object->fieldReference($output); }
-			if ($output instanceof Aggregate) { $_return[] = $this->object->aggregate($output); }
+			$_return[] = $this->object->selectExpression($output);
 		}
 		
 		return implode(', ', $_return);
@@ -117,8 +116,12 @@ class MySQLQueryGrammar
 	
 	public function joined(Join $join) : string
 	{
-		if ($join instanceof JoinTable) { return $this->joinedTable($join); }
-		if ($join instanceof JoinQuery) { return $this->joinedQuery($join); }
+		if ($join instanceof JoinTable) {
+			return $this->joinedTable($join);
+		}
+		if ($join instanceof JoinQuery) {
+			return $this->joinedQuery($join);
+		}
 		throw new ApplicationException('Impossible condition ' . get_class($join));
 	}
 	
@@ -147,10 +150,14 @@ class MySQLQueryGrammar
 		}
 		
 		return $restrictions->each(function ($r) {
-				if ($r instanceof RestrictionGroup) { return $this->whereConditions($r); }
-				if ($r instanceof Restriction) { return $this->restriction($r); }
+			if ($r instanceof RestrictionGroup) {
+				return $this->whereConditions($r);
+			}
+			if ($r instanceof Restriction) {
+				return $this->restriction($r);
+			}
 				throw new ApplicationException('Impossible condition');
-			})
+		})
 			->join($restrictions->getType() === RestrictionGroup::TYPE_AND? ' AND ' : ' OR ');
 		;
 	}
@@ -173,7 +180,8 @@ class MySQLQueryGrammar
 		
 		if ($value === null) {
 			return $this->object->fieldReference(
-				$restriction->getField()) . ($operator === '='? ' IS NULL' : ' IS NOT NULL'
+				$restriction->getField()
+			) . ($operator === '='? ' IS NULL' : ' IS NOT NULL'
 			);
 		}
 		
@@ -207,7 +215,7 @@ class MySQLQueryGrammar
 	
 	/**
 	 * The gr
-	 * 
+	 *
 	 * @param Query $query
 	 * @return string
 	 */
@@ -223,7 +231,7 @@ class MySQLQueryGrammar
 	
 	/**
 	 * Generates an order statement for your query.
-	 * 
+	 *
 	 * @param Query $query
 	 * @return string
 	 */
@@ -237,7 +245,7 @@ class MySQLQueryGrammar
 			}
 			
 			/**
-			 * If the output is the result of an anonymous aggregation, we need to treat it 
+			 * If the output is the result of an anonymous aggregation, we need to treat it
 			 * with special care.
 			 */
 			return sprintf('`%s`', $output);
@@ -249,10 +257,10 @@ class MySQLQueryGrammar
 	/**
 	 * Returns the limit expression for the query so the data complies with the
 	 * restrictions the application needs.
-	 * 
-	 * Limiting the resultset is commonly used for pagination, although, for 
+	 *
+	 * Limiting the resultset is commonly used for pagination, although, for
 	 * performance it is recommended to avoid the offset.
-	 * 
+	 *
 	 * @param Query $query
 	 * @return string
 	 */

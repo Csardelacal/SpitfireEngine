@@ -3,7 +3,7 @@
 use spitfire\collection\Collection;
 use spitfire\collection\OutOfBoundsException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -26,10 +26,10 @@ use spitfire\collection\OutOfBoundsException;
  * The Schema class allows a database driver to maintain a list of layouts
  * mapped together under a single "umbrella" that the system can use to refer
  * to the schema.
- * 
+ *
  * This also allows the drivers to suggest migrations using a diff method in
  * future versions of the application.
- * 
+ *
  * @todo Add a diff version to the driver so two schemas can be tested as different
  * @todo Add a migrations method to the schema itself that returns a bunch of migrations
  */
@@ -39,21 +39,21 @@ class Schema
 	/**
 	 * The name of the schema. Most DBMS allow having multiple schemas in a single server
 	 * or have a filename to identify the schema.
-	 * 
+	 *
 	 * @var string|null
 	 */
 	private $name;
 	
 	/**
 	 * The layouts / Tables that the schema is holding for the server.
-	 * 
+	 *
 	 * @var Collection<Layout>
 	 */
 	private $layouts;
 	
 	/**
 	 * Instance a new schema.
-	 * 
+	 *
 	 * @param string $name
 	 */
 	public function __construct(string $name)
@@ -65,7 +65,7 @@ class Schema
 	/**
 	 * Returns the name of the schema. Some DBMS do not support multiple schemas on a single
 	 * database server / file. These may return null.
-	 * 
+	 *
 	 * @return string|null
 	 */
 	public function getName() :? string
@@ -76,7 +76,7 @@ class Schema
 	/**
 	 * Gets a layout by it's name. Please note that when disabling assertions this code will no
 	 * longer check whether the layout actually exists and may throw errors.
-	 * 
+	 *
 	 * @param string $name
 	 * @throws OutOfBoundsException
 	 * @return Layout
@@ -100,7 +100,7 @@ class Schema
 	
 	/**
 	 * Returns the list of layouts.
-	 * 
+	 *
 	 * @return Collection<Layout>
 	 */
 	public function getLayouts() : Collection
@@ -110,7 +110,7 @@ class Schema
 	
 	/**
 	 * Adds a new layout with the name you provided.
-	 * 
+	 *
 	 * @param string $name
 	 * @return Layout
 	 */
@@ -123,7 +123,7 @@ class Schema
 	
 	/**
 	 * Adds a Layout to the Schema.
-	 * 
+	 *
 	 * @param Layout $layout
 	 * @return Schema
 	 */
@@ -145,4 +145,11 @@ class Schema
 		return $this;
 	}
 	
+	public function apply(MigrationOperationInterface $migration) : void
+	{
+	}
+	
+	public function rollback(MigrationOperationInterface $migration) : void
+	{
+	}
 }

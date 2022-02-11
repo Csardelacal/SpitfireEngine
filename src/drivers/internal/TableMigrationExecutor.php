@@ -135,7 +135,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * Adds an index to the table.
 	 *
 	 * @param string $name
-	 * @param Field[] $fields
+	 * @param string[] $fields
 	 * @return TableMigrationExecutorInterface
 	 */
 	public function index(string $name, array $fields): TableMigrationExecutorInterface

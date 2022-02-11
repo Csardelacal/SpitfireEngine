@@ -3,7 +3,7 @@
 use Closure;
 use spitfire\exceptions\ApplicationException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ use spitfire\exceptions\ApplicationException;
 /**
  * This class is intended to create an interface for common migration operations
  * to be performed on schemas.
- * 
+ *
  * @todo Add  an import method that migrates a schema onto an empty one
  * @todo Add empty/reset method that removes all tables from the schema
  */
@@ -34,9 +34,9 @@ interface SchemaMigrationExecutorInterface
 	
 	/**
 	 * Creates a table according to the specification of the closure. The system must
-	 * invoke the closure and pass a TableMigrationExecutorInterface to it so it can 
+	 * invoke the closure and pass a TableMigrationExecutorInterface to it so it can
 	 * assemble a proper table that can then be applied to the DBMS
-	 * 
+	 *
 	 * @param string $name
 	 * @param Closure $fn
 	 * @return SchemaMigrationExecutorInterface
@@ -45,7 +45,7 @@ interface SchemaMigrationExecutorInterface
 	
 	/**
 	 * Renames the table from one name to another.
-	 * 
+	 *
 	 * @param string $from
 	 * @param string $to
 	 * @return SchemaMigrationExecutorInterface
@@ -54,7 +54,7 @@ interface SchemaMigrationExecutorInterface
 	
 	/**
 	 * Removes the table from the underlying driver.
-	 * 
+	 *
 	 * @throws ApplicationException
 	 * @param string $name
 	 * @return SchemaMigrationExecutorInterface
@@ -62,9 +62,17 @@ interface SchemaMigrationExecutorInterface
 	public function drop(string $name) : SchemaMigrationExecutorInterface;
 	
 	/**
+	 * Returns true if the schema has a table with the provided name.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function has(string $name) : bool;
+	
+	/**
 	 * Access the table migration executor for the current database, this allows the application
 	 * to perform changes to the tables themselves.
-	 * 
+	 *
 	 * @throws ApplicationException
 	 * @param string $name
 	 * @return TableMigrationExecutorInterface
@@ -74,7 +82,7 @@ interface SchemaMigrationExecutorInterface
 	/**
 	 * Performs raw SQL on the database. Please note that this may cause inconsistent behavior
 	 * between schemas and the DBMS, use with caution.
-	 * 
+	 *
 	 * @throws ApplicationException
 	 * @param string $sql
 	 * @return SchemaMigrationExecutorInterface

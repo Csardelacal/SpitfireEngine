@@ -102,6 +102,11 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		return new TableMigrationExecutor($this->schema->getLayoutByName($name));
 	}
 	
+	public function has(string $name): bool
+	{
+		return $this->schema->hasLayoutByName($name);
+	}
+	
 	/**
 	 * The internal schema migrator cannot execute any SQL code. Invoking this method
 	 * will lead to nothing happening.

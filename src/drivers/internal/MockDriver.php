@@ -63,6 +63,11 @@ class MockDriver implements DriverInterface
 		return true;
 	}
 	
+	public function has(string $name): bool
+	{
+		return false;
+	}
+	
 	/**
 	 *
 	 * @return array<int,array<int|string,mixed>>

@@ -6,6 +6,10 @@ use spitfire\storage\database\ResultSetInterface;
 class MockResultSet implements ResultSetInterface
 {
 	
+	/**
+	 * 
+	 * @return void[]
+	 */
 	public function fetch() : array
 	{
 		return [];

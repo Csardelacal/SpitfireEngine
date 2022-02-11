@@ -59,7 +59,7 @@ class Index implements IndexInterface
 	 * application.
 	 * 
 	 * @param string $name
-	 * @param Collection $fields
+	 * @param Collection<Field> $fields
 	 * @param bool $unique
 	 * @param bool $primary
 	 */
@@ -86,7 +86,7 @@ class Index implements IndexInterface
 	 * Returns the fields affected by this index. These should be fields that are used
 	 * together when searching.
 	 * 
-	 * @return Collection
+	 * @return Collection<Field>
 	 */
 	public function getFields() : Collection
 	{

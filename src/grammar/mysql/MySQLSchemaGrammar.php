@@ -1,11 +1,5 @@
 <?php namespace spitfire\storage\database\grammar\mysql;
 
-use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\Field;
-use spitfire\storage\database\FieldReference;
-use spitfire\storage\database\ForeignKey;
-use spitfire\storage\database\Index;
-use spitfire\storage\database\IndexInterface;
 use spitfire\storage\database\LayoutInterface;
 
 /*
@@ -40,19 +34,12 @@ class MySQLSchemaGrammar
 	
 	/**
 	 *
-	 * @var MySQLObjectGrammar
-	 */
-	private $object;
-	
-	/**
-	 *
 	 * @var MySQLColumnGrammar
 	 */
 	private $column;
 	
 	public function __construct()
 	{
-		$this->object = new MySQLObjectGrammar();
 		$this->column = new MySQLColumnGrammar();
 	}
 	
@@ -119,5 +106,15 @@ class MySQLSchemaGrammar
 	public function dropTable(string $tablename)
 	{
 		return sprintf('DROP TABLE `%s`', $tablename);
+	}
+	
+	public function hasTable(string $schemaName, string $tableName) : string
+	{
+		return sprintf(
+			"SELECT COUNT(*) AS `exists` FROM information_schema.TABLES 
+			WHERE TABLE_SCHEMA LIKE %s AND TABLE_TYPE LIKE 'BASE TABLE' AND TABLE_NAME = %s",
+			$schemaName,
+			$tableName
+		);
 	}
 }

@@ -3,9 +3,10 @@
 use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\FieldReference;
 use spitfire\storage\database\query\Alias;
+use spitfire\storage\database\query\SelectExpression;
 use spitfire\storage\database\TableReference;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -28,7 +29,7 @@ use spitfire\storage\database\TableReference;
  * A grammar class allows Spitfire to generate the SQL without executing it. This makes
  * it really simple to prepare scripts to be run in batch, outsourced to another app and
  * for unit testing.
- * 
+ *
  * This grammar allows Spitfire to stringify objects, which is often required in the
  * context of queries.
  */
@@ -46,19 +47,26 @@ class MySQLObjectGrammar
 		return sprintf('%s.`%s`', $this->tableReference($field->getTable()), $field->getName());
 	}
 	
-	public function aggregate(Aggregate $aggregate) : string
+	public function selectExpression(SelectExpression $s): string
 	{
-		return sprintf(
-			'%s(%s) AS `%s`', 
-			$aggregate->getOperation(), 
-			$this->fieldReference($aggregate->getInput()),
-			$aggregate->getOutput()
-		);
+		if ($s->getAggregate()) {
+			return sprintf(
+				'%s(%s) AS `%s`',
+				$s->getAggregate()->getOperation(),
+				$this->fieldReference($s->getInput()),
+				$s->getAlias()
+			);
+		}
+		elseif ($s->hasAlias()) {
+			return sprintf('%s.`%s` AS `%s`', $this->tableReference($s->getInput()->getTable()), $s->getInput()->getName(), $s->getAlias());
+		}
+		else {
+			return sprintf('%s.`%s`', $this->tableReference($s->getInput()->getTable()), $s->getInput()->getName());
+		}
 	}
 	
 	public function alias(Alias $alias) : string
 	{
 		return sprintf('%s AS %s', $this->tableReference($alias->input()), $this->tableReference($alias->output()));
 	}
-	
 }

@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\query\SelectExpression;
 
 /**
  * A subquery allows the application to wrap a query, allowing a join to
@@ -14,7 +15,7 @@ class Subquery
 	/**
 	 * In order to prevent queries from clashing with each other, we use a counter
 	 * to give each subquery a unique number.
-	 * 
+	 *
 	 * @var int
 	 */
 	private static $counter = 1;
@@ -22,7 +23,7 @@ class Subquery
 	/**
 	 * The query providing data. This is used to extract the outputs and will be stringified
 	 * into the SQL.
-	 * 
+	 *
 	 * @var Query
 	 */
 	private $query;
@@ -30,25 +31,29 @@ class Subquery
 	/**
 	 * The table we extracted from the query. Please note that this is created in the constructor,
 	 * which means that changes to the query won't be reflected.
-	 * 
+	 *
 	 * @var TableReference
 	 */
 	private $table;
 	
 	/**
 	 * Instances a new subquery.
-	 * 
+	 *
 	 * @param Query $query
 	 */
 	public function __construct(Query $query)
 	{
+		$outputs = $query->getOutputs()->each(function (SelectExpression $e) : string {
+			return $e->getAlias();
+		});
+		
 		$this->query = $query;
-		$this->table = new TableReference('sq_' . $query->getTable()->getName() . self::$counter++, $query->getOutputs());
+		$this->table = new TableReference('sq_' . $query->getTable()->getName() . self::$counter++, $outputs);
 	}
 	
 	/**
 	 * Returns the table that represents the output of the subquery.
-	 * 
+	 *
 	 * @return TableReference
 	 */
 	public function getTable() : TableReference
@@ -58,7 +63,7 @@ class Subquery
 	
 	/**
 	 * Returns the query where the data for the subquery is coming from.
-	 * 
+	 *
 	 * @return Query
 	 */
 	public function getQuery() : Query

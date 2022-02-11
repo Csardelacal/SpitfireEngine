@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d02c17bb1c5222ef4b9d4e68c7b437c2",
+    "content-hash": "4eaa627f3a2341e60a4328894ec27cf7",
     "packages": [
         {
             "name": "magic3w/url-reflection",
@@ -152,36 +152,6 @@
                 "source": "https://github.com/php-fig/log/tree/1.1.4"
             },
             "time": "2021-05-03T11:20:27+00:00"
-        },
-        {
-            "name": "spitfire/caching",
-            "version": "0.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitfire-caching.git",
-                "reference": "4c122e9fdd79979143cde9b6dd1c561a9866062f"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "spitfire\\cache\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "César de la Cal Bretschneider",
-                    "email": "cesar@magic3w.com"
-                }
-            ],
-            "description": "Caching component for spitfire",
-            "time": "2020-10-28T14:49:56+00:00"
         },
         {
             "name": "spitfire/collection",

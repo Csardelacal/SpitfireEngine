@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
  * The output class allows the application to define a series of return
  * outputs for the query. Most DBMS allow to write a variation of this
  * statement:
- * 
+ *
  * SELECT SUM(field) as a, field2 as b FROM ...
  */
 class Aggregate
@@ -35,55 +35,25 @@ class Aggregate
 	const AGGREGATE_COUNT = 'count';
 	
 	/**
-	 * The alias to be providing when the application is generating a SQL string.
-	 * This is also the name by which the components depending on the return must
-	 * address this field.
-	 * 
-	 * @var string
-	 */
-	private $output;
-	
-	/**
-	 * The field underlying to the output.
-	 * 
-	 * @todo Replace with the underlying class
-	 * @var FieldReference
-	 */
-	private $field;
-	
-	/**
 	 * The operation (if any) to be performed on the resultset before returning it.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $operation;
 	
 	/**
-	 * 
-	 * @param FieldReference $input
+	 *
 	 * @param string $operation
-	 * @todo Replace with the underlying class
 	 */
-	public function __construct(FieldReference $input, string $operation, string $output)
+	public function __construct(string $operation)
 	{
-		$this->output = $output;
-		$this->field = $input;
 		$this->operation = $operation;
-	}
-	
-	/**
-	 * 
-	 * @return FieldReference
-	 */
-	public function getInput(): FieldReference 
-	{
-		return $this->field;
 	}
 	
 	/**
 	 * The operation to be performing on the field before returning it to the
 	 * output.
-	 * 
+	 *
 	 * @see Aggregate::AGGREGATE_*
 	 * @return string
 	 */
@@ -93,31 +63,9 @@ class Aggregate
 	}
 	
 	/**
-	 * The alias to be addressing this output as.
-	 * 
-	 * @return string
-	 */
-	public function getOutput() : string 
-	{
-		return $this->output;
-	}
-	
-	/**
-	 * Sets the field to retrieve data from to be serving it to the output.
-	 * 
-	 * @param FieldReference $field
-	 * @todo Replace with the underlying class
-	 */
-	public function setField(FieldReference $field) : Aggregate
-	{
-		$this->field = $field;
-		return $this;
-	}
-	
-	/**
 	 * The operation to be performing on the field before returning it to the
 	 * output.
-	 * 
+	 *
 	 * @see Aggregate::AGGREGATE_*
 	 * @param string $operation
 	 */
@@ -126,16 +74,4 @@ class Aggregate
 		$this->operation = $operation;
 		return $this;
 	}
-	
-	/**
-	 * The alias to be addressing this output as.
-	 * 
-	 * @param string $alias
-	 */
-	public function setOutput(string $alias) : Aggregate
-	{
-		$this->output = $alias;
-		return $this;
-	}
-	
 }

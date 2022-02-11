@@ -41,11 +41,11 @@ class MySQLQueryGrammarTest extends TestCase
 		$table = $layout->getTableReference();
 		
 		$query = new Query($table);
-		$query->aggregate(new Aggregate(
-			$query->getFrom()->output()->getOutput('testfield'), 
-			Aggregate::AGGREGATE_COUNT, 
+		$query->aggregate(
+			$query->getFrom()->output()->getOutput('testfield'),
+			new Aggregate(Aggregate::AGGREGATE_COUNT),
 			'_META_COUNT_'
-		));
+		);
 		
 		$result = $grammar->selectExpression($query);
 		$this->assertStringContainsString($query->getFrom()->output()->getName(), $result);
@@ -141,14 +141,13 @@ class MySQLQueryGrammarTest extends TestCase
 		$query = new Query($table);
 		$query->selectAll();
 		
-		$aggregate = new Aggregate(
-			$query->getFrom()->output()->getOutput('testfield'), 
-			Aggregate::AGGREGATE_COUNT, 
+		$query->aggregate(
+			$query->getFrom()->output()->getOutput('testfield'),
+			new Aggregate(Aggregate::AGGREGATE_COUNT),
 			'_META_COUNT_'
 		);
 		
-		$query->aggregate($aggregate);
-		$query->putOrder(new OrderBy($aggregate->getOutput()));
+		$query->putOrder(new OrderBy($query->getOutput('_META_COUNT_')->getAlias()));
 		
 		$result = $grammar->query($query);
 		$this->assertStringContainsString($query->getFrom()->output()->getName(), $result);

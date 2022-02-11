@@ -2,6 +2,7 @@
 
 use Closure;
 use PDO;
+use PDOStatement;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 use spitfire\storage\database\drivers\internal\TableMigrationExecutor as GenericTableMigrationExecutor;
@@ -145,5 +146,14 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	{
 		$this->pdo->exec($sql);
 		return $this;
+	}
+	
+	public function has(string $name): bool
+	{
+		$grammar = new MySQLSchemaGrammar();
+		$stmt = $this->pdo->query($grammar->hasTable($this->schema->getName(), $name));
+		
+		assert($stmt instanceof PDOStatement);
+		return ($stmt->fetch()[0]) > 0;
 	}
 }
