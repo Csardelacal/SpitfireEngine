@@ -34,7 +34,7 @@ use spitfire\validation\ValidationRule;
  * This is a quick hand method to use Spitfire's main App class as a singleton.
  * It allows you to quickly access many of the components the framework provides
  * to make it easier to read and maintain the code being created.
- * 
+ *
  * @staticvar type $sf
  * @return \spitfire\SpitFire
  */
@@ -42,8 +42,8 @@ function spitfire()
 {
 	static $sf = null;
 	
-	if ($sf !== null) { 
-		return $sf; 
+	if ($sf !== null) {
+		return $sf;
 	} else {
 		$sf = new SpitFire();
 		return $sf;
@@ -51,14 +51,14 @@ function spitfire()
 }
 
 /**
- * 
+ *
  * Registers a new Application in Spitfire, allowing it to handle requests directed
  * to it.
- * 
+ *
  * @param string $name The name of the Application
- * @param string $namespace The namespace in which the requests will be sent to 
+ * @param string $namespace The namespace in which the requests will be sent to
  *             the application.
- * @return App The App created by the system, use this to pass parameters and 
+ * @return App The App created by the system, use this to pass parameters and
  *             configuration to the application.
  */
 function app($name, $namespace)
@@ -73,7 +73,7 @@ function app($name, $namespace)
  * A very basic function to dispatch a response to the server environment. This sets the
  * status code for the response, dispatches the headers that the application set, and finally
  * emits the body.
- * 
+ *
  * @param ResponseInterface $message
  * @return void
  */
@@ -93,7 +93,7 @@ function emit(ResponseInterface $message) : void
 /**
  * Ths function will boot a kernel, instancing it and executing the necessary scripts to
  * initialize it.
- * 
+ *
  * @param class-string<KernelInterface> $kernel The name of the kernel to boot
  * @return KernelInterface
  * @throws ApplicationException
@@ -110,9 +110,9 @@ function boot(string $kernel) : KernelInterface
 	
 	/**
 	 * Instance the new kernel. Kernels must be able to be instanced with minimum
-	 * available configuration and set up. At this point no service providers or 
+	 * available configuration and set up. At this point no service providers or
 	 * similar are running.
-	 * 
+	 *
 	 * We use the service provider for this, allowing the developer to potentially
 	 * override the kernel with custom logic.
 	 */
@@ -139,23 +139,23 @@ function boot(string $kernel) : KernelInterface
 
 /**
  * Raises an exception whenever the application runs into an scenario that was not
- * expected. This function functions in a very similar manner to an assertion (with 
+ * expected. This function functions in a very similar manner to an assertion (with
  * the exception of this being executed in production).
- * 
+ *
  * The second parameter contains the name of the exception to be raised on failure,
  * an exception instance or a closure to be executed, which should then either end
  * execution or throw an exception itself.
- * 
+ *
  * This is intended to reduce the boilerplate on code that looks like this:
  * if (!$condition) { throw new Exception(); }
- * 
+ *
  * The code becomes a bit more readable and drops the negation, making it look like this:
  * assume($condition, Exception::class);
- * 
- * Overall reducing the strain of visually analyzing the code. 
- * 
+ *
+ * Overall reducing the strain of visually analyzing the code.
+ *
  * @param bool $condition If the condition is true, the code will continue being executed
- * @param string|Closure|Exception $failure 
+ * @param string|Closure|Exception $failure
  * @return void
  */
 function assume(bool $condition, $failure) : void
@@ -165,15 +165,15 @@ function assume(bool $condition, $failure) : void
 	 * the application to continue.
 	 */
 	if ($condition) {
-		return; 
+		return;
 	}
 	
 	/**
 	 * Otherwise, we need to stop the execution. This should be done in the closure, but if the
 	 * user does not raise any exception in the closure, our code will do.
 	 */
-	if ($failure instanceof Closure) { 
-		$failure(); 
+	if ($failure instanceof Closure) {
+		$failure();
 		throw new Exception('Failed to meet assumption');
 	}
 	
@@ -181,7 +181,7 @@ function assume(bool $condition, $failure) : void
 	 * If the user provided an exception instance, we throw the provided exception.
 	 */
 	if ($failure instanceof Exception) {
-		throw $failure; 
+		throw $failure;
 	}
 	
 	/**
@@ -196,12 +196,12 @@ function assume(bool $condition, $failure) : void
  * This function allows the developer to stop the execution of the application.
  * It raises a failure exception that will prevent the code from continuing and
  * display a message to the end user that explains the situation.
- * 
+ *
  * Whenever your application runs into a more specific issue, you should avoid
  * using this and instead raise a custom exception that offers the user support
  * to resolve the issue or additional information.
- * 
- * 
+ *
+ *
  * @param int $status
  * @param string $message
  * @return void
@@ -218,13 +218,13 @@ function fail(int $status, string $message = '') : void
  *
  * @return \spitfire\storage\database\DB
  */
-function db() 
+function db()
 {
 	static $db = null;
 	
 	#If we're requesting the standard driver and have it cached, we use this
 	if ($db !== null) {
-		return $db; 
+		return $db;
 	}
 	
 	#If no options were passed, we try to fetch them from the configuration
@@ -240,16 +240,16 @@ function db()
 }
 
 /**
- * Creates a view. This function will automatically locate the appropriate file 
- * containing the template for the view, generate a template and render it to 
+ * Creates a view. This function will automatically locate the appropriate file
+ * containing the template for the view, generate a template and render it to
  * generate a response.
- * 
+ *
  * Right now it does a very simplistic job, intializing a pug engine that will allow
  * us to generate an output.
- * 
+ *
  * @todo Future iterations should accept a templating engine other than pug
  * @todo Future revisions should return the template so changes can be made
- * 
+ *
  * @param string|null $identifier
  * @param array $data
  * @return StreamInterface
@@ -270,17 +270,17 @@ function view(?string $identifier, array $data) : StreamInterface
  * This function provides a shorthand way of creating a response to a request, this
  * is very useful in combination with the view() function, allowing you to respond
  * from a controller with something like this:
- * 
+ *
  * `return response(view('home'));`
- * 
+ *
  * Or something along the lines of:
- * 
+ *
  * `return response(view('notfound'), 404);
- * 
+ *
  * @param StreamInterface $stream
  * @param int $code
  * @param string[][] $headers
- * 
+ *
  * @return Response
  */
 function response(StreamInterface $stream, int $code = 200, array $headers = []) : Response
@@ -292,16 +292,16 @@ function response(StreamInterface $stream, int $code = 200, array $headers = [])
  * The redirect function is a helper to quickly issue a response that causes a redirection,
  * this avoids having to create an explicit redirection response whenever the application
  * needs to redirect the user.
- * 
- * Redirections are a clearly distinct type of response, and naming them in the code makes 
- * our code more readable and scannable, since the person reading or refactoring the code 
- * will immediately be familiar with the behavior of the application without the need to 
- * read into the parameters of the function to understand it's behavior (like they would have 
+ *
+ * Redirections are a clearly distinct type of response, and naming them in the code makes
+ * our code more readable and scannable, since the person reading or refactoring the code
+ * will immediately be familiar with the behavior of the application without the need to
+ * read into the parameters of the function to understand it's behavior (like they would have
  * to with the response function).
- * 
+ *
  * Note: This function does not perform validation of the URL the user is sent to. Please make
  * sure to not make the location parameter user controllable.
- * 
+ *
  * @param string $location
  * @param int $code
  * @return Response
@@ -311,12 +311,12 @@ function redirect(string $location, int $code = 302) : Response
 	/**
 	 * The redirection cannot be performed unless the status code is a valid
 	 * redirection code.
-	 * 
+	 *
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages
-	 * 
+	 *
 	 * While 300 is technically a redirection, it's a redirection that requires
 	 * a body to work properly. This is not something this method supports.
-	 * 
+	 *
 	 * Please note the assertion. In a production environment this test is not
 	 * performed. The status code should not be user controllable.
 	 */
@@ -346,9 +346,9 @@ function console()
 }
 
 /**
- * Retrieves the current path from the request. This will retrieve the path 
+ * Retrieves the current path from the request. This will retrieve the path
  * without query string or document root.
- * 
+ *
  * @see http://www.spitfirephp.com/wiki/index.php/NgiNX_Configuration For NGiNX setup
  * @return string
  */
@@ -358,10 +358,10 @@ function getPathInfo()
 	list($path) = explode('?', substr($_SERVER['REQUEST_URI'], strlen($base_url)));
 	
 	if (strlen($path) !== 0) {
-		return $path; 
+		return $path;
 	}
 	else {
-		return  '/';  
+		return  '/';
 	}
 }
 
@@ -374,7 +374,7 @@ function _def(&$a, $b)
  * This function is a shorthand for "new Collection" which also allows fluent
  * usage of the collection in certain environments where the PHP version still
  * limits that behavior.
- * 
+ *
  * @param mixed $elements
  * @return Collection
  */
@@ -387,7 +387,7 @@ function collect($elements = [])
 /**
  * Returns the URLBuilder that helps you accessing all the functions that you need
  * to manipulate and generate URLs in Spitfire.
- * 
+ *
  * @return URLBuilder
  */
 function url()
@@ -399,14 +399,14 @@ function url()
  * The clamp function is a math function that receives three arguments, a minimum,
  * a bias and a maximum. Clamp will either return the bias or the closest value
  * whenever the bias is outside the range of maximum and minimum.
- * 
- * The first and the last parameter delimit the range. The second parameter is 
+ *
+ * The first and the last parameter delimit the range. The second parameter is
  * the bias being tested.
- * 
+ *
  * <code>within(1,  50, 100); //Outputs:  50</code>
  * <code>within(1, 500, 100); //Outputs: 100</code>
  * <code>within(1, -50, 100); //Outputs:   1</code>
- * 
+ *
  * @param number $min
  * @param number $bias
  * @param number $max
@@ -419,7 +419,7 @@ function clamp($min, $bias, $max)
 
 /**
  * This is the deprecated naming for the clamp function.
- * 
+ *
  * @deprecated since version 0.1-dev 2020-09-29
  * @see clamp
  * @param number $min
@@ -454,7 +454,7 @@ function media()
 }
 
 /**
- * 
+ *
  * @staticvar type $dispatcher
  * @param type $uri
  * @return DriveDispatcher|NodeInterface
@@ -483,40 +483,15 @@ function storage()
 function mime($file)
 {
 	if (function_exists('mime_content_type')) {
-		return mime_content_type($file); 
+		return mime_content_type($file);
 	}
 	else {
-		return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0]; 
+		return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0];
 	}
 }
 
 /**
- * Allows the application to manage a central event dispatching system, instead 
- * of relying on every component to build a custom one. If your component doesn't
- * wish to share it's hooks and plugins please @see Target
- * 
- * @staticvar \spitfire\core\event\EventDispatcher $dispatcher
- * @return \spitfire\core\event\EventDispatcher
- */
-function event(\spitfire\core\event\Event$event = null)
-{
-	static $dispatcher = null;
-	
-	if ($dispatcher === null) {
-		$dispatcher = new \spitfire\core\event\EventDispatcher();
-		\spitfire\core\event\RecipeLoader::import();
-	}
-	
-	if ($event !== null) {
-		$dispatcher->dispatch($event);
-		return $event;
-	}
-	
-	return $dispatcher;
-}
-
-/**
- * 
+ *
  * @staticvar \spitfire\io\lock\FileLockFactory $handler
  * @param \spitfire\io\lock\FileLockFactory $set
  * @return \spitfire\io\lock\FileLockFactory
@@ -526,34 +501,34 @@ function lock($set = null)
 	static $handler;
 	
 	if ($set) {
-		$handler = $set; 
+		$handler = $set;
 	}
 	if (!$handler) {
-		$handler = new \spitfire\io\lock\FileLockFactory(dirname(dirname(__FILE__)) . '/bin/usr/lock'); 
+		$handler = new \spitfire\io\lock\FileLockFactory(dirname(dirname(__FILE__)) . '/bin/usr/lock');
 	}
 	
 	return $handler;
 }
 
 /**
- * 
+ *
  * @todo Move this code into URLBuilder::asset and invoke it from there.
  * @param string $name
- * @param string $scope A directory to scope this to. If an application builds it's 
+ * @param string $scope A directory to scope this to. If an application builds it's
  *                      own assets and generates a manifest file, it will be located here.
  *                      The mix-manifest file is required to be located in the root
  *                      of this directory.
- * 
+ *
  *                      Note that the scope must be relative to the public directory,
  *                      if this is not the case, the system will generate bad URLs
  *                      or fail to locate the manifests.
- * 
- *                      If, for example, your application publishes it's assets to the 
+ *
+ *                      If, for example, your application publishes it's assets to the
  *                      assets/vendor/myapp older within public folder, this is exactly
  *                      the string it should pass
  * @return string
  */
-function asset(string $name, string $scope = 'assets/') : string 
+function asset(string $name, string $scope = 'assets/') : string
 {
 	static $scopes = [];
 	
@@ -565,7 +540,7 @@ function asset(string $name, string $scope = 'assets/') : string
 		 */
 		$manifest = spitfire()->locations()->public(rtrim($scope, '\/') . DIRECTORY_SEPARATOR . 'mix-manifest.json');
 		if (!file_exists($manifest)) {
-			throw new \spitfire\exceptions\ApplicationException(sprintf('No asset manifest for %s', $scope)); 
+			throw new \spitfire\exceptions\ApplicationException(sprintf('No asset manifest for %s', $scope));
 		}
 		
 		/*
@@ -578,23 +553,23 @@ function asset(string $name, string $scope = 'assets/') : string
 	 * It's possible that the developer has set an asset location to serve static assets
 	 * from. This may be a CDN or a separate domain (to protect the users against origin
 	 * based attacks - this seems to be an issue with flash files).
-	 * 
+	 *
 	 * @see https://secure.phabricator.com/book/phabricator/article/configuring_file_domain/
-	 * 
+	 *
 	 * The location defined in `app.assets.location` needs to point to a mirror of the app's
 	 * public directory.
 	 */
 	$base = config('app.assets.location', SpitFire::baseUrl());
 	
 	/*
-	 * Look for the asset inside the memory cache. This allows us to make use of 
+	 * Look for the asset inside the memory cache. This allows us to make use of
 	 * the versioned files without having to look them up every single time.
 	 */
-	$asset = $scopes[$scope]->get($name, function ($name) { 
+	$asset = $scopes[$scope]->get($name, function ($name) {
 		throw new \spitfire\exceptions\user\NotFoundException(sprintf('Asset %s is not available', $name));
 	});
 	
-	return '/' . implode('/', array_filter([ 
+	return '/' . implode('/', array_filter([
 			trim($base, '/'),
 			trim($scope?? '', '/'),
 			trim($asset, '/')
@@ -605,10 +580,10 @@ function asset(string $name, string $scope = 'assets/') : string
  * Convenience method for accessing the TaskFactory for deferring tasks. You can
  * pass a task class to be deferred, a bunch of settings and a time to execute
  * this task at.
- * 
- * Please refer to the documentation to enable the daemon required to process the 
+ *
+ * Please refer to the documentation to enable the daemon required to process the
  * queue.
- * 
+ *
  * @staticvar spitfire\defer\TaskFactory $async
  * @param string $task
  * @param mixed $options
@@ -630,12 +605,12 @@ function defer(string $task, $options, int $defer = 0, int $ttl = 10) : void
 /**
  * Returns an application configuration. Note that configuration in Spitfire is tiered,
  * configuration and environments.
- * 
+ *
  * You as the developer should establish the configuration so the components you add to
  * your application work as expected, and should expose the environment to the person
  * deploying the application so they can customize the behavior.
- * 
- * 
+ *
+ *
  * @param string $key The key in the configuration
  * @param mixed  $fallback The value to return if the configuration does not contain the key
  * @return mixed The data for this configuration entry
@@ -648,10 +623,10 @@ function config($key, $fallback = null)
 /**
  * This function should ONLY be invoked from the config files. This data is not cached, and therefore
  * not always available during runtime.
- * 
+ *
  * Reads a value from the current environment.
- * 
- * @param string Set the environment, or look up the current env
+ *
+ * @param string $param Set the environment, or look up the current env
  * @return string|null
  */
 function env(string $param) :? string
@@ -680,8 +655,8 @@ function env(string $param) :? string
 }
 
 /**
- * Allows the application to reliably determine whether it is running in a console or 
- * on a web server environment. 
+ * Allows the application to reliably determine whether it is running in a console or
+ * on a web server environment.
  */
 function cli() : bool
 {

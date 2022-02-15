@@ -3,6 +3,6 @@ includes:
 	- phpstan-baseline.neon
 	
 parameters: 
-	excludes_analyse:
+	excludePaths:
 		- vendor/
 		- tests/

@@ -2,17 +2,19 @@
 	"name": "spitfire/engine",
 	"license": "MIT",
 	"homepage": "https://spitfirephp.com",
+	
+	"description": "Spitfire is a simple framework for web development",
 
 	"require": {
-		"php" : ">7",
+		"php" : "^7||^8",
 		"ext-gd" : "*",
-		"spitfire/dependency-provider": "^0.2.0",
+		"spitfire/dependency-provider": "^0.2.4",
 		"spitfire/caching": "^0.1.0",
 		"psr/log": "^1.1",
 		"spitfire/defer": "^0.2.2",
 		"spitfire/cli": "^0.1.1",
 		"spitfire/database": "dev-master",
-		"spitfire/collection": "^0.1.0",
+		"spitfire/collection": "^0.1.2",
 		"psr/http-server-middleware": "^1.0",
 		"psr/http-factory": "^1.0",
 		"psr/http-message": "^1.0",
@@ -23,10 +25,9 @@
 	"require-dev": {
 		"phpunit/phpunit": "^9.5",
 		"monolog/monolog": "^2.2",
-		"phpstan/phpstan": "^0.12.84",
+		"phpstan/phpstan": "^1.4",
 		"pug-php/pug": "^3.4",
-		"respect/validation": "^2.2",
-		"squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
+		"magic3w/php-coding-standard": "^1.0"
 	},
 
 	"suggest": {
@@ -48,13 +49,17 @@
 	
 	"scripts" : {
 		"test" : [
-			"./vendor/bin/phpcs . -s",
+			"cp ./vendor/magic3w/php-coding-standard/.phpcs.xml .phpcs.xml",
 			"./vendor/bin/phpstan analyse --level 5 .",
 			"./vendor/bin/phpunit tests/"
 		],
 		"baseline" : [
 			"./vendor/bin/phpstan analyse --generate-baseline --level 5 ."
-		]
+		],
+		"sniff":
+			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')",
+		"style":
+			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')"
 	},
 	
 	"config": {

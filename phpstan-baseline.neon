@@ -41,22 +41,22 @@ parameters:
 			path: Model.php
 
 		-
+			message: "#^Method spitfire\\\\Model\\:\\:getTable\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: Model.php
+
+		-
 			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
 			count: 2
 			path: Model.php
 
 		-
-			message: "#^Parameter \\$table of method spitfire\\\\Model\\:\\:__construct\\(\\) has invalid typehint type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			message: "#^Parameter \\$table of method spitfire\\\\Model\\:\\:__construct\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 2
 			path: Model.php
 
 		-
 			message: "#^Property spitfire\\\\Model\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
-			count: 1
-			path: Model.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\Model\\:\\:getTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: Model.php
 
@@ -86,7 +86,7 @@ parameters:
 			path: core/Headers.php
 
 		-
-			message: "#^Parameter \\$header of method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) has invalid typehint type spitfire\\\\core\\\\type\\.$#"
+			message: "#^Parameter \\$header of method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) has invalid type spitfire\\\\core\\\\type\\.$#"
 			count: 1
 			path: core/Headers.php
 
@@ -94,16 +94,6 @@ parameters:
 			message: "#^PHPDoc tag @param for parameter \\$path with type string\\|null is not subtype of native type string\\.$#"
 			count: 2
 			path: core/Locations.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\app\\\\AppCollection\\:\\:byClassName\\(\\) should return spitfire\\\\App\\|null but returns \\$this\\(spitfire\\\\core\\\\app\\\\AppCollection\\)\\.$#"
-			count: 1
-			path: core/app/AppCollection.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\app\\\\AppCollection\\:\\:byClassName\\(\\) should return spitfire\\\\App\\|null but returns false\\.$#"
-			count: 1
-			path: core/app/AppCollection.php
 
 		-
 			message: "#^Parameter \\#2 \\$assoc of function json_decode expects bool, null given\\.$#"
@@ -131,32 +121,7 @@ parameters:
 			path: core/config/directors/BuildConfigurationDirector.php
 
 		-
-			message: "#^Method spitfire\\\\core\\\\event\\\\EventDispatcher\\:\\:dispatch\\(\\) should return spitfire\\\\core\\\\event\\\\type but empty return statement found\\.$#"
-			count: 1
-			path: core/event/EventDispatcher.php
-
-		-
-			message: "#^Method spitfire\\\\core\\\\event\\\\EventDispatcher\\:\\:dispatch\\(\\) should return spitfire\\\\core\\\\event\\\\type but return statement is missing\\.$#"
-			count: 1
-			path: core/event/EventDispatcher.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$fn$#"
-			count: 1
-			path: core/event/EventDispatcher.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\core\\\\event\\\\EventDispatcher\\:\\:dispatch\\(\\) has invalid type spitfire\\\\core\\\\event\\\\type\\.$#"
-			count: 1
-			path: core/event/EventDispatcher.php
-
-		-
 			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:registerApp\\(\\)\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Call to static method import\\(\\) on an unknown class spitfire\\\\core\\\\event\\\\RecipeLoader\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -171,12 +136,7 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Function event\\(\\) should return spitfire\\\\core\\\\event\\\\EventDispatcher but returns spitfire\\\\core\\\\event\\\\Event\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string Set the environment, or look up the current env\\)\\: Unexpected token \"Set\", expected variable at offset 218$#"
+			message: "#^Function db\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\DB\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -186,7 +146,7 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Return typehint of function db\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			message: "#^Variable \\$scope on left side of \\?\\? always exists and is not nullable\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -204,6 +164,11 @@ parameters:
 			message: "#^Property spitfire\\\\core\\\\http\\\\LanguageAccept\\:\\:\\$locale \\(string\\) does not accept null\\.$#"
 			count: 1
 			path: core/http/LanguageAccept.php
+
+		-
+			message: "#^Cannot call method getPriority\\(\\) on string\\.$#"
+			count: 2
+			path: core/http/LanguageAcceptParser.php
 
 		-
 			message: "#^Property spitfire\\\\core\\\\http\\\\request\\\\handler\\\\ClosureResponseRequestHandler\\:\\:\\$response \\(Psr\\\\Http\\\\Message\\\\ResponseInterface\\) does not accept Closure\\.$#"
@@ -284,6 +249,11 @@ parameters:
 			message: "#^PHPDoc tag @return with type void is incompatible with native type spitfire\\\\core\\\\router\\\\Parameters\\|null\\.$#"
 			count: 1
 			path: core/router/Route.php
+
+		-
+			message: "#^PHPDoc tag @var above a method has no effect\\.$#"
+			count: 1
+			path: core/router/Router.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\FileNotFoundException not found\\.$#"
@@ -369,6 +339,11 @@ parameters:
 			message: "#^Call to an undefined method spitfire\\\\io\\\\html\\\\dateTimePicker\\:\\:readPostData\\(\\)\\.$#"
 			count: 1
 			path: io/html/date_picker.php
+
+		-
+			message: "#^Property spitfire\\\\io\\\\lock\\\\FileLock\\:\\:\\$file is never read, only written\\.$#"
+			count: 1
+			path: io/lock/FileLock.php
 
 		-
 			message: "#^Parameter \\#1 \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) expects spitfire\\\\storage\\\\objectStorage\\\\type, string given\\.$#"
@@ -501,6 +476,11 @@ parameters:
 			path: io/session/FileSessionHandler.php
 
 		-
+			message: "#^Method spitfire\\\\io\\\\session\\\\FileSessionHandler\\:\\:gc\\(\\) should return int\\|false but returns true\\.$#"
+			count: 1
+			path: io/session/FileSessionHandler.php
+
+		-
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\FileNotFoundException\\.$#"
 			count: 1
 			path: io/session/FileSessionHandler.php
@@ -509,6 +489,11 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 1
 			path: io/session/FileSessionHandler.php
+
+		-
+			message: "#^Method spitfire\\\\io\\\\session\\\\MemcachedSessionHandler\\:\\:gc\\(\\) should return int\\|false but returns true\\.$#"
+			count: 1
+			path: io/session/MemcachedSessionHandler.php
 
 		-
 			message: "#^Function current_context not found\\.$#"
@@ -521,7 +506,7 @@ parameters:
 			path: io/session/Session.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of function setcookie expects string, bool given\\.$#"
+			message: "#^Parameter \\#2 \\$value of function setcookie expects string, false given\\.$#"
 			count: 1
 			path: io/session/Session.php
 
@@ -531,32 +516,32 @@ parameters:
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Parameter \\#1 \\$open of function session_set_save_handler expects callable\\(string, string\\)\\: bool, array\\(\\*NEVER\\*, 'start'\\) given\\.$#"
+			message: "#^Parameter \\#1 \\$open of function session_set_save_handler expects callable\\(string, string\\)\\: bool, array\\{\\*NEVER\\*, 'start'\\} given\\.$#"
 			count: 1
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Parameter \\#2 \\$close of function session_set_save_handler expects callable\\(\\)\\: bool, array\\(\\*NEVER\\*, 'close'\\) given\\.$#"
+			message: "#^Parameter \\#2 \\$close of function session_set_save_handler expects callable\\(\\)\\: bool, array\\{\\*NEVER\\*, 'close'\\} given\\.$#"
 			count: 1
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Parameter \\#3 \\$read of function session_set_save_handler expects callable\\(string\\)\\: string, array\\(\\*NEVER\\*, 'read'\\) given\\.$#"
+			message: "#^Parameter \\#3 \\$read of function session_set_save_handler expects callable\\(string\\)\\: string, array\\{\\*NEVER\\*, 'read'\\} given\\.$#"
 			count: 1
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Parameter \\#4 \\$write of function session_set_save_handler expects callable\\(string, string\\)\\: bool, array\\(\\*NEVER\\*, 'write'\\) given\\.$#"
+			message: "#^Parameter \\#4 \\$write of function session_set_save_handler expects callable\\(string, string\\)\\: bool, array\\{\\*NEVER\\*, 'write'\\} given\\.$#"
 			count: 1
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Parameter \\#5 \\$destroy of function session_set_save_handler expects callable\\(string\\)\\: bool, array\\(\\*NEVER\\*, 'destroy'\\) given\\.$#"
+			message: "#^Parameter \\#5 \\$destroy of function session_set_save_handler expects callable\\(string\\)\\: bool, array\\{\\*NEVER\\*, 'destroy'\\} given\\.$#"
 			count: 1
 			path: io/session/SessionHandler.php
 
 		-
-			message: "#^Parameter \\#6 \\$gc of function session_set_save_handler expects callable\\(string\\)\\: bool, array\\(\\*NEVER\\*, 'gc'\\) given\\.$#"
+			message: "#^Parameter \\#6 \\$gc of function session_set_save_handler expects callable\\(string\\)\\: bool, array\\{\\*NEVER\\*, 'gc'\\} given\\.$#"
 			count: 1
 			path: io/session/SessionHandler.php
 
@@ -591,17 +576,42 @@ parameters:
 			path: io/stream/Stream.php
 
 		-
+			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Function _t not found\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\validation\\\\ValidationError not found\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\Field\\:\\:getTable\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\Field\\:\\:validate\\(\\) has invalid return type spitfire\\\\validation\\\\ValidationError\\.$#"
+			count: 1
+			path: model/Field.php
+
+		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: model/Field.php
 
 		-
-			message: "#^Parameter \\$bean of method spitfire\\\\model\\\\Field\\:\\:getBeanField\\(\\) has invalid typehint type CoffeeBean\\.$#"
+			message: "#^Parameter \\$bean of method spitfire\\\\model\\\\Field\\:\\:getBeanField\\(\\) has invalid type CoffeeBean\\.$#"
 			count: 1
 			path: model/Field.php
 
 		-
-			message: "#^Parameter \\$value of method spitfire\\\\model\\\\Field\\:\\:validate\\(\\) has invalid typehint type spitfire\\\\model\\\\type\\.$#"
+			message: "#^Parameter \\$value of method spitfire\\\\model\\\\Field\\:\\:validate\\(\\) has invalid type spitfire\\\\model\\\\type\\.$#"
 			count: 1
 			path: model/Field.php
 
@@ -611,14 +621,94 @@ parameters:
 			path: model/Field.php
 
 		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\Field\\:\\:getTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			message: "#^Cannot call method getSchema\\(\\) on void\\.$#"
 			count: 1
-			path: model/Field.php
+			path: model/Index.php
 
 		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\AdapterInterface\\:\\:getModel\\(\\) has invalid type Model\\.$#"
+			message: "#^Result of method spitfire\\\\collection\\\\Collection\\<mixed\\>\\:\\:rewind\\(\\) \\(void\\) is used\\.$#"
+			count: 1
+			path: model/Index.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\OTFModel\\:\\:definitions\\(\\) should return spitfire\\\\model\\\\Schema but return statement is missing\\.$#"
+			count: 1
+			path: model/OTFModel.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
+			count: 2
+			path: model/Schema.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getBaseRestrictions\\(\\) has invalid return type spitfire\\\\model\\\\type\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getBaseRestrictions\\(\\) should return spitfire\\\\model\\\\type but return statement is missing\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getPrimary\\(\\) should return spitfire\\\\model\\\\Index but returns null\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getTable\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
+			count: 2
+			path: model/Schema.php
+
+		-
+			message: "#^Parameter \\#1 \\$fields of class spitfire\\\\model\\\\Index constructor expects spitfire\\\\collection\\\\Collection\\<spitfire\\\\model\\\\Field\\>\\|null, array given\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Parameter \\#1 \\$fields of class spitfire\\\\model\\\\Index constructor expects spitfire\\\\collection\\\\Collection\\<spitfire\\\\model\\\\Field\\>\\|null, array\\{spitfire\\\\model\\\\fields\\\\IntegerField\\} given\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:__construct\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 2
+			path: model/Schema.php
+
+		-
+			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:setTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\Schema\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
+			count: 1
+			path: model/Schema.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
+			count: 2
+			path: model/Schema.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\AdapterInterface\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
 			count: 1
 			path: model/adapters/AdapterInterface.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
+			count: 1
+			path: model/adapters/BaseAdapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:validate\\(\\) has invalid return type spitfire\\\\validation\\\\ValidationResult\\.$#"
+			count: 1
+			path: model/adapters/BaseAdapter.php
 
 		-
 			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:validate\\(\\) should return spitfire\\\\validation\\\\ValidationResult but returns bool\\|spitfire\\\\validation\\\\ValidationError\\.$#"
@@ -631,7 +721,7 @@ parameters:
 			path: model/adapters/BaseAdapter.php
 
 		-
-			message: "#^Parameter \\$model of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:__construct\\(\\) has invalid typehint type Model\\.$#"
+			message: "#^Parameter \\$model of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:__construct\\(\\) has invalid type Model\\.$#"
 			count: 1
 			path: model/adapters/BaseAdapter.php
 
@@ -642,16 +732,6 @@ parameters:
 
 		-
 			message: "#^Property spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:\\$model has unknown class Model as its type\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:getModel\\(\\) has invalid type Model\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:validate\\(\\) has invalid type spitfire\\\\validation\\\\ValidationResult\\.$#"
 			count: 1
 			path: model/adapters/BaseAdapter.php
 
@@ -701,12 +781,22 @@ parameters:
 			path: model/adapters/ChildrenAdapter.php
 
 		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:commit\\(\\) has invalid return type spitfire\\\\model\\\\adapters\\\\type\\.$#"
+			count: 1
+			path: model/adapters/ChildrenAdapter.php
+
+		-
 			message: "#^Method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:commit\\(\\) should return spitfire\\\\model\\\\adapters\\\\type but return statement is missing\\.$#"
 			count: 1
 			path: model/adapters/ChildrenAdapter.php
 
 		-
 			message: "#^Method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:getField\\(\\) should return spitfire\\\\model\\\\Field but returns ChildrenField\\.$#"
+			count: 1
+			path: model/adapters/ChildrenAdapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
 			count: 1
 			path: model/adapters/ChildrenAdapter.php
 
@@ -731,22 +821,12 @@ parameters:
 			path: model/adapters/ChildrenAdapter.php
 
 		-
-			message: "#^Parameter \\$field of method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:__construct\\(\\) has invalid typehint type ChildrenField\\.$#"
+			message: "#^Parameter \\$field of method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:__construct\\(\\) has invalid type ChildrenField\\.$#"
 			count: 1
 			path: model/adapters/ChildrenAdapter.php
 
 		-
 			message: "#^Property spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:\\$field has unknown class ChildrenField as its type\\.$#"
-			count: 1
-			path: model/adapters/ChildrenAdapter.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:commit\\(\\) has invalid type spitfire\\\\model\\\\adapters\\\\type\\.$#"
-			count: 1
-			path: model/adapters/ChildrenAdapter.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:getModel\\(\\) has invalid type Model\\.$#"
 			count: 1
 			path: model/adapters/ChildrenAdapter.php
 
@@ -831,6 +911,11 @@ parameters:
 			path: model/adapters/ReferenceAdapter.php
 
 		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ReferenceAdapter\\:\\:dbGetData\\(\\) has invalid return type spitfire\\\\model\\\\adapters\\\\type\\.$#"
+			count: 1
+			path: model/adapters/ReferenceAdapter.php
+
+		-
 			message: "#^Method spitfire\\\\model\\\\adapters\\\\ReferenceAdapter\\:\\:dbGetData\\(\\) should return spitfire\\\\model\\\\adapters\\\\type but returns array\\.$#"
 			count: 1
 			path: model/adapters/ReferenceAdapter.php
@@ -842,11 +927,6 @@ parameters:
 
 		-
 			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
-			count: 1
-			path: model/adapters/ReferenceAdapter.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\adapters\\\\ReferenceAdapter\\:\\:dbGetData\\(\\) has invalid type spitfire\\\\model\\\\adapters\\\\type\\.$#"
 			count: 1
 			path: model/adapters/ReferenceAdapter.php
 
@@ -901,7 +981,137 @@ parameters:
 			path: model/adapters/enumadapter.php
 
 		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:fetchAll\\(\\)\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Call to method getBridge\\(\\) on an unknown class spitfire\\\\model\\\\ManyToManyField\\.$#"
+			count: 2
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Call to method getModel\\(\\) on an unknown class spitfire\\\\model\\\\ManyToManyField\\.$#"
+			count: 2
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Call to method getPrimaryData\\(\\) on an unknown class Model\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Call to method getQuery\\(\\) on an unknown class Model\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Call to method getTarget\\(\\) on an unknown class spitfire\\\\model\\\\ManyToManyField\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Elseif branch is unreachable because previous condition is always true\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:getField\\(\\) should return ManyToManyField but returns spitfire\\\\model\\\\ManyToManyField\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:getModel\\(\\) should return spitfire\\\\Model but returns Model\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:next\\(\\) with return type void returns Model\\|false but should not return anything\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:rewind\\(\\) with return type void returns Model\\|false but should not return anything\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$parentField of class spitfire\\\\model\\\\adapters\\\\BridgeAdapter constructor expects ManyToManyField, spitfire\\\\model\\\\ManyToManyField given\\.$#"
+			count: 2
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$children \\(array\\<Model\\>\\) does not accept void\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$children has unknown class Model as its type\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$field \\(spitfire\\\\model\\\\ManyToManyField\\) does not accept ManyToManyField\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$field has unknown class spitfire\\\\model\\\\ManyToManyField as its type\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$parent \\(Model\\) does not accept spitfire\\\\Model\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$parent has unknown class Model as its type\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
+			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
+			count: 1
+			path: model/adapters/m2madapter.php
+
+		-
 			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Field\\:\\:getReferencedField\\(\\)\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:getQueryTable\\(\\)\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
+			message: "#^Call to method getCollection\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
+			message: "#^Call to method getDB\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
+			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: model/children.php
 
@@ -916,12 +1126,27 @@ parameters:
 			path: model/children.php
 
 		-
+			message: "#^Method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:findReference\\(\\) has invalid return type Reference\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
 			message: "#^Method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:findReference\\(\\) should return Reference but return statement is missing\\.$#"
 			count: 1
 			path: model/children.php
 
 		-
+			message: "#^Method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:findReference\\(\\) should return Reference but returns spitfire\\\\model\\\\Field\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
 			message: "#^Method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:findReference\\(\\) should return Reference but returns spitfire\\\\model\\\\fields\\\\Reference\\.$#"
+			count: 1
+			path: model/children.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:getReferencedField\\(\\) should return spitfire\\\\model\\\\fields\\\\Reference but returns spitfire\\\\model\\\\Field\\|null\\.$#"
 			count: 1
 			path: model/children.php
 
@@ -932,11 +1157,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$field of class spitfire\\\\model\\\\adapters\\\\ChildrenAdapter constructor expects ChildrenField, \\$this\\(spitfire\\\\model\\\\fields\\\\ChildrenField\\) given\\.$#"
-			count: 1
-			path: model/children.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:findReference\\(\\) has invalid type Reference\\.$#"
 			count: 1
 			path: model/children.php
 
@@ -961,7 +1181,22 @@ parameters:
 			path: model/fields/IntegerField.php
 
 		-
-			message: "#^Parameter \\$value of method spitfire\\\\model\\\\fields\\\\IntegerField\\:\\:validate\\(\\) has invalid typehint type spitfire\\\\model\\\\type\\.$#"
+			message: "#^Function _t not found\\.$#"
+			count: 1
+			path: model/fields/IntegerField.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\validation\\\\ValidationError not found\\.$#"
+			count: 1
+			path: model/fields/IntegerField.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\fields\\\\IntegerField\\:\\:validate\\(\\) has invalid return type spitfire\\\\validation\\\\ValidationError\\.$#"
+			count: 1
+			path: model/fields/IntegerField.php
+
+		-
+			message: "#^Parameter \\$value of method spitfire\\\\model\\\\fields\\\\IntegerField\\:\\:validate\\(\\) has invalid type spitfire\\\\model\\\\type\\.$#"
 			count: 1
 			path: model/fields/IntegerField.php
 
@@ -971,8 +1206,18 @@ parameters:
 			path: model/fields/Reference.php
 
 		-
-			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:getQueryTable\\(\\)\\.$#"
 			count: 1
+			path: model/fields/Reference.php
+
+		-
+			message: "#^Call to function is_string\\(\\) with spitfire\\\\model\\\\Schema will always evaluate to false\\.$#"
+			count: 1
+			path: model/fields/Reference.php
+
+		-
+			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 2
 			path: model/fields/Reference.php
 
 		-
@@ -996,6 +1241,11 @@ parameters:
 			path: model/fields/Reference.php
 
 		-
+			message: "#^Property spitfire\\\\model\\\\fields\\\\Reference\\:\\:\\$target \\(spitfire\\\\model\\\\Schema\\) does not accept string\\.$#"
+			count: 1
+			path: model/fields/Reference.php
+
+		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: model/fields/Reference.php
@@ -1011,12 +1261,27 @@ parameters:
 			path: model/fields/StringField.php
 
 		-
+			message: "#^Function _t not found\\.$#"
+			count: 1
+			path: model/fields/StringField.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\validation\\\\ValidationError not found\\.$#"
+			count: 1
+			path: model/fields/StringField.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\fields\\\\StringField\\:\\:validate\\(\\) has invalid return type spitfire\\\\validation\\\\ValidationError\\.$#"
+			count: 1
+			path: model/fields/StringField.php
+
+		-
 			message: "#^Parameter \\#1 \\$string of function strlen expects string, spitfire\\\\model\\\\type given\\.$#"
 			count: 1
 			path: model/fields/StringField.php
 
 		-
-			message: "#^Parameter \\$value of method spitfire\\\\model\\\\fields\\\\StringField\\:\\:validate\\(\\) has invalid typehint type spitfire\\\\model\\\\type\\.$#"
+			message: "#^Parameter \\$value of method spitfire\\\\model\\\\fields\\\\StringField\\:\\:validate\\(\\) has invalid type spitfire\\\\model\\\\type\\.$#"
 			count: 1
 			path: model/fields/StringField.php
 
@@ -1036,9 +1301,79 @@ parameters:
 			path: model/fields/float.php
 
 		-
-			message: "#^Parameter \\$value of method FloatField\\:\\:validate\\(\\) has invalid typehint type spitfire\\\\model\\\\type\\.$#"
+			message: "#^Function _t not found\\.$#"
 			count: 1
 			path: model/fields/float.php
+
+		-
+			message: "#^Instantiated class spitfire\\\\validation\\\\ValidationError not found\\.$#"
+			count: 1
+			path: model/fields/float.php
+
+		-
+			message: "#^Method FloatField\\:\\:validate\\(\\) has invalid return type spitfire\\\\validation\\\\ValidationError\\.$#"
+			count: 1
+			path: model/fields/float.php
+
+		-
+			message: "#^Parameter \\$value of method FloatField\\:\\:validate\\(\\) has invalid type spitfire\\\\model\\\\type\\.$#"
+			count: 1
+			path: model/fields/float.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\model\\\\Field\\:\\:getTarget\\(\\)\\.$#"
+			count: 1
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Field\\:\\:getReferencedField\\(\\)\\.$#"
+			count: 6
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:getQueryTable\\(\\)\\.$#"
+			count: 3
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Call to method getAll\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 2
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			count: 3
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 2
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Method ManyToManyField\\:\\:getModelField\\(\\) should return spitfire\\\\storage\\\\database\\\\Field but returns spitfire\\\\model\\\\Field\\|null\\.$#"
+			count: 1
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Parameter \\#2 \\$role of method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:__construct\\(\\) expects string, null given\\.$#"
+			count: 1
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Property ManyToManyField\\:\\:\\$meta is never written, only read\\.$#"
+			count: 1
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 2
+			path: model/fields/manytomany.php
+
+		-
+			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
+			count: 1
+			path: model/support/ReflectionParameterTransformer.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
@@ -1054,31 +1389,6 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 1
 			path: mvc/Invoke.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\FileNotFoundException not found\\.$#"
-			count: 1
-			path: plugins.php
-
-		-
-			message: "#^Static call to instance method plugins\\:\\:register\\(\\)\\.$#"
-			count: 1
-			path: plugins.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\FileNotFoundException\\.$#"
-			count: 1
-			path: plugins.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: plugins.php
-
-		-
-			message: "#^Variable \\$textContent might not be defined\\.$#"
-			count: 1
-			path: plugins.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\storage\\\\objectStorage\\\\NodeInterface\\:\\:getPath\\(\\)\\.$#"
@@ -1111,12 +1421,12 @@ parameters:
 			path: storage/drive/Driver.php
 
 		-
-			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\drive\\\\Driver\\:\\:atime\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
+			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\drive\\\\Driver\\:\\:atime\\(\\) has invalid type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
 			count: 1
 			path: storage/drive/Driver.php
 
 		-
-			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\drive\\\\Driver\\:\\:delete\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
+			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\drive\\\\Driver\\:\\:delete\\(\\) has invalid type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
 			count: 1
 			path: storage/drive/Driver.php
 
@@ -1191,12 +1501,12 @@ parameters:
 			path: storage/objectStorage/DriveDispatcher.php
 
 		-
-			message: "#^Parameter \\$drive of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:register\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\DriveInterface\\.$#"
+			message: "#^Parameter \\$drive of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:register\\(\\) has invalid type spitfire\\\\storage\\\\objectStorage\\\\DriveInterface\\.$#"
 			count: 1
 			path: storage/objectStorage/DriveDispatcher.php
 
 		-
-			message: "#^Parameter \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
+			message: "#^Parameter \\$location of method spitfire\\\\storage\\\\objectStorage\\\\DriveDispatcher\\:\\:retrieve\\(\\) has invalid type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
 			count: 1
 			path: storage/objectStorage/DriveDispatcher.php
 
@@ -1216,17 +1526,27 @@ parameters:
 			path: storage/objectStorage/DriverInterface.php
 
 		-
-			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\objectStorage\\\\DriverInterface\\:\\:atime\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
+			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\objectStorage\\\\DriverInterface\\:\\:atime\\(\\) has invalid type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
 			count: 1
 			path: storage/objectStorage/DriverInterface.php
 
 		-
-			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\objectStorage\\\\DriverInterface\\:\\:delete\\(\\) has invalid typehint type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
+			message: "#^Parameter \\$key of method spitfire\\\\storage\\\\objectStorage\\\\DriverInterface\\:\\:delete\\(\\) has invalid type spitfire\\\\storage\\\\objectStorage\\\\type\\.$#"
 			count: 1
 			path: storage/objectStorage/DriverInterface.php
+
+		-
+			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid return type spitfire\\\\utils\\\\type\\.$#"
+			count: 1
+			path: utils/Strings.php
 
 		-
 			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) should return spitfire\\\\utils\\\\type but returns string\\.$#"
+			count: 1
+			path: utils/Strings.php
+
+		-
+			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid return type spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: utils/Strings.php
 
@@ -1241,22 +1561,12 @@ parameters:
 			path: utils/Strings.php
 
 		-
-			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid typehint type spitfire\\\\utils\\\\type\\.$#"
+			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: utils/Strings.php
 
 		-
-			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid typehint type spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Return typehint of method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
+			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: utils/Strings.php
 
@@ -1301,7 +1611,7 @@ parameters:
 			path: utils/database/DatabaseImportDirector.php
 
 		-
-			message: "#^Parameter \\$table of anonymous function has invalid typehint type spitfire\\\\storage\\\\database\\\\Table\\.$#"
+			message: "#^Parameter \\$table of anonymous function has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: utils/database/DatabaseImportDirector.php
 
@@ -1312,11 +1622,6 @@ parameters:
 
 		-
 			message: "#^Function basedir not found\\.$#"
-			count: 1
-			path: utils/database/DatabaseInitDirector.php
-
-		-
-			message: "#^Method spitfire\\\\utils\\\\database\\\\DatabaseInitDirector\\:\\:exec\\(\\) should return int but return statement is missing\\.$#"
 			count: 1
 			path: utils/database/DatabaseInitDirector.php
 

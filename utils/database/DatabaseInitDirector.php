@@ -3,7 +3,7 @@
 use spitfire\cli\arguments\CLIParameters;
 use spitfire\mvc\Director;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2020 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -30,19 +30,19 @@ use spitfire\mvc\Director;
 /**
  * The database director allows to use the models to quickly create the database
  * schema on the DBMS, and import and export data from the DBMS to a File system.
- * 
+ *
  * This util should also make it infinitely more easy to change data to a new encoding.
- * Sadly, MySQL, MariaDB (and I suspect the other DBMSs too) are a real pain to 
+ * Sadly, MySQL, MariaDB (and I suspect the other DBMSs too) are a real pain to
  * change the encoding and collation. Just being able to export the tables, load them
  * into files and write them back into the database seems like a godsend for many
  * of these operations.
- * 
+ *
  * It also makes it more approachable to backup and restore data, since many of the
  * SQL based import/export tools will cause artifacts.
- * 
+ *
  * @todo Move to Database rather than utils
  * @todo Allow for incremental updates (this is tricky due to the fact that deletes may happen)
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class DatabaseInitDirector extends Director
@@ -62,12 +62,12 @@ class DatabaseInitDirector extends Director
 	 * Initializes the schemas on the DBMS side. This removes the need for spitfire's
 	 * old mechanism where it would fall back from these errors and attempt to fix
 	 * the database for each request.
-	 * 
+	 *
 	 * @todo Introduce migrations / repairs / upgrades to add and remove indexes
 	 * @todo This only creates tables for the top level application, child apps are not processed
 	 * @todo This has debugging output that needs to go
 	 * @todo Replace this with dependency injected database?
-	 * @todo Spitfire has no abstracted mean to load / list models, controllers, directors, 
+	 * @todo Spitfire has no abstracted mean to load / list models, controllers, directors,
 	 *		templates that removes the need for this glob madness and allows it to cache
 	 *		known locations
 	 */
@@ -86,8 +86,8 @@ class DatabaseInitDirector extends Director
 			 * We're only interested in PHP files, since these contain the models.
 			 * The system does not just import all the models and use reflection to
 			 * locate them, instead, it does some magic with the filenames.
-			 * 
-			 * There's a certain level of risk we assume whenever blindly looping 
+			 *
+			 * There's a certain level of risk we assume whenever blindly looping
 			 * over a set of files in PHP and including them. But other than manually
 			 * parsing them - there's not much we can do to look for class declarations
 			 * in them. The models folder should be for models only.
@@ -111,5 +111,6 @@ class DatabaseInitDirector extends Director
 		};
 		
 		$walk($dir, '');
+		return 0;
 	}
 }
