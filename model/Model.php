@@ -1,4 +1,4 @@
-<?php namespace spitfire;
+<?php namespace spitfire\model;
 
 use JsonSerializable;
 use Serializable;
