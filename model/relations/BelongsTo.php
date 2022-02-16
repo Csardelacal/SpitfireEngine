@@ -29,7 +29,8 @@ class BelongsTo extends Relationship implements RelationshipSingleInterface
 	 */
 	public function injectWhere(DatabaseQuery $query, Model $model) : void
 	{
-		$query->where($this->getField()->getField(), $model->getPrimaryData());
+		$table = $this->getField()->getModel()->getTable()->getTableReference();
+		$query->where($table->getOutput($this->getField()->getField()), $model->getPrimaryData());
 	}
 	
 	/**
@@ -43,14 +44,14 @@ class BelongsTo extends Relationship implements RelationshipSingleInterface
 	public function injectWith(DatabaseQuery $query, callable $fn) : Join
 	{
 		return $query->joinTable(
-			$this->getField()->getModel()->getTable(),
+			$this->getField()->getModel()->getTable()->getTableReference(),
 			function (JoinTable $t, DatabaseQuery $parent) use ($fn) : void {
 				
 				$primary = $this->getReferenced()->getModel()->getTable()->getPrimaryKey();
 				
 				$t->on(
 					$t->getAlias()->output()->getOutput($this->getField()->getField()),
-					$parent->getFrom()->output()->getOutput($primary)
+					$parent->getFrom()->output()->getOutput($primary->getFields()->first()->getName())
 				);
 				
 				$fn($t);
@@ -70,15 +71,19 @@ class BelongsTo extends Relationship implements RelationshipSingleInterface
 	 * @return void
 	 */
 	public function injectWhereHas(DatabaseQuery $query, callable $fn) : void
-	{
+	{	
 		$query->whereExists(function (TableIdentifierInterface $parent) use ($fn) : DatabaseQuery {
-			$subquery = $this->getQuery();
+			$subquery = $this->getReferenced()->getModel()->query();
 			$fn($subquery);
 			
-			return $subquery->getQuery()->where(
-				$subquery->getQuery()->getFrom()->output()->getOutput($this->getField()->getField()),
-				$parent->getOutput($this->getReferenced()->getModel()->getTable()->getPrimaryKey())
+			$query = $subquery->getQuery();
+			$query->select($this->getReferenced()->getField());
+			$query->where(
+				$query->getFrom()->output()->getOutput($this->getReferenced()->getField()),
+				$parent->getOutput($this->getReferenced()->getModel()->getTable()->getPrimaryKey()->getFields()->first()->getName())
 			);
+			
+			return $query;
 		});
 	}
 }

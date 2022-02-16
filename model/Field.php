@@ -1,6 +1,6 @@
 <?php namespace spitfire\model;
 
-use spitfire\Model;
+use spitfire\model\Model;
 use spitfire\model\Schema;
 use spitfire\storage\database\Table;
 use spitfire\validation\ValidationError;
@@ -24,6 +24,10 @@ class Field
 		$this->name = $field;
 	}
 	
+	/**
+	 * 
+	 * @return Model
+	 */
 	public function getModel()
 	{
 		return $this->model;

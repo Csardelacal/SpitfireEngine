@@ -3,6 +3,7 @@
 use BadMethodCallException;
 use spitfire\model\query\Queriable;
 use spitfire\model\query\RestrictionGroup;
+use spitfire\storage\database\Connection;
 use spitfire\storage\database\DriverInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 
@@ -14,8 +15,6 @@ class Query
 	
 	use Queriable;
 	
-	private $db;
-	
 	private $model;
 	
 	private $with;
@@ -26,18 +25,21 @@ class Query
 	 */
 	private $query;
 	
-	public function __construct(DriverInterface $db, Model $model)
+	public function __construct(Model $model)
 	{
-		$this->db = $db;
 		$this->model = $model;
 		
-		$this->query = new DatabaseQuery($this->model->getTable());
-		$this->query->selectAll();
+		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
 	}
 	
-	public function getQuery()
+	public function getQuery() : DatabaseQuery
 	{
 		return $this->query;
+	}
+	
+	public function getModel() : Model
+	{
+		return $this->model;
 	}
 	
 	public function first(callable $or = null)
@@ -46,6 +48,8 @@ class Query
 	
 	public function all()
 	{
+		$this->query->selectAll();
+		$this->db->query($this->query);
 	}
 	
 	public function range(int $offset, int $size)

@@ -1,10 +1,16 @@
 <?php namespace spitfire\model;
 
+use Exception;
 use JsonSerializable;
+use Monolog\Logger;
 use Serializable;
 use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Schema;
+use spitfire\storage\database\Connection;
+use spitfire\storage\database\drivers\mysqlpdo\Driver;
+use spitfire\storage\database\Layout;
+use spitfire\storage\database\Settings;
 use spitfire\storage\database\Table;
 
 /**
@@ -22,7 +28,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 * around the array that allows to validate data on the go and to alert the 
 	 * programmer about inconsistent types.
 	 * 
-	 * @var \spitfire\model\adapters\AdapterInterface[]
+	 * @var mixed[]
 	 */
 	private $data;
 	
@@ -31,7 +37,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 * This allows it to power functions like store that require knowledge about 
 	 * the database keeping the information.
 	 * 
-	 * @var Table
+	 * @var Layout
 	 */
 	private $table;
 	
@@ -41,33 +47,20 @@ abstract class Model implements Serializable, JsonSerializable
 	/**
 	 * Creates a new record.
 	 * 
-	 * @param Table $table DB Table this record belongs to. Easiest way
+	 * @param Layout $table DB Table this record belongs to. Easiest way
 	 *                       to get this is by using $this->model->*tablename*
 	 * 
 	 * @param mixed $data  Attention! This parameter is intended to be 
 	 *                       used by the system. To create a new record, leave
 	 *                       empty and use setData.
 	 */
-	public function __construct(Table$table = null, $data = null)
+	public function __construct(Layout $table = null, $data = [])
 	{
 		
 		$this->table   = $table;
 		$this->new     = empty($data);
-		
-		$this->makeAdapters();
-		$this->populateAdapters($data);
+		$this->data    = $data;
 	}
-	
-	/**
-	 * This method is used to generate the 'template' for the table that allows
-	 * spitfire to automatically generate tables and allows it to check the types
-	 * of data and fix tables.
-	 *
-	 * @param Schema $schema
-	 * @return Schema
-	 * @abstract
-	 */
-	abstract public function definitions(Schema$schema);
 	
 	/**
 	 * Returns the data this record currently contains as associative array.
@@ -157,11 +150,24 @@ abstract class Model implements Serializable, JsonSerializable
 		$ret = array();
 		
 		foreach ($primaryFields as $field) {
-			$logical = $field->getLogicalField();
-			$ret = array_merge($ret, $this->data[$logical->getName()]->dbGetData());
+			return $this->data[$field->getName()];
 		}
 		
 		return $ret;
+	}
+	
+	public function query()
+	{
+		return new Query($this);
+	}
+	
+	public function get($name)
+	{
+		if (!array_key_exists($name, $this->data)) {
+			throw new Exception('Bad');
+		}
+		assert(array_key_exists($name, $this->data));
+		return $this->data[$name];
 	}
 	
 	public function getQuery()
@@ -180,9 +186,9 @@ abstract class Model implements Serializable, JsonSerializable
 	/**
 	 * Returns the table this record belongs to.
 	 * 
-	 * @return \spitfire\storage\database\Table
+	 * @return Layout
 	 */
-	public function getTable()
+	public function getTable() : Layout
 	{
 		return $this->table;
 	}

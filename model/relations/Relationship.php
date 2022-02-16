@@ -4,6 +4,7 @@ use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\Query;
 use spitfire\model\query\Queriable;
+use spitfire\storage\database\Query as DatabaseQuery;
 
 abstract class Relationship implements RelationshipInterface
 {
@@ -21,7 +22,7 @@ abstract class Relationship implements RelationshipInterface
 		$this->referenced = $referenced;
 	}
 	
-	public function getQuery() : Query
+	public function getQuery() : DatabaseQuery
 	{
 		$query = $this->referenced->getModel()->query();
 		
@@ -30,7 +31,12 @@ abstract class Relationship implements RelationshipInterface
 			$this->field->getValue()
 		);
 		
-		return $query;
+		return $query->getQuery();
+	}
+	
+	public function getModel(): Model
+	{
+		return $this->referenced->getModel();
 	}
 	
 	public function getField() : Field

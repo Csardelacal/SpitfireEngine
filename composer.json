@@ -12,7 +12,7 @@
 		"spitfire/caching": "^0.1.0",
 		"psr/log": "^1.1",
 		"spitfire/defer": "^0.2.2",
-		"spitfire/database": "dev-master",
+		"spitfire/database": "^0.1.4",
 		"spitfire/collection": "^0.1.2",
 		"psr/http-server-middleware": "^1.0",
 		"psr/http-factory": "^1.0",
