@@ -2,10 +2,7 @@
 
 use spitfire\model\Model;
 use spitfire\model\Query;
-use spitfire\storage\database\identifiers\TableIdentifierInterface;
-use spitfire\storage\database\Query as DatabaseQuery;
-use spitfire\storage\database\query\Join;
-use spitfire\storage\database\query\JoinTable;
+use spitfire\model\query\Queriable;
 
 /**
  * The belongsTo relationship allows an application to indicate that this
@@ -15,7 +12,7 @@ use spitfire\storage\database\query\JoinTable;
  * child. This makes it a single relationship, since models using this
  * relationship will have a single parent.
  */
-class BelongsTo extends Relationship implements RelationshipSingleInterface
+class HasMany extends Relationship implements RelationshipMultipleInterface
 {
 	
 }

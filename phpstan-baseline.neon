@@ -1181,11 +1181,6 @@ parameters:
 			path: model/fields/manytomany.php
 
 		-
-			message: "#^Parameter \\$model of method TextField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 2
-			path: model/fields/text.php
-
-		-
 			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
 			count: 1
 			path: model/support/ReflectionParameterTransformer.php

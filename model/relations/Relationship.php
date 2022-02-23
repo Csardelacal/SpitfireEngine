@@ -3,13 +3,13 @@
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\Query;
-use spitfire\model\query\Queriable;
-use spitfire\storage\database\Query as DatabaseQuery;
 
+/**
+ *
+ * @mixin Query
+ */
 abstract class Relationship implements RelationshipInterface
 {
-	
-	use Queriable;
 	
 	private $field;
 	
@@ -20,18 +20,6 @@ abstract class Relationship implements RelationshipInterface
 	{
 		$this->field = $field;
 		$this->referenced = $referenced;
-	}
-	
-	public function getQuery() : DatabaseQuery
-	{
-		$query = $this->referenced->getModel()->query();
-		
-		$query->where(
-			$this->referenced->getField(),
-			$this->field->getValue()
-		);
-		
-		return $query->getQuery();
 	}
 	
 	public function getModel(): Model
@@ -49,8 +37,26 @@ abstract class Relationship implements RelationshipInterface
 		return $this->referenced;
 	}
 	
-	public function getReferencedModel() : Model
+	public function getQuery(): Query
 	{
-		return $this->referenced->getModel();
+		$query = $this->referenced->getModel()->query();
+		
+		$query->getQuery()->where(
+			$query->getQuery()->getFrom()->output()->getOutput($this->referenced->getField()),
+			$this->field->getModel()->getPrimaryData()
+		);
+		
+		return $query;
+	}
+	
+	public function injector() : RelationshipInjectorInterface
+	{
+		return new DirectRelationshipInjector($this->field, $this->referenced);
+	}
+	
+	public function __call($name, $arguments)
+	{
+		assert(method_exists($this->getQuery(), $name));
+		return $this->getQuery()->{$name}(...$arguments);
 	}
 }

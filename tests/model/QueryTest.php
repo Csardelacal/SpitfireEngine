@@ -46,8 +46,8 @@ class QueryTest extends TestCase
 		$this->layout2->putField('unrelated', 'string:255', false, false);
 		$this->layout2->primary($this->layout->getField('_id'));
 		$this->layout2->putIndex(new ForeignKey(
-			'testforeign', 
-			$this->layout2->getField('test_id'), 
+			'testforeign',
+			$this->layout2->getField('test_id'),
 			$this->layout->getTableReference()->getOutput('_id')
 		));
 		
@@ -70,7 +70,8 @@ class QueryTest extends TestCase
 				parent::__construct($layout);
 			}
 			
-			public function test() {
+			public function test()
+			{
 				return new BelongsTo(new Field($this, 'test_id'), new Field($this->parent, '_id'));
 			}
 		};
@@ -169,5 +170,8 @@ class QueryTest extends TestCase
 		
 		$this->assertStringContainsString('WHERE EXISTS', $driver->queries[0]);
 		$this->assertStringContainsString('`my_stick` = \'is better than bacon\'', $driver->queries[0]);
+		$this->assertCount(1, $driver->queries);
+		$this->assertStringContainsString('`_id` FROM `test`', $driver->queries[0]);
+		$this->assertStringContainsString("`.`my_stick` = 'is better than bacon' AND", $driver->queries[0]);
 	}
 }

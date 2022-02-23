@@ -25,7 +25,7 @@ class Field
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return Model
 	 */
 	public function getModel()

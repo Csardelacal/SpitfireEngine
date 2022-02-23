@@ -17,7 +17,13 @@ class Query
 	
 	private $model;
 	
-	private $with;
+	/**
+	 * The with method allows the user to determine relations that should be
+	 * proactively resolved.
+	 *
+	 * @var string[]
+	 */
+	private $with = [];
 	
 	/**
 	 *
@@ -40,6 +46,19 @@ class Query
 	public function getModel() : Model
 	{
 		return $this->model;
+	}
+	
+	/**
+	 * Pass an array of strings with relationships that should be eagerly
+	 * loaded when retrieving data.
+	 *
+	 * @param string[] $with
+	 * @return self
+	 */
+	public function with(array $with)
+	{
+		$this->with = $with;
+		return $this;
 	}
 	
 	public function first(callable $or = null)

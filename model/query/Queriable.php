@@ -1,5 +1,6 @@
 <?php namespace spitfire\model\query;
 
+use BadMethodCallException;
 use spitfire\model\Model;
 use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Query;
@@ -20,14 +21,15 @@ trait Queriable
 				$operator = $args[1];
 				$value = $args[2];
 				break;
+			default:
+				throw new BadMethodCallException('Invalid argument count for where', 2202231731);
 		}
 		
 		if ($value instanceof Model) {
 			$relation = $this->getModel()->{$field}();
 			assert($relation instanceof RelationshipInterface);
 			
-			$relation->injectWhere($this->getQuery(), $value);
-			$this->getQuery();
+			$relation->injector()->injectWhere($this, $value);
 			return $this;
 		}
 		
@@ -42,7 +44,7 @@ trait Queriable
 		$relation = $this->getModel()->{$relation}();
 		assert($relation instanceof RelationshipInterface);
 		
-		$relation->injectWhereHas($this->getQuery(), $value);
+		$relation->injector()->injectWhereHas($this->getQuery(), $value);
 		return $this->getQuery();
 	}
 	
