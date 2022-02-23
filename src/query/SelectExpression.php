@@ -1,9 +1,7 @@
 <?php namespace spitfire\storage\database\query;
 
 use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\Field;
-use spitfire\storage\database\FieldReference;
-use spitfire\storage\database\TableReference;
+use spitfire\storage\database\identifiers\IdentifierInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -39,7 +37,7 @@ class SelectExpression
 	
 	/**
 	 *
-	 * @var FieldReference
+	 * @var IdentifierInterface
 	 */
 	private $input;
 	
@@ -52,11 +50,11 @@ class SelectExpression
 	
 	/**
 	 *
-	 * @param FieldReference $input
+	 * @param IdentifierInterface $input
 	 * @param string|null $alias
 	 * @param Aggregate|null $aggregate
 	 */
-	public function __construct(FieldReference $input, string $alias = null, Aggregate $aggregate = null)
+	public function __construct(IdentifierInterface $input, string $alias = null, Aggregate $aggregate = null)
 	{
 		assert($aggregate === null || $alias !== null);
 		$this->input = $input;
@@ -71,7 +69,24 @@ class SelectExpression
 	 */
 	public function getAlias() : string
 	{
-		return $this->alias?: $this->input->getName();
+		assert($this->alias !== null);
+		return $this->alias;
+	}
+	
+	
+	/**
+	 * The alias to be addressing this alias as.
+	 *
+	 * @return string
+	 */
+	public function getName() : string
+	{
+		if (!$this->alias) {
+			$raw = $this->input->raw();
+			return array_pop($raw);
+		}
+		
+		return $this->alias;
 	}
 	
 	/**
@@ -106,9 +121,9 @@ class SelectExpression
 	
 	/**
 	 *
-	 * @return FieldReference
+	 * @return IdentifierInterface
 	 */
-	public function getInput(): FieldReference
+	public function getInput(): IdentifierInterface
 	{
 		return $this->input;
 	}

@@ -3,6 +3,7 @@
 use spitfire\collection\Collection;
 use spitfire\event\EventDispatch;
 use spitfire\exceptions\NotFoundException;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
 /*
  * The MIT License
@@ -148,9 +149,9 @@ interface LayoutInterface
 	 * Returns a reference to this table. These are used by queries and migrations for generating
 	 * SQL and passing along references.
 	 *
-	 * @return TableReference
+	 * @return TableIdentifierInterface
 	 */
-	public function getTableReference() : TableReference;
+	public function getTableReference() : TableIdentifierInterface;
 	
 	/**
 	 * This provides access to the table's event dispatching. This is required for

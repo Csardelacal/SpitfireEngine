@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\identifiers\TableIdentifier;
 use spitfire\storage\database\query\SelectExpression;
 
 /**
@@ -32,7 +33,7 @@ class Subquery
 	 * The table we extracted from the query. Please note that this is created in the constructor,
 	 * which means that changes to the query won't be reflected.
 	 *
-	 * @var TableReference
+	 * @var TableIdentifier
 	 */
 	private $table;
 	
@@ -48,15 +49,16 @@ class Subquery
 		});
 		
 		$this->query = $query;
-		$this->table = new TableReference('sq_' . $query->getTable()->getName() . self::$counter++, $outputs);
+		$raw = $query->getTable()->raw();
+		$this->table = new TableIdentifier(['sq_' . array_pop($raw) . self::$counter++], $outputs);
 	}
 	
 	/**
 	 * Returns the table that represents the output of the subquery.
 	 *
-	 * @return TableReference
+	 * @return TableIdentifier
 	 */
-	public function getTable() : TableReference
+	public function getTable() : TableIdentifier
 	{
 		return $this->table;
 	}

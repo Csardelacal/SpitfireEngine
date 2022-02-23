@@ -37,6 +37,17 @@ class MySQLColumnGrammar
 {
 	
 	/**
+	 *
+	 * @var MySQLObjectGrammar
+	 */
+	private $object;
+	
+	public function __construct()
+	{
+		$this->object = new MySQLObjectGrammar();
+	}
+	
+	/**
 	 * The column definition tells the DBMS the name, type and properties of a
 	 * column in a table.
 	 *
@@ -179,7 +190,7 @@ class MySQLColumnGrammar
 				'FOREIGN KEY %s (%s) REFERENCES `%s` (%s)',
 				$index->getName(),
 				$fields->join(', '),
-				$index->getReferencedTable()->getName(),
+				$this->object->identifier($index->getReferencedTable()),
 				$referenced->join(', ')
 			);
 		}

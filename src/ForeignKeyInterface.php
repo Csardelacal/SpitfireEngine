@@ -1,6 +1,8 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
+use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
 /*
  * The MIT License
@@ -34,16 +36,16 @@ interface ForeignKeyInterface extends IndexInterface
 	 * that a foreign key may span multiple fields, but they must all belong to
 	 * the same table.
 	 *
-	 * @return TableReference
+	 * @return TableIdentifierInterface
 	 */
-	public function getReferencedTable() : TableReference;
+	public function getReferencedTable() : TableIdentifierInterface;
 	
 	/**
 	 * Returns a collection of fields that the index is referencing. This allows
 	 * the application to properly define indexes that do only exist for the
 	 * purpose of linking two tables.
 	 *
-	 * @return Collection<FieldReference>
+	 * @return Collection<IdentifierInterface>
 	 */
 	public function getReferencedField() : Collection;
 }

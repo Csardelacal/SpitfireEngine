@@ -2,9 +2,11 @@
 
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\TableReference;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -23,7 +25,7 @@ use spitfire\storage\database\TableReference;
  * MA 02110-1301  USA
  */
 /**
- * Joins are used in databases to create cross products of data that can 
+ * Joins are used in databases to create cross products of data that can
  * be filtered. Allowing the application to retrieve more specific data from
  * the server without the need to perform multiple trips to the DBMS.
  */
@@ -33,25 +35,19 @@ abstract class Join
 	/**
 	 * Whether the join is left, right, inner, cross or full outer. Currently spitfire
 	 * only supports left inner joins.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $direction = 'left';
 	
 	/**
-	 * 
-	 * @var TableReference
-	 */
-	private $table;
-	
-	/**
-	 * 
+	 *
 	 * @var RestrictionGroup
 	 */
 	private $on;
 	
 	/**
-	 * Instance a new join. This takes a TableReference (which may connect a physical table or a 
+	 * Instance a new join. This takes a TableReference (which may connect a physical table or a
 	 * temorary table / query).
 	 */
 	public function __construct()
@@ -61,14 +57,14 @@ abstract class Join
 	
 	/**
 	 * Add a restriction to the table so the join can provide a filter.
-	 * 
+	 *
 	 * @param mixed $args
 	 */
-	public function on(... $args) : Join
+	public function on(...$args) : Join
 	{
 		$field = $args[0];
 		
-		switch(count($args)) {
+		switch (count($args)) {
 			case 2:
 				$operator = '=';
 				$operand = $args[1];
@@ -78,22 +74,22 @@ abstract class Join
 				$operand = $args[2];
 				break;
 			default:
-			throw new ApplicationException('Invalid argument count', 2109271126);
+				throw new ApplicationException('Invalid argument count', 2109271126);
 		}
 		
-		assert($field instanceof FieldReference);
+		assert($field instanceof IdentifierInterface);
 		
 		$this->on->push(new Restriction($field, $operator, $operand));
 		return $this;
 	}
 	
 	/**
-	 * Returns the direction of the join operation (left, right, inner or outer). Please refer to 
+	 * Returns the direction of the join operation (left, right, inner or outer). Please refer to
 	 * the manual of the database management system that you use to understand how these work.
-	 * 
+	 *
 	 * Spitfire will default to the more common left join, but you could use other join types for
 	 * your application.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDirection() : string
@@ -104,11 +100,11 @@ abstract class Join
 	/**
 	 * Returns the list of restrictions used to join the two TableReferences, please note that the query
 	 * table itself may be a query with restrictions.
-	 * 
-	 * Spitfire defaults to avoiding subqueries with restrictions, since it's very common for these 
+	 *
+	 * Spitfire defaults to avoiding subqueries with restrictions, since it's very common for these
 	 * operations to be executed against a temporary table that needs disk access. So any use of these
 	 * will slow down the system in environments where many queries are executed.
-	 * 
+	 *
 	 * @return RestrictionGroup
 	 */
 	public function getRestrictions() : RestrictionGroup

@@ -6,10 +6,12 @@ use PDOStatement;
 use Psr\Log\LoggerInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLQuoter;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
 use spitfire\storage\database\io\CharsetEncoder;
+use spitfire\storage\database\Layout;
 use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
@@ -90,6 +92,10 @@ class Driver implements DriverInterface
 	
 	public function query(Query $query): ResultSetInterface
 	{
+		$sql = (new MySQLQueryGrammar(new MySQLQuoter($this->connection)))->query($query);
+		$res = $this->connection->query($sql);
+		assert($res instanceof PDOStatement);
+		return new ResultSet($this->encoder, $res);
 	}
 	
 	public function update(Record $record): bool

@@ -3,6 +3,9 @@
 use BadMethodCallException;
 use Closure;
 use spitfire\collection\Collection;
+use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\query\Alias;
 use spitfire\storage\database\query\Join;
 use spitfire\storage\database\query\JoinTable;
@@ -72,7 +75,7 @@ class Query
 	 * * Fields that are part of the groupby
 	 * * Computed fields that reduce the result to a single record (like max or count)
 	 *
-	 * @var Collection<FieldReference>
+	 * @var Collection<IdentifierInterface>
 	 */
 	protected $groupBy;
 	
@@ -92,9 +95,9 @@ class Query
 	
 	/**
 	 *
-	 * @param TableReference $table
+	 * @param TableIdentifierInterface $table
 	 */
-	public function __construct(TableReference $table)
+	public function __construct(TableIdentifierInterface $table)
 	{
 		$this->from = new Alias($table, $table->withAlias());
 		$this->joins = new Collection();
@@ -113,17 +116,17 @@ class Query
 	 * * Join : The new connection. You can use it to retrieve fields and push connections
 	 * * Query: The query being joined into. You can use this to retrieve the fields from the uplinks.
 	 *
-	 * @param TableReference $table
+	 * @param TableIdentifierInterface $table
 	 * @param Closure $fn
 	 */
-	public function joinTable(TableReference $table, Closure $fn = null) : Query
+	public function joinTable(TableIdentifierInterface $table, Closure $fn = null) : JoinTable
 	{
 		$join = new JoinTable(new Alias($table, $table->withAlias()));
 		$this->joins->push($join);
 		
 		$fn !== null && $fn($join, $this);
 		
-		return $this;
+		return $join;
 	}
 	
 	/**
@@ -202,7 +205,7 @@ class Query
 	 * @todo When adding aggregation, the system should automatically use the aggregation for extraction
 	 * @todo Currently the system only supports grouping and not aggregation, this is a bit of a strange situation that needs resolution
 	 *
-	 * @param FieldReference[] $columns
+	 * @param IdentifierInterface[] $columns
 	 * @return Query Description
 	 */
 	public function groupBy(array $columns = [])
@@ -214,7 +217,7 @@ class Query
 	/**
 	 * Returns the fields this query is grouped by.
 	 *
-	 * @return Collection<FieldReference>
+	 * @return Collection<IdentifierInterface>
 	 */
 	public function getGroupBy() : Collection
 	{
@@ -225,13 +228,13 @@ class Query
 	 * Add all the fields of a table (implied to be the current query table if null is
 	 * passed).
 	 *
-	 * @param TableReference $table
+	 * @param TableIdentifierInterface $table
 	 * @return Query
 	 */
-	public function selectAll(TableReference $table = null) : Query
+	public function selectAll(TableIdentifierInterface $table = null) : Query
 	{
 		$_t = $table !== null? $table : $this->from->output();
-		$this->calculated->add($_t->getOutputs()->each(function (FieldReference $f) : SelectExpression {
+		$this->calculated->add($_t->getOutputs()->each(function (IdentifierInterface $f) : SelectExpression {
 			return new SelectExpression($f);
 		}));
 		
@@ -239,7 +242,7 @@ class Query
 		return $this;
 	}
 	
-	public function select(string $name, TableReference $table = null) : Query
+	public function select(string $name, TableIdentifierInterface $table = null) : Query
 	{
 		$field = ($table?: $this->from->output())->getOutput($name);
 		$this->calculated->push(new SelectExpression($field));
@@ -265,7 +268,7 @@ class Query
 		return $this;
 	}
 	
-	public function aggregate(FieldReference $field, Aggregate $fn, string $alias) : Query
+	public function aggregate(FieldIdentifier $field, Aggregate $fn, string $alias) : Query
 	{
 		$this->calculated->push(new SelectExpression($field, $alias, $fn));
 		return $this;
@@ -279,7 +282,7 @@ class Query
 	public function getOutput(string $name) : SelectExpression
 	{
 		return $this->calculated->filter(function (SelectExpression $e) use ($name) {
-			return $e->getAlias() === $name;
+			return $e->getName() === $name;
 		})->first();
 	}
 	
@@ -313,7 +316,7 @@ class Query
 	/**
 	 * Returns the actual table this query is searching on.
 	 *
-	 * @return TableReference
+	 * @return TableIdentifierInterface
 	 */
 	public function getTable()
 	{
@@ -339,8 +342,8 @@ class Query
 	{
 		return sprintf(
 			'%s(%s) {%s}',
-			$this->from->input()->getName(),
-			$this->from->output()->getName(),
+			implode('.', $this->from->input()->raw()),
+			implode('.', $this->from->output()->raw()),
 			implode(',', $this->restrictions->toArray())
 		);
 	}

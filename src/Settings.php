@@ -2,7 +2,7 @@
 
 use magic3w\http\url\reflection\URLReflection;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -27,70 +27,70 @@ use magic3w\http\url\reflection\URLReflection;
  */
 
 /**
- * This class allows to retrieve database settings in a organized manner. This 
+ * This class allows to retrieve database settings in a organized manner. This
  * should make the transfer to environment based database settings much easier.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class Settings
 {
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $driver;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $server;
 	
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
 	private $port;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $user;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $password;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $schema;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $prefix;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $encoding;
 	
 	/**
-	 * 
+	 *
 	 * @var array{driver: string, server: string, port: int|null, user: string, password: string, schema: string, prefix: string, encoding: string}
 	 */
 	private static $defaults = [
 		'driver'   => 'mysqlpdo',
 		'server'   => 'localhost',
-		'port'     => null,
+		'port'     => 3306,
 		'user'     => 'root',
 		'password' => '',
 		'schema'   => 'database',
@@ -98,7 +98,7 @@ class Settings
 		'encoding' => 'utf8'
 	];
 	
-	public function __construct(string $driver, string $server, int $port, string $user, string $password, string $schema, string $prefix, string $encoding) 
+	public function __construct(string $driver, string $server, int $port, string $user, string $password, string $schema, string $prefix, string $encoding)
 	{
 		$this->driver = $driver;
 		$this->server = $server;
@@ -120,7 +120,7 @@ class Settings
 		return $this->server;
 	}
 	
-	public function getUser() : string 
+	public function getUser() : string
 	{
 		return $this->user;
 	}
@@ -202,7 +202,7 @@ class Settings
 	 * Reads the settings from a URL. Since October 2017 we're focusing on providing
 	 * URLs to store database credentials, which allow in turn to store the DB
 	 * settings outside of the application and on the server itself.
-	 * 
+	 *
 	 * @todo Move to external URL parser
 	 * @param string $url
 	 * @return Settings
@@ -216,19 +216,19 @@ class Settings
 		$reflection = URLReflection::fromURL($url);
 		
 		return new Settings(
-			$reflection->getProtocol()?: self::$defaults['driver'], 
-			$reflection->getHostname()?: self::$defaults['server'], 
-			$reflection->getPort()?: self::$defaults['port'], 
-			$reflection->getUser()?: self::$defaults['user'], 
-			$reflection->getPassword()?: self::$defaults['password'], 
-			substr($reflection->getPath(), 1)?: self::$defaults['schema'], 
-			$reflection->getQueryString()['prefix']?? self::$defaults['prefix'], 
-			$reflection->getQueryString()['encoding']?? self::$defaults['encoding']
+			$reflection->getScheme()?: self::$defaults['driver'],
+			$reflection->getHost()?: self::$defaults['server'],
+			$reflection->getPort()?: self::$defaults['port'],
+			$reflection->getUser()?: self::$defaults['user'],
+			$reflection->getPassword()?: self::$defaults['password'],
+			substr($reflection->getPath(), 1)?: self::$defaults['schema'],
+			$reflection->getQueryData()['prefix']?? self::$defaults['prefix'],
+			$reflection->getQueryData()['encoding']?? self::$defaults['encoding']
 		);
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param array{driver: string, server: string, port: int|null, user: string, password: string, schema: string, prefix: string, encoding: string} $arr
 	 */
 	public static function fromArray(array $arr) : Settings
@@ -236,15 +236,14 @@ class Settings
 		$ops = $arr + self::$defaults;
 		
 		return new Settings(
-			$ops['driver'], 
-			$ops['server'], 
-			$ops['port'], 
-			$ops['user'], 
-			$ops['password'], 
-			$ops['schema'], 
+			$ops['driver'],
+			$ops['server'],
+			$ops['port'],
+			$ops['user'],
+			$ops['password'],
+			$ops['schema'],
 			$ops['prefix'],
 			$ops['encoding']
 		);
 	}
-	
 }

@@ -2,6 +2,7 @@
 
 use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\query\Alias;
 use spitfire\storage\database\query\SelectExpression;
 use spitfire\storage\database\TableReference;
@@ -37,36 +38,35 @@ class MySQLObjectGrammar
 {
 	
 	
-	public function tableReference(TableReference $table) : string
+	public function identifier(IdentifierInterface $id) : string
 	{
-		return sprintf('`%s`', $table->getName());
-	}
-	
-	public function fieldReference(FieldReference $field) : string
-	{
-		return sprintf('%s.`%s`', $this->tableReference($field->getTable()), $field->getName());
+		return implode('.', array_map(function ($e) : string {
+			return sprintf('`%s`', $e);
+		}, $id->raw()));
 	}
 	
 	public function selectExpression(SelectExpression $s): string
 	{
 		if ($s->getAggregate()) {
+			assert($s->hasAlias());
+			
 			return sprintf(
 				'%s(%s) AS `%s`',
 				$s->getAggregate()->getOperation(),
-				$this->fieldReference($s->getInput()),
+				$this->identifier($s->getInput()),
 				$s->getAlias()
 			);
 		}
 		elseif ($s->hasAlias()) {
-			return sprintf('%s.`%s` AS `%s`', $this->tableReference($s->getInput()->getTable()), $s->getInput()->getName(), $s->getAlias());
+			return sprintf('%s AS `%s`', $this->identifier($s->getInput()), $s->getAlias());
 		}
 		else {
-			return sprintf('%s.`%s`', $this->tableReference($s->getInput()->getTable()), $s->getInput()->getName());
+			return sprintf('%s', $this->identifier($s->getInput()));
 		}
 	}
 	
 	public function alias(Alias $alias) : string
 	{
-		return sprintf('%s AS %s', $this->tableReference($alias->input()), $this->tableReference($alias->output()));
+		return sprintf('%s AS %s', $this->identifier($alias->input()), $this->identifier($alias->output()));
 	}
 }

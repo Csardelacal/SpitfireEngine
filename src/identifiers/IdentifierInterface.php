@@ -1,6 +1,4 @@
-<?php namespace spitfire\storage\database\query;
-
-use spitfire\storage\database\identifiers\TableIdentifierInterface;
+<?php namespace spitfire\storage\database\identifiers;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -24,34 +22,14 @@ use spitfire\storage\database\identifiers\TableIdentifierInterface;
 /**
  *
  */
-class Alias
+interface IdentifierInterface
 {
 	
 	/**
+	 * Returns the components of the identifier. This can be any combination of
+	 * strings that identifies a field or table inside the DBMS or a query.
 	 *
-	 * @var TableIdentifierInterface
+	 * @return string[]
 	 */
-	private $input;
-	
-	/**
-	 *
-	 * @var TableIdentifierInterface
-	 */
-	private $output;
-	
-	public function __construct(TableIdentifierInterface $input, TableIdentifierInterface $output)
-	{
-		$this->input = $input;
-		$this->output = $output;
-	}
-	
-	public function input() : TableIdentifierInterface
-	{
-		return $this->input;
-	}
-	
-	public function output() : TableIdentifierInterface
-	{
-		return $this->output;
-	}
+	public function raw(): array;
 }

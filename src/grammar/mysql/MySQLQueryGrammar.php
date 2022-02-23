@@ -2,8 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\OrderBy;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\query\Join;
@@ -135,7 +134,7 @@ class MySQLQueryGrammar
 		return sprintf(
 			'LEFT JOIN (%s) AS %s ON (%s)',
 			$this->query($join->getSubQuery()->getQuery()),
-			$this->object->tableReference($join->getSubQuery()->getTable()),
+			$this->object->identifier($join->getSubQuery()->getTable()),
 			$this->whereConditions($join->getRestrictions())
 		);
 	}
@@ -179,7 +178,7 @@ class MySQLQueryGrammar
 		}
 		
 		if ($value === null) {
-			return $this->object->fieldReference(
+			return $this->object->identifier(
 				$restriction->getField()
 			) . ($operator === '='? ' IS NULL' : ' IS NOT NULL'
 			);
@@ -190,24 +189,24 @@ class MySQLQueryGrammar
 			
 			return sprintf(
 				'%s %s %s',
-				$this->object->fieldReference($restriction->getField()),
+				$this->object->identifier($restriction->getField()),
 				$restriction->getOperator(),
 				$this->query($value)
 			);
 		}
 		
-		if ($value instanceof FieldReference) {
+		if ($value instanceof IdentifierInterface) {
 			return sprintf(
 				'%s %s %s',
-				$this->object->fieldReference($restriction->getField()),
+				$this->object->identifier($restriction->getField()),
 				$restriction->getOperator(),
-				$this->object->fieldReference($value)
+				$this->object->identifier($value)
 			);
 		}
 		
 		return sprintf(
 			'%s %s %s',
-			$this->object->fieldReference($restriction->getField()),
+			$this->object->identifier($restriction->getField()),
 			$restriction->getOperator(),
 			$this->quoter->quote(strval($value))
 		);
@@ -222,8 +221,8 @@ class MySQLQueryGrammar
 	public function groupBy(Query $query) : string
 	{
 		
-		$grouped = (new Collection($query->getGroupBy()))->each(function (FieldReference $e) {
-			return $this->object->fieldReference($e);
+		$grouped = (new Collection($query->getGroupBy()))->each(function (IdentifierInterface $e) {
+			return $this->object->identifier($e);
 		});
 		
 		return $grouped->isEmpty()? '' : 'GROUP BY ' . $grouped->join(', ');
@@ -240,8 +239,8 @@ class MySQLQueryGrammar
 		$columns = $query->getOrder()->each(function (OrderBy $order) {
 			$output = $order->getOutput();
 			
-			if ($output instanceof FieldReference) {
-				return $this->object->fieldReference($output) . ' ' . $order->getDirection();
+			if ($output instanceof IdentifierInterface) {
+				return $this->object->identifier($output) . ' ' . $order->getDirection();
 			}
 			
 			/**

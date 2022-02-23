@@ -3,6 +3,8 @@
 use spitfire\collection\Collection;
 use spitfire\event\EventDispatch;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\identifiers\TableIdentifier;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -320,9 +322,9 @@ class Layout implements LayoutInterface
 		})->first();
 	}
 	
-	public function getTableReference() : TableReference
+	public function getTableReference() : TableIdentifierInterface
 	{
-		return new TableReference($this->getTableName(), $this->fields->each(function (Field $e) {
+		return new TableIdentifier([$this->getTableName()], $this->fields->each(function (Field $e) {
 			return $e->getName();
 		}));
 	}

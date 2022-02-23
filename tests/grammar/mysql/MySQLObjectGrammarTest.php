@@ -6,6 +6,8 @@ use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\FieldReference;
 use spitfire\storage\database\grammar\mysql\MySQLObjectGrammar;
+use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\query\SelectExpression;
 use spitfire\storage\database\TableReference;
@@ -27,13 +29,13 @@ class MySQLObjectGrammarTest extends TestCase
 	
 	/**
 	 *
-	 * @var TableReference
+	 * @var TableIdentifierInterface
 	 */
 	private $queryTable;
 	
 	/**
 	 *
-	 * @var FieldReference
+	 * @var IdentifierInterface
 	 */
 	private $queryField;
 	
@@ -52,29 +54,31 @@ class MySQLObjectGrammarTest extends TestCase
 	
 	public function testQueryField()
 	{
-		$statement = $this->grammar->fieldReference($this->queryField);
+		$statement = $this->grammar->identifier($this->queryField);
+		$raw = $this->queryField->raw();
 		
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
-		$this->assertStringContainsString($this->queryField->getTable()->getName(), $statement);
-		$this->assertStringContainsString($this->queryField->getName(), $statement);
+		$this->assertStringContainsString($raw[0], $statement);
+		$this->assertStringContainsString($raw[1], $statement);
 	}
 	
 	public function testAggregate()
 	{
 		$aggregate = new Aggregate(Aggregate::AGGREGATE_COUNT);
 		$statement = $this->grammar->selectExpression(new SelectExpression($this->queryField, '__C__', $aggregate));
+		$raw = $this->queryField->raw();
 		
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
 		$this->assertStringContainsString('count', $statement);
 		$this->assertStringContainsString('__C__', $statement);
-		$this->assertStringContainsString($this->queryField->getName(), $statement);
+		$this->assertStringContainsString($raw[1], $statement);
 	}
 	
 	public function testTable()
 	{
-		$statement = $this->grammar->tableReference($this->queryTable);
+		$statement = $this->grammar->identifier($this->queryTable);
 		$this->assertStringContainsString($this->queryTable->getName(), $statement);
 	}
 }

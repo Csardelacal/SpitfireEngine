@@ -23,9 +23,9 @@
 			"./vendor/bin/phpunit tests"
 		],
 		"sniff":
-			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')",
+			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff master --diff-filter=d --cached --name-only | grep -E '\\.php$')",
 		"style":
-			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff --diff-filter=d --cached --name-only | grep -E '\\.php$')"
+			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff master --diff-filter=d --cached --name-only | grep -E '\\.php$')"
 	},
 	"require": {
 		"spitfire/collection": "^0.1.1",
@@ -37,7 +37,8 @@
 	"require-dev": {
 		"phpunit/phpunit": "^9.5",
 		"phpstan/phpstan": "^0.12.92",
-		"magic3w/php-coding-standard": "^1.0"
+		"magic3w/php-coding-standard": "^1.0",
+		"monolog/monolog": "^2.3"
 	},
 
 	"repositories":

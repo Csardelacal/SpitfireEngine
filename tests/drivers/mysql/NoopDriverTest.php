@@ -1,6 +1,10 @@
-<?php namespace spitfire\storage\database\query;
+<?php namespace spitfire\storage\database\tests\drivers\mysql;
 
-use spitfire\storage\database\identifiers\TableIdentifierInterface;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
+use spitfire\storage\database\drivers\mysqlpdo\NoopDriver;
+use spitfire\storage\database\Settings;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -24,34 +28,40 @@ use spitfire\storage\database\identifiers\TableIdentifierInterface;
 /**
  *
  */
-class Alias
+class NoopDriverTest extends TestCase
 {
 	
 	/**
 	 *
-	 * @var TableIdentifierInterface
+	 * @var TestHandler
 	 */
-	private $input;
+	private $handler;
 	
 	/**
 	 *
-	 * @var TableIdentifierInterface
+	 * @var Logger
 	 */
-	private $output;
+	private $logger;
 	
-	public function __construct(TableIdentifierInterface $input, TableIdentifierInterface $output)
+	/**
+	 *
+	 * @var NoopDriver
+	 */
+	private $driver;
+	
+	public function setUp() : void
 	{
-		$this->input = $input;
-		$this->output = $output;
+		$this->handler = new TestHandler();
+		$this->logger = new Logger('test', [$this->handler]);
+		$this->driver = new NoopDriver(Settings::fromArray([]), $this->logger);
 	}
 	
-	public function input() : TableIdentifierInterface
+	public function testExec()
 	{
-		return $this->input;
-	}
-	
-	public function output() : TableIdentifierInterface
-	{
-		return $this->output;
+		$this->driver->create();
+		$records = $this->handler->getRecords();
+		
+		$this->assertCount(2, $records);
+		$this->assertEquals('CREATE DATABASE `database`', $records[0]['message']);
 	}
 }

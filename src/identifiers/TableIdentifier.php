@@ -1,6 +1,9 @@
-<?php namespace spitfire\storage\database;
+<?php namespace spitfire\storage\database\identifiers;
 
 use spitfire\collection\Collection;
+use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
 /**
  * The query table wraps a table and provides a consistent aliasing mechanism.
@@ -16,16 +19,16 @@ use spitfire\collection\Collection;
  * And then reference the fields within them as c1.id or c2.id. Otherwise, the DBMS
  * will fail, indicating that the field `id` is ambiguous.
  */
-class TableReference
+class TableIdentifier implements TableIdentifierInterface
 {
 	
 	/**
 	 * This table provides all the information (metadata and fields) about the table
 	 * being queried.
 	 *
-	 * @var string
+	 * @var string[]
 	 */
-	private $table;
+	private $raw;
 	
 	/**
 	 *
@@ -49,13 +52,15 @@ class TableReference
 	
 	/**
 	 *
-	 * @param string $table
+	 * @param string[] $table
 	 * @param Collection<string> $fields
 	 */
-	public function __construct(string $table, Collection $fields)
+	public function __construct(array $table, Collection $fields)
 	{
+		assert(count($table) > 0 && count($table) < 3);
+		
 		#In case this table is aliased, the unique alias will be generated using this.
-		$this->table = $table;
+		$this->raw = $table;
 		$this->fields = $fields;
 	}
 	
@@ -63,12 +68,17 @@ class TableReference
 	 * Creates a copy of this query table, generating a new ID in the process. This is
 	 * due to the fact that these aliases are intended to be immutable.
 	 *
-	 * @return TableReference
+	 * @return TableIdentifierInterface
 	 */
-	public function withAlias() : TableReference
+	public function withAlias() : TableIdentifierInterface
 	{
 		$id = self::$counter++;
-		return new TableReference(sprintf('%s_%s', $this->table, $id), $this->fields);
+		
+		$raw = $this->raw;
+		$last = sprintf('%s_%s', array_pop($raw), $id);
+		array_push($raw, $last);
+		
+		return new TableIdentifier($raw, $this->fields);
 	}
 	
 	/**
@@ -80,23 +90,29 @@ class TableReference
 	 */
 	public function getName(): string
 	{
-		return $this->table;
+		$raw = $this->raw;
+		return array_pop($raw);
 	}
 	
 	/**
 	 *
-	 * @return Collection<FieldReference>
+	 * @return Collection<IdentifierInterface>
 	 */
 	public function getOutputs(): Collection
 	{
-		return $this->fields->each(function (string $field) : FieldReference {
-			return new FieldReference($this, $field);
+		return $this->fields->each(function (string $field) : IdentifierInterface {
+			return new FieldIdentifier(array_merge($this->raw, [$field]));
 		});
 	}
 	
-	public function getOutput(string $name): FieldReference
+	public function getOutput(string $name): FieldIdentifier
 	{
 		assert($this->fields->contains($name));
-		return new FieldReference($this, $name);
+		return new FieldIdentifier(array_merge($this->raw, [$name]));
+	}
+	
+	public function raw(): array
+	{
+		return $this->raw;
 	}
 }

@@ -13,7 +13,7 @@ use spitfire\storage\database\Table;
 /**
  * This class works as a traditional resultset. It acts as an adapter between the
  * driver's raw data retrieving and the logical record classes.
- * 
+ *
  * @author César de la Cal <cesar@magic3w.com>
  */
 class ResultSet implements ResultSetInterface
@@ -28,29 +28,20 @@ class ResultSet implements ResultSetInterface
 	private $result;
 	
 	/**
-	 * This is a reference to the table this resultset belongs to. This allows
-	 * Spitfire to retrieve data about the model and the fields the datatype has.
-	 *
-	 * @var LayoutInterface
-	 */
-	private $table;
-	
-	/**
 	 * An encoder that converts the data from the DB charset, to the internal charset.
-	 * 
+	 *
 	 * @var CharsetEncoder
 	 */
 	private $encoder;
 	
-	public function __construct(CharsetEncoder $encoder, LayoutInterface $table, PDOStatement $stt) 
+	public function __construct(CharsetEncoder $encoder, PDOStatement $stt)
 	{
 		$this->result = $stt;
 		$this->encoder = $encoder;
-		$this->table = $table;
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return Collection<mixed[]>
 	 */
 	public function fetchAll() : Collection
@@ -65,10 +56,7 @@ class ResultSet implements ResultSetInterface
 		}
 		
 		foreach ($data as &$record) {
-			$record = new Record(
-				$this->table,
-				array_map( Array($this->encoder, 'decode'), $record)
-			);
+			$record = array_map(array($this->encoder, 'decode'), $record);
 		}
 		
 		return new Collection($data);
@@ -77,12 +65,12 @@ class ResultSet implements ResultSetInterface
 	/**
 	 * Returns the data the way any associative adapter would return it. This allows
 	 * your app to withdraw raw data without it being treated by the framework.
-	 * 
+	 *
 	 * @return mixed[]
 	 */
 	public function fetch(): ?array
 	{
-		return $this->result->fetch(PDO::FETCH_ASSOC);
+		$record = $this->result->fetch(PDO::FETCH_ASSOC);
+		return array_map(array($this->encoder, 'decode'), $record);
 	}
-	
 }

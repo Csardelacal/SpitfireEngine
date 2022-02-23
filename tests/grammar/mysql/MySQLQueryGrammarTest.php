@@ -26,7 +26,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$query->selectAll();
 		
 		$result = $grammar->selectExpression($query);
-		$this->assertStringContainsString($query->getFrom()->output()->getName(), $result);
+		$this->assertStringContainsString($query->getFrom()->output()->raw()[0], $result);
 		$this->assertStringContainsString('testfield', $result);
 		$this->assertStringContainsString('teststring', $result);
 	}
@@ -75,7 +75,7 @@ class MySQLQueryGrammarTest extends TestCase
 		});
 		
 		$result = $grammar->query($query);
-		$this->assertStringContainsString($query->getTable()->getName(), $result);
+		$this->assertStringContainsString($query->getTable()->raw()[0], $result);
 		$this->assertStringContainsString('testfield', $result);
 		$this->assertStringContainsString('teststring', $result);
 	}
@@ -124,7 +124,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$query->putOrder(new OrderBy($query->getFrom()->output()->getOutput('testfield')));
 		
 		$result = $grammar->query($query);
-		$this->assertStringContainsString("ORDER BY `{$query->getFrom()->output()->getName()}`.`testfield`", $result);
+		$this->assertStringContainsString("ORDER BY `{$query->getFrom()->output()->raw()[0]}`.`testfield`", $result);
 		$this->assertStringContainsString('teststring', $result);
 	}
 	
@@ -150,7 +150,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$query->putOrder(new OrderBy($query->getOutput('_META_COUNT_')->getAlias()));
 		
 		$result = $grammar->query($query);
-		$this->assertStringContainsString($query->getFrom()->output()->getName(), $result);
+		$this->assertStringContainsString($query->getFrom()->output()->raw()[0], $result);
 		$this->assertStringContainsString('testfield', $result);
 		$this->assertStringContainsString('ORDER BY `_META_COUNT_`', $result);
 		$this->assertStringContainsString('teststring', $result);

@@ -1,16 +1,16 @@
 <?php namespace spitfire\storage\database\query;
 
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Query;
 
 /**
- * A restriction indicates a condition a record in a database's relation must 
+ * A restriction indicates a condition a record in a database's relation must
  * satisfy to be returned by a database query.
- * 
- * Restrictions can only contain basic data-types like integers, floats, strings 
+ *
+ * Restrictions can only contain basic data-types like integers, floats, strings
  * or enums as their value.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class Restriction implements RestrictionInterface
@@ -20,14 +20,14 @@ class Restriction implements RestrictionInterface
 	 * The field that this restriction is searching on. This lets the application
 	 * know which table, field and alias to use to refer to when assembling a query.
 	 *
-	 * @var FieldReference|null
+	 * @var IdentifierInterface|null
 	 */
 	private $field;
 	
 	/**
 	 * The value can be any value that our database can accept within the field. Please note
 	 * that during runtime the system does not check whether this data is clean.
-	 * 
+	 *
 	 * @var mixed
 	 */
 	private $value;
@@ -35,7 +35,7 @@ class Restriction implements RestrictionInterface
 	/**
 	 * The operator used to represent the type of restriction within the database field. These
 	 * are generally greather than, smaller than and equals.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $operator;
@@ -45,12 +45,12 @@ class Restriction implements RestrictionInterface
 	
 	/**
 	 * Instances a new restriction.
-	 * 
-	 * @param FieldReference|null $field
+	 *
+	 * @param IdentifierInterface|null $field
 	 * @param string $operator
 	 * @param mixed $value
 	 */
-	public function __construct(FieldReference $field = null, string $operator, $value) 
+	public function __construct(IdentifierInterface $field = null, string $operator, $value)
 	{
 		$this->field    = $field;
 		$this->value    = $value;
@@ -59,10 +59,10 @@ class Restriction implements RestrictionInterface
 	
 	/**
 	 * Returns the field we're querying for the value of the restriction.
-	 * 
-	 * @return FieldReference
+	 *
+	 * @return IdentifierInterface
 	 */
-	public function getField() :? FieldReference
+	public function getField() :? IdentifierInterface
 	{
 		return $this->field;
 	}
@@ -75,40 +75,40 @@ class Restriction implements RestrictionInterface
 		
 		return $this->operator;
 	}
-
+	
 	/**
 	 * Returns the value we're searching the database for.
-	 * 
-	 * @return string|int|Query|null|FieldReference
+	 *
+	 * @return string|int|Query|null|IdentifierInterface
 	 */
-	public function getValue() 
+	public function getValue()
 	{
 		return $this->value;
 	}
 	
 	/**
 	 * Negates the operator and returns the operation this leads to.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function negate() : string
 	{
 		switch ($this->operator) {
-			case '=': 
+			case '=':
 				return $this->operator = '<>';
-			case '<>': 
+			case '<>':
 				return $this->operator = '=';
-			case '>': 
+			case '>':
 				return $this->operator = '<';
-			case '<': 
+			case '<':
 				return $this->operator = '>';
-			case 'IS': 
+			case 'IS':
 				return $this->operator = 'IS NOT';
-			case 'IS NOT': 
+			case 'IS NOT':
 				return $this->operator = 'IS';
-			case 'LIKE': 
+			case 'LIKE':
 				return $this->operator = 'NOT LIKE';
-			case 'NOT LIKE': 
+			case 'NOT LIKE':
 				return $this->operator = 'LIKE';
 		}
 		

@@ -4,17 +4,16 @@ use Closure;
 use InvalidArgumentException;
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\FieldReference;
-use spitfire\storage\database\Query;
+use spitfire\storage\database\identifiers\IdentifierInterface;
 
 /**
  * A restriction group contains a set of restrictions (or restriction groups)
  * that can be used by the database to generate more complex queries.
- * 
+ *
  * This groups can be different of two different types, they can be 'OR' or 'AND',
  * changing the behavior of the group by making it more or less restrictive. This
  * OR and AND types are known from most DBMS.
- * 
+ *
  * @extends Collection<RestrictionInterface>
  */
 class RestrictionGroup extends Collection implements RestrictionInterface
@@ -26,18 +25,18 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	 * Determines whether the restrictions within this are inclusive or exclusive. If the
 	 * group is an and, all the conditions must be satisfied. If it's an or, just one has
 	 * to be satisfied.
-	 * 
+	 *
 	 * @var string
 	 */
-	private $type = self::TYPE_OR;
+	private $type = self::TYPE_AND;
 	
 	/**
 	 * The negated flag allows the application to maintain a state on the restriction
 	 * group. Negating these groups is expensive, since we have to descend into the
 	 * children and rewrite a lot of stuff.
-	 * 
+	 *
 	 * Instead we maintaing the state and flip the group only when and if needed.
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $negated = false;
@@ -48,7 +47,7 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	 *
 	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 *
-	 * @param FieldReference $field
+	 * @param IdentifierInterface $field
 	 * @param mixed  $value
 	 * @param string $_
 	 * @return RestrictionGroup
@@ -62,8 +61,12 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 		 * Depending on how the parameters are provided, where will appropriately
 		 * shuffle them to make them look correctly.
 		 */
-		if ($params === 3) { list($operator, $value) = [$value, $_]; }
-		else               { $operator = Restriction::EQUAL_OPERATOR; }
+		if ($params === 3) {
+			list($operator, $value) = [$value, $_];
+		}
+		else {
+			$operator = Restriction::EQUAL_OPERATOR;
+		}
 		
 		
 		$this->push(new Restriction($field, $operator, $value));
@@ -85,7 +88,7 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string $type
 	 * @return RestrictionGroup
 	 */
@@ -122,18 +125,27 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 			 * We normalize the children first. This ensures that the normalization
 			 * the parent performs is still correct.
 			 */
-			->filter(function ($e) { return $e instanceof RestrictionGroup; })
-			->each(function (RestrictionGroup$e) { return $e->normalize(); })
-			
+			->filter(function ($e) {
+				return $e instanceof RestrictionGroup;
+			})
+			->each(function (RestrictionGroup$e) {
+				return $e->normalize();
+			})
+		
 			/*
 			 * We remove the groups that satisfy any of the following:
 			 * * They're empty
 			 * * They only contain one restriction
 			 * * They have the same type as the current one. Based on (A AND B) AND C == A AND B AND C
 			 */
-			->filter(function (RestrictionGroup$e) { return $e->getType() === $this->getType() || $e->count() < 2; })
+			->filter(function (RestrictionGroup$e) {
+				return $e->getType() === $this->getType() || $e->count() < 2;
+			})
 			->each(function ($e) {
-				$this->add($e->each(function ($e) { $e->setParent($this); return $e; })->toArray());
+				$this->add($e->each(function ($e) {
+					$e->setParent($this);
+					return $e;
+				})->toArray());
 				$this->remove($e);
 			});
 		
@@ -143,23 +155,24 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	/**
 	 * When a restriction group is flipped, the system will change the type from
 	 * AND to OR and viceversa. When doing so, all the restrictions are negated.
-	 * 
+	 *
 	 * This means that <code>$a == $a->flip()</code> even though they have inverted
 	 * types. This is specially interesting for query optimization and negation.
-	 * 
+	 *
 	 * @return RestrictionGroup
 	 */
 	public function flip() : RestrictionGroup
 	{
 		$this->negated = !$this->negated;
 		$this->type = $this->type === self::TYPE_AND? self::TYPE_OR : self::TYPE_AND;
-
+		
 		foreach ($this as $restriction) {
 			if ($restriction instanceof Restriction ||
-			    $restriction instanceof RestrictionGroup) { $restriction->negate(); }
+				$restriction instanceof RestrictionGroup) {
+				$restriction->negate();
+			}
 		}
 		
 		return $this;
 	}
-
 }

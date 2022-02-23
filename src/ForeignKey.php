@@ -1,6 +1,10 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
+use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\TableIdentifier;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -52,7 +56,7 @@ class ForeignKey implements ForeignKeyInterface
 	 * index does not allow, but the index will not allow it's own field to contain
 	 * data that is not in the referenced field.
 	 *
-	 * @var FieldReference
+	 * @var IdentifierInterface
 	 */
 	private $referenced;
 	
@@ -60,9 +64,9 @@ class ForeignKey implements ForeignKeyInterface
 	 *
 	 * @param string $name
 	 * @param Field $field
-	 * @param FieldReference $referenced
+	 * @param IdentifierInterface $referenced
 	 */
-	public function __construct(string $name, Field $field, FieldReference $referenced)
+	public function __construct(string $name, Field $field, IdentifierInterface $referenced)
 	{
 		$this->name  = $name;
 		$this->field = $field;
@@ -100,7 +104,7 @@ class ForeignKey implements ForeignKeyInterface
 	 * In the event of the application planning to return multiple fields as part
 	 * of the index, they would have to be appropriately sorted, so they correlate.
 	 *
-	 * @return Collection<FieldReference>
+	 * @return Collection<IdentifierInterface>
 	 */
 	public function getReferencedField(): Collection
 	{
@@ -110,11 +114,16 @@ class ForeignKey implements ForeignKeyInterface
 	/**
 	 * Return the table the foreign key is referencing to.
 	 *
-	 * @return TableReference
+	 * @return TableIdentifierInterface
 	 */
-	public function getReferencedTable(): TableReference
+	public function getReferencedTable(): TableIdentifierInterface
 	{
-		return $this->referenced->getTable();
+		$raw = $this->referenced->raw();
+		array_pop($raw);
+		
+		$table = new TableIdentifier($raw, new Collection());
+		
+		return $table;
 	}
 	
 	/**
