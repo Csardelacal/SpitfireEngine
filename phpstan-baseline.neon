@@ -331,36 +331,6 @@ parameters:
 			path: model/Index.php
 
 		-
-			message: "#^Call to method getAutoIncrement\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 2
-			path: model/Model.php
-
-		-
-			message: "#^Call to method getCollection\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 5
-			path: model/Model.php
-
-		-
-			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: model/Model.php
-
-		-
-			message: "#^Call to method getModel\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 5
-			path: model/Model.php
-
-		-
-			message: "#^Call to method getPrimaryKey\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: model/Model.php
-
-		-
-			message: "#^Call to method increment\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: model/Model.php
-
-		-
 			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
 			count: 1
 			path: model/Model.php
@@ -371,23 +341,8 @@ parameters:
 			path: model/Model.php
 
 		-
-			message: "#^Method spitfire\\\\model\\\\Model\\:\\:getTable\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: model/Model.php
-
-		-
 			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
 			count: 2
-			path: model/Model.php
-
-		-
-			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Model\\:\\:__construct\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 2
-			path: model/Model.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\Model\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
-			count: 1
 			path: model/Model.php
 
 		-
@@ -462,6 +417,11 @@ parameters:
 
 		-
 			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
+			count: 1
+			path: model/adapters/BaseAdapter.php
+
+		-
+			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:validate\\(\\) has invalid return type spitfire\\\\validation\\\\ValidationResult\\.$#"
 			count: 1
 			path: model/adapters/BaseAdapter.php
 
@@ -1121,66 +1081,6 @@ parameters:
 			path: model/fields/float.php
 
 		-
-			message: "#^Access to constant TYPE_AND on an unknown class spitfire\\\\storage\\\\database\\\\RestrictionGroup\\.$#"
-			count: 2
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Access to constant TYPE_OR on an unknown class spitfire\\\\storage\\\\database\\\\RestrictionGroup\\.$#"
-			count: 2
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\model\\\\Field\\:\\:getTarget\\(\\)\\.$#"
-			count: 1
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:getQueryTable\\(\\)\\.$#"
-			count: 3
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Call to method getAll\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 2
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Call to method getDb\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 3
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Method ManyToManyField\\:\\:getModelField\\(\\) should return spitfire\\\\storage\\\\database\\\\Field but returns spitfire\\\\model\\\\Field\\|null\\.$#"
-			count: 1
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Parameter \\#2 \\$role of method spitfire\\\\model\\\\fields\\\\ChildrenField\\:\\:__construct\\(\\) expects string, null given\\.$#"
-			count: 1
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Parameter \\$model of method ManyToManyField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 2
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Property ManyToManyField\\:\\:\\$meta is never written, only read\\.$#"
-			count: 1
-			path: model/fields/manytomany.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 2
-			path: model/fields/manytomany.php
-
-		-
 			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
 			count: 1
 			path: model/support/ReflectionParameterTransformer.php
@@ -1204,38 +1104,3 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 1
 			path: mvc/Invoke.php
-
-		-
-			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid return type spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) should return spitfire\\\\utils\\\\type but returns string\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid return type spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Parameter \\#1 \\$string of function htmlspecialchars expects string, spitfire\\\\utils\\\\type given\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, spitfire\\\\utils\\\\type given\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:escape\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: utils/Strings.php
-
-		-
-			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
-			count: 1
-			path: utils/Strings.php

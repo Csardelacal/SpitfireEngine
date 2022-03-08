@@ -2,16 +2,20 @@
 
 use Exception;
 use JsonSerializable;
-use Monolog\Logger;
+use ReflectionClass;
 use Serializable;
 use spitfire\collection\Collection;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Schema;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
+use spitfire\storage\database\DriverInterface as DatabaseDriverInterface;
+use spitfire\storage\database\events\RecordBeforeInsertEvent;
+use spitfire\storage\database\events\RecordBeforeUpdateEvent;
 use spitfire\storage\database\Layout;
-use spitfire\storage\database\Settings;
-use spitfire\storage\database\Table;
+use spitfire\storage\database\Record;
+use spitfire\storage\database\Schema as DatabaseSchema;
+use spitfire\utils\Strings;
 
 /**
  * This class allows to track changes on database data along the use of a program
@@ -28,38 +32,60 @@ abstract class Model implements Serializable, JsonSerializable
 	 * around the array that allows to validate data on the go and to alert the
 	 * programmer about inconsistent types.
 	 *
-	 * @var mixed[]
+	 * @var Record|null
 	 */
-	private $data;
+	private $record;
 	
 	/**
-	 * Keeps information about the table that owns the record this Model represents.
-	 * This allows it to power functions like store that require knowledge about
-	 * the database keeping the information.
+	 * Determines whether the model is holding a record or not.
 	 * 
-	 * @var Layout
+	 * @var bool
 	 */
-	private $table;
-	
-	#Status vars
-	private $new = false;
+	private $hydrated = false;
 	
 	/**
-	 * Creates a new record.
 	 * 
-	 * @param Layout $table DB Table this record belongs to. Easiest way
-	 *                       to get this is by using $this->model->*tablename*
-	 *
-	 * @param mixed $data  Attention! This parameter is intended to be
-	 *                       used by the system. To create a new record, leave
-	 *                       empty and use setData.
+	 * @var string|null
 	 */
-	public function __construct(Layout $table = null, $data = [])
+	private $connection = null;
+	
+	private $prefix = null;
+	
+	/**
+	 * If the model was retrieved as part of a relationship, it's possible that it
+	 * is enriched by the pivot data.
+	 * 
+	 * This for example could be something like a user and follower table. In that case
+	 * we could retrieve a user's followers, this would return a usermodel with the
+	 * follower model as a pivot, which provides information about the relationship like
+	 * when the following was started, etc.
+	 * 
+	 * @var Model|null
+	 */
+	private $pivot = null;
+	
+	/**
+	 * Returns the record this model is working on. This requires the model to be 
+	 * hydrated to work.
+	 * 
+	 * @return Record
+	 */
+	public function getRecord() : Record
 	{
-		
-		$this->table   = $table;
-		$this->new     = empty($data);
-		$this->data    = $data;
+		assert($this->record !== null);
+		return $this->record;
+	}
+	
+	/**
+	 * Returns the record this model is working on. This requires the model to be 
+	 * hydrated to work.
+	 * 
+	 * @return Model
+	 */
+	public function setRecord(Record $record) : Model
+	{
+		$this->record = $record;
+		return $this;
 	}
 	
 	/**
@@ -71,7 +97,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function getData()
 	{
-		return $this->data;
+		return $this->record->raw();
 	}
 	
 	/**
@@ -81,60 +107,31 @@ abstract class Model implements Serializable, JsonSerializable
 	 *
 	 * @throws PrivateException
 	 */
-	public function store()
+	public function store(array $options = [])
 	{
 		$this->onbeforesave();
 		
 		#Decide whether to insert or update depending on the Model
-		if ($this->new) {
-			#Get the autoincrement field
-			$id = $this->table->getCollection()->insert($this);
-			$ai = $this->table->getAutoIncrement();
-			$ad = $ai? $this->data[$ai->getName()]->dbGetData() : null;
+		if ($this->record->exists()) {
+			#Tell the table that the record is being stored
+			$event = new RecordBeforeInsertEvent($this->getConnection(), $this->record, $options);
 			
-			#If the autoincrement field is empty set the new DB given id
-			if ($ai && !reset($ad)) {
-				$this->data[$ai->getName()]->dbSetData(array($ai->getName() => $id));
-			}
+			$fn = function (Record $record) {
+				#The insert function is in this closure, which allows the event to cancel storing the data
+				$this->getConnection()->insert($record);
+			};
 		}
 		else {
-			$this->table->getCollection()->update($this);
+			#Tell the table that the record is being stored
+			$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->record, $options);
+			$fn = function (Record $record) {
+				#The insert function is in this closure, which allows the event to cancel storing the data
+				$this->getConnection()->update($record);
+			};
 		}
 		
-		$this->new = false;
-		
-		foreach ($this->data as $value) {
-			$value->commit();
-		}
-	}
-	
-	/**
-	 *
-	 * @deprecated since version 0.1-dev 20190611
-	 */
-	public function write()
-	{
-		#Decide whether to insert or update depending on the Model
-		if ($this->new) {
-			#Get the autoincrement field
-			$id = $this->table->getCollection()->insert($this);
-			$ai = $this->table->getAutoIncrement();
-			$ad = $ai? $this->data[$ai->getName()]->dbGetData() : null;
-			
-			#If the autoincrement field is empty set the new DB given id
-			if ($ai && !reset($ad)) {
-				$this->data[$ai->getName()]->dbSetData(array($ai->getName() => $id));
-			}
-		}
-		else {
-			$this->table->getCollection()->update($this);
-		}
-		
-		$this->new = false;
-		
-		foreach ($this->data as $value) {
-			$value->commit();
-		}
+		$this->getTable()->events()->dispatch($event, $fn);
+		$this->rehydrate();
 	}
 	
 	/**
@@ -146,11 +143,11 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function getPrimaryData()
 	{
-		$primaryFields = $this->table->getPrimaryKey()->getFields();
+		$primaryFields = $this->getTable()->getPrimaryKey()->getFields();
 		$ret = array();
 		
 		foreach ($primaryFields as $field) {
-			return $this->data[$field->getName()];
+			$ret[$field->getName()] = $this->record->get($field->getName());
 		}
 		
 		return $ret;
@@ -158,16 +155,16 @@ abstract class Model implements Serializable, JsonSerializable
 	
 	public function query()
 	{
-		return new Query($this);
+		return new QueryBuilder($this);
 	}
 	
 	public function get($name)
 	{
-		if (!array_key_exists($name, $this->data)) {
+		if (!array_key_exists($name, $this->record)) {
 			throw new Exception('Bad');
 		}
-		assert(array_key_exists($name, $this->data));
-		return $this->data[$name];
+		assert(array_key_exists($name, $this->record));
+		return $this->record[$name];
 	}
 	
 	public function getQuery()
@@ -190,24 +187,48 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function getTable() : Layout
 	{
-		return $this->table;
+		return $this->getSchema()->getLayoutByName($this->getTableName());
+	}
+	
+	/**
+	 * By default, spitfire 
+	 */
+	public function getSchema() : DatabaseSchema
+	{
+		return spitfire()->provider()->get(DatabaseSchema::class);
+	}
+	
+	public function getPrefix()
+	{
+		return $this->prefix;
+	}
+	
+	public function setPrefix($prefix)
+	{
+		$this->prefix = $prefix;
+	}
+	
+	public function getTableName()
+	{
+		$reflection = new ReflectionClass($this);
+		return Strings::plural($reflection->getShortName());
 	}
 	
 	public function __set($field, $value)
 	{
 		
-		if (!isset($this->data[$field])) {
+		if (!isset($this->record[$field])) {
 			throw new PrivateException("Setting non existent field: " . $field);
 		}
 		
-		$this->data[$field]->usrSetData($value);
+		$this->record[$field]->usrSetData($value);
 	}
 	
 	public function __get($field)
 	{
 		#If the field is in the record we return it's contents
-		if (isset($this->data[$field])) {
-			return $this->data[$field]->usrGetData();
+		if (isset($this->record[$field])) {
+			return $this->record[$field]->usrGetData();
 		} else {
 			//TODO: In case debug is enabled this should throw an exception
 			return null;
@@ -216,14 +237,14 @@ abstract class Model implements Serializable, JsonSerializable
 	
 	public function __isset($name)
 	{
-		return (array_key_exists($name, $this->data));
+		return (array_key_exists($name, $this->record));
 	}
 	
 	//TODO: This now breaks due to the adapters
 	public function serialize()
 	{
 		$data = array();
-		foreach ($this->data as $adapter) {
+		foreach ($this->record as $adapter) {
 			if (! $adapter->isSynced()) {
 				throw new PrivateException("Database record cannot be serialized out of sync");
 			}
@@ -252,23 +273,17 @@ abstract class Model implements Serializable, JsonSerializable
 		return sprintf('%s(%s)', $this->getTable()->getModel()->getName(), implode(',', $this->getPrimaryData()));
 	}
 	
-	public function delete()
+	public function delete(array $options = [])
 	{
-		$this->table->getCollection()->delete($this);
-	}
-	
-	/**
-	 * Increments a value on high read/write environments. Using update can
-	 * cause data to be corrupted. Increment requires the data to be in sync
-	 * aka. stored to database.
-	 *
-	 * @param String $key
-	 * @param int|float $diff
-	 * @throws PrivateException
-	 */
-	public function increment($key, $diff = 1)
-	{
-		$this->table->increment($this, $key, $diff);
+		#Tell the table that the record is being deleted
+		$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->record, $options);
+		$fn = function (Record $record) {
+			#The insert function is in this closure, which allows the event to cancel storing the data
+			$this->getConnection()->update($record);
+		};
+		
+		$this->getTable()->events()->dispatch($event, $fn);
+		$this->rehydrate();
 	}
 	
 	protected function makeAdapters()
@@ -280,7 +295,7 @@ abstract class Model implements Serializable, JsonSerializable
 		
 		$fields = $this->getTable()->getModel()->getFields();
 		foreach ($fields as $field) {
-			$this->data[$field->getName()] = $field->getAdapter($this);
+			$this->record[$field->getName()] = $field->getAdapter($this);
 		}
 	}
 	
@@ -305,7 +320,7 @@ abstract class Model implements Serializable, JsonSerializable
 			}
 			
 			#Set the data into the adapter and let it work it's magic.
-			$this->data[$field->getName()]->dbSetData($current);
+			$this->record[$field->getName()]->dbSetData($current);
 		}
 	}
 	
@@ -317,7 +332,7 @@ abstract class Model implements Serializable, JsonSerializable
 	public function getDependencies()
 	{
 		
-		$dependencies = collect($this->data)
+		$dependencies = collect($this->record)
 			->each(function ($e) {
 				return $e->getDependencies();
 			})
@@ -327,9 +342,19 @@ abstract class Model implements Serializable, JsonSerializable
 		return $dependencies;
 	}
 	
-	public function isNew()
+	public function setPivot(Model $pivot) : Model
 	{
-		return $this->new;
+		$this->pivot = $pivot;
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @return Model|null
+	 */
+	public function pivot() :? Model
+	{
+		return $this->pivot;
 	}
 	
 	/**
@@ -349,7 +374,7 @@ abstract class Model implements Serializable, JsonSerializable
 	{
 		$raw = [];
 		
-		foreach ($this->data as $name => $adapter) {
+		foreach ($this->record as $name => $adapter) {
 			$raw[$name] = $adapter->usrGetData();
 		}
 		
@@ -363,5 +388,12 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function onbeforesave()
 	{
+	}
+	
+	public function getConnection() : DatabaseDriverInterface
+	{
+		return $this->connection !== null?
+			spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
+			spitfire()->provider()->get(ConnectionManager::class)->getDefault();
 	}
 }

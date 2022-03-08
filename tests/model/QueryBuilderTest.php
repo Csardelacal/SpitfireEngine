@@ -6,7 +6,9 @@ use PHPUnit\Framework\TestCase;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\Query;
+use spitfire\model\QueryBuilder;
 use spitfire\model\relations\BelongsTo;
+use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
@@ -19,10 +21,11 @@ use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
 use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\query\ResultInterface;
+use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
 
-class QueryTest extends TestCase
+class QueryBuilderTest extends TestCase
 {
 	
 	private $schema;
@@ -55,24 +58,32 @@ class QueryTest extends TestCase
 		$this->schema->putLayout($this->layout);
 		$this->schema->putLayout($this->layout2);
 		
+		spitfire()->provider()->set(Schema::class, $this->schema);
+		
 		$this->model = new class ($this->layout) extends Model {
 			
+			public function getTableName()
+			{
+				return 'test';
+			}
 		};
 		
-		$this->model2 = new class ($this->layout2, $this->model) extends Model {
-			private $layout;
+		$this->model2 = new class ($this->model) extends Model {
 			private $parent;
 			
-			public function __construct($layout, $parent)
+			public function __construct(Model $parent)
 			{
-				$this->layout = $layout;
 				$this->parent = $parent;
-				parent::__construct($layout);
 			}
 			
 			public function test()
 			{
-				return new BelongsTo(new Field($this, 'test_id'), new Field($this->parent, '_id'));
+				return new BelongsToOne(new Field($this, 'test_id'), new Field($this->parent, '_id'));
+			}
+			
+			public function getTableName()
+			{
+				return 'test2';
 			}
 		};
 	}
@@ -115,9 +126,18 @@ class QueryTest extends TestCase
 			$this->model2
 		);
 		
-		$builder->where('test', new class ($this->layout, ['_id' => 1]) extends Model {
+		$model = new class () extends Model {
 			
-		});
+			
+			public function getTableName()
+			{
+				return 'test2';
+			}
+		};
+		
+		$model->setRecord(new Record(['_id' => 1]));
+		
+		$builder->where('test', $model);
 		
 		$connection->query($builder->getQuery());
 		
@@ -162,7 +182,7 @@ class QueryTest extends TestCase
 			$this->model2
 		);
 		
-		$builder->whereHas('test', function (Query $builder) {
+		$builder->whereHas('test', function (QueryBuilder $builder) {
 			$builder->where('my_stick', 'is better than bacon');
 		});
 		

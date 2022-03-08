@@ -29,7 +29,7 @@ trait Queriable
 			$relation = $this->getModel()->{$field}();
 			assert($relation instanceof RelationshipInterface);
 			
-			$relation->injector()->injectWhere($this, $value);
+			$relation->injector()->injectWhere($this->getQuery()->getRestrictions(), $value);
 			return $this;
 		}
 		
@@ -44,7 +44,7 @@ trait Queriable
 		$relation = $this->getModel()->{$relation}();
 		assert($relation instanceof RelationshipInterface);
 		
-		$relation->injector()->injectWhereHas($this->getQuery(), $value);
+		$relation->injector()->injectWhereHas($this->getQuery()->getRestrictions(), $value);
 		return $this->getQuery();
 	}
 	

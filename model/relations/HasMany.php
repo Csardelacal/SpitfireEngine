@@ -3,6 +3,7 @@
 use spitfire\model\Model;
 use spitfire\model\Query;
 use spitfire\model\query\Queriable;
+use spitfire\model\QueryBuilder;
 
 /**
  * The belongsTo relationship allows an application to indicate that this
@@ -15,4 +16,20 @@ use spitfire\model\query\Queriable;
 class HasMany extends Relationship implements RelationshipMultipleInterface
 {
 	
+	public function getQuery(): QueryBuilder
+	{
+		$query = $this->getReferenced()->getModel()->query();
+		
+		$query->getQuery()->where(
+			$query->getQuery()->getFrom()->output()->getOutput($this->getReferenced()->getField()),
+			$this->getField()->getModel()->getPrimaryData()
+		);
+		
+		return $query;
+	}
+	
+	public function injector(): RelationshipInjectorInterface
+	{
+		
+	}
 }

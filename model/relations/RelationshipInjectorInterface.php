@@ -3,6 +3,7 @@
 use spitfire\model\Model;
 use spitfire\model\Query;
 use spitfire\storage\database\Query as DatabaseQuery;
+use spitfire\storage\database\query\RestrictionGroup;
 
 /**
  * A relationship describes how two models connect with each other. This is useful
@@ -11,6 +12,6 @@ use spitfire\storage\database\Query as DatabaseQuery;
 interface RelationshipInjectorInterface
 {
 	
-	public function injectWhere(Query $query, Model $model) : void;
-	public function injectWhereHas(DatabaseQuery $query, callable $value) : void;
+	public function injectWhere(RestrictionGroup $query, Model $model) : void;
+	public function injectWhereHas(RestrictionGroup $query, callable $value) : void;
 }

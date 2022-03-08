@@ -18,7 +18,7 @@ class Field
 	private $model;
 	private $name;
 	
-	public function __construct($model, $field)
+	public function __construct(Model $model, $field)
 	{
 		$this->model = $model;
 		$this->name = $field;
@@ -28,7 +28,7 @@ class Field
 	 *
 	 * @return Model
 	 */
-	public function getModel()
+	public function getModel() : Model
 	{
 		return $this->model;
 	}

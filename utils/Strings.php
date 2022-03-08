@@ -10,19 +10,6 @@ class Strings
 	 * @param String $str
 	 * @return string
 	 */
-	public static function camel2underscores($str)
-	{
-		trigger_error("The function camel2underscores was renamed to snake", E_USER_DEPRECATED);
-		return self::snake($str);
-	}
-	
-	/**
-	 * Turns camelCased strings into under_scored strings. This is specially useful
-	 * for class to URL conversion and the other way around.
-	 *
-	 * @param String $str
-	 * @return string
-	 */
 	public static function snake(string $str) : string
 	{
 		$_ret = preg_replace('/[A-Z]/', '_$0', $str);
@@ -124,8 +111,8 @@ class Strings
 	/**
 	 *
 	 * @deprecated since version 0.1
-	 * @param type $str
-	 * @return type
+	 * @param string $str
+	 * @return string
 	 */
 	public static function strToHTML($str)
 	{
@@ -164,8 +151,8 @@ class Strings
 	 * Please note though, that this method does not protect your application from
 	 * executing javascript if the output is used in the wrong location.
 	 *
-	 * @param type $str
-	 * @return type
+	 * @param string $str
+	 * @return string
 	 */
 	public static function escape($str)
 	{

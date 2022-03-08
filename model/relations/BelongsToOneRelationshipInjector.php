@@ -2,11 +2,11 @@
 
 use spitfire\model\Field;
 use spitfire\model\Model;
-use spitfire\model\Query;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
+use spitfire\storage\database\query\RestrictionGroup;
 
-class DirectRelationshipInjector implements RelationshipInjectorInterface
+class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 {
 	
 	private $field;
@@ -18,6 +18,9 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	{
 		$this->field = $field;
 		$this->referenced = $referenced;
+		
+		assert($this->field->getField() !== null);
+		assert($this->referenced->getField() !== null);
 	}
 	
 	
@@ -26,13 +29,13 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	 * have to do is look for those where the referencing field matches the
 	 * id of the parent model.
 	 *
-	 * @param Query $query
+	 * @param RestrictionGroup $query
 	 * @param Model $model
 	 * @return void
 	 */
-	public function injectWhere(Query $query, Model $model) : void
+	public function injectWhere(RestrictionGroup $query, Model $model) : void
 	{
-		$query->where($this->field->getField(), $model->getPrimaryData());
+		$query->where($query->table()->getOutput($this->field->getField()), $model->getPrimaryData()[$this->referenced->getField()]);
 	}
 	
 	/**
@@ -42,11 +45,11 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	 *
 	 * PostModel::query()->whereHas('user', function (Query $query) { $query->where('verified', true); });
 	 *
-	 * @param DatabaseQuery $query
+	 * @param RestrictionGroup $query
 	 * @param callable(DatabaseQuery):void $fn
 	 * @return void
 	 */
-	public function injectWhereHas(DatabaseQuery $query, callable $fn) : void
+	public function injectWhereHas(RestrictionGroup $query, callable $fn) : void
 	{
 		$query->whereExists(function (TableIdentifierInterface $parent) use ($fn) : DatabaseQuery {
 			/**
@@ -73,7 +76,7 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 			);
 			
 			/**
-			 * 
+			 *
 			 */
 			$query->select($this->referenced->getField());
 			

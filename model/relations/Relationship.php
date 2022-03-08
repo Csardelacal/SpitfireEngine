@@ -2,11 +2,11 @@
 
 use spitfire\model\Field;
 use spitfire\model\Model;
-use spitfire\model\Query;
+use spitfire\model\QueryBuilder;
 
 /**
  *
- * @mixin Query
+ * @mixin QueryBuilder
  */
 abstract class Relationship implements RelationshipInterface
 {
@@ -37,22 +37,9 @@ abstract class Relationship implements RelationshipInterface
 		return $this->referenced;
 	}
 	
-	public function getQuery(): Query
-	{
-		$query = $this->referenced->getModel()->query();
-		
-		$query->getQuery()->where(
-			$query->getQuery()->getFrom()->output()->getOutput($this->referenced->getField()),
-			$this->field->getModel()->getPrimaryData()
-		);
-		
-		return $query;
-	}
+	abstract public function getQuery(): QueryBuilder;
 	
-	public function injector() : RelationshipInjectorInterface
-	{
-		return new DirectRelationshipInjector($this->field, $this->referenced);
-	}
+	abstract public function injector() : RelationshipInjectorInterface;
 	
 	public function __call($name, $arguments)
 	{
