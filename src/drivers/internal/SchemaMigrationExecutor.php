@@ -1,12 +1,15 @@
 <?php namespace spitfire\storage\database\drivers\internal;
 
+use BadMethodCallException;
 use Closure;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 use spitfire\storage\database\Layout;
+use spitfire\storage\database\migration\TagManager;
+use spitfire\storage\database\migration\TagManagerInterface;
 use spitfire\storage\database\Schema;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -36,7 +39,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	/**
 	 * The schema will contain all the migrated tables and data. Please note that
 	 * since this is a reference, the data is being written to the reference directly.
-	 * 
+	 *
 	 * @var Schema
 	 */
 	private $schema;
@@ -49,7 +52,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	/**
 	 * Add the table to the schema. Before writing it to the schema, the application may
 	 * alter the table.
-	 * 
+	 *
 	 * @param string $name
 	 * @param Closure $fn
 	 * @return SchemaMigrationExecutorInterface
@@ -66,7 +69,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	
 	/**
 	 * Rename the table on the schema.
-	 * 
+	 *
 	 * @param string $from
 	 * @param string $to
 	 * @return SchemaMigrationExecutorInterface
@@ -81,7 +84,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	
 	/**
 	 * Removes the layout from the schema.
-	 * 
+	 *
 	 * @param string $name
 	 * @return SchemaMigrationExecutorInterface
 	 */
@@ -93,7 +96,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	
 	/**
 	 * Allows the application to descend into migrations pertaining to the table.
-	 * 
+	 *
 	 * @param string $name
 	 * @return TableMigrationExecutorInterface
 	 */
@@ -110,12 +113,17 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	/**
 	 * The internal schema migrator cannot execute any SQL code. Invoking this method
 	 * will lead to nothing happening.
-	 * 
+	 *
 	 * @param string $sql
 	 * @return SchemaMigrationExecutorInterface
 	 */
 	public function execute(string $sql): SchemaMigrationExecutorInterface
 	{
 		return $this;
+	}
+	
+	public function tags(): TagManagerInterface
+	{
+		throw new BadMethodCallException('Not implemented');
 	}
 }

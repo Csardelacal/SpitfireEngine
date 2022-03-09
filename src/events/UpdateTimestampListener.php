@@ -7,7 +7,7 @@ use spitfire\event\Listener;
 use spitfire\event\ListenerInterface;
 use spitfire\exceptions\ApplicationException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -27,14 +27,14 @@ use spitfire\exceptions\ApplicationException;
  */
 
  /**
-  * 
+  *
   * @implements ListenerInterface<RecordEvent>
   */
 class UpdateTimestampListener implements ListenerInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $field;
@@ -50,7 +50,7 @@ class UpdateTimestampListener implements ListenerInterface
 		 * If the payload is not good, we cannot proceed.
 		 */
 		assert($event instanceof RecordEvent);
-		assert($event->getRecord()->getLayout()->hasField($this->field));
+		assert($event->getRecord()->has($this->field));
 		
 		$event->getRecord()->set($this->field, time());
 	}

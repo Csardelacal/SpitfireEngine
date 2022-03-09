@@ -4,14 +4,18 @@ use PDO;
 use Psr\Log\LoggerInterface;
 use spitfire\storage\database\DriverInterface;
 use spitfire\storage\database\drivers\internal\MockResultSet;
+use spitfire\storage\database\drivers\internal\SchemaMigrationExecutor;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
 use spitfire\storage\database\grammar\SlashQuoter;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
+use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
 
 /**
@@ -47,12 +51,9 @@ class NoopDriver implements DriverInterface
 		$this->logger   = $logger;
 	}
 	
-	public function apply(MigrationOperationInterface $migration) : void
+	public function getMigrationExecutor(Schema $schema): SchemaMigrationExecutorInterface
 	{
-	}
-	
-	public function rollback(MigrationOperationInterface $migration) : void
-	{
+		return new SchemaMigrationExecutor($schema);
 	}
 	
 	public function query(Query $query): ResultSetInterface
@@ -62,28 +63,28 @@ class NoopDriver implements DriverInterface
 		return new MockResultSet();
 	}
 	
-	public function update(Record $record): bool
+	public function update(LayoutInterface $layout, Record $record): bool
 	{
 		$grammar = new MySQLRecordGrammar(new SlashQuoter());
-		$stmt = $grammar->updateRecord($record);
+		$stmt = $grammar->updateRecord($layout, $record);
 		
 		$this->logger->debug($stmt);
 		return true;
 	}
 	
-	public function insert(Record $record): bool
+	public function insert(LayoutInterface $layout, Record $record): bool
 	{
 		$grammar = new MySQLRecordGrammar(new SlashQuoter());
-		$stmt = $grammar->insertRecord($record);
+		$stmt = $grammar->insertRecord($layout, $record);
 		
 		$this->logger->debug($stmt);
 		return true;
 	}
 	
-	public function delete(Record $record): bool
+	public function delete(LayoutInterface $layout, Record $record): bool
 	{
 		$grammar = new MySQLRecordGrammar(new SlashQuoter());
-		$stmt = $grammar->deleteRecord($record);
+		$stmt = $grammar->deleteRecord($layout, $record);
 		
 		$this->logger->debug($stmt);
 		return true;

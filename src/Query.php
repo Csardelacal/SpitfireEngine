@@ -251,6 +251,22 @@ class Query
 	}
 	
 	/**
+	 * Creates a copy of the query that does not select anything. This is specially
+	 * useful, when dealing with metadata queries, like count.
+	 *
+	 * Since order usually depends on the outputs of the query, the order is also removed.
+	 *
+	 * @return Query
+	 */
+	public function withoutSelect() : Query
+	{
+		$copy = clone $this;
+		$copy->calculated = new Collection();
+		$copy->order = new Collection();
+		return $copy;
+	}
+	
+	/**
 	 * Adds a restriction to the current query. Restraining the data a field
 	 * in it can contain.
 	 *

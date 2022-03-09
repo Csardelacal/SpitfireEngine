@@ -27,21 +27,13 @@ interface DriverInterface
 {
 	
 	/**
-	 * Executes a migration operation on the database. This allows you to create,
-	 * upgrade or downgrade database schemas.
+	 * Returns an object capable of making changes to the database, allowing migrations to
+	 * be applied and rolled back without issue.
 	 *
-	 * @param MigrationOperationInterface $migration
-	 * @throws ApplicationException If the migration could not be applied
+	 * @param Schema $schema
+	 * @return SchemaMigrationExecutorInterface
 	 */
-	public function apply(MigrationOperationInterface $migration) : void;
-	
-	/**
-	 * Rolls a migration back. Undoing it's changes to the schema.
-	 *
-	 * @param MigrationOperationInterface $migration
-	 * @throws ApplicationException If the migration could not be applied
-	 */
-	public function rollback(MigrationOperationInterface $migration) : void;
+	public function getMigrationExecutor(Schema $schema) : SchemaMigrationExecutorInterface;
 	
 	/**
 	 * Query the database for data. The query needs to encapsulate all the data
@@ -56,25 +48,28 @@ interface DriverInterface
 	 * Update database data in the DBMS. The result is true if the data was written
 	 * successfuly.
 	 *
+	 * @param LayoutInterface $layout
 	 * @param Record $record
 	 */
-	public function update(Record $record) : bool;
+	public function update(LayoutInterface $layout, Record $record) : bool;
 	
 	/**
 	 * Insert database data in the DBMS. The result is true if the data was written
 	 * successfuly.
 	 *
+	 * @param LayoutInterface $layout
 	 * @param Record $record
 	 */
-	public function insert(Record $record) : bool;
+	public function insert(LayoutInterface $layout, Record $record) : bool;
 	
 	/**
 	 * Delete database data in the DBMS. The result is true if the data was written
 	 * successfuly.
 	 *
+	 * @param LayoutInterface $layout
 	 * @param Record $record
 	 */
-	public function delete(Record $record) : bool;
+	public function delete(LayoutInterface $layout, Record $record) : bool;
 	
 	/**
 	 * Allows the application to create the database needed to store the tables

@@ -31,7 +31,7 @@ class TagManager
 		 * To ensure that the tagging system can work at all, we need to make sure that
 		 * the tag table is included.
 		 */
-		$this->driver->apply(new TagLayoutMigration());
+		(new TagLayoutMigration())->up($this->driver->getMigrationExecutor($schema));
 		$this->schema->apply(new TagLayoutMigration());
 	}
 	
@@ -43,8 +43,8 @@ class TagManager
 	 */
 	public function tag(string $tag): void
 	{
-		$record = new Record($this->schema->getLayoutByName('_tags'), ['tag' => $tag]);
-		$this->driver->insert($record);
+		$record = new Record(['tag' => $tag]);
+		$this->driver->insert($this->schema->getLayoutByName('_tags'), $record);
 	}
 	
 	/**
@@ -55,8 +55,8 @@ class TagManager
 	 */
 	public function untag(string $tag): void
 	{
-		$record = new Record($this->schema->getLayoutByName('_tags'), ['tag' => $tag]);
-		$this->driver->delete($record);
+		$record = new Record(['tag' => $tag]);
+		$this->driver->delete($this->schema->getLayoutByName('_tags'), $record);
 	}
 	
 	/**

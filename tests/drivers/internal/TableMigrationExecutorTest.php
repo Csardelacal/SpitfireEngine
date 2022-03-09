@@ -13,7 +13,7 @@ use spitfire\storage\database\events\RecordEventPayload;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\Record;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -94,9 +94,10 @@ class TableMigrationExecutorTest extends TestCase
 		$migrator->id();
 		$migrator->timestamps();
 		
-		$record = new Record($layout, []);
+		$record = new Record(['created' => null]);
 		
-		$layout->events()->dispatch(new RecordBeforeInsertEvent(new MockDriver, $record), function () {});
+		$layout->events()->dispatch(new RecordBeforeInsertEvent(new MockDriver, $layout, $record), function () {
+		});
 		
 		$this->assertNotEquals($record->get('created'), null);
 		$this->assertEquals($record->get('created'), time());
@@ -112,13 +113,15 @@ class TableMigrationExecutorTest extends TestCase
 		$migrator->softDelete();
 		
 		$driver = new MockDriver;
-		$record = new Record($layout, []);
-		$event  = new RecordBeforeDeleteEvent($driver, $record);
+		$record = new Record(['removed' => null]);
+		$event  = new RecordBeforeDeleteEvent($driver, $layout, $record);
 		$called = false;
 		
 		$layout->events()->dispatch(
-			$event, 
-			function () use (&$called) { $called = true; }
+			$event,
+			function () use (&$called) {
+				$called = true;
+			}
 		);
 		
 		$this->assertNotEquals($record->get('removed'), null);

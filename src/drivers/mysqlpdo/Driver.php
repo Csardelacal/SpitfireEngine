@@ -6,16 +6,20 @@ use PDOStatement;
 use Psr\Log\LoggerInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
+use spitfire\storage\database\Field;
 use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLQuoter;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
 use spitfire\storage\database\io\CharsetEncoder;
 use spitfire\storage\database\Layout;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
+use spitfire\storage\database\Schema;
 use spitfire\storage\database\Settings;
 
 /**
@@ -82,12 +86,9 @@ class Driver implements DriverInterface
 		}
 	}
 	
-	public function apply(MigrationOperationInterface $migration) : void
+	public function getMigrationExecutor(Schema $schema): SchemaMigrationExecutorInterface
 	{
-	}
-	
-	public function rollback(MigrationOperationInterface $migration) : void
-	{
+		return new SchemaMigrationExecutor($this->connection, $schema);
 	}
 	
 	public function query(Query $query): ResultSetInterface
@@ -98,32 +99,54 @@ class Driver implements DriverInterface
 		return new ResultSet($this->encoder, $res);
 	}
 	
-	public function update(Record $record): bool
+	public function update(LayoutInterface $layout, Record $record): bool
 	{
 		$grammar = new MySQLRecordGrammar(new MySQLQuoter($this->connection));
-		$stmt = $grammar->updateRecord($record);
+		$stmt = $grammar->updateRecord($layout, $record);
 		
 		$this->logger->debug($stmt);
 		$result = $this->connection->exec($stmt);
+		$record->commit();
 		
 		return $result !== false;
 	}
 	
-	public function insert(Record $record): bool
+	public function insert(LayoutInterface $layout, Record $record): bool
 	{
 		$grammar = new MySQLRecordGrammar(new MySQLQuoter($this->connection));
-		$stmt = $grammar->insertRecord($record);
+		$stmt = $grammar->insertRecord($layout, $record);
 		
 		$this->logger->debug($stmt);
 		$result = $this->connection->exec($stmt);
 		
+		/**
+		 * In the event that the field is automatically incremented, the dbms
+		 * will provide us with the value it inserted. This value needs to be
+		 * stored to the record.
+		 */
+		$increment = $layout->getFields()->filter(function (Field $field) {
+			return $field->isAutoIncrement();
+		})->first();
+		
+		if ($increment !== null) {
+			$id = $this->connection->lastInsertId();
+			$record->set($increment->getName(), $id);
+		}
+		
+		/**
+		 * Since the database data is now in sync with the contents of the
+		 * record, we can commit the record as containing the same data that
+		 * the DBMS does.
+		 */
+		$record->commit();
+		
 		return $result !== false;
 	}
 	
-	public function delete(Record $record): bool
+	public function delete(LayoutInterface $layout, Record $record): bool
 	{
 		$grammar = new MySQLRecordGrammar(new MySQLQuoter($this->connection));
-		$stmt = $grammar->deleteRecord($record);
+		$stmt = $grammar->deleteRecord($layout, $record);
 		
 		$this->logger->debug($stmt);
 		$result = $this->connection->exec($stmt);

@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database\drivers\mysqlpdo;
 
+use BadMethodCallException;
 use Closure;
 use PDO;
 use PDOStatement;
@@ -8,6 +9,7 @@ use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 use spitfire\storage\database\drivers\internal\TableMigrationExecutor as GenericTableMigrationExecutor;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
 use spitfire\storage\database\Layout;
+use spitfire\storage\database\migration\TagManagerInterface;
 use spitfire\storage\database\Schema;
 
 /*
@@ -155,5 +157,10 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		
 		assert($stmt instanceof PDOStatement);
 		return ($stmt->fetch()[0]) > 0;
+	}
+	
+	public function tags(): TagManagerInterface
+	{
+		throw new BadMethodCallException('Not yet implemented');
 	}
 }

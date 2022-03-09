@@ -2,7 +2,7 @@
 
 use spitfire\exceptions\ApplicationException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,66 +25,32 @@ class Record
 {
 	
 	/**
-	 * The layout/table this record fits into.
-	 * 
-	 * @var LayoutInterface
-	 */
-	private $layout;
-	
-	/**
-	 * 
+	 *
 	 * @var mixed[]
 	 */
 	private $original;
 	
 	/**
 	 * The raw data that the database contains for this record.
-	 * 
+	 *
 	 * @var mixed[]
 	 */
 	private $data;
 	
 	/**
-	 * 
-	 * @param LayoutInterface $layout
+	 *
 	 * @param mixed[] $data
 	 */
-	public function __construct(LayoutInterface $layout, array $data)
+	public function __construct(array $data)
 	{
-		$this->layout   = $layout;
 		$this->original = $data;
 		$this->data     = $data;
-	}
-	
-	public function getLayout() : LayoutInterface
-	{
-		return $this->layout;
-	}
-	
-	/**
-	 * The value of the primary key, null means that the software expects the
-	 * database to assign this record a primary key on insert.
-	 * 
-	 * When editing the primary key value this will ALWAYS return the data that 
-	 * the system assumes to be in the database.
-	 * 
-	 * @return int|string
-	 */
-	public function getPrimary()
-	{
-		$fields = $this->layout->getPrimaryKey()->getFields();
-		
-		if ($fields->isEmpty()) {
-			throw new ApplicationException('Record has no primary key', 2101181306); 
-		}
-		
-		return $this->original[$fields[0]->getName()];
 	}
 	
 	/**
 	 * Returns true if the record (or the given data) have not been changed since the
 	 * record was created by the database.
-	 * 
+	 *
 	 * @param string|null $field
 	 * @return bool
 	 */
@@ -95,83 +61,82 @@ class Record
 		 * be caught during development, and therefore we consider an assertion sufficient
 		 * here.
 		 */
-		assert($field === null || $this->layout->hasField($field));
+		assert($field === null || $this->has($field));
 		
 		/**
 		 * If the user determined which field has to be checked, then we just check that the
 		 * current and original data contain the same data.
 		 */
-		if ($field !== null) { 
-			return $this->data[$field] !== $this->original[$field]; 
+		if ($field !== null) {
+			return $this->data[$field] !== $this->original[$field];
 		}
 		
 		/**
 		 * Otherwise, loop over the available fields, and check if any of them have different data
 		 * in them.
 		 */
-		foreach ($this->layout->getFields() as $_field) {
-			$_name = $_field->getName();
-			$_data = $this->data[$_name]?? null;
+		foreach ($this->data as $_name => $_value) {
 			$_orig = $this->original[$_name]?? null;
-			if ($_data !== $_orig) { return true; }
+			if ($_value !== $_orig) {
+				return true;
+			}
 		}
 		
 		/**
 		 * If no items were found, we can safely say that the data is unchanged since we
 		 * read it from the database.
 		 */
-		return false; 
+		return false;
 	}
 	
 	/**
 	 * Returns the current data for the provided field. During development, with assertions,
 	 * this method will fail when attempting to read a non-existing field.
-	 * 
+	 *
 	 * @param string $field
 	 * @return mixed
 	 */
 	public function get(string $field)
 	{
-		assert(!!$this->layout->hasField($field));
 		return $this->data[$field]?? null;
 	}
 	
 	
 	/**
 	 * Sets a field to a given value.
-	 * 
+	 *
 	 * @param string $field
 	 * @param mixed $value
 	 * @return Record
 	 */
 	public function set(string $field, $value) : Record
 	{
-		/**
-		 * Only when assertions are enabled we perform a check whether this field is actually
-		 * intended to be written at all.
-		 */
-		assert(!!$this->layout->hasField($field));
+		assert($this->has($field));
 		
 		$this->data[$field] = $value;
 		return $this;
 	}
 	
+	public function has(string $name) : bool
+	{
+		return array_key_exists($name, $this->original);
+	}
+	
 	/**
 	 * Returns the data that the database holds for the given field.
-	 * 
+	 *
 	 * @param string $field
 	 * @return mixed
 	 */
-	public function original(string $field) : mixed
+	public function original(string $field)
 	{
-		assert(!!$this->layout->hasField($field));
 		return $this->original[$field]?? null;
 	}
 	
 	/**
 	 * Returns the current data. This means that the system expects this data to be
 	 * in the DBMS when the data is saved.
-	 * 
+	 *
 	 * @return mixed[]
 	 */
 	public function raw() : array
@@ -181,7 +146,7 @@ class Record
 	
 	/**
 	 * Returns the data that the system expects to be contained in the database right now.
-	 * 
+	 *
 	 * @return mixed[]
 	 */
 	public function rawOriginal() : array
@@ -191,15 +156,14 @@ class Record
 	
 	/**
 	 * Generate a diff of data that needs to be written to the database.
-	 * 
+	 *
 	 * @return mixed[]
 	 */
 	public function diff() : array
 	{
 		$_diff = [];
 		
-		foreach ($this->layout->getFields() as $_field) {
-			$_name = $_field->getName();
+		foreach (array_keys($this->data) as $_name) {
 			if (($this->data[$_name]?? null) !== ($this->original[$_name]?? null)) {
 				$_diff[$_name] = $this->data[$_name];
 			}
@@ -224,5 +188,4 @@ class Record
 	{
 		$this->data = $this->original;
 	}
-	
 }

@@ -32,12 +32,12 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, ['testfield' => 1]);
+		$record = new Record(['testfield' => 1]);
 		$record->set('testfield', 3);
 		
 		$this->assertArrayHasKey('testfield', $record->diff());
 		
-		$statement = $this->grammar->updateRecord($record);
+		$statement = $this->grammar->updateRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
 		$this->assertStringContainsString("`testfield` = '1'", $statement);
@@ -52,13 +52,13 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, ['testfield' => 1, 'testfield2' => 2]);
+		$record = new Record(['testfield' => 1, 'testfield2' => 2]);
 		$record->set('testfield', 3);
 		$record->set('testfield2', 3);
 		
 		$this->assertArrayHasKey('testfield', $record->diff());
 		
-		$statement = $this->grammar->updateRecord($record);
+		$statement = $this->grammar->updateRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
 		$this->assertStringContainsString("`testfield2` = '3'", $statement);
@@ -73,12 +73,12 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, []);
+		$record = new Record(['testfield' => null]);
 		$record->set('testfield', 3);
 		
 		$this->assertArrayHasKey('testfield', $record->raw());
 		
-		$statement = $this->grammar->insertRecord($record);
+		$statement = $this->grammar->insertRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield', $statement);
 		$this->assertStringContainsString("VALUES ( '3' )", $statement);
@@ -93,13 +93,13 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, []);
+		$record = new Record(['testfield' => null, 'testfield2' => null]);
 		$record->set('testfield', 3);
 		$record->set('testfield2', 4);
 		
 		$this->assertArrayHasKey('testfield', $record->raw());
 		
-		$statement = $this->grammar->insertRecord($record);
+		$statement = $this->grammar->insertRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield`, `testfield2', $statement);
 		$this->assertStringContainsString("VALUES ( '3', '4' )", $statement);
@@ -114,12 +114,12 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, []);
+		$record = new Record(['testfield' => null, 'testfield2' => null]);
 		$record->set('testfield', 3);
 		
 		$this->assertArrayHasKey('testfield', $record->raw());
 		
-		$statement = $this->grammar->insertRecord($record);
+		$statement = $this->grammar->insertRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield`, `testfield2', $statement);
 		$this->assertStringContainsString("VALUES ( '3', null )", $statement);
@@ -134,13 +134,13 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, []);
+		$record = new Record(['testfield' => null, 'testfield2' => null]);
 		$record->set('testfield', 3);
 		$record->set('testfield2', 'hello');
 		
 		$this->assertArrayHasKey('testfield', $record->raw());
 		
-		$statement = $this->grammar->insertRecord($record);
+		$statement = $this->grammar->insertRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('testfield`, `testfield2', $statement);
 		$this->assertStringContainsString("VALUES ( '3', 'hello' )", $statement);
@@ -155,11 +155,11 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
-		$record = new Record($layout, ['testfield' => 3, 'testfield2' => 'hello']);
+		$record = new Record(['testfield' => 3, 'testfield2' => 'hello']);
 		
 		$this->assertArrayHasKey('testfield', $record->raw());
 		
-		$statement = $this->grammar->deleteRecord($record);
+		$statement = $this->grammar->deleteRecord($layout, $record);
 		$this->assertStringContainsString('testtable', $statement);
 		$this->assertStringContainsString('`testfield` = 3', $statement);
 	}

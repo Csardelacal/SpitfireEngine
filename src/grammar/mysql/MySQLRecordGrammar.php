@@ -2,6 +2,8 @@
 
 use PDO;
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\QuoterInterface;
 use spitfire\storage\database\Record;
 
@@ -42,11 +44,13 @@ class MySQLRecordGrammar
 		$this->quoter = $quoter;
 	}
 	
-	public function updateRecord(Record $record) : string
+	public function updateRecord(LayoutInterface $layout, Record $record) : string
 	{
-		$layout  = $record->getLayout();
 		$fields  = $layout->getFields();
+		$primary = $layout->getPrimaryKey()->getFields()->first();
 		$diff    = $record->diff();
+		
+		assert($primary !== null);
 		
 		$payload = $fields->each(function ($e) use ($diff) {
 			if (!array_key_exists($e->getName(), $diff)) {
@@ -63,15 +67,14 @@ class MySQLRecordGrammar
 			'WHERE',
 			sprintf('`%s`', $layout->getPrimaryKey()->getFields()[0]->getName()),
 			'=',
-			$this->quote($record->getPrimary())
+			$this->quote($record->original($primary->getName()))
 		]))->join(' ');
 		
 		return $stmt;
 	}
 	
-	public function insertRecord(Record $record) : string
+	public function insertRecord(LayoutInterface $layout, Record $record) : string
 	{
-		$layout  = $record->getLayout();
 		$fields  = $layout->getFields();
 		$raw     = $record->raw();
 		
@@ -102,9 +105,11 @@ class MySQLRecordGrammar
 	 * @param Record $record
 	 * @return string
 	 */
-	public function deleteRecord(Record $record) : string
+	public function deleteRecord(LayoutInterface $layout, Record $record) : string
 	{
-		$layout  = $record->getLayout();
+		$primary = $layout->getPrimaryKey()->getFields()->first();
+		
+		assert($primary !== null);
 		
 		$stmt = (new Collection([
 			'DELETE FROM',
@@ -112,7 +117,7 @@ class MySQLRecordGrammar
 			'WHERE',
 			sprintf('`%s`', $layout->getPrimaryKey()->getFields()[0]->getName()),
 			'=',
-			$record->getPrimary()
+			$record->get($primary->getName())
 		]))->join(' ');
 		
 		return $stmt;

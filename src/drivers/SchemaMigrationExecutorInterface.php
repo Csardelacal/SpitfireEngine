@@ -2,6 +2,7 @@
 
 use Closure;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\migration\TagManagerInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -88,4 +89,12 @@ interface SchemaMigrationExecutorInterface
 	 * @return SchemaMigrationExecutorInterface
 	 */
 	public function execute(string $sql) : SchemaMigrationExecutorInterface;
+	
+	/**
+	 * Allows the schema to be tagged. This allows the application to maintain an in-channel
+	 * record of the state of the database, the migrations applied, etc.
+	 *
+	 * @return TagManagerInterface
+	 */
+	public function tags() : TagManagerInterface;
 }

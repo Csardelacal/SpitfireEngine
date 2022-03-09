@@ -7,7 +7,7 @@ use spitfire\event\Listener;
 use spitfire\event\ListenerInterface;
 use spitfire\exceptions\ApplicationException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -27,14 +27,14 @@ use spitfire\exceptions\ApplicationException;
  */
 
  /**
-  * 
+  *
   * @implements ListenerInterface<RecordEvent>
   */
 class SoftDeleteListener implements ListenerInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $field;
@@ -51,7 +51,7 @@ class SoftDeleteListener implements ListenerInterface
 		 * If the payload is not good, we cannot proceed.
 		 */
 		assert($event instanceof RecordEvent);
-		assert($event->getRecord()->getLayout()->hasField($this->field));
+		assert($event->getRecord()->has($this->field));
 		
 		$options = $event->getOptions();
 		
@@ -69,7 +69,7 @@ class SoftDeleteListener implements ListenerInterface
 		 * a 'recycle-bin' or audit log before an incinerator runs and force deletes this.
 		 */
 		$event->getRecord()->set($this->field, time());
-		$event->getDriver()->update($event->getRecord());
+		$event->getDriver()->update($event->getLayout(), $event->getRecord());
 		
 		$event->preventDefault();
 	}

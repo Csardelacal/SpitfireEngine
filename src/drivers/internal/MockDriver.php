@@ -1,10 +1,13 @@
 <?php namespace spitfire\storage\database\drivers\internal;
 
 use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
+use spitfire\storage\database\Schema;
 
 class MockDriver implements DriverInterface
 {
@@ -31,23 +34,23 @@ class MockDriver implements DriverInterface
 		return new MockResultSet();
 	}
 	
-	public function update(Record $record): bool
+	public function update(LayoutInterface $layout, Record $record): bool
 	{
 		$this->operations[] = ['update', $record->diff()];
 		$record->commit();
 		return true;
 	}
 	
-	public function insert(Record $record): bool
+	public function insert(LayoutInterface $layout, Record $record): bool
 	{
 		$this->operations[] = ['insert', $record->raw()];
 		$record->commit();
 		return true;
 	}
 	
-	public function delete(Record $record): bool
+	public function delete(LayoutInterface $layout, Record $record): bool
 	{
-		$this->operations[] = ['delete', $record->getPrimary()];
+		$this->operations[] = ['delete', $record->get($layout->getPrimaryKey()->getFields()->first()->getName())];
 		return true;
 	}
 	
@@ -66,6 +69,11 @@ class MockDriver implements DriverInterface
 	public function has(string $name): bool
 	{
 		return false;
+	}
+	
+	public function getMigrationExecutor(Schema $schema): SchemaMigrationExecutorInterface
+	{
+		return new SchemaMigrationExecutor($schema);
 	}
 	
 	/**
