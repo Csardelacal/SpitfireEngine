@@ -5,6 +5,7 @@ use JsonSerializable;
 use ReflectionClass;
 use Serializable;
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\model\Schema;
 use spitfire\storage\database\Connection;
@@ -49,7 +50,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	private $connection = null;
 	
-	private $prefix = null;
+	private $prefix = '';
 	
 	/**
 	 * If the model was retrieved as part of a relationship, it's possible that it
@@ -97,7 +98,51 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function getData()
 	{
+		assert($this->hydrated);
 		return $this->record->raw();
+	}
+	
+	/**
+	 * Creates a copy of the model that is hydrated with the given record. This
+	 * allows the application to distinguish between models that carry a payload
+	 * and the ones that provide relationships and schema information.
+	 * 
+	 * @return self
+	 */
+	public function withHydrate(Record $record) : Model
+	{
+		$copy = clone $this;
+		$copy->record = $record;
+		$copy->hydrated = true;
+		$copy->rehydrate();
+		return $copy;
+	}
+	
+	/**
+	 * Rehydrating reads the data from the underlying record into the model. This allows
+	 * the model to use properties properly and provides PHP with native behacviors.
+	 */
+	public function rehydrate() : void
+	{
+		$raw = $this->record->raw();
+		
+		foreach ($raw as $k => $v) {
+			$this->$k = $v;
+		}
+	}
+	
+	/**
+	 * This performs the opposite operation to rehydrating, it writes data from the model
+	 * into the record so it can be written to the DBMS.
+	 */
+	public function sync() : void
+	{
+		assert($this->hydrated);
+		$raw = $this->record->raw();
+		
+		foreach (array_keys($raw) as $k) {
+			$this->record->set($k, $this->$k);
+		}
 	}
 	
 	/**
@@ -109,13 +154,16 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function store(array $options = [])
 	{
-		$this->onbeforesave();
+		$this->sync();
 		
-		#Decide whether to insert or update depending on the Model
-		if ($this->record->exists()) {
+		/**
+		 * If the primary key is assumed to be null on the dbms (which is not possible
+		 * the way we designed SF), the system will assume that the record does not exist
+		 * on the DBMS and therefore record a new entry in the table.
+		 */
+		if ($this->record->getPrimary() === null) {
 			#Tell the table that the record is being stored
 			$event = new RecordBeforeInsertEvent($this->getConnection(), $this->record, $options);
-			
 			$fn = function (Record $record) {
 				#The insert function is in this closure, which allows the event to cancel storing the data
 				$this->getConnection()->insert($record);
@@ -135,15 +183,40 @@ abstract class Model implements Serializable, JsonSerializable
 	}
 	
 	/**
+	 * The value of the primary key, null means that the software expects the
+	 * database to assign this record a primary key on insert.
+	 * 
+	 * When editing the primary key value this will ALWAYS return the data that 
+	 * the system assumes to be in the database.
+	 * 
+	 * @return int|string
+	 */
+	public function getPrimary()
+	{
+		assert($this->hydrated);
+		
+		$fields = $this->layout->getPrimaryKey()->getFields();
+		
+		if ($fields->isEmpty()) {
+			throw new ApplicationException('Record has no primary key', 2101181306); 
+		}
+		
+		return $this->record->get($fields[0]->getName());
+	}
+	
+	/**
 	 * Returns the values of the fields included in this records primary
 	 * fields
 	 *
 	 * @todo Find better function name
+	 * @deprecated
 	 * @return array
 	 */
 	public function getPrimaryData()
 	{
-		$primaryFields = $this->getTable()->getPrimaryKey()->getFields();
+		assert($this->hydrated);
+		
+		$primaryFields = $this->table->getPrimaryKey()->getFields();
 		$ret = array();
 		
 		foreach ($primaryFields as $field) {
@@ -153,31 +226,20 @@ abstract class Model implements Serializable, JsonSerializable
 		return $ret;
 	}
 	
-	public function query()
+	public function query() : QueryBuilder
 	{
 		return new QueryBuilder($this);
 	}
 	
-	public function get($name)
+	/**
+	 * 
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function get(string $name)
 	{
-		if (!array_key_exists($name, $this->record)) {
-			throw new Exception('Bad');
-		}
-		assert(array_key_exists($name, $this->record));
-		return $this->record[$name];
-	}
-	
-	public function getQuery()
-	{
-		$query     = $this->getTable()->getDb()->getObjectFactory()->queryInstance($this->getTable());
-		$primaries = $this->table->getModel()->getPrimary()->getFields();
-		
-		foreach ($primaries as $primary) {
-			$name = $primary->getName();
-			$query->addRestriction($name, $this->$name);
-		}
-		
-		return $query;
+		assert($this->hydrated);
+		return $this->record->get($name);
 	}
 	
 	/**
@@ -187,23 +249,25 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function getTable() : Layout
 	{
-		return $this->getSchema()->getLayoutByName($this->getTableName());
+		return $this->getConnection()->getSchema()->getLayoutByName($this->getTableName());
 	}
 	
 	/**
 	 * By default, spitfire 
+	 * 
+	 * @deprecated I don't even
 	 */
 	public function getSchema() : DatabaseSchema
 	{
-		return spitfire()->provider()->get(DatabaseSchema::class);
+		return $this->getConnection()->getSchema();
 	}
 	
-	public function getPrefix()
+	public function getPrefix() : string
 	{
 		return $this->prefix;
 	}
 	
-	public function setPrefix($prefix)
+	public function setPrefix(string $prefix)
 	{
 		$this->prefix = $prefix;
 	}
@@ -211,70 +275,43 @@ abstract class Model implements Serializable, JsonSerializable
 	public function getTableName()
 	{
 		$reflection = new ReflectionClass($this);
-		return Strings::plural($reflection->getShortName());
+		return $this->prefix . Strings::plural($reflection->getShortName());
 	}
 	
-	public function __set($field, $value)
+	public function __set(string $field, $value)
 	{
-		
-		if (!isset($this->record[$field])) {
-			throw new PrivateException("Setting non existent field: " . $field);
-		}
-		
-		$this->record[$field]->usrSetData($value);
+		assert($this->hydrated);
+		assert($this->record->has($field));
+		$this->record->set($field, $value);
 	}
 	
 	public function __get($field)
 	{
-		#If the field is in the record we return it's contents
-		if (isset($this->record[$field])) {
-			return $this->record[$field]->usrGetData();
-		} else {
-			//TODO: In case debug is enabled this should throw an exception
-			return null;
-		}
+		assert($this->hydrated);
+		assert($this->record->has($field));
+		return $this->record->get($field);
 	}
 	
 	public function __isset($name)
 	{
-		return (array_key_exists($name, $this->record));
+		assert($this->hydrated);
+		return $this->record->has($name);
 	}
 	
-	//TODO: This now breaks due to the adapters
-	public function serialize()
-	{
-		$data = array();
-		foreach ($this->record as $adapter) {
-			if (! $adapter->isSynced()) {
-				throw new PrivateException("Database record cannot be serialized out of sync");
-			}
-			$data = array_merge($data, $adapter->dbGetData());
-		}
-		
-		$output = array();
-		$output['model'] = $this->table->getModel()->getName();
-		$output['data']  = $data;
-		
-		return serialize($output);
-	}
-	
-	public function unserialize($serialized)
-	{
-		
-		$input = unserialize($serialized);
-		$this->table = db()->table($input['model']);
-		
-		$this->makeAdapters();
-		$this->populateAdapters($input['data']);
-	}
 	
 	public function __toString()
 	{
-		return sprintf('%s(%s)', $this->getTable()->getModel()->getName(), implode(',', $this->getPrimaryData()));
+		if ($this->hydrated) {
+			return sprintf('%s(%s)', $this->getTableName(), $this->getPrimary());
+		}
+		
+		return sprintf('Model (%s, %s)', get_class($this), $this->getTableName());
 	}
 	
 	public function delete(array $options = [])
 	{
+		$this->sync();
+		
 		#Tell the table that the record is being deleted
 		$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->record, $options);
 		$fn = function (Record $record) {
@@ -286,64 +323,10 @@ abstract class Model implements Serializable, JsonSerializable
 		$this->rehydrate();
 	}
 	
-	protected function makeAdapters()
-	{
-		#If there is no table defined there is no need to create adapters
-		if ($this->table === null) {
-			return;
-		}
-		
-		$fields = $this->getTable()->getModel()->getFields();
-		foreach ($fields as $field) {
-			$this->record[$field->getName()] = $field->getAdapter($this);
-		}
-	}
-	
-	protected function populateAdapters($data)
-	{
-		#If the set carries no data, why bother reading?
-		if (empty($data)) {
-			return;
-		}
-		
-		#Retrieves the full list of fields this adapter needs to populate
-		$fields = $this->getTable()->getModel()->getFields();
-		
-		#Loops through the fields retrieving the physical fields
-		foreach ($fields as $field) {
-			$physical = $field->getPhysical();
-			$current  = array();
-			
-			#The physical fields are matched to the content and it is assigned.
-			foreach ($physical as $p) {
-				$current[$p->getName()] = $data[$p->getName()];
-			}
-			
-			#Set the data into the adapter and let it work it's magic.
-			$this->record[$field->getName()]->dbSetData($current);
-		}
-	}
-	
-	/**
-	 *
-	 * @deprecated since version 0.1-dev 20190611
-	 * @return Collection
-	 */
-	public function getDependencies()
-	{
-		
-		$dependencies = collect($this->record)
-			->each(function ($e) {
-				return $e->getDependencies();
-			})
-			->filter()
-			->flatten();
-		
-		return $dependencies;
-	}
-	
 	public function setPivot(Model $pivot) : Model
 	{
+		assert($this->hydrated);
+		
 		$this->pivot = $pivot;
 		return $this;
 	}
@@ -354,6 +337,7 @@ abstract class Model implements Serializable, JsonSerializable
 	 */
 	public function pivot() :? Model
 	{
+		assert($this->hydrated);
 		return $this->pivot;
 	}
 	
@@ -382,14 +366,8 @@ abstract class Model implements Serializable, JsonSerializable
 	}
 	
 	/**
-	 * Allows the model to perform small tasks before it is written to the database.
-	 *
-	 * @return void This method does not return
+	 * @todo This should return a database connection
 	 */
-	public function onbeforesave()
-	{
-	}
-	
 	public function getConnection() : DatabaseDriverInterface
 	{
 		return $this->connection !== null?
