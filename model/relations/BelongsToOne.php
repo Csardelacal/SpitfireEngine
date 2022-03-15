@@ -2,12 +2,8 @@
 
 use spitfire\collection\Collection;
 use spitfire\model\Model;
-use spitfire\model\Query;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
-use spitfire\storage\database\Query as DatabaseQuery;
-use spitfire\storage\database\query\Join;
-use spitfire\storage\database\query\JoinTable;
 
 /**
  * The belongsTo relationship allows an application to indicate that this
@@ -45,9 +41,17 @@ class BelongsToOne extends Relationship implements RelationshipSingleInterface
 		return $this->buildQuery(new Collection([$this->getField()->getModel()]));
 	}
 	
+	/**
+	 * Eagerly load the children of a relationship. Please note that this receives a collection of 
+	 * parents and returns a collection grouped by their ID.
+	 * 
+	 * @return Collection<Collection<Model>>
+	 */
 	public function eagerLoad(Collection $parents): Collection
 	{
-		return $this->buildQuery($parents)->all();
+		return $this->buildQuery($parents)->all()->groupBy(function (Model $e) {
+			return $e->{$this->getReferenced()->getField()};
+		});
 	}
 	
 	public function injector(): RelationshipInjectorInterface

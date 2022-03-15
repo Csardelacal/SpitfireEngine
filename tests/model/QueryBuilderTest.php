@@ -1,17 +1,13 @@
 <?php namespace tests\spitfire\model;
 
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use spitfire\model\ConnectionManager;
 use spitfire\model\Field;
 use spitfire\model\Model;
-use spitfire\model\Query;
 use spitfire\model\QueryBuilder;
-use spitfire\model\relations\BelongsTo;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
-use spitfire\storage\database\drivers\mysqlpdo\Driver;
 use spitfire\storage\database\drivers\test\AbstractDriver;
 use spitfire\storage\database\drivers\test\AbstractResultSet;
 use spitfire\storage\database\ForeignKey;
@@ -23,7 +19,6 @@ use spitfire\storage\database\Layout;
 use spitfire\storage\database\query\ResultInterface;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema;
-use spitfire\storage\database\Settings;
 
 class QueryBuilderTest extends TestCase
 {
@@ -33,6 +28,15 @@ class QueryBuilderTest extends TestCase
 	private $layout;
 	private $layout2;
 	
+	/**
+	 * @var TestHandler
+	 */
+	private $logger;
+	
+	/**
+	 * 
+	 * @var Model
+	 */
 	private $model;
 	private $model2;
 	
@@ -86,6 +90,52 @@ class QueryBuilderTest extends TestCase
 				return 'test2';
 			}
 		};
+		
+		$schema = new Schema('test');
+		$schema->putLayout($this->layout);
+		$schema->putLayout($this->layout2);
+		
+		$id = rand();
+		
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$this->schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter()),
+				new MySQLSchemaGrammar
+			)
+		);
+		
+		$manager = spitfire()->provider()->get(ConnectionManager::class);
+		$manager->put($id, $connection);
+		$manager->setDefault($id);
+		
+		spitfire()->provider()->set(ConnectionManager::class, $manager);
+		
+		$this->model->setConnection($id);
+		$this->model2->setConnection($id);
 	}
 	
 	public function testBelongsToWhere()
@@ -122,7 +172,7 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$builder = new Query(
+		$builder = new QueryBuilder(
 			$this->model2
 		);
 		
@@ -178,7 +228,7 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$builder = new Query(
+		$builder = new QueryBuilder(
 			$this->model2
 		);
 		

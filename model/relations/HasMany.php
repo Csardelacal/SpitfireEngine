@@ -1,8 +1,8 @@
 <?php namespace spitfire\model\relations;
 
+use spitfire\collection\Collection;
 use spitfire\model\Model;
-use spitfire\model\Query;
-use spitfire\model\query\Queriable;
+use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 
 /**
@@ -15,21 +15,46 @@ use spitfire\model\QueryBuilder;
  */
 class HasMany extends Relationship implements RelationshipMultipleInterface
 {
-	
-	public function getQuery(): QueryBuilder
+	public function buildQuery(Collection $parents) : QueryBuilder
 	{
 		$query = $this->getReferenced()->getModel()->query();
 		
-		$query->getQuery()->where(
-			$query->getQuery()->getFrom()->output()->getOutput($this->getReferenced()->getField()),
-			$this->getField()->getModel()->getPrimaryData()
-		);
+		/**
+		 * Create an or group and loop over the parents to build a query with all the
+		 * required parents.
+		 */
+		$query->group('OR', function (RestrictionGroupBuilder $group) use ($parents) {
+			foreach ($parents as $parent) {
+				$group->where(
+					$this->query->getQuery()->getFrom()->output()->getOutput($this->getReferenced()->getField()),
+					$parent->getPrimary()
+				);
+			}
+		});
 		
 		return $query;
 	}
 	
+	public function getQuery(): QueryBuilder
+	{
+		return $this->buildQuery(new Collection([$this->getModel()]));
+	}
+	
+	/**
+	 * Eagerly load the children of a relationship. Please note that this receives a collection of 
+	 * parents and returns a collection grouped by their ID.
+	 * 
+	 * @return Collection<Collection<Model>>
+	 */
+	public function eagerLoad(Collection $parents): Collection
+	{
+		return $this->buildQuery($parents)->all()->groupBy(function (Model $e) {
+			return $e->{$this->getReferenced()->getField()};
+		});
+	}
+	
 	public function injector(): RelationshipInjectorInterface
 	{
-		
+		return new HasManyRelationshipInjector($this->getField(), $this->getReferenced());
 	}
 }

@@ -1,7 +1,6 @@
 <?php namespace spitfire\model\relations;
 
 use spitfire\model\Model;
-use spitfire\model\Query;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
 
@@ -12,6 +11,6 @@ use spitfire\storage\database\query\RestrictionGroup;
 interface RelationshipInjectorInterface
 {
 	
-	public function injectWhere(RestrictionGroup $query, Model $model) : void;
+	public function injectWhere(DatabaseQuery $context, RestrictionGroup $query, Model $model) : void;
 	public function injectWhereHas(RestrictionGroup $query, callable $value) : void;
 }

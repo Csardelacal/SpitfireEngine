@@ -29,7 +29,7 @@ trait Queriable
 			$relation = $this->getModel()->{$field}();
 			assert($relation instanceof RelationshipInterface);
 			
-			$relation->injector()->injectWhere($this->getQuery()->getRestrictions(), $value);
+			$relation->injector()->injectWhere($this->getQuery(), $this->getQuery()->getRestrictions(), $value);
 			return $this;
 		}
 		

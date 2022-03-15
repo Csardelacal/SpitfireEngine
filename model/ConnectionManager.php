@@ -2,7 +2,7 @@
 
 use Psr\Log\LoggerInterface;
 use spitfire\provider\Container;
-use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\mysqlpdo\Driver as MySQLDriver;
 use spitfire\storage\database\Settings;
 
@@ -17,7 +17,7 @@ class ConnectionManager
 	
 	/**
 	 * 
-	 * @var DriverInterface[]
+	 * @var Connection[]
 	 */
 	private $connections = [];
 	
@@ -33,7 +33,7 @@ class ConnectionManager
 	}
 	
 	
-	public function put(string $name, DriverInterface $driver) : void
+	public function put(string $name, Connection $driver) : void
 	{
 		$this->connections[$name] = $driver;
 	}
@@ -47,7 +47,7 @@ class ConnectionManager
 		}
 	}
 	
-	public function get(string $name) : DriverInterface
+	public function get(string $name) : Connection
 	{
 		assert(array_key_exists($name, $this->connections));
 		return $this->connections[$name];

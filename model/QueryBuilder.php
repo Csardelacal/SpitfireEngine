@@ -117,8 +117,8 @@ class QueryBuilder
 	
 	public function all() : Collection
 	{
-		$result = $this->db->query($this->withDefaultMapping()->getQuery())->fetchAll();
-		
+		$result = $this->model->getConnection()->getDriver()->query($this->withDefaultMapping()->getQuery())->fetchAll();
+		return new Collection();
 	}
 	
 	public function range(int $offset, int $size) : Collection
@@ -135,7 +135,7 @@ class QueryBuilder
 			'c'
 		);
 		
-		$res = $this->db->query($query)->fetch();
+		$res = $this->model->getConnection()->getDriver()->query($query)->fetch();
 		return $res['c'];
 	}
 }

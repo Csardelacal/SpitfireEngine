@@ -1036,11 +1036,6 @@ parameters:
 			path: model/fields/StringField.php
 
 		-
-			message: "#^Parameter \\$model of method BooleanField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 2
-			path: model/fields/boolean.php
-
-		-
 			message: "#^Parameter \\$model of method DatetimeField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
 			count: 2
 			path: model/fields/datetime.php
