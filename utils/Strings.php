@@ -7,10 +7,10 @@ class Strings
 	 * Turns camelCased strings into under_scored strings. This is specially useful
 	 * for class to URL conversion and the other way around.
 	 * 
-	 * @param String $str
+	 * @param string $str
 	 * @return string
 	 */
-	public static function camel2underscores($str)
+	public static function snake($str)
 	{
 		$_ret = preg_replace('/[A-Z]/', '_$0', $str);
 		return strtolower(trim($_ret, '_'));

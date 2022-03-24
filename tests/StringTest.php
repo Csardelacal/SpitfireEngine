@@ -43,8 +43,8 @@ class StringTest extends TestCase
 	 */
 	public function testCamelCase2UnderscoreConversions()
 	{
-		$this->assertEquals('some_string', Strings::camel2underscores('someString'));
-		$this->assertEquals('some_string', Strings::camel2underscores('SomeString'));
+		$this->assertEquals('some_string', Strings::snake('someString'));
+		$this->assertEquals('some_string', Strings::snake('SomeString'));
 	}
 	
 	/**

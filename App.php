@@ -1,6 +1,9 @@
 <?php namespace spitfire;
 
+use ReflectionClass;
 use spitfire\core\router\Router;
+use spitfire\model\Model;
+use spitfire\utils\Strings;
 
 /**
  * Spitfire Application Class. This class is the base of every other 'app', an 
@@ -61,4 +64,17 @@ abstract class App
 	 * spitfire will look for controllers, models etc for this application.
 	 */
 	abstract public function namespace();
+	
+	/**
+	 * 
+	 */
+	public function model(string $model) : Model
+	{
+		$reflection = new ReflectionClass($model);
+		assert($reflection->isSubclassOf(Model::class));
+		
+		$instance = $reflection->newInstance();
+		$instance->setPrefix(Strings::snake(str_replace('/', '-', trim($this->url(), '/')) . '-'));
+		return $instance;
+	}
 }
