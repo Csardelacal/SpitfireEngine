@@ -1,6 +1,7 @@
 <?php namespace spitfire\model;
 
 use spitfire\collection\Collection;
+use spitfire\exceptions\user\ApplicationException;
 use spitfire\model\query\Queriable;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSetMapping;
@@ -62,6 +63,8 @@ class QueryBuilder
 		/**
 		 * Extract the name of the fields so we can assign it back to the generic mapping
 		 * that will read the data from the query into the model.
+		 * 
+		 * @var string[]
 		 */
 		$fields = $copy->model->getTable()->getFields()->extract('getName')->toArray();
 		
@@ -77,12 +80,12 @@ class QueryBuilder
 		return $copy;
 	}
 	
-	public function getQuery()
+	public function getQuery() : DatabaseQuery
 	{
 		return $this->query;
 	}
 	
-	public function getModel()
+	public function getModel() : Model
 	{
 		return $this->model;
 	}
@@ -115,16 +118,44 @@ class QueryBuilder
 	
 	public function first(callable $or = null):? Model
 	{
+		$copy   = $this->withDefaultMapping();
+		$query  = $copy->getQuery()->range(0, 1);
+		$result = $this->model->getConnection()->getDriver()->query($query)->fetchAll();
+		
+		$record = $this->eagerLoad($result->each(function ($read) use ($copy) {
+			return $copy->map($read);
+		}))->first();
+		
+		if ($record === null && $or !== null) {
+			if (is_string($or)) { throw new $or('No records found'); }
+			if (is_callable($or)) { return $or(); }
+			throw new ApplicationException('No record found');
+		}
+		
+		assert($record instanceof $this->model);
+		
+		return $record;
 	}
 	
 	public function all() : Collection
 	{
-		$result = $this->model->getConnection()->getDriver()->query($this->withDefaultMapping()->getQuery())->fetchAll();
-		return new Collection();
+		$copy   = $this->withDefaultMapping();
+		$result = $this->model->getConnection()->getDriver()->query($copy->getQuery())->fetchAll();
+		
+		return $this->eagerLoad($result->each(function ($read) use ($copy) {
+			return $copy->map($read);
+		}));
 	}
 	
 	public function range(int $offset, int $size) : Collection
 	{
+		$copy   = $this->withDefaultMapping();
+		$query  = $copy->getQuery()->range($offset, $size);
+		$result = $this->model->getConnection()->getDriver()->query($query)->fetchAll();
+		
+		return $this->eagerLoad($result->each(function ($read) use ($copy) {
+			return $copy->map($read);
+		}));
 	}
 	
 	public function count() : int

@@ -1,14 +1,10 @@
 <?php namespace spitfire\model;
 
-use Exception;
 use JsonSerializable;
 use ReflectionClass;
-use Serializable;
-use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Connection;
-use spitfire\storage\database\DriverInterface as DatabaseDriverInterface;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
 use spitfire\storage\database\Layout;

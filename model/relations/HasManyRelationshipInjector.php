@@ -30,7 +30,7 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 	 * @param Model $model
 	 * @return void
 	 */
-	public function injectWhere(RestrictionGroup $query, Model $model) : void
+	public function injectWhere(DatabaseQuery $context, RestrictionGroup $query, Model $model) : void
 	{
 		/**
 		 * If we're looking for the parent of an element, all we have to do is look for the

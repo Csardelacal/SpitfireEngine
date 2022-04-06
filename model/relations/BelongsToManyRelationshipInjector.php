@@ -1,8 +1,6 @@
 <?php namespace spitfire\model\relations;
 
 use BadMethodCallException;
-use spitfire\collection\Collection;
-use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
@@ -32,7 +30,7 @@ class BelongsToManyRelationshipInjector implements RelationshipInjectorInterface
 	 * @param Model $model
 	 * @return void
 	 */
-	public function injectWhere(RestrictionGroup $query, Model $model) : void
+	public function injectWhere(DatabaseQuery $context, RestrictionGroup $query, Model $model) : void
 	{
 		throw new BadMethodCallException('BelongsToMany Queries cannot be queried like this');
 	}
