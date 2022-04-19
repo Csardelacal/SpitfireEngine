@@ -3,6 +3,7 @@
 use spitfire\collection\Collection;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
 
@@ -60,13 +61,13 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 	 * relationships are constructed. Even though they are similar, the differences are subtle
 	 * and make a major difference in the output.
 	 *
-	 * @param RestrictionGroup $query
+	 * @param RestrictionGroup $restrictions
 	 * @param callable(RestrictionGroup):void $fn
 	 * @return void
 	 */
-	public function injectWhereHas(RestrictionGroup $query, callable $fn) : void
+	public function injectWhereHas(RestrictionGroup $restrictions, callable $fn) : void
 	{
-		$query->whereExists(function (DatabaseQuery $parent) use ($fn) : DatabaseQuery {
+		$restrictions->whereExists(function (TableIdentifierInterface $parent) use ($fn) : DatabaseQuery {
 			/**
 			 * The subquery is just a regular query being performed on the remote model (the
 			 * one being referenced).
@@ -82,20 +83,20 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 			 * After that, we need to access the underlying query that spitfire/database manages
 			 * to inject the relation between the local and remote fields within the subquery.
 			 */
-			$query = $subquery->getQuery();
+			$dbquery = $subquery->getQuery();
 			$primary = $this->field->getField();
 			
-			$query->where(
-				$query->getFrom()->output()->getOutput($this->referenced->getField()),
-				$parent->getFrom()->output()->getOutput($primary)
+			$dbquery->where(
+				$dbquery->getFrom()->output()->getOutput($this->referenced->getField()),
+				$parent->getOutput($primary)
 			);
 			
 			/**
 			 *
 			 */
-			$query->select($this->referenced->getField());
+			$dbquery->select($this->referenced->getField());
 			
-			return $query;
+			return $dbquery;
 		});
 	}
 }

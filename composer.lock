@@ -693,16 +693,16 @@
         },
         {
             "name": "spitfire/collection",
-            "version": "0.1.3",
+            "version": "0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spitfire-php/collection.git",
-                "reference": "c3a90b5b028bec3af9cbd2a2580746b25e9eb1e5"
+                "reference": "0e7dcb24b9eccace307298b16e5808698c560882"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/c3a90b5b028bec3af9cbd2a2580746b25e9eb1e5",
-                "reference": "c3a90b5b028bec3af9cbd2a2580746b25e9eb1e5",
+                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/0e7dcb24b9eccace307298b16e5808698c560882",
+                "reference": "0e7dcb24b9eccace307298b16e5808698c560882",
                 "shasum": ""
             },
             "require-dev": {
@@ -729,9 +729,9 @@
             "description": "Provides collections for spitfire/engine",
             "support": {
                 "issues": "https://github.com/spitfire-php/collection/issues",
-                "source": "https://github.com/spitfire-php/collection/tree/0.1.3"
+                "source": "https://github.com/spitfire-php/collection/tree/0.1.4"
             },
-            "time": "2022-02-17T12:01:54+00:00"
+            "time": "2022-04-12T17:53:37+00:00"
         },
         {
             "name": "spitfire/database",
@@ -739,12 +739,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/spitfire-php/database.git",
-                "reference": "e04e842169f1fcbc89c24076c6678fa796ec092e"
+                "reference": "9a03390a38a7ca7d5dbc88e9db1f8ab7f1c5f72a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spitfire-php/database/zipball/e04e842169f1fcbc89c24076c6678fa796ec092e",
-                "reference": "e04e842169f1fcbc89c24076c6678fa796ec092e",
+                "url": "https://api.github.com/repos/spitfire-php/database/zipball/9a03390a38a7ca7d5dbc88e9db1f8ab7f1c5f72a",
+                "reference": "9a03390a38a7ca7d5dbc88e9db1f8ab7f1c5f72a",
                 "shasum": ""
             },
             "require": {
@@ -782,7 +782,7 @@
                 "issues": "https://github.com/spitfire-php/database/issues",
                 "source": "https://github.com/spitfire-php/database/tree/master"
             },
-            "time": "2022-03-09T13:28:06+00:00"
+            "time": "2022-04-19T08:12:40+00:00"
         },
         {
             "name": "spitfire/defer",
@@ -1301,16 +1301,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "d7fd7450628561ba697b7097d86db72662f54aef"
+                "reference": "4192345e260f1d51b365536199744b987e160edc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d7fd7450628561ba697b7097d86db72662f54aef",
-                "reference": "d7fd7450628561ba697b7097d86db72662f54aef",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/4192345e260f1d51b365536199744b987e160edc",
+                "reference": "4192345e260f1d51b365536199744b987e160edc",
                 "shasum": ""
             },
             "require": {
@@ -1384,7 +1384,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/2.4.0"
+                "source": "https://github.com/Seldaek/monolog/tree/2.5.0"
             },
             "funding": [
                 {
@@ -1396,7 +1396,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-14T12:44:37+00:00"
+            "time": "2022-04-08T15:43:54+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1919,16 +1919,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.5.4",
+            "version": "1.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "bbf68cae24f6dc023c607ea0f87da55dd9d55c2b"
+                "reference": "799dd8c2d2c9c704bb55d2078078cb970cf0f6d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/bbf68cae24f6dc023c607ea0f87da55dd9d55c2b",
-                "reference": "bbf68cae24f6dc023c607ea0f87da55dd9d55c2b",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/799dd8c2d2c9c704bb55d2078078cb970cf0f6d1",
+                "reference": "799dd8c2d2c9c704bb55d2078078cb970cf0f6d1",
                 "shasum": ""
             },
             "require": {
@@ -1954,7 +1954,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.5.4"
+                "source": "https://github.com/phpstan/phpstan/tree/1.5.6"
             },
             "funding": [
                 {
@@ -1974,7 +1974,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-03T12:39:00+00:00"
+            "time": "2022-04-15T11:13:37+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
