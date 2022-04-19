@@ -122,8 +122,8 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		return $this;
 	}
 	
-	public function tags(): TagManagerInterface
+	public function tags():? TagManagerInterface
 	{
-		throw new BadMethodCallException('Not implemented');
+		return null;
 	}
 }

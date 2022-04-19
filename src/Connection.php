@@ -86,7 +86,7 @@ class Connection
 		
 		foreach ($migrators as $migrator) {
 			$migration->up($migrator);
-			$migrator->tags()->tag('migration:' . $migration->identifier());
+			$migrator->tags()? $migrator->tags()->tag('migration:' . $migration->identifier()) : null;
 		}
 	}
 	
@@ -105,7 +105,7 @@ class Connection
 		
 		foreach ($migrators as $migrator) {
 			$migration->down($migrator);
-			$migrator->tags()->untag('migration:' . $migration->identifier());
+			$migrator->tags()? $migrator->tags()->untag('migration:' . $migration->identifier()) : null;
 		}
 	}
 }

@@ -144,12 +144,4 @@ class Schema
 		unset($this->layouts[$layout->getTableName()]);
 		return $this;
 	}
-	
-	public function apply(MigrationOperationInterface $migration) : void
-	{
-	}
-	
-	public function rollback(MigrationOperationInterface $migration) : void
-	{
-	}
 }

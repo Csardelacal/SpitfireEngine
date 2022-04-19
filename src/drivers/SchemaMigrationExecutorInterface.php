@@ -94,7 +94,7 @@ interface SchemaMigrationExecutorInterface
 	 * Allows the schema to be tagged. This allows the application to maintain an in-channel
 	 * record of the state of the database, the migrations applied, etc.
 	 *
-	 * @return TagManagerInterface
+	 * @return TagManagerInterface|null
 	 */
-	public function tags() : TagManagerInterface;
+	public function tags() :? TagManagerInterface;
 }

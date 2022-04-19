@@ -6,7 +6,7 @@ use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema;
 
-class TagManager
+class TagManager implements TagManagerInterface
 {
 	
 	
@@ -32,7 +32,6 @@ class TagManager
 		 * the tag table is included.
 		 */
 		(new TagLayoutMigration())->up($this->driver->getMigrationExecutor($schema));
-		$this->schema->apply(new TagLayoutMigration());
 	}
 	
 	/**
