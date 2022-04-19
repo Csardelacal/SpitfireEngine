@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database\query;
 
+use Closure;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\FieldReference;
 use spitfire\storage\database\identifiers\IdentifierInterface;
@@ -80,6 +81,19 @@ abstract class Join
 		assert($field instanceof IdentifierInterface);
 		
 		$this->on->push(new Restriction($field, $operator, $operand));
+		return $this;
+	}
+	
+	/**
+	 * Creates a group within the join's restrictions. The closure performs operations on the group,
+	 * allowing the application to change the group's type or add restrictions to it.
+	 * 
+	 * @param Closure(RestrictionGroup) $inner
+	 * @return RestrictionGroup
+	 */
+	public function group(Closure $inner) : Join
+	{
+		$inner($this->on->group(RestrictionGroup::TYPE_OR));
 		return $this;
 	}
 	
