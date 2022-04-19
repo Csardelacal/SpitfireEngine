@@ -100,9 +100,14 @@ class TableIdentifier implements TableIdentifierInterface
 	 */
 	public function getOutputs(): Collection
 	{
-		return $this->fields->each(function (string $field) : IdentifierInterface {
+		/**
+		 * @var Collection<IdentifierInterface>
+		 */
+		$t = $this->fields->each(function (string $field) : IdentifierInterface {
 			return new FieldIdentifier(array_merge($this->raw, [$field]));
 		});
+		
+		return $t;
 	}
 	
 	public function getOutput(string $name): FieldIdentifier

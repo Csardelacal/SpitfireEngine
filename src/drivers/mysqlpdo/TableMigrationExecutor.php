@@ -169,8 +169,8 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * is not causing any inconsistent behavior. This code is only executed during testing
 		 * and is generally not expected to run in production.
 		 */
-		assert((new Collection($options))->filter(function ($e) {
-			return strstr($e, ',');
+		assert((new Collection($options))->filter(function (string $e) : bool {
+			return strstr($e, ',') !== false;
 		})->isEmpty());
 		
 		/**

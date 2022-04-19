@@ -84,7 +84,8 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 		$group->setType($type);
 		
 		#Add it to our restriction list
-		return $this->push($group);
+		$this->push($group);
+		return $group;
 	}
 	
 	/**
@@ -111,44 +112,6 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	public function negate() : RestrictionGroup
 	{
 		$this->negated = !$this->negated;
-		return $this;
-	}
-	
-	public function normalize() : RestrictionGroup
-	{
-		if ($this->negated) {
-			$this->flip();
-		}
-		
-		$this
-			/*
-			 * We normalize the children first. This ensures that the normalization
-			 * the parent performs is still correct.
-			 */
-			->filter(function ($e) {
-				return $e instanceof RestrictionGroup;
-			})
-			->each(function (RestrictionGroup$e) {
-				return $e->normalize();
-			})
-		
-			/*
-			 * We remove the groups that satisfy any of the following:
-			 * * They're empty
-			 * * They only contain one restriction
-			 * * They have the same type as the current one. Based on (A AND B) AND C == A AND B AND C
-			 */
-			->filter(function (RestrictionGroup$e) {
-				return $e->getType() === $this->getType() || $e->count() < 2;
-			})
-			->each(function ($e) {
-				$this->add($e->each(function ($e) {
-					$e->setParent($this);
-					return $e;
-				})->toArray());
-				$this->remove($e);
-			});
-		
 		return $this;
 	}
 	

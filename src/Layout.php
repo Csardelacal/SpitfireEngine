@@ -261,7 +261,7 @@ class Layout implements LayoutInterface
 		 * key. Obviously this needs only be checked during development but should
 		 * be safe to be assumed to be the case in production.
 		 */
-		assert($index->getFields()->reduce(function ($c, $e) {
+		assert($index->getFields()->reduce(function (bool $c, Field $e) {
 			return $c && $this->hasField($e->getName());
 		}, true) === true);
 		

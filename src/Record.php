@@ -123,6 +123,33 @@ class Record
 	}
 	
 	/**
+	 * When slicing a set of keys out of a record, we create a copy of the record
+	 * with the selected keys only.
+	 *
+	 * This will inherit the current record's edited state. So make sure to reset the
+	 * record if you need an unaltered version of it.
+	 *
+	 * @param string[] $keys
+	 * @return Record
+	 */
+	public function slice(array $keys) : Record
+	{
+		$_record = new Record([]);
+		$_original = [];
+		$_data = [];
+		
+		foreach ($keys as $key) {
+			$_original[$key] = $this->original[$key];
+			$_data[$key] = $this->data[$key];
+		}
+		
+		$_record->original = $_original;
+		$_record->data = $_data;
+		
+		return $_record;
+	}
+	
+	/**
 	 * Returns the data that the database holds for the given field.
 	 *
 	 * @param string $field

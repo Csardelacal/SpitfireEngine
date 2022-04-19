@@ -16,6 +16,37 @@ class RecordTest extends TestCase
 		$this->assertEquals(false, $record->isChanged('test'));
 	}
 	
+	public function testSlice()
+	{
+		$record = new Record([
+			'a' => 1,
+			'b' => 2,
+			'c' => 3,
+			'd' => 4
+		]);
+		
+		$slice = $record->slice(['a', 'c']);
+		$this->assertEquals(false, $slice->has('b'));
+	}
+	
+	public function testSliceEdited()
+	{
+		$record = new Record([
+			'a' => 1,
+			'b' => 2,
+			'c' => 3,
+			'd' => 4
+		]);
+		
+		$record->set('b', 42);
+		$slice = $record->slice(['b', 'c']);
+		
+		$this->assertEquals(false, $slice->has('a'));
+		$this->assertEquals(42, $slice->get('b'));
+		$this->assertEquals(2, $slice->original('b'));
+		$this->assertEquals($record->diff(), $slice->diff());
+	}
+	
 	public function testDiff()
 	{
 		$record = new Record(['test' => 1, 'test2' => 'test']);
