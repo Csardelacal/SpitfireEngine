@@ -3,6 +3,11 @@
 use spitfire\model\Model;
 use spitfire\storage\database\identifiers\FieldIdentifier;
 
+/**
+ * @todo Include options to map metadata like counts and other aggregated values or prefetch
+ * data that would make use of increased query performance by gathering it together with the
+ * main query.
+ */
 class ResultSetMapping
 {
 	

@@ -6,8 +6,8 @@ use spitfire\model\query\Queriable;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSetMapping;
 use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\DriverInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
+use spitfire\storage\database\Record;
 
 /**
  *
@@ -23,9 +23,9 @@ class QueryBuilder
 	
 	/**
 	 *
-	 * @var Collection<ResultSetMapping>
+	 * @var ResultSetMapping
 	 */
-	private $mappings;
+	private $mapping;
 	
 	/**
 	 * The with method allows the user to determine relations that should be
@@ -47,18 +47,30 @@ class QueryBuilder
 		$this->model = $model;
 		
 		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
-		$this->mappings = new Collection();
+		$this->makeMapping();
 	}
 	
-	public function withDefaultMapping() : QueryBuilder
+	/**
+	 * Defines a mapping where the fields of the database are directly mapped to the fields of
+	 * the database record.
+	 * 
+	 * @todo
+	 * In this iteration of the query builder, the system just isn't advanced enough to allow
+	 * for custom queries for returning wild mapped queries. In future revisions, the model should
+	 * be able to define mappings so that joined data can be retrieved alongside the query.
+	 * 
+	 * This would be useful for a model like employee that has a belongsToOne relationship with
+	 * a relatinon like Department. In this case, the application could assemble a mapping that
+	 * allows SQL to fetch a single record for both models and map them, reducing the need for 
+	 * round trips to the database.
+	 */
+	public function makeMapping() : void
 	{
-		$copy = clone $this;
-		
 		/**
 		 * We need to select all the fields from the table we're querying to push them into
 		 * our model so it can be hydrated.
 		 */
-		$copy->query->selectAll();
+		$this->query->selectAll();
 		
 		/**
 		 * Extract the name of the fields so we can assign it back to the generic mapping
@@ -66,18 +78,10 @@ class QueryBuilder
 		 * 
 		 * @var string[]
 		 */
-		$fields = $copy->model->getTable()->getFields()->extract('getName')->toArray();
+		$fields = $this->model->getTable()->getFields();
+		$names  = $fields->extract('getName')->toArray();
 		
-		$copy->mappings->push(new ResultSetMapping($this->model, array_combine($fields, $fields)));
-		
-		return $copy;
-	}
-	
-	public function withMapping(ResultSetMapping $mapping) : QueryBuilder
-	{
-		$copy = clone $this;
-		$copy->mappings->push($mapping);
-		return $copy;
+		$this->mapping = new ResultSetMapping($this->model, array_combine($fields, $fields));
 	}
 	
 	public function getQuery() : DatabaseQuery
@@ -118,12 +122,11 @@ class QueryBuilder
 	
 	public function first(callable $or = null):? Model
 	{
-		$copy   = $this->withDefaultMapping();
-		$query  = $copy->getQuery()->range(0, 1);
+		$query  = clone ($this->query)->range(0, 1);
 		$result = $this->model->getConnection()->getDriver()->query($query)->fetchAll();
 		
-		$record = $this->eagerLoad($result->each(function ($read) use ($copy) {
-			return $copy->map($read);
+		$record = $this->eagerLoad($result->each(function ($read) {
+			return $this->mapping->make($read->raw());
 		}))->first();
 		
 		if ($record === null && $or !== null) {
@@ -139,22 +142,20 @@ class QueryBuilder
 	
 	public function all() : Collection
 	{
-		$copy   = $this->withDefaultMapping();
-		$result = $this->model->getConnection()->getDriver()->query($copy->getQuery())->fetchAll();
+		$result = $this->model->getConnection()->getDriver()->query($this->getQuery())->fetchAll();
 		
-		return $this->eagerLoad($result->each(function ($read) use ($copy) {
-			return $copy->map($read);
+		return $this->eagerLoad($result->each(function (Record $read) {
+			return $this->mapping->make($read->raw());
 		}));
 	}
 	
 	public function range(int $offset, int $size) : Collection
 	{
-		$copy   = $this->withDefaultMapping();
-		$query  = $copy->getQuery()->range($offset, $size);
+		$query  = clone ($this->query)->range($offset, $size);
 		$result = $this->model->getConnection()->getDriver()->query($query)->fetchAll();
 		
-		return $this->eagerLoad($result->each(function ($read) use ($copy) {
-			return $copy->map($read);
+		return $this->eagerLoad($result->each(function ($read) {
+			return $this->mapping->make($read->raw());
 		}));
 	}
 	
@@ -170,5 +171,10 @@ class QueryBuilder
 		
 		$res = $this->model->getConnection()->getDriver()->query($query)->fetch();
 		return $res['c'];
+	}
+	
+	public function __clone()
+	{
+		$this->query = clone $this->query;
 	}
 }
