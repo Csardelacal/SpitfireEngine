@@ -44,7 +44,7 @@ class JoinQuery extends Join
 	public function __construct(Query $query)
 	{
 		$this->query = new Subquery($query);
-		parent::__construct();
+		parent::__construct($query->getFrom()->output());
 	}
 	
 	/**

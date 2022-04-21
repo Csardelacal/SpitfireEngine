@@ -5,6 +5,7 @@ use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\FieldReference;
 use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\SlashQuoter;
+use spitfire\storage\database\identifiers\TableIdentifier;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\OrderBy;
 use spitfire\storage\database\Query;
@@ -95,10 +96,10 @@ class MySQLQueryGrammarTest extends TestCase
 		
 		$query = new Query($table);
 		$query->selectAll();
-		$query->whereExists(function (Query $parent) use ($layout2) {
+		$query->whereExists(function (TableIdentifier $parent) use ($layout2) {
 			$sq = new Query($layout2->getTableReference());
 			$sq->select('testfield');
-			$sq->where($sq->getTable()->getOutput('teststring'), $parent->getTable()->getOutput('teststring'));
+			$sq->where($sq->getTable()->getOutput('teststring'), $parent->getOutput('teststring'));
 			return $sq;
 		});
 		

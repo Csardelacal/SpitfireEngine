@@ -43,7 +43,7 @@ class JoinTable extends Join
 	public function __construct(Alias $alias)
 	{
 		$this->alias = $alias;
-		parent::__construct();
+		parent::__construct($alias->output());
 	}
 	
 	/**

@@ -101,7 +101,7 @@ class Query
 	{
 		$this->from = new Alias($table, $table->withAlias());
 		$this->joins = new Collection();
-		$this->restrictions = new RestrictionGroup();
+		$this->restrictions = new RestrictionGroup($this->from->output());
 		$this->calculated = new Collection();
 		$this->groupBy = new Collection();
 		$this->order = new Collection();
@@ -276,24 +276,6 @@ class Query
 		$copy->calculated = new Collection();
 		$copy->order = new Collection();
 		return $copy;
-	}
-	
-	/**
-	 * Adds a restriction to the current query. Restraining the data a field
-	 * in it can contain.
-	 *
-	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
-	 *
-	 * @param Closure $generator
-	 * @return Query
-	 */
-	public function whereExists(Closure $generator) : Query
-	{
-		$value = $generator($this);
-		assert($value instanceof Query);
-		
-		$this->restrictions->push(new Restriction(null, Restriction::EQUAL_OPERATOR, $value));
-		return $this;
 	}
 	
 	public function aggregate(FieldIdentifier $field, Aggregate $fn, string $alias) : Query

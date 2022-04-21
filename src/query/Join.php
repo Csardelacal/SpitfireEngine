@@ -51,9 +51,9 @@ abstract class Join
 	 * Instance a new join. This takes a TableReference (which may connect a physical table or a
 	 * temorary table / query).
 	 */
-	public function __construct()
+	public function __construct(TableIdentifierInterface $table)
 	{
-		$this->on = new RestrictionGroup();
+		$this->on = new RestrictionGroup($table);
 	}
 	
 	/**
