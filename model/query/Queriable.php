@@ -34,7 +34,7 @@ trait Queriable
 		}
 		
 		$table = $this->getQuery()->getFrom()->output();
-		$this->getQuery()->where($table->getOutput($field), $operator, $value);
+		$this->getQuery()->where($field, $operator, $value);
 		return $this;
 	}
 	

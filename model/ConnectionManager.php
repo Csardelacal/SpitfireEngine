@@ -10,19 +10,19 @@ class ConnectionManager
 {
 	
 	/**
-	 * 
+	 *
 	 * @var string|null
 	 */
 	private $default;
 	
 	/**
-	 * 
+	 *
 	 * @var Connection[]
 	 */
 	private $connections = [];
 	
 	/**
-	 * 
+	 *
 	 * @var Container
 	 */
 	private $provider;
@@ -40,8 +40,7 @@ class ConnectionManager
 	
 	public function make(string $name, Settings $settings) : void
 	{
-		if ($settings->getDriver() === 'mysqlpdo')
-		{
+		if ($settings->getDriver() === 'mysqlpdo') {
 			$driver = new MySQLDriver($settings, $this->provider->get(LoggerInterface::class));
 			$this->connections[$name] = $driver;
 		}

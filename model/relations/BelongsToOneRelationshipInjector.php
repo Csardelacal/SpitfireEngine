@@ -33,7 +33,7 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 	public function injectWhere(DatabaseQuery $context, RestrictionGroup $query, Model $model) : void
 	{
 		$name = $this->field->getField();
-		$query->where($context->getFrom()->output()->getOutput($name), $model->getPrimary());
+		$query->where($name, $model->getPrimary());
 	}
 	
 	/**
@@ -65,18 +65,19 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 			 * After that, we need to access the underlying query that spitfire/database manages
 			 * to inject the relation between the local and remote fields within the subquery.
 			 */
-			$dbquery = $subquery->getQuery();
+			$dbquery = $subquery->getQuery()->withoutSelect();
 			$primary = $this->referenced->getField();
 			
 			$dbquery->where(
-				$parent->getOutput($this->field->getField()),
-				$dbquery->getFrom()->output()->getOutput($primary)
+				$primary,
+				$parent->getOutput($this->field->getField())
 			);
 			
 			/**
 			 *
 			 */
 			$dbquery->select($this->referenced->getField());
+			assert($dbquery->getOutputs()->count() === 1);
 			
 			return $dbquery;
 		});

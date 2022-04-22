@@ -33,13 +33,13 @@ abstract class Model implements JsonSerializable
 	
 	/**
 	 * Determines whether the model is holding a record or not.
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $hydrated = false;
 	
 	/**
-	 * 
+	 *
 	 * @var string|null
 	 */
 	private $connection = null;
@@ -49,20 +49,20 @@ abstract class Model implements JsonSerializable
 	/**
 	 * If the model was retrieved as part of a relationship, it's possible that it
 	 * is enriched by the pivot data.
-	 * 
+	 *
 	 * This for example could be something like a user and follower table. In that case
 	 * we could retrieve a user's followers, this would return a usermodel with the
 	 * follower model as a pivot, which provides information about the relationship like
 	 * when the following was started, etc.
-	 * 
+	 *
 	 * @var Model|null
 	 */
 	private $pivot = null;
 	
 	/**
-	 * Returns the record this model is working on. This requires the model to be 
+	 * Returns the record this model is working on. This requires the model to be
 	 * hydrated to work.
-	 * 
+	 *
 	 * @return Record
 	 */
 	public function getRecord() : Record
@@ -88,7 +88,7 @@ abstract class Model implements JsonSerializable
 	 * Creates a copy of the model that is hydrated with the given record. This
 	 * allows the application to distinguish between models that carry a payload
 	 * and the ones that provide relationships and schema information.
-	 * 
+	 *
 	 * @return self
 	 */
 	public function withHydrate(Record $record) : Model
@@ -167,10 +167,10 @@ abstract class Model implements JsonSerializable
 	/**
 	 * The value of the primary key, null means that the software expects the
 	 * database to assign this record a primary key on insert.
-	 * 
-	 * When editing the primary key value this will ALWAYS return the data that 
+	 *
+	 * When editing the primary key value this will ALWAYS return the data that
 	 * the system assumes to be in the database.
-	 * 
+	 *
 	 * @return int|string
 	 */
 	public function getPrimary()
@@ -180,7 +180,7 @@ abstract class Model implements JsonSerializable
 		$fields = $this->getTable()->getPrimaryKey()->getFields();
 		
 		if ($fields->isEmpty()) {
-			throw new ApplicationException('Record has no primary key', 2101181306); 
+			throw new ApplicationException('Record has no primary key', 2101181306);
 		}
 		
 		return $this->record->get($fields[0]->getName());
@@ -210,11 +210,11 @@ abstract class Model implements JsonSerializable
 	
 	public function query() : QueryBuilder
 	{
-		return new QueryBuilder($this->getConnection(), $this);
+		return new QueryBuilder($this);
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string $name
 	 * @return mixed
 	 */
@@ -235,8 +235,8 @@ abstract class Model implements JsonSerializable
 	}
 	
 	/**
-	 * By default, spitfire 
-	 * 
+	 * By default, spitfire
+	 *
 	 * @deprecated I don't even
 	 */
 	public function getSchema() : DatabaseSchema
@@ -314,7 +314,7 @@ abstract class Model implements JsonSerializable
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return Model|null
 	 */
 	public function pivot() :? Model
@@ -353,8 +353,8 @@ abstract class Model implements JsonSerializable
 	public function getConnection() : Connection
 	{
 		return $this->connection !== null?
-			spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
-			spitfire()->provider()->get(ConnectionManager::class)->getDefault();
+		spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
+		spitfire()->provider()->get(ConnectionManager::class)->getDefault();
 	}
 	
 	public function setConnection(string $id) : Model

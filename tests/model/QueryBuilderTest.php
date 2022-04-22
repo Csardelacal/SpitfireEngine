@@ -28,7 +28,7 @@ class QueryBuilderTest extends TestCase
 	private $logger;
 	
 	/**
-	 * 
+	 *
 	 * @var Model
 	 */
 	private $model;
@@ -115,7 +115,7 @@ class QueryBuilderTest extends TestCase
 	
 	public function testBelongsToWhereHas()
 	{
-		$handler = new TestHandler();
+		$handler = $this->logger;
 		$query = new QueryBuilder($this->model2);
 		
 		$query->whereHas('test', function (QueryBuilder $query) {

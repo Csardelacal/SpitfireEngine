@@ -38,7 +38,7 @@ class StringTest extends TestCase
 	
 	/**
 	 * Tests some of the most common usages of the camel2underscores function. This
-	 * function is usually helpful when converting class names to environments 
+	 * function is usually helpful when converting class names to environments
 	 * which are not case-sensitive.
 	 */
 	public function testCamelCase2UnderscoreConversions()
@@ -48,7 +48,7 @@ class StringTest extends TestCase
 	}
 	
 	/**
-	 * Tests the function that converts underscore separated names into camel case 
+	 * Tests the function that converts underscore separated names into camel case
 	 * identifiers.
 	 */
 	public function testUnderscore2CamelCaseConversions()

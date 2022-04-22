@@ -12,7 +12,7 @@ class RestrictionGroupBuilder
 	private $query;
 	
 	/**
-	 * 
+	 *
 	 * @var RestrictionGroup
 	 */
 	private $restrictionGroup;
@@ -63,5 +63,4 @@ class RestrictionGroupBuilder
 		$relation->injector()->injectWhereHas($this->restrictionGroup, $value);
 		return $this;
 	}
-	
 }

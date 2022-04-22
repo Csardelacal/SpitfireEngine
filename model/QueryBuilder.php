@@ -60,15 +60,15 @@ class QueryBuilder
 	/**
 	 * Defines a mapping where the fields of the database are directly mapped to the fields of
 	 * the database record.
-	 * 
+	 *
 	 * @todo
 	 * In this iteration of the query builder, the system just isn't advanced enough to allow
 	 * for custom queries for returning wild mapped queries. In future revisions, the model should
 	 * be able to define mappings so that joined data can be retrieved alongside the query.
-	 * 
+	 *
 	 * This would be useful for a model like employee that has a belongsToOne relationship with
 	 * a relatinon like Department. In this case, the application could assemble a mapping that
-	 * allows SQL to fetch a single record for both models and map them, reducing the need for 
+	 * allows SQL to fetch a single record for both models and map them, reducing the need for
 	 * round trips to the database.
 	 */
 	public function makeMapping() : void
@@ -83,13 +83,13 @@ class QueryBuilder
 		/**
 		 * Extract the name of the fields so we can assign it back to the generic mapping
 		 * that will read the data from the query into the model.
-		 * 
+		 *
 		 * @var Collection<FieldIdentifier>
 		 */
 		$fields = $table->getOutputs();
 		
 		/**
-		 * 
+		 *
 		 * @var string[]
 		 */
 		$names  = $fields->each(function (FieldIdentifier $e) : string {
@@ -111,7 +111,7 @@ class QueryBuilder
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string $type
 	 * @param callable(RestrictionGroupBuilder) $do
 	 * @return QueryBuilder
@@ -146,8 +146,12 @@ class QueryBuilder
 		}))->first();
 		
 		if ($record === null && $or !== null) {
-			if (is_string($or)) { throw new $or('No records found'); }
-			if (is_callable($or)) { return $or(); }
+			if (is_string($or)) {
+				throw new $or('No records found');
+			}
+			if (is_callable($or)) {
+				return $or();
+			}
 			throw new ApplicationException('No record found');
 		}
 		
@@ -199,7 +203,7 @@ class QueryBuilder
 			$_property->setAccessible(true);
 			
 			/**
-			 * Fetch the collection of children that are related to the resultset 
+			 * Fetch the collection of children that are related to the resultset
 			 * we retrieved.
 			 */
 			$children = $relationship->eagerLoad($result);
@@ -207,9 +211,9 @@ class QueryBuilder
 			
 			foreach ($result as $record) {
 				/**
-				 * If the relationship provides multiple results, the application needs to expect 
+				 * If the relationship provides multiple results, the application needs to expect
 				 * a collection in the field that the relationship provides.
-				 * 
+				 *
 				 * The collection is cloned, so that changes to one record do not propagate to other
 				 * records.
 				 */
@@ -237,12 +241,11 @@ class QueryBuilder
 					 * can be accepted.
 					 */
 					assert($payload instanceof Model || $payload === null);
-					$_property->setValue($record, $payload);	
+					$_property->setValue($record, $payload);
 				}
 				else {
 					throw new PrivateApplicationException('Invalid relationship type');
 				}
-				
 			}
 			
 			/**

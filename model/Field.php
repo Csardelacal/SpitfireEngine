@@ -34,7 +34,7 @@ class Field
 	}
 	
 	/**
-	 * 
+	 *
 	 * @todo Rename to something more fitting.
 	 */
 	public function getField()

@@ -6,7 +6,7 @@ class Strings
 	/**
 	 * Turns camelCased strings into under_scored strings. This is specially useful
 	 * for class to URL conversion and the other way around.
-	 * 
+	 *
 	 * @param string $str
 	 * @return string
 	 */
@@ -19,9 +19,9 @@ class Strings
 	/**
 	 * Converts under_score separated strings into camelCased. Allowing an application
 	 * to retrieve a class name from a case insensitive environment.
-	 * 
+	 *
 	 * @param string  $str  The input string (example: camel_case)
-	 * @param boolean $high Defines whether the first letter should be uppercase. 
+	 * @param boolean $high Defines whether the first letter should be uppercase.
 	 *                      "CamelCase" (true) or "camelCase" (false)
 	 * @return string
 	 */
@@ -43,14 +43,14 @@ class Strings
 	{
 		
 		$str = strtolower(preg_replace(
-			array('/[^\p{L}0-9_\-\s]/u', '/[ \-\_ª]+/'), 
-			array('-' /*Remove non-alphanumeric characters*/, '-' /*Remove multiple spaces*/), 
+			array('/[^\p{L}0-9_\-\s]/u', '/[ \-\_ª]+/'),
+			array('-' /*Remove non-alphanumeric characters*/, '-' /*Remove multiple spaces*/),
 			$string
 		));
 		
 		return preg_replace(
 				  /*http://stackoverflow.com/questions/10444885/php-replace-foreign-characters-in-a-string*/
-			'/&([A-Za-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);/i', 
+			'/&([A-Za-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);/i',
 			'$1', //Remove accents
 			htmlentities($str, ENT_QUOTES, 'UTF-8')
 		);
@@ -59,7 +59,7 @@ class Strings
 	public static function endsWith($haystack, $needle)
 	{
 		if (!$needle) {
-			return true; 
+			return true;
 		}
 		return strcmp(substr($haystack, 0 - strlen($needle)), $needle) === 0;
 	}
@@ -67,7 +67,7 @@ class Strings
 	public static function startsWith($haystack, $needle)
 	{
 		if (empty($needle)) {
-			return true; 
+			return true;
 		}
 		return strpos($haystack, $needle) === 0;
 	}
@@ -77,7 +77,7 @@ class Strings
 		if (Strings::endsWith($string, 'y')) {
 			return substr($string, 0, -1) .'ies';
 		} else {
-			return $string . 's'; 
+			return $string . 's';
 		}
 	}
 	
@@ -93,7 +93,7 @@ class Strings
 	}
 	
 	/**
-	 * 
+	 *
 	 * @deprecated since version 0.1
 	 * @param type $str
 	 * @return type
@@ -113,7 +113,7 @@ class Strings
 			if ($flip) {
 				#HTML
 				return Strings::escape($e);
-			} 
+			}
 			else {
 				#URL
 				return ($cb ?: function ($url) {
@@ -131,10 +131,10 @@ class Strings
 	/**
 	 * This method allows your application to safely print HTML to the output buffer
 	 * without having to worry about potential HTML injections.
-	 * 
+	 *
 	 * Please note though, that this method does not protect your application from
 	 * executing javascript if the output is used in the wrong location.
-	 * 
+	 *
 	 * @param type $str
 	 * @return type
 	 */
@@ -144,9 +144,9 @@ class Strings
 	}
 	
 	/**
-	 * Offsets the line by a character. For example, when you're printing text to 
+	 * Offsets the line by a character. For example, when you're printing text to
 	 * HTML you wish it to be indented the same way as the rest of your HTML
-	 * 
+	 *
 	 * @param string $str
 	 * @param int    $times
 	 * @param string $character
