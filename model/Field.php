@@ -33,6 +33,10 @@ class Field
 		return $this->model;
 	}
 	
+	/**
+	 * 
+	 * @todo Rename to something more fitting.
+	 */
 	public function getField()
 	{
 		return $this->name;

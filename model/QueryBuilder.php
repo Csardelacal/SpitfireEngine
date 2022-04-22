@@ -1,13 +1,20 @@
 <?php namespace spitfire\model;
 
+use ReflectionClass;
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException as PrivateApplicationException;
 use spitfire\exceptions\user\ApplicationException;
 use spitfire\model\query\Queriable;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSetMapping;
+use spitfire\model\relations\Relationship;
+use spitfire\model\relations\RelationshipMultipleInterface;
+use spitfire\model\relations\RelationshipSingleInterface;
 use spitfire\storage\database\Aggregate;
+use spitfire\storage\database\identifiers\FieldIdentifier;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\Record;
+use spitfire\utils\Strings;
 
 /**
  *
@@ -71,17 +78,26 @@ class QueryBuilder
 		 * our model so it can be hydrated.
 		 */
 		$this->query->selectAll();
+		$table = $this->query->getFrom()->output();
 		
 		/**
 		 * Extract the name of the fields so we can assign it back to the generic mapping
 		 * that will read the data from the query into the model.
 		 * 
+		 * @var Collection<FieldIdentifier>
+		 */
+		$fields = $table->getOutputs();
+		
+		/**
+		 * 
 		 * @var string[]
 		 */
-		$fields = $this->model->getTable()->getFields();
-		$names  = $fields->extract('getName')->toArray();
+		$names  = $fields->each(function (FieldIdentifier $e) : string {
+			$raw = $e->raw();
+			return Strings::underscores2camel(array_pop($raw));
+		})->toArray();
 		
-		$this->mapping = new ResultSetMapping($this->model, array_combine($fields, $fields));
+		$this->mapping = new ResultSetMapping($this->model, array_combine($names, $fields->toArray()));
 	}
 	
 	public function getQuery() : DatabaseQuery
@@ -157,6 +173,86 @@ class QueryBuilder
 		return $this->eagerLoad($result->each(function ($read) {
 			return $this->mapping->make($read->raw());
 		}));
+	}
+	
+	protected function eagerLoad(Collection $result) : Collection
+	{
+		$reflection = new ReflectionClass($this->model);
+		
+		foreach ($this->with as $relation) {
+			$relationship = $this->model->$relation();
+			
+			/**
+			 * The relationship we retrieved must obviously be a relationship, it must also
+			 * provide a proper value in the model so we can write to it.
+			 */
+			assert($relationship instanceof Relationship);
+			assert($reflection->hasProperty($relationship->getField()->getField()));
+			
+			/**
+			 * We need to reflect the property of the model so we can write to it
+			 * directly without dispatching any get or set magic methods. This allows
+			 * spitfire to populate the model without triggering user validation or
+			 * similar.
+			 */
+			$_property = $reflection->getProperty($relationship->getField()->getField());
+			$_property->setAccessible(true);
+			
+			/**
+			 * Fetch the collection of children that are related to the resultset 
+			 * we retrieved.
+			 */
+			$children = $relationship->eagerLoad($result);
+			$field = $relationship->getField();
+			
+			foreach ($result as $record) {
+				/**
+				 * If the relationship provides multiple results, the application needs to expect 
+				 * a collection in the field that the relationship provides.
+				 * 
+				 * The collection is cloned, so that changes to one record do not propagate to other
+				 * records.
+				 */
+				if ($relationship instanceof RelationshipMultipleInterface) {
+					$payload = $children[$field->getField()];
+					
+					/**
+					 * Verify that the payload we received from the database is actually what we need and
+					 * not something else.
+					 */
+					assert($payload instanceof Collection);
+					assert($payload->containsOnly(Model::class));
+					
+					$_property->setValue($record, clone $children[$field->getField()]);
+				}
+				/**
+				 * Otherwise, if the application expects a single model, then the data should be a
+				 * model.
+				 */
+				elseif ($relationship instanceof RelationshipSingleInterface) {
+					$payload = $children[$field->getField()]->first();
+					
+					/**
+					 * Make sure that the payload we received is either null or a model. No other payload
+					 * can be accepted.
+					 */
+					assert($payload instanceof Model || $payload === null);
+					$_property->setValue($record, $payload);	
+				}
+				else {
+					throw new PrivateApplicationException('Invalid relationship type');
+				}
+				
+			}
+			
+			/**
+			 * We lock the property back up, so that no component may accidentally write to it when
+			 * not allowed.
+			 */
+			$_property->setAccessible(false);
+		}
+		
+		return $result;
 	}
 	
 	public function count() : int
