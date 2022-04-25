@@ -29,10 +29,10 @@
 	},
 	"require": {
 		"spitfire/collection": "^0.1.1",
-		"spitfire/exception": "^0.1.1",
 		"magic3w/url-reflection": "^0.1.3",
 		"psr/log": "^1.1",
-		"spitfire/event": "^0.1.0"
+		"spitfire/event": "^0.1.0",
+		"spitfire/exception": "^0.1.1"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.5",

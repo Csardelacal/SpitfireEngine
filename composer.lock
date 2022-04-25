@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cc9d163d721a140e848ecd833311a00",
+    "content-hash": "ee75804e895ec99ecd323eafbaa67518",
     "packages": [
         {
             "name": "magic3w/url-reflection",
@@ -155,16 +155,16 @@
         },
         {
             "name": "spitfire/collection",
-            "version": "0.1.3",
+            "version": "0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spitfire-php/collection.git",
-                "reference": "c3a90b5b028bec3af9cbd2a2580746b25e9eb1e5"
+                "reference": "953ba9ded32c3991afac07e13c56995901423743"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/c3a90b5b028bec3af9cbd2a2580746b25e9eb1e5",
-                "reference": "c3a90b5b028bec3af9cbd2a2580746b25e9eb1e5",
+                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/953ba9ded32c3991afac07e13c56995901423743",
+                "reference": "953ba9ded32c3991afac07e13c56995901423743",
                 "shasum": ""
             },
             "require-dev": {
@@ -191,9 +191,9 @@
             "description": "Provides collections for spitfire/engine",
             "support": {
                 "issues": "https://github.com/spitfire-php/collection/issues",
-                "source": "https://github.com/spitfire-php/collection/tree/0.1.3"
+                "source": "https://github.com/spitfire-php/collection/tree/0.1.5"
             },
-            "time": "2022-02-17T12:01:54+00:00"
+            "time": "2022-04-22T11:27:37+00:00"
         },
         {
             "name": "spitfire/event",
@@ -243,7 +243,7 @@
             "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitfire-exception.git",
+                "url": "https://github.com/spitfire-php/exceptions.git",
                 "reference": "02b1d64efe48d8a379013cd341e7865c0768779f"
             },
             "require-dev": {
@@ -378,16 +378,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "d7fd7450628561ba697b7097d86db72662f54aef"
+                "reference": "4192345e260f1d51b365536199744b987e160edc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d7fd7450628561ba697b7097d86db72662f54aef",
-                "reference": "d7fd7450628561ba697b7097d86db72662f54aef",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/4192345e260f1d51b365536199744b987e160edc",
+                "reference": "4192345e260f1d51b365536199744b987e160edc",
                 "shasum": ""
             },
             "require": {
@@ -461,7 +461,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/2.4.0"
+                "source": "https://github.com/Seldaek/monolog/tree/2.5.0"
             },
             "funding": [
                 {
@@ -473,7 +473,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-14T12:44:37+00:00"
+            "time": "2022-04-08T15:43:54+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2630,5 +2630,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
