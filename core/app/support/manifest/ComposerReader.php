@@ -5,7 +5,7 @@ use spitfire\collection\Collection;
 use spitfire\core\app\AppManifest;
 use spitfire\exceptions\NotFoundException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ use spitfire\exceptions\NotFoundException;
  * This class extracts manifest data from composer.json and allows the application
  * to assemble an application booststrap object that it can then cache and use to
  * get the application running.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class ComposerReader
@@ -37,10 +37,10 @@ class ComposerReader
 	/**
 	 * Reads the contents of a composer.json file and returns the manifest data
 	 * that it contains.
-	 * 
+	 *
 	 * @throws BadMethodCallException
 	 * @throws NotFoundException
-	 * 
+	 *
 	 * @param string $file
 	 * @return AppManifest
 	 */
@@ -75,7 +75,7 @@ class ComposerReader
 			 * The process of reading the apps into the system is recursive. Please note that
 			 * the dependency tree terminates the recursion. The application will not be able
 			 * to work with circular dependencies.
-			 * 
+			 *
 			 * @var Collection<AppManifest>
 			 */
 			$apps = (new Collection((array)($json->extra->spitfire->apps?? [])))
@@ -85,7 +85,7 @@ class ComposerReader
 			
 			/**
 			 * Extract the events that this application is listening for
-			 * 
+			 *
 			 * @todo Determine the exact syntax of the events key
 			 */
 			$events = (array)($json->extra->spitfire->events?? []);
@@ -100,7 +100,7 @@ class ComposerReader
 	}
 	
 	/**
-	 * 
+	 *
 	 * @todo Allow passing a list of packages to be ignored by this function
 	 * @param string $installedJSON
 	 * @return string[]
@@ -116,7 +116,7 @@ class ComposerReader
 		$packages = $json->packages;
 		
 		/**
-		 * Prepare an empty array that we will use to populate the service providers that our 
+		 * Prepare an empty array that we will use to populate the service providers that our
 		 * application needs to load.
 		 */
 		$providers = [];
@@ -127,13 +127,13 @@ class ComposerReader
 			 * the extra key is missing, the application is not registering any.
 			 */
 			if (!isset($package->extra)) {
-				continue; 
+				continue;
 			}
 			if (!isset($package->extra->spitfire)) {
-				continue; 
+				continue;
 			}
 			if (!isset($package->extra->spitfire->providers)) {
-				continue; 
+				continue;
 			}
 			
 			/**

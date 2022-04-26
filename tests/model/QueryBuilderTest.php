@@ -126,6 +126,13 @@ class QueryBuilderTest extends TestCase
 		
 		$this->assertCount(1, $handler->getRecords());
 		$this->assertStringContainsString('`_id` FROM `test`', $handler->getRecords()[0]['message']);
-		$this->assertStringContainsString("`.`my_stick` = 'is better than bacon' AND", $handler->getRecords()[0]['message']);
+		
+		/**
+		 * Check whether the restriction we provided is actually in there
+		 */
+		$this->assertStringContainsString(
+			"`.`my_stick` = 'is better than bacon' AND",
+			$handler->getRecords()[0]['message']
+		);
 	}
 }
