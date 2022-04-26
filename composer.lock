@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee75804e895ec99ecd323eafbaa67518",
+    "content-hash": "f72d4605fd1e64da2f2bb9a30bf2865b",
     "packages": [
         {
             "name": "magic3w/url-reflection",
-            "version": "0.1.4",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Magic3W/url-reflection.git",
