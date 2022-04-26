@@ -75,10 +75,12 @@ class ComposerReader
 			 * The process of reading the apps into the system is recursive. Please note that
 			 * the dependency tree terminates the recursion. The application will not be able
 			 * to work with circular dependencies.
+			 * 
+			 * @var Collection<AppManifest>
 			 */
 			$apps = (new Collection((array)($json->extra->spitfire->apps?? [])))
-				->each(function ($app) {
-					$this->read(spitfire()->locations()->root('vendor/' . $app . '/composer.json'));
+				->each(function ($app) : AppManifest {
+					return $this->read(spitfire()->locations()->root('vendor/' . $app . '/composer.json'));
 				});
 			
 			/**

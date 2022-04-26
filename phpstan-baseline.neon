@@ -31,11 +31,6 @@ parameters:
 			path: core/Locations.php
 
 		-
-			message: "#^Parameter \\#2 \\$assoc of function json_decode expects bool, null given\\.$#"
-			count: 2
-			path: core/app/support/manifest/ComposerReader.php
-
-		-
 			message: "#^Undefined variable\\: \\$this$#"
 			count: 1
 			path: core/app/support/manifest/ComposerReader.php
@@ -424,11 +419,6 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 1
 			path: io/session/FileSessionHandler.php
-
-		-
-			message: "#^Method spitfire\\\\io\\\\session\\\\MemcachedSessionHandler\\:\\:gc\\(\\) should return int\\|false but returns true\\.$#"
-			count: 1
-			path: io/session/MemcachedSessionHandler.php
 
 		-
 			message: "#^Function current_context not found\\.$#"
