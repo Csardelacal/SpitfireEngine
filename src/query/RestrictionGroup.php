@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\database\query;
 
-use Closure;
+use BadMethodCallException;
 use InvalidArgumentException;
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
@@ -15,9 +15,9 @@ use spitfire\storage\database\Query;
  * changing the behavior of the group by making it more or less restrictive. This
  * OR and AND types are known from most DBMS.
  *
- * @extends Collection<RestrictionInterface>
+ * @mixin Collection<Restriction|RestrictionGroup>
  */
-class RestrictionGroup extends Collection implements RestrictionInterface
+class RestrictionGroup
 {
 	const TYPE_OR  = 'OR';
 	const TYPE_AND = 'AND';
@@ -39,9 +39,18 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	 */
 	private $table;
 	
+	/**
+	 * The table allows us to maintain a lst of available fields for the restriction group,
+	 * making functions like whereExists available.
+	 *
+	 * @var Collection<Restriction|RestrictionGroup>
+	 */
+	private $restrictions;
+	
 	public function __construct(TableIdentifierInterface $table)
 	{
 		$this->table = $table;
+		$this->restrictions = new Collection();
 	}
 	
 	/**
@@ -52,7 +61,7 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	 *
 	 * @param string $field
 	 * @param mixed  $value
-	 * @param string $_
+	 * @param mixed  $_
 	 * @return RestrictionGroup
 	 * @throws ApplicationException
 	 */
@@ -72,7 +81,7 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 		}
 		
 		
-		$this->push(new Restriction($this->table->getOutput($field), $operator, $value));
+		$this->restrictions->push(new Restriction($this->table->getOutput($field), $operator, $value));
 		return $this;
 	}
 	
@@ -82,15 +91,15 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 	 *
 	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 *
-	 * @param Closure $generator
+	 * @param callable(TableIdentifierInterface):Query $generator
 	 * @return RestrictionGroup
 	 */
-	public function whereExists(Closure $generator) : RestrictionGroup
+	public function whereExists($generator) : RestrictionGroup
 	{
 		$value = $generator($this->table);
 		assert($value instanceof Query);
 		
-		$this->push(new Restriction(null, Restriction::EQUAL_OPERATOR, $value));
+		$this->restrictions->push(new Restriction(null, Restriction::EQUAL_OPERATOR, $value));
 		return $this;
 	}
 	
@@ -105,7 +114,7 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 		$group->setType($type);
 		
 		#Add it to our restriction list
-		$this->push($group);
+		$this->restrictions->push($group);
 		return $group;
 	}
 	
@@ -135,4 +144,27 @@ class RestrictionGroup extends Collection implements RestrictionInterface
 		return $this->table;
 	}
 	
+	/**
+	 *
+	 * @return Collection<Restriction|RestrictionGroup>
+	 */
+	public function restrictions() : Collection
+	{
+		return $this->restrictions;
+	}
+	
+	/**
+	 *
+	 * @param string $name
+	 * @param mixed $arguments
+	 * @return mixed
+	 */
+	public function __call($name, $arguments)
+	{
+		if (method_exists($this->restrictions, $name)) {
+			return $this->restrictions->$name(...$arguments);
+		}
+		
+		throw new BadMethodCallException(sprintf('Undefined method RestrictionGroup::%s', $name));
+	}
 }

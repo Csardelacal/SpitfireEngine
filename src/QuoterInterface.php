@@ -2,7 +2,7 @@
 
 use PDO;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -22,15 +22,15 @@ use PDO;
  */
 
 /**
- * A quoter allows a database grammar to properly escape data that it is being 
+ * A quoter allows a database grammar to properly escape data that it is being
  * made part of a SQL Query, preventing malicious users from executing any
  * SQL injection attacks.
- * 
- * The strongest use case for this is testing. Some DBMS require an existing 
+ *
+ * The strongest use case for this is testing. Some DBMS require an existing
  * connection with the DBMS to quote input, which is safer, but also requires
  * the server to be running the affected DBMS.
- * 
- * By using this class we can test the grammar without the need for a DBMS to 
+ *
+ * By using this class we can test the grammar without the need for a DBMS to
  * be available at all.
  */
 interface QuoterInterface
@@ -39,8 +39,8 @@ interface QuoterInterface
 	/**
 	 * Add quotes to the output. This method is intended to return the exact same
 	 * output as PDO::quote would.
-	 * 
+	 *
 	 * @see PDO::quote
 	 */
-	function quote(string $str = null): string;
+	public function quote(string $str): string;
 }

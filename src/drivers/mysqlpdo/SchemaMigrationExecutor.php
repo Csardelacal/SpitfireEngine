@@ -152,6 +152,8 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	
 	public function has(string $name): bool
 	{
+		assert($this->schema->getName() !== null);
+		
 		$grammar = new MySQLSchemaGrammar();
 		$stmt = $this->pdo->query($grammar->hasTable($this->schema->getName(), $name));
 		

@@ -83,7 +83,9 @@ class SelectExpression
 	{
 		if (!$this->alias) {
 			$raw = $this->input->raw();
-			return array_pop($raw);
+			$last = array_pop($raw);
+			assert($last !== null);
+			return $last;
 		}
 		
 		return $this->alias;

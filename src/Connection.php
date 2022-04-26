@@ -61,7 +61,13 @@ class Connection
 	 */
 	public function contains(MigrationOperationInterface $migration): bool
 	{
-		$tags = $this->driver->getMigrationExecutor($this->schema)->tags()->listTags();
+		$manager = $this->driver->getMigrationExecutor($this->schema)->tags();
+		
+		if ($manager === null) {
+			return false;
+		}
+		
+		$tags = $manager->listTags();
 		
 		return !!array_search(
 			'migration:' . $migration->identifier(),
@@ -86,7 +92,7 @@ class Connection
 		
 		foreach ($migrators as $migrator) {
 			$migration->up($migrator);
-			$migrator->tags()? $migrator->tags()->tag('migration:' . $migration->identifier()) : null;
+			$migrator->tags() !== null? $migrator->tags()->tag('migration:' . $migration->identifier()) : null;
 		}
 	}
 	
@@ -105,7 +111,7 @@ class Connection
 		
 		foreach ($migrators as $migrator) {
 			$migration->down($migrator);
-			$migrator->tags()? $migrator->tags()->untag('migration:' . $migration->identifier()) : null;
+			$migrator->tags() !== null? $migrator->tags()->untag('migration:' . $migration->identifier()) : null;
 		}
 	}
 }

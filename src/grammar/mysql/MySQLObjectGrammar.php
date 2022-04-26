@@ -47,7 +47,7 @@ class MySQLObjectGrammar
 	
 	public function selectExpression(SelectExpression $s): string
 	{
-		if ($s->getAggregate()) {
+		if ($s->getAggregate() !== null) {
 			assert($s->hasAlias());
 			
 			return sprintf(

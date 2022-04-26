@@ -3,7 +3,7 @@
 use PDO;
 use spitfire\storage\database\QuoterInterface;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ class MySQLQuoter implements QuoterInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var PDO
 	 */
 	private $pdo;
@@ -40,7 +40,7 @@ class MySQLQuoter implements QuoterInterface
 		$this->pdo = $pdo;
 	}
 	
-	public function quote(string $str = null): string
+	public function quote(string $str): string
 	{
 		return $this->pdo->quote($str);
 	}

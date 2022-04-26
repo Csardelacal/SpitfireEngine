@@ -33,12 +33,6 @@ class Query
 	protected $from;
 	
 	/**
-	 *
-	 * @var Collection<OrderBy>
-	 */
-	protected $order;
-	
-	/**
 	 * Allows the query to include complex resultsets that accommodate more elaborate
 	 * searches. A join is composed of a type (left, right, inner, outer) and a query
 	 * that restricts it's return.
@@ -56,16 +50,15 @@ class Query
 	 *
 	 * @var RestrictionGroup
 	 */
-	private $restrictions;
+	private $where;
 	
 	/**
 	 * This contains an array of aggregation functions that are executed with the
 	 * query to provide metadata on the query.
 	 *
-	 * @todo Rename to reflect the fact that this is what e expect as output of the query.
 	 * @var Collection<SelectExpression>
 	 */
-	protected $calculated;
+	protected $select;
 	
 	/**
 	 * Determines by which fields the result should be aggregated. This affects aggregation
@@ -78,6 +71,12 @@ class Query
 	 * @var Collection<IdentifierInterface>
 	 */
 	protected $groupBy;
+	
+	/**
+	 *
+	 * @var Collection<OrderBy>
+	 */
+	protected $order;
 	
 	/**
 	 * The number of records that should be skipped when working with the query's resultset.
@@ -101,8 +100,8 @@ class Query
 	{
 		$this->from = new Alias($table, $table->withAlias());
 		$this->joins = new Collection();
-		$this->restrictions = new RestrictionGroup($this->from->output());
-		$this->calculated = new Collection();
+		$this->where = new RestrictionGroup($this->from->output());
+		$this->select = new Collection();
 		$this->groupBy = new Collection();
 		$this->order = new Collection();
 	}
@@ -140,7 +139,7 @@ class Query
 	
 	public function getRestrictions() : RestrictionGroup
 	{
-		return $this->restrictions;
+		return $this->where;
 	}
 	
 	/**
@@ -239,9 +238,9 @@ class Query
 			return new SelectExpression($f);
 		});
 		
-		$this->calculated->add($add);
+		$this->select->add($add);
 		
-		assert($this->calculated->containsOnly(SelectExpression::class));
+		assert($this->select->containsOnly(SelectExpression::class));
 		return $add;
 	}
 	
@@ -249,16 +248,16 @@ class Query
 	{
 		$field = $this->from->output()->getOutput($name);
 		$expression = new SelectExpression($field, $alias);
-		$this->calculated->push($expression);
-		assert($this->calculated->containsOnly(SelectExpression::class));
+		$this->select->push($expression);
+		assert($this->select->containsOnly(SelectExpression::class));
 		return $expression;
 	}
 	
 	public function selectField(FieldIdentifier $field, string $alias = null) : SelectExpression
 	{
 		$expression = new SelectExpression($field, $alias);
-		$this->calculated->push($expression);
-		assert($this->calculated->containsOnly(SelectExpression::class));
+		$this->select->push($expression);
+		assert($this->select->containsOnly(SelectExpression::class));
 		return $expression;
 	}
 	
@@ -273,14 +272,14 @@ class Query
 	public function withoutSelect() : Query
 	{
 		$copy = clone $this;
-		$copy->calculated = new Collection();
+		$copy->select = new Collection();
 		$copy->order = new Collection();
 		return $copy;
 	}
 	
 	public function aggregate(FieldIdentifier $field, Aggregate $fn, string $alias) : Query
 	{
-		$this->calculated->push(new SelectExpression($field, $alias, $fn));
+		$this->select->push(new SelectExpression($field, $alias, $fn));
 		return $this;
 	}
 	
@@ -291,7 +290,7 @@ class Query
 	 */
 	public function getOutput(string $name) : SelectExpression
 	{
-		$output = $this->calculated->filter(function (SelectExpression $e) use ($name) {
+		$output = $this->select->filter(function (SelectExpression $e) use ($name) {
 			return $e->getName() === $name;
 		})->first();
 		
@@ -305,7 +304,7 @@ class Query
 	 */
 	public function getOutputs() : Collection
 	{
-		return $this->calculated;
+		return $this->select;
 	}
 	
 	/**
@@ -344,8 +343,8 @@ class Query
 	 */
 	public function __call($name, $arguments)
 	{
-		if (method_exists($this->restrictions, $name)) {
-			return $this->restrictions->$name(...$arguments);
+		if (method_exists($this->where, $name)) {
+			return $this->where->$name(...$arguments);
 		}
 		
 		throw new BadMethodCallException(sprintf('Undefined method Query::%s', $name));
@@ -357,7 +356,7 @@ class Query
 			'%s(%s) {%s}',
 			implode('.', $this->from->input()->raw()),
 			implode('.', $this->from->output()->raw()),
-			implode(',', $this->restrictions->toArray())
+			implode(',', $this->where->restrictions()->toArray())
 		);
 	}
 }

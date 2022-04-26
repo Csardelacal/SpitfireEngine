@@ -2,7 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\FieldReference;
 use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\identifiers\TableIdentifier;
@@ -10,6 +9,7 @@ use spitfire\storage\database\Layout;
 use spitfire\storage\database\OrderBy;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\query\JoinTable;
+use spitfire\storage\database\query\Restriction;
 
 class MySQLQueryGrammarTest extends TestCase
 {
@@ -71,8 +71,8 @@ class MySQLQueryGrammarTest extends TestCase
 		$query = new Query($table);
 		$query->selectAll();
 		$query->joinTable($layout2->getTableReference(), function (JoinTable $join, Query $parent) {
-			$join->on($join->getAlias()->output()->getOutput('testfield'), $parent->getTable()->getOutput('testfield'));
-			$parent->where($join->getAlias()->output()->getOutput('testfield'), '!=', null);
+			$join->on($join->getOutput('testfield'), $parent->getTable()->getOutput('testfield'));
+			$parent->getRestrictions()->push(new Restriction($join->getOutput('testfield'), '!=', null));
 		});
 		
 		$result = $grammar->query($query);
@@ -99,7 +99,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$query->whereExists(function (TableIdentifier $parent) use ($layout2) {
 			$sq = new Query($layout2->getTableReference());
 			$sq->select('testfield');
-			$sq->where($sq->getTable()->getOutput('teststring'), $parent->getOutput('teststring'));
+			$sq->where('teststring', $parent->getOutput('teststring'));
 			return $sq;
 		});
 		

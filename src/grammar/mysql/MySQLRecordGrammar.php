@@ -46,6 +46,8 @@ class MySQLRecordGrammar
 	
 	public function updateRecord(LayoutInterface $layout, Record $record) : string
 	{
+		assert($layout->getPrimaryKey() !== null);
+		
 		$fields  = $layout->getFields();
 		$primary = $layout->getPrimaryKey()->getFields()->first();
 		$diff    = $record->diff();
@@ -107,6 +109,8 @@ class MySQLRecordGrammar
 	 */
 	public function deleteRecord(LayoutInterface $layout, Record $record) : string
 	{
+		assert($layout->getPrimaryKey() !== null);
+		
 		$primary = $layout->getPrimaryKey()->getFields()->first();
 		
 		assert($primary !== null);

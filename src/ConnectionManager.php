@@ -18,6 +18,10 @@ class ConnectionManager
 	 */
 	private $definitions;
 	
+	/**
+	 *
+	 * @param mixed[] $definitions
+	 */
 	public function __construct(array $definitions)
 	{
 		$this->definitions = $definitions;
@@ -65,7 +69,7 @@ class ConnectionManager
 		/**
 		 * Initialize the driver, find the appropriate driver class, and instance it with the settings
 		 * we found earlier.
-		 * 
+		 *
 		 * To ensure proper state, we verify the object we received is actually an instance of a Driver.
 		 */
 		$type   = $definition['driver'];
@@ -74,7 +78,7 @@ class ConnectionManager
 		assert($driver instanceof Driver);
 		
 		/**
-		 * Create the connection, cache it, and return it. Please note that this does not yet guarantee 
+		 * Create the connection, cache it, and return it. Please note that this does not yet guarantee
 		 * that the driver is working properly, drivers may be lazy with their connection to prevent
 		 * starting connections for applications that may not need them.
 		 */

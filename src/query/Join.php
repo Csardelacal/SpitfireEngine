@@ -80,18 +80,18 @@ abstract class Join
 		
 		assert($field instanceof IdentifierInterface);
 		
-		$this->on->push(new Restriction($field, $operator, $operand));
+		$this->on->restrictions()->push(new Restriction($field, $operator, $operand));
 		return $this;
 	}
 	
 	/**
 	 * Creates a group within the join's restrictions. The closure performs operations on the group,
 	 * allowing the application to change the group's type or add restrictions to it.
-	 * 
-	 * @param Closure(RestrictionGroup) $inner
-	 * @return RestrictionGroup
+	 *
+	 * @param callable(RestrictionGroup):void $inner
+	 * @return Join
 	 */
-	public function group(Closure $inner) : Join
+	public function group($inner) : Join
 	{
 		$inner($this->on->group(RestrictionGroup::TYPE_OR));
 		return $this;

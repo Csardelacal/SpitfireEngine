@@ -240,11 +240,17 @@
         },
         {
             "name": "spitfire/exception",
-            "version": "v0.1.1",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spitfire-php/exceptions.git",
                 "reference": "02b1d64efe48d8a379013cd341e7865c0768779f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spitfire-php/exceptions/zipball/02b1d64efe48d8a379013cd341e7865c0768779f",
+                "reference": "02b1d64efe48d8a379013cd341e7865c0768779f",
+                "shasum": ""
             },
             "require-dev": {
                 "phpstan/phpstan": "^0.12.71",
@@ -267,7 +273,11 @@
                 }
             ],
             "description": "Exception interfaces for spitfire",
-            "time": "2021-02-06T15:12:59+00:00"
+            "support": {
+                "issues": "https://github.com/spitfire-php/exceptions/issues",
+                "source": "https://github.com/spitfire-php/exceptions/tree/0.1.1"
+            },
+            "time": "2021-03-23T11:55:24+00:00"
         }
     ],
     "packages-dev": [
@@ -2630,5 +2640,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

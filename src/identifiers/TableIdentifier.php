@@ -91,7 +91,14 @@ class TableIdentifier implements TableIdentifierInterface
 	public function getName(): string
 	{
 		$raw = $this->raw;
-		return array_pop($raw);
+		$last = array_pop($raw);
+		
+		/**
+		 * If a table identifier happens to be empty, the application has a severe malfunction
+		 * somewhere.
+		 */
+		assert($last !== null);
+		return $last;
 	}
 	
 	/**

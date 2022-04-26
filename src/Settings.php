@@ -85,7 +85,7 @@ class Settings
 	
 	/**
 	 *
-	 * @var array{driver: string, server: string, port: int|null, user: string, password: string, schema: string, prefix: string, encoding: string}
+	 * @var array{driver: string, server: string, port: int, user: string, password: string, schema: string, prefix: string, encoding: string}
 	 */
 	private static $defaults = [
 		'driver'   => 'mysqlpdo',
@@ -229,7 +229,7 @@ class Settings
 	
 	/**
 	 *
-	 * @param array{driver: string, server: string, port: int|null, user: string, password: string, schema: string, prefix: string, encoding: string} $arr
+	 * @param array{driver: string, server: string, port: int, user: string, password: string, schema: string, prefix: string, encoding: string} $arr
 	 */
 	public static function fromArray(array $arr) : Settings
 	{

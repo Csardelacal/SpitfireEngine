@@ -13,19 +13,38 @@ class MigrateCommand extends Director
 	 * @var Connection
 	 */
 	private $connection;
+	
+	/**
+	 *
+	 * @var MigrationOperationInterface[]
+	 */
 	private $migrations;
 	
-	public function __construct(Connection $connection, $migrations)
+	/**
+	 *
+	 * @param Connection $connection
+	 * @param MigrationOperationInterface[] $migrations
+	 */
+	public function __construct(Connection $connection, array $migrations)
 	{
 		$this->connection = $connection;
 		$this->migrations = $migrations;
 	}
 	
+	/**
+	 *
+	 * @return string[]
+	 */
 	public function parameters(): array
 	{
 		return [];
 	}
 	
+	/**
+	 *
+	 * @param string[] $parameters
+	 * @param CLIParameters $arguments
+	 */
 	public function exec(array $parameters, CLIParameters $arguments): int
 	{
 		foreach	($this->migrations as $migration) {

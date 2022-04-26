@@ -56,4 +56,7 @@ interface TableIdentifierInterface extends IdentifierInterface
 	
 	
 	public function withAlias() : TableIdentifierInterface;
+	
+	
+	public function getName() : string;
 }

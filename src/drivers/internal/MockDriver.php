@@ -50,6 +50,9 @@ class MockDriver implements DriverInterface
 	
 	public function delete(LayoutInterface $layout, Record $record): bool
 	{
+		assert($layout->getPrimaryKey() !== null);
+		assert($layout->getPrimaryKey()->getFields()->first() !== null);
+		
 		$this->operations[] = ['delete', $record->get($layout->getPrimaryKey()->getFields()->first()->getName())];
 		return true;
 	}

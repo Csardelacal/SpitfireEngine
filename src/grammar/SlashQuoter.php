@@ -2,7 +2,7 @@
 
 use spitfire\storage\database\QuoterInterface;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -24,16 +24,16 @@ use spitfire\storage\database\QuoterInterface;
 /**
  * This class adds slashes to data that is intended to be sent to the
  * database.
- * 
+ *
  * NOTE: This class is unsafe and intended to perform testing on the database
  * grammar packages. Under no circumstance should this be used in production
- * 
+ *
  * @see MySQLQuoter
  */
 class SlashQuoter implements QuoterInterface
 {
 	
-	public function quote(string $str = null): string
+	public function quote(string $str): string
 	{
 		return sprintf("'%s'", addslashes($str));
 	}

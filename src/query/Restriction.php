@@ -13,7 +13,7 @@ use spitfire\storage\database\Query;
  *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class Restriction implements RestrictionInterface
+class Restriction
 {
 	
 	/**
