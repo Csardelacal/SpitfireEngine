@@ -12,6 +12,19 @@ class Strings
 	 */
 	public static function camel2underscores($str)
 	{
+		trigger_error("The function camel2underscores was renamed to snake", E_USER_DEPRECATED);
+		return self::snake($str);
+	}
+	
+	/**
+	 * Turns camelCased strings into under_scored strings. This is specially useful
+	 * for class to URL conversion and the other way around.
+	 * 
+	 * @param String $str
+	 * @return string
+	 */
+	public static function snake(string $str) : string
+	{
 		$_ret = preg_replace('/[A-Z]/', '_$0', $str);
 		return strtolower(trim($_ret, '_'));
 	}
@@ -25,7 +38,23 @@ class Strings
 	 *                      "CamelCase" (true) or "camelCase" (false)
 	 * @return string
 	 */
-	public static function underscores2camel($str, $high = true)
+	public static function underscores2camel($str, $high = true) 
+	{
+		trigger_error("The function underscores2camel was renamed to camel", E_USER_DEPRECATED);
+		return self::camel($str, $high);
+	}
+	
+	
+	/**
+	 * Converts under_score separated strings into camelCased. Allowing an application
+	 * to retrieve a class name from a case insensitive environment.
+	 * 
+	 * @param string  $str  The input string (example: camel_case)
+	 * @param boolean $high Defines whether the first letter should be uppercase. 
+	 *                      "CamelCase" (true) or "camelCase" (false)
+	 * @return string
+	 */
+	public static function camel(string $str, bool $high = true) : string
 	{
 		$_ret = preg_replace_callback('/\_[a-z]/', function ($e) {
 			return strtoupper($e[0][1]);

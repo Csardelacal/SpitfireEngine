@@ -37,14 +37,14 @@ class StringTest extends TestCase
 	}
 	
 	/**
-	 * Tests some of the most common usages of the camel2underscores function. This
+	 * Tests some of the most common usages of the snake function. This
 	 * function is usually helpful when converting class names to environments 
 	 * which are not case-sensitive.
 	 */
 	public function testCamelCase2UnderscoreConversions()
 	{
-		$this->assertEquals('some_string', Strings::camel2underscores('someString'));
-		$this->assertEquals('some_string', Strings::camel2underscores('SomeString'));
+		$this->assertEquals('some_string', Strings::snake('someString'));
+		$this->assertEquals('some_string', Strings::snake('SomeString'));
 	}
 	
 	/**
@@ -53,8 +53,8 @@ class StringTest extends TestCase
 	 */
 	public function testUnderscore2CamelCaseConversions()
 	{
-		$this->assertEquals('SomeString', Strings::underscores2camel('some_string'));
-		$this->assertEquals('someString', Strings::underscores2camel('some_string', false));
+		$this->assertEquals('SomeString', Strings::camel('some_string'));
+		$this->assertEquals('someString', Strings::camel('some_string', false));
 	}
 	
 	/**
