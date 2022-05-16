@@ -1,16 +1,14 @@
-<?php namespace spitfire\mvc;
+<?php namespace spitfire\contracts\cli;
 
 use spitfire\cli\arguments\CLIParameters;
-use spitfire\contracts\cli\DirectorInterface;
 
 /**
  * The director allows an application to register a command that should be able 
  * to be invoked via CLI.
  * 
- * @deprecated
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-abstract class Director implements DirectorInterface
+interface DirectorInterface
 {
 	
 	/**
@@ -47,7 +45,7 @@ abstract class Director implements DirectorInterface
 	 * 
 	 * @return array
 	 */
-	abstract public function parameters() : array;
+	public function parameters() : array;
 	
 	/**
 	 * Executes the director, handling control to the application implementing it.
@@ -56,5 +54,5 @@ abstract class Director implements DirectorInterface
 	 * @param CLIParameters $arguments The raw arguments read from the process
 	 * @return int The return code
 	 */
-	abstract public function exec(array $parameters, CLIParameters $arguments): int;
+	public function exec(array $parameters, CLIParameters $arguments): int;
 }

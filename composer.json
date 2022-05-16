@@ -34,13 +34,18 @@
 		"monolog/monolog": "Provides logging capabilities for applications",
 		"guzzlehttp/guzzle": "PSR7 compatible HTTP messaging library"
 	},
+	
+	"replace": {
+		"spitfire/contracts" : "self.version"
+	},
 
 	"autoload": {
 		"files": [
 			"./core/functions.php"
 		],
 		"psr-4": {
-			"spitfire\\": "./"
+			"spitfire\\": "./",
+			"spitfire\\contracts\\": "./src/contracts/"
 		}
 
 	},

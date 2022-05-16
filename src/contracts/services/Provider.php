@@ -1,7 +1,6 @@
-<?php namespace spitfire\core\service;
+<?php namespace spitfire\contracts\services;
 
-use spitfire\contracts\services\Provider as ServicesProvider;
-use spitfire\provider\Container;
+use Psr\Container\ContainerInterface;
 
 /* 
  * The MIT License
@@ -36,6 +35,30 @@ use spitfire\provider\Container;
  * onto the container, the init method then allows to initialize the services needed
  * for the application knowing that all services are enabled.
  */
-abstract class Provider extends ServicesProvider
+abstract class Provider
 {
+	
+	/**
+	 *
+	 * @var ContainerInterface
+	 */
+	protected $container;
+	
+	public function __construct(ContainerInterface $container)
+	{
+		$this->$container = $container;
+	}
+	
+	/**
+	 * Implementations of this function must only register services. Performing
+	 * other operations may lead to unexpected behavior.
+	 * 
+	 */
+	abstract public function register();
+	
+	/**
+	 * Use this to initialize your services, register published resources etc.
+	 * 
+	 */
+	abstract public function init();
 }

@@ -1,0 +1,9 @@
+{
+    "subtree-splits": [
+        {
+            "name": "contracts",
+            "directory": "src/contracts/",
+            "target": "git@github.com:spitfire-php/contracts.git"
+        }
+    ]
+}
