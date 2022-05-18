@@ -3,7 +3,6 @@
 use Closure;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use spitfire\core\Response;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
@@ -13,40 +12,46 @@ use spitfire\core\http\request\handler\DecoratingRequestHandler;
  * attach controllers to different URLs than they would normally do. Please note
  * that enabling a route to a certain controller does not disable it's canonical
  * URL.
- * 
+ *
  * @author César de la Cal <cesar@magic3w.com>
  */
 class Router extends Routable
 {
 	
 	/**
-	 * The middleware this router applies to it's routes and children. Middleware is 
+	 * The middleware this router applies to it's routes and children. Middleware is
 	 * applied once the Intent object is created and being returned.
-	 * 
+	 *
 	 * This means that more specific middleware is applied first when handling a request,
 	 * and later when handling a response.
-	 * 
+	 *
 	 * @var Collection<MiddlewareInterface>
 	 */
 	private $middleware;
 	
 	/**
-	 * These routers inherit from this. Whenever this router is tasked with handling a 
+	 * These routers inherit from this. Whenever this router is tasked with handling a
 	 * request that it cannot satisfy itself, the router will delegate this request to
 	 * it's children.
-	 * 
+	 *
 	 * This behavior implies that routes defined in the parent take precedence over the
 	 * routes defined by it's children.
-	 * 
+	 *
 	 * Also note: whenever you call the scope() method, the router generates a NEW Router
 	 * for your scope. This means that you can have routers that manage routes within
 	 * the same scope but have different middleware.
-	 * 
+	 *
 	 * @var Collection<Router>
 	 */
 	private $children;
 	
-	public function __construct($prefix)
+	/**
+	 * Initialize the router. Please note that a router is always scoped to a namespace.
+	 * By default, this will be the global scope.
+	 *
+	 * @param string $prefix
+	 */
+	public function __construct(string $prefix = '/')
 	{
 		$this->middleware = new Collection();
 		$this->children = new Collection();
@@ -60,17 +65,17 @@ class Router extends Routable
 	}
 	
 	/**
-	 * This rewrites a request into a Path (or in given cases, a Response). This 
-	 * allows Spitfire to use the data from the Router to accordingly find a 
+	 * This rewrites a request into a Path (or in given cases, a Response). This
+	 * allows Spitfire to use the data from the Router to accordingly find a
 	 * controller to handle the request being thrown at it.
-	 * 
+	 *
 	 * Please note that Spitfire is 'lazy' about it's routes. Once it found a valid
 	 * one that can be used to respond to the request it will stop looking for
 	 * another possible rewrite.
-	 * 
-	 * @todo The extension should be passed down to the servers (and therefore 
+	 *
+	 * @todo The extension should be passed down to the servers (and therefore
 	 * the routes) to allow the routes to respond to different requests properly.
-	 * 
+	 *
 	 * @param ServerRequestInterface $request
 	 * @return RouterResult
 	 */
@@ -87,7 +92,7 @@ class Router extends Routable
 			
 			#Verify whether the route is valid at all
 			if (!$route->test($request)) {
-				continue; 
+				continue;
 			}
 			
 			/**
@@ -101,10 +106,10 @@ class Router extends Routable
 		
 		/**
 		 * In case the router could not handle the route itself, iterate over the children.
-		 * 
+		 *
 		 * If any of the children is able to issue a request handler for this, we should
 		 * return it.
-		 * 
+		 *
 		 * By doing it this way, children routes have lower precedence than the parent, meaning
 		 * that a parent route that matches a request will override a child.
 		 */
@@ -112,11 +117,11 @@ class Router extends Routable
 			$_r = $child->rewrite($request);
 			assert($_r instanceof RouterResult);
 			
-			if ($_r->success()) { 
+			if ($_r->success()) {
 				
 				/**
 				 * If the router is processing the result from an underlying router, it will simply
-				 * unwrap it's result and decorate it with middleware before returning it as a new 
+				 * unwrap it's result and decorate it with middleware before returning it as a new
 				 * result.
 				 */
 				return new RouterResult($this->middleware->reverse()->reduce(function (RequestHandlerInterface $handler, MiddlewareInterface $middleware) : RequestHandlerInterface {
@@ -130,8 +135,8 @@ class Router extends Routable
 	}
 	
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @var string $scope
 	 * @var Closure $do
 	 * @return Router
@@ -150,7 +155,7 @@ class Router extends Routable
 	 * Finds a route by name, this searches recursively, so you don't need to.
 	 * Since this method searches for the route, it may become taxing to your
 	 * application if you have a ton of routes.
-	 * 
+	 *
 	 * @param string $name
 	 * @return Route|null
 	 */
@@ -188,7 +193,7 @@ class Router extends Routable
 			 */
 			$result = $child->findByName($name);
 			if ($result) {
-				return $result; 
+				return $result;
 			}
 		}
 		
