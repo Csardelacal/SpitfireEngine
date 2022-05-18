@@ -71,11 +71,6 @@ parameters:
 			path: _init/LoadCluster.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:config\\(\\)\\.$#"
-			count: 1
-			path: _init/LoadConfiguration.php
-
-		-
 			message: "#^Invalid array key type spitfire\\\\core\\\\type\\.$#"
 			count: 1
 			path: core/Headers.php
