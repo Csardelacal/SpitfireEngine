@@ -3,6 +3,7 @@
 use spitfire\core\config\Configuration;
 use spitfire\core\service\Provider;
 use spitfire\exceptions\ApplicationException;
+use spitfire\provider\Container;
 
 class SessionProvider extends Provider
 {
@@ -13,6 +14,13 @@ class SessionProvider extends Provider
 	
 	public function register()
 	{
+		
+		/**
+		 * 
+		 * @var Container
+		 */
+		$container = $this->container->get(Container::class);
+		
 		$config = $this->container->get(Configuration::class);
 		$settings = $config->get('spitfire.io.session');
 		
@@ -24,7 +32,7 @@ class SessionProvider extends Provider
 			 */
 			case 'file':
 				$_session = new Session(new FileSessionHandler($settings['directory']?? session_save_path()));
-				$this->container->set(Session::class, $_session);
+				$container->set(Session::class, $_session);
 				break;
 			/**
 			 * Assuming the developer selected no session handling mechanism
@@ -32,7 +40,7 @@ class SessionProvider extends Provider
 			 */
 			case '':
 			case null:
-				$this->container->set(Session::class, new Session(new FileSessionHandler(session_save_path())));
+				$container->set(Session::class, new Session(new FileSessionHandler(session_save_path())));
 				break;
 			/**
 			 * The user provided a configuration that we cannot associate with any

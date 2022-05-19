@@ -3,6 +3,7 @@
 use spitfire\core\config\Configuration;
 use spitfire\core\router\Router;
 use spitfire\core\service\Provider;
+use spitfire\provider\Container;
 use spitfire\SpitFire;
 
 /**
@@ -15,10 +16,16 @@ class URLServiceProvider extends Provider
 	{
 		$config = $this->container->get(Configuration::class);
 		
-		$this->container->set(
+		/**
+		 * 
+		 * @var Container
+		 */
+		$container = $this->container->get(Container::class);
+		
+		$container->set(
 			URLBuilder::class, 
-			$this->container->assemble(URLBuilder::class, [
-				'routes' => $this->container->get(Router::class)->getRoutes(),
+			$container->assemble(URLBuilder::class, [
+				'routes' => $container->get(Router::class)->getRoutes(),
 				'root'   => SpitFire::baseUrl(),
 				'assets' => $config->get('app.assets.location', SpitFire::baseUrl() . '/assets')
 			])
