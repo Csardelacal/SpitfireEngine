@@ -1,5 +1,8 @@
 <?php namespace spitfire\core\kernel;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\_init\LoadConfiguration;
 use spitfire\_init\ProvidersInit;
 use spitfire\_init\LoadCluster;
@@ -9,14 +12,13 @@ use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
 use spifire\io\Stream;
 use spitfire\_init\InitRequest;
-use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\core\router\Router;
 use spitfire\core\router\RoutingMiddleware;
 use spitfire\exceptions\ExceptionHandler;
 use spitfire\provider\Container;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -36,21 +38,21 @@ use spitfire\provider\Container;
  */
 
 /**
- * The web kernel allows the application to interact with a web server and to 
+ * The web kernel allows the application to interact with a web server and to
  * select a controller that will provide an adequate response to the request.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class WebKernel implements KernelInterface
+class WebKernel implements KernelInterface, RequestHandlerInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var Router
 	 */
 	private $router;
 	
-	public function __construct(Container $provider) 
+	public function __construct(Container $provider)
 	{
 		/**
 		 * If a router has already been defined for the system to use from here on
@@ -80,14 +82,14 @@ class WebKernel implements KernelInterface
 	 * The web kernel receives a request and processes it to generate a response. At the time
 	 * of writing this means that Spitfire will use the router to find a compatible controller,
 	 * and if this didn't work, it will proceed to issue a standard 404 page.
-	 * 
+	 *
 	 * If the application ran into a different error than not having a route available, Spitfire
 	 * will issue an appropriate error page.
-	 * 
-	 * @param Request $request
-	 * @return Response
+	 *
+	 * @param ServerRequestInterface $request
+	 * @return ResponseInterface
 	 */
-	public function process(Request $request) : Response
+	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
 		
 		try {
@@ -107,7 +109,7 @@ class WebKernel implements KernelInterface
 		return $this->router;
 	}
 	
-	public function initScripts(): array 
+	public function initScripts(): array
 	{
 		return [
 			LoadConfiguration::class,

@@ -196,11 +196,6 @@ parameters:
 			path: core/kernel/WebKernel.php
 
 		-
-			message: "#^Method spitfire\\\\core\\\\kernel\\\\WebKernel\\:\\:process\\(\\) should return spitfire\\\\core\\\\Response but returns Psr\\\\Http\\\\Message\\\\ResponseInterface\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
 			message: "#^Parameter \\#1 \\$body of class spitfire\\\\core\\\\Response constructor expects Psr\\\\Http\\\\Message\\\\StreamInterface, spifire\\\\io\\\\Stream given\\.$#"
 			count: 1
 			path: core/kernel/WebKernel.php
