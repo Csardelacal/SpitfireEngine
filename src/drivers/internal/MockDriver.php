@@ -9,6 +9,10 @@ use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
 use spitfire\storage\database\Schema;
 
+/**
+ *
+ * @todo This has been obsoleted by the driver mode switches. Remove.
+ */
 class MockDriver implements DriverInterface
 {
 	
@@ -17,6 +21,10 @@ class MockDriver implements DriverInterface
 	 * @var array<int,array<int|string,mixed>>
 	 */
 	private $operations = [];
+	
+	public function init() : void
+	{
+	}
 	
 	public function apply(MigrationOperationInterface $migration): void
 	{
@@ -86,5 +94,10 @@ class MockDriver implements DriverInterface
 	public function getLog() : array
 	{
 		return $this->operations;
+	}
+	
+	public function mode(?int $mode = null): int
+	{
+		return DriverInterface::MODE_LOG;
 	}
 }

@@ -27,6 +27,32 @@ interface DriverInterface
 {
 	
 	/**
+	 * Available modes for drivers. These modes can be passed as binary masks, and the drivers
+	 * can choose to implement the way they wish.
+	 *
+	 * The EXC mode enables sending queries to the DBMS. Executing them as they are available.
+	 */
+	const MODE_EXC = 0x001;
+	
+	/**
+	 * The logging mode requests the driver to send the data to a log output, please refer to the
+	 * driver's manual to see how the logging is configured so it suits your needs.
+	 */
+	const MODE_LOG = 0x002;
+	
+	/**
+	 * PRinT requests the queries to be printed to STDOUT. This is usually only useful for debugging
+	 * purposes.
+	 */
+	const MODE_PRT = 0x004;
+	
+	/**
+	 * This mode causes a breakpoint to be dispatched whenever a query is executed. This is useful when
+	 * debugging a query that is misbehaving and we want to see the query being sent to the DBMS.
+	 */
+	const MODE_DBG = 0x008;
+	
+	/**
 	 * Returns an object capable of making changes to the database, allowing migrations to
 	 * be applied and rolled back without issue.
 	 *
@@ -34,6 +60,12 @@ interface DriverInterface
 	 * @return SchemaMigrationExecutorInterface
 	 */
 	public function getMigrationExecutor(Schema $schema) : SchemaMigrationExecutorInterface;
+	
+	/**
+	 * Allows the driver to initialize the connection / file for the DBMS to be run,
+	 * it should be safe to call this function multiple times.
+	 */
+	public function init() : void;
 	
 	/**
 	 * Query the database for data. The query needs to encapsulate all the data
@@ -88,4 +120,13 @@ interface DriverInterface
 	 * @return bool Whether the operation could be completed
 	 */
 	public function destroy();
+	
+	/**
+	 * Sets the mode for the driver to something else that the default. When invoked
+	 * without parameters, it must return the current mode the driver is in.
+	 *
+	 * The recommended default for production is 0x001
+	 * The recommended default for development and staging is 0x003
+	 */
+	public function mode(int $mode = null) : int;
 }

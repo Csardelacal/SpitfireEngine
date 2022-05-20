@@ -3,6 +3,8 @@
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\drivers\mysqlpdo\Driver;
 use spitfire\storage\database\drivers\mysqlpdo\NoopDriver;
 use spitfire\storage\database\Settings;
 
@@ -53,7 +55,8 @@ class NoopDriverTest extends TestCase
 	{
 		$this->handler = new TestHandler();
 		$this->logger = new Logger('test', [$this->handler]);
-		$this->driver = new NoopDriver(Settings::fromArray([]), $this->logger);
+		$this->driver = new Driver(Settings::fromArray([]), $this->logger);
+		$this->driver->mode(DriverInterface::MODE_LOG);
 	}
 	
 	public function testExec()
