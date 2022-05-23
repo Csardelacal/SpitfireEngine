@@ -41,7 +41,7 @@ class LoadCluster implements InitScriptInterface
 		/**
 		 * Get the cluster from spitfire() so we can start putting apps into it.
 		 */
-		$cluster = spitfire()->cluster();
+		$cluster = spitfire()->apps();
 		$router  = spitfire()->provider()->get(Router::class);
 		
 		/**
