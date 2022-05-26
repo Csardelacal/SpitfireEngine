@@ -99,7 +99,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$query->whereExists(function (TableIdentifier $parent) use ($layout2) {
 			$sq = new Query($layout2->getTableReference());
 			$sq->select('testfield');
-			$sq->where('teststring', $parent->getOutput('teststring'));
+			$sq->where($sq->table()->getOutput('teststring'), $parent->getOutput('teststring'));
 			return $sq;
 		});
 		

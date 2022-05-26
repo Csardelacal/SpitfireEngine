@@ -4,6 +4,7 @@ use BadMethodCallException;
 use InvalidArgumentException;
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\identifiers\FieldIdentifier;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query;
 
@@ -59,13 +60,13 @@ class RestrictionGroup
 	 *
 	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
 	 *
-	 * @param string $field
-	 * @param mixed  $value
-	 * @param mixed  $_
+	 * @param FieldIdentifier $field
+	 * @param mixed $value
+	 * @param mixed $_
 	 * @return RestrictionGroup
 	 * @throws ApplicationException
 	 */
-	public function where($field, $value, $_ = null) : RestrictionGroup
+	public function where(FieldIdentifier $field, $value, $_ = null) : RestrictionGroup
 	{
 		$params = func_num_args();
 		
@@ -81,7 +82,7 @@ class RestrictionGroup
 		}
 		
 		
-		$this->restrictions->push(new Restriction($this->table->getOutput($field), $operator, $value));
+		$this->restrictions->push(new Restriction($field, $operator, $value));
 		return $this;
 	}
 	
