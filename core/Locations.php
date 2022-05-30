@@ -1,6 +1,6 @@
 <?php namespace spitfire\core;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2020 cesar.
@@ -26,29 +26,36 @@
 
 /**
  * This class provides utility access to most of Spitfire's most common paths,
- * including the current working directory, the root directory of spitfire, the 
+ * including the current working directory, the root directory of spitfire, the
  * vendor directory and the different locations of each application that is active.
- * 
+ *
  * All directories must be returned with a trailing slash to ensure consistent
  * behavior across different apps.
  */
 class Locations
 {
 	
+	private $basedir;
+	
+	public function __construct(string $basedir)
+	{
+		$this->basedir = $basedir;
+	}
+	
 	/**
 	 * Returns the current working directory for the application. This will determine
 	 * how the system looks up files.
-	 * 
+	 *
 	 * The working directory is not always the directory that contains the files
 	 * of the application. Here are two examples:
-	 * 
+	 *
 	 * - `php console ...` // Working directory == application root
 	 * - `cd /files; php /myapp/console ...` // Working directory =/= application root
-	 * 
+	 *
 	 * Whenever working with the application's file you should use root(). When
 	 * letting the user define a set of files to work with or a directory to write
 	 * to, you should use the working directory.
-	 * 
+	 *
 	 * @param string $path A path to locate within the folder [optional]
 	 * @return string
 	 */
@@ -59,19 +66,19 @@ class Locations
 	
 	/**
 	 * Returns the path of the root directory of spitfire.
-	 * 
+	 *
 	 * @param string $path  [optional]
 	 * @return string
 	 */
 	public function root(string $path = '') : string
 	{
-		return defined('BASEDIR')? rtrim(BASEDIR, '\/') . DIRECTORY_SEPARATOR . ltrim($path, '\/') : $this->spitfire($path);
+		return $this->basedir . DIRECTORY_SEPARATOR . ltrim($path, '\/');
 	}
 	
 	/**
 	 * The config path should contain configuration files that the system can load
 	 * to make decisions based on the preferences the operator has determined.
-	 * 
+	 *
 	 * @param string $path A path to locate within the folder [optional]
 	 * @return string
 	 */
@@ -81,9 +88,9 @@ class Locations
 	}
 	
 	/**
-	 * Returns the location of the spitfire installation. Most spitfire 
+	 * Returns the location of the spitfire installation. Most spitfire
 	 * installations do not need to have access to the location of the framework.
-	 * 
+	 *
 	 * @param string $path A path to locate within the folder [optional]
 	 * @return string The location of the spitfire installation
 	 */
@@ -94,9 +101,9 @@ class Locations
 	}
 	
 	/**
-	 * Returns a path to the public folder (or a selected path within it). Files 
+	 * Returns a path to the public folder (or a selected path within it). Files
 	 * in this location can be served by the web-server.
-	 * 
+	 *
 	 * @param string $path
 	 * @return string
 	 */
@@ -108,7 +115,7 @@ class Locations
 	/**
 	 * The resources folder contains uncompiled assets, templates, locales, etc
 	 * that the system can use to enrich the experience of the user.
-	 * 
+	 *
 	 * @param string $path
 	 * @return string
 	 */
@@ -121,7 +128,7 @@ class Locations
 	 * The storage folder allows the application to determine where it should place
 	 * files within the server. Files placed here are not accessible by the users without
 	 * code that exposes them.
-	 * 
+	 *
 	 * @param string|null $path
 	 * @return string
 	 */
@@ -137,7 +144,7 @@ class Locations
 	 * The public storage folder returns a location to storage that the system provides
 	 * within the scope of the webserver's document root. This means that files placed
 	 * here will be accessible by users without the need for credentials or anything similar.
-	 * 
+	 *
 	 * @param string|null $path
 	 * @return string
 	 */

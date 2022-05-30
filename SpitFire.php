@@ -8,7 +8,7 @@ use spitfire\provider\Container;
 
 /**
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.
- * 
+ *
  * @author César de la Cal <cesar@magic3w.com>
  */
 class SpitFire
@@ -23,7 +23,7 @@ class SpitFire
 	/**
 	 * Provides quick access to different locations that the system will commonly
 	 * use. This object is read only.
-	 * 
+	 *
 	 * @var Locations
 	 */
 	private $locations;
@@ -35,7 +35,7 @@ class SpitFire
 	private $publisher;
 	
 	/**
-	 * 
+	 *
 	 * @var Cluster
 	 */
 	private $apps;
@@ -45,7 +45,7 @@ class SpitFire
 		
 		$this->apps = new Cluster();
 		$this->publisher = new Publisher();
-		$this->locations = new Locations();
+		$this->locations = new Locations(defined('BASEDIR')? rtrim(BASEDIR, '\/') : __DIR__);
 		
 		/*
 		 * Initialize the service container, which will manage all the services that
@@ -58,7 +58,7 @@ class SpitFire
 	 * Returns the collection containing the apps that spitfire has registered.
 	 * You can use the collection to query for a certain application by their
 	 * url or classpath.
-	 * 
+	 *
 	 * @return Cluster
 	 */
 	public function apps()
@@ -72,13 +72,13 @@ class SpitFire
 		 * If the application has a url defined as the base url for the application,
 		 * we use that.
 		 */
-		if (config('app.url')) { 
-			return config('app.url'); 
+		if (config('app.url')) {
+			return config('app.url');
 		}
 		
 		/**
 		 * CLI applications must have a base url defined, since otherwise the application
-		 * could be generating bad URLs without our knowledge. This is usually a very bad 
+		 * could be generating bad URLs without our knowledge. This is usually a very bad
 		 * experience for the user who receives a URL they cannot access.
 		 */
 		if (php_sapi_name() === 'cli') {
@@ -94,7 +94,7 @@ class SpitFire
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return Locations
 	 */
 	public function locations()
@@ -104,8 +104,8 @@ class SpitFire
 	
 	/**
 	 * Return the dependency container for this Spitfire instance. This container
-	 * allows the application to inject behaviors into the 
-	 * 
+	 * allows the application to inject behaviors into the
+	 *
 	 * @return Container
 	 */
 	public function provider()
@@ -116,7 +116,7 @@ class SpitFire
 	/**
 	 * Returns the publisher for spitfire. This object allows the applications to
 	 * suggest pablishing resources to certain shared resources.
-	 * 
+	 *
 	 * @return Publisher
 	 */
 	public function publisher()
