@@ -15,13 +15,13 @@ class URLServiceProvider extends Provider
 	
 	public function register(ContainerInterface $container)
 	{
-		$config = $this->container->get(Configuration::class);
+		$config = $container->get(Configuration::class);
 		
 		/**
 		 * 
 		 * @var Container
 		 */
-		$container = $this->container->get(Container::class);
+		$container = $container->get(Container::class);
 		
 		$container->set(
 			URLBuilder::class, 

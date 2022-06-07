@@ -5,8 +5,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\_init\LoadConfiguration;
 use spitfire\_init\ProvidersInit;
-use spitfire\_init\LoadCluster;
-use spitfire\_init\ProvidersFromManifest;
 use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
@@ -114,9 +112,7 @@ class WebKernel implements KernelInterface, RequestHandlerInterface
 		return [
 			LoadConfiguration::class,
 			ProvidersRegister::class,
-			ProvidersFromManifest::class,
 			ProvidersInit::class,
-			LoadCluster::class,
 			InitRequest::class
 		];
 	}

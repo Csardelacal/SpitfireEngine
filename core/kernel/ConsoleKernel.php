@@ -87,29 +87,17 @@ class ConsoleKernel implements KernelInterface
 	
 	/**
 	 * The exec method takes a command, and a set of arguments to locate a single
-	 * director and execute it.
+	 * command and execute it.
 	 * 
 	 * @throws CommandNotFoundException
-	 * @param string $command
-	 * @param string[] $arguments
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
 	 * @return int
 	 */
 	public function handle(InputInterface $input, OutputInterface $output) : int
 	{
 		boot($this);
 		return $this->application->run($input, $output);
-	}
-	
-	/**
-	 * The all method is intended as a mechanism to return a list of directors
-	 * available to the user, making it easier for them to select a command to
-	 * execute.
-	 * 
-	 * @return Collection<Director>
-	 */
-	public function all() : Collection
-	{
-		return $this->commands;
 	}
 	
 	/**
