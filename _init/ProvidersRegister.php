@@ -46,7 +46,7 @@ class ProvidersRegister implements InitScriptInterface
 			 * @var Provider $provider
 			 */
 			$provider = spitfire()->provider()->get($name);
-			$provider->register();
+			$provider->register(spitfire()->provider());
 		});
 	}
 }

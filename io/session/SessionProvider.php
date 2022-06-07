@@ -1,5 +1,6 @@
 <?php namespace spitfire\io\session;
 
+use Psr\Container\ContainerInterface;
 use spitfire\core\config\Configuration;
 use spitfire\core\service\Provider;
 use spitfire\exceptions\ApplicationException;
@@ -8,20 +9,20 @@ use spitfire\provider\Container;
 class SessionProvider extends Provider
 {
 	
-	public function init() 
+	public function init(ContainerInterface $container) 
 	{
 	}
 	
-	public function register()
+	public function register(ContainerInterface $container)
 	{
 		
 		/**
 		 * 
 		 * @var Container
 		 */
-		$container = $this->container->get(Container::class);
+		$container = $container->get(Container::class);
 		
-		$config = $this->container->get(Configuration::class);
+		$config = $container->get(Configuration::class);
 		$settings = $config->get('spitfire.io.session');
 		
 		switch ($settings['handler']?? null) {

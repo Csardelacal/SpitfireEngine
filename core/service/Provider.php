@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\service;
 
-use spitfire\contracts\services\Provider as ServicesProvider;
+use spitfire\contracts\services\ProviderInterface;
 use spitfire\provider\Container;
 
 /* 
@@ -36,6 +36,6 @@ use spitfire\provider\Container;
  * onto the container, the init method then allows to initialize the services needed
  * for the application knowing that all services are enabled.
  */
-abstract class Provider extends ServicesProvider
+abstract class Provider implements ProviderInterface
 {
 }

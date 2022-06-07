@@ -1,11 +1,14 @@
 <?php namespace spitfire\mvc\providers;
 
+use Psr\Container\ContainerInterface;
 use spitfire\core\kernel\ConsoleKernel;
 use spitfire\core\kernel\KernelInterface;
 use spitfire\core\service\Provider as ServiceProvider;
 
 use spitfire\core\app\support\directors\ManifestCacheBuildDirector;
+use spitfire\core\config\Configuration;
 use spitfire\core\config\directors\BuildConfigurationDirector;
+use spitfire\core\Locations;
 use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
 
 /* 
@@ -39,7 +42,7 @@ class DirectorProvider extends ServiceProvider
 	/**
 	 * 
 	 */
-	public function register()
+	public function register(ContainerInterface $container)
 	{
 		/*
 		 * The director provider is only loaded in order to register the known 
@@ -48,19 +51,22 @@ class DirectorProvider extends ServiceProvider
 	}
 	
 	
-	public function init()
+	public function init(ContainerInterface $container)
 	{
 		
-		$kernel = spitfire()->provider()->get(KernelInterface::class);
+		$kernel = $container->get(ConsoleKernel::class);
 		
 		/*
 		 * We only need to register the directors if our kernel is actually the 
 		 * console kernel. We cannot work with directors on the web server.
 		 */
-		if ($kernel instanceof ConsoleKernel) {
-			$kernel->register('spitfire.config.build', new BuildConfigurationDirector());
-			$kernel->register('spitfire.app.cache.build', new ManifestCacheBuildDirector);
-			$kernel->register('spitfire.storage.check.permissions', new CheckStoragePermissionsDirector);
-		}
+		$locations = $container->get(Locations::class);
+		
+		$kernel->register(new BuildConfigurationDirector(
+			$locations->root('bin/config.php'), 
+			$container->get(Configuration::class))
+		);
+		
+		$kernel->register(new CheckStoragePermissionsDirector($locations));
 	}
 }

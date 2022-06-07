@@ -35,30 +35,19 @@ use Psr\Container\ContainerInterface;
  * onto the container, the init method then allows to initialize the services needed
  * for the application knowing that all services are enabled.
  */
-abstract class Provider
+interface ProviderInterface
 {
-	
-	/**
-	 *
-	 * @var ContainerInterface
-	 */
-	protected $container;
-	
-	public function __construct(ContainerInterface $container)
-	{
-		$this->container = $container;
-	}
 	
 	/**
 	 * Implementations of this function must only register services. Performing
 	 * other operations may lead to unexpected behavior.
 	 * 
 	 */
-	abstract public function register();
+	public function register(ContainerInterface $container);
 	
 	/**
 	 * Use this to initialize your services, register published resources etc.
 	 * 
 	 */
-	abstract public function init();
+	public function init(ContainerInterface $container);
 }
