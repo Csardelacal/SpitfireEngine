@@ -1,6 +1,4 @@
-<?php namespace spitfire\core;
-
-use spitfire\contracts\core\LocationsInterface;
+<?php namespace spitfire\contracts\core;
 
 /*
  * The MIT License
@@ -34,15 +32,8 @@ use spitfire\contracts\core\LocationsInterface;
  * All directories must be returned with a trailing slash to ensure consistent
  * behavior across different apps.
  */
-class Locations implements LocationsInterface
+interface LocationsInterface
 {
-	
-	private $basedir;
-	
-	public function __construct(string $basedir)
-	{
-		$this->basedir = $basedir;
-	}
 	
 	/**
 	 * Returns the current working directory for the application. This will determine
@@ -61,10 +52,7 @@ class Locations implements LocationsInterface
 	 * @param string $path A path to locate within the folder [optional]
 	 * @return string
 	 */
-	public function working($path = '') : string
-	{
-		return rtrim(getcwd()?: './', '\/') . DIRECTORY_SEPARATOR . ltrim($path, '\/');
-	}
+	public function working($path = '') : string;
 	
 	/**
 	 * Returns the path of the root directory of spitfire.
@@ -72,10 +60,7 @@ class Locations implements LocationsInterface
 	 * @param string $path  [optional]
 	 * @return string
 	 */
-	public function root(string $path = '') : string
-	{
-		return $this->basedir . DIRECTORY_SEPARATOR . ltrim($path, '\/');
-	}
+	public function root(string $path = '') : string;
 	
 	/**
 	 * The config path should contain configuration files that the system can load
@@ -84,10 +69,7 @@ class Locations implements LocationsInterface
 	 * @param string $path A path to locate within the folder [optional]
 	 * @return string
 	 */
-	public function config(string $path = '') : string
-	{
-		return $this->root('config/' . ltrim($path, '\/'));
-	}
+	public function config(string $path = '') : string;
 	
 	/**
 	 * Returns the location of the spitfire installation. Most spitfire
@@ -96,11 +78,7 @@ class Locations implements LocationsInterface
 	 * @param string $path A path to locate within the folder [optional]
 	 * @return string The location of the spitfire installation
 	 */
-	public function spitfire(string $path = '') : string
-	{
-		$sfdir = dirname(__DIR__);
-		return rtrim($sfdir, '\/') . DIRECTORY_SEPARATOR . ($path? ltrim($path, '\/') : '');
-	}
+	public function spitfire(string $path = '') : string;
 	
 	/**
 	 * Returns a path to the public folder (or a selected path within it). Files
@@ -109,10 +87,7 @@ class Locations implements LocationsInterface
 	 * @param string $path
 	 * @return string
 	 */
-	public function public(string $path = '') : string
-	{
-		return $this->root('public/' . ltrim($path, '\/'));
-	}
+	public function public(string $path = '') : string;
 	
 	/**
 	 * The resources folder contains uncompiled assets, templates, locales, etc
@@ -121,10 +96,7 @@ class Locations implements LocationsInterface
 	 * @param string $path
 	 * @return string
 	 */
-	public function resources(string $path = '') : string
-	{
-		return $this->root('resources/' . ltrim($path, '\/'));
-	}
+	public function resources(string $path = '') : string;
 	
 	/**
 	 * The storage folder allows the application to determine where it should place
@@ -134,13 +106,7 @@ class Locations implements LocationsInterface
 	 * @param string $path
 	 * @return string
 	 */
-	public function storage(string $path = '') : string
-	{
-		#Right now, for compatibility, I'm using this out-of-character location within
-		#bin to locate uploads. Moving it to another location is a potentially breaking
-		#change for many apps that needs careful planning.
-		return $this->root('bin/usr/uploads/' . ltrim($path, '\/'));
-	}
+	public function storage(string $path = '') : string;
 	
 	/**
 	 * The public storage folder returns a location to storage that the system provides
@@ -150,8 +116,5 @@ class Locations implements LocationsInterface
 	 * @param string $path
 	 * @return string
 	 */
-	public function publicStorage(string $path = '') : string
-	{
-		return $this->public('storage/' . ltrim($path, '\/'));
-	}
+	public function publicStorage(string $path = '') : string;
 }

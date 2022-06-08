@@ -1,16 +1,9 @@
-<?php namespace spitfire\core\kernel;
+<?php namespace spitfire\contracts\core\kernel;
 
-use spitfire\_init\LoadConfiguration;
-use spitfire\_init\ProvidersInit;
-use spitfire\_init\ProvidersRegister;
-use spitfire\contracts\core\kernel\ConsoleKernelInterface;
 use spitfire\core\kernel\exceptions\CommandNotFoundException;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use function spitfire;
 
 /*
  * The MIT License
@@ -42,45 +35,24 @@ use function spitfire;
  *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class ConsoleKernel implements ConsoleKernelInterface
+interface ConsoleKernelInterface extends KernelInterface
 {
-	
-	/**
-	 *
-	 * @var Application
-	 */
-	private $application;
-	
-	/**
-	 * @todo Populate the application name and version.
-	 */
-	public function __construct()
-	{
-		$this->application = new Application(__DIR__);
-		spitfire()->provider()->set(Application::class, $this->application);
-	}
 	
 	/**
 	 * The boot method receives no parameters, and is intended to let the kernel
 	 * execute some initial housekeeping and setup tasks before it starts executing
 	 * the user's command.
 	 */
-	public function boot() : void
-	{
-	}
+	public function boot() : void;
 	
 	/**
 	 * This method allows an application to register a command that the application
 	 * wishes to expose to the end-user of the application.
 	 *
 	 * @param Command $command
-	 * @return ConsoleKernel
+	 * @return ConsoleKernelInterface
 	 */
-	public function register(Command $command) : ConsoleKernel
-	{
-		$this->application->add($command);
-		return $this;
-	}
+	public function register(Command $command) : ConsoleKernelInterface;
 	
 	/**
 	 * The exec method takes a command, and a set of arguments to locate a single
@@ -91,24 +63,5 @@ class ConsoleKernel implements ConsoleKernelInterface
 	 * @param OutputInterface $output
 	 * @return int
 	 */
-	public function handle(InputInterface $input, OutputInterface $output) : int
-	{
-		boot($this);
-		return $this->application->run($input, $output);
-	}
-	
-	/**
-	 * The list of init scripts that need to be executed in order for the kernel to
-	 * be usable.
-	 *
-	 * @return string[]
-	 */
-	public function initScripts(): array
-	{
-		return [
-			LoadConfiguration::class,
-			ProvidersRegister::class,
-			ProvidersInit::class,
-		];
-	}
+	public function handle(InputInterface $input, OutputInterface $output) : int;
 }

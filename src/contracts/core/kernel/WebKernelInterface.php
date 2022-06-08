@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\kernel;
+<?php namespace spitfire\contracts\core\kernel;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -9,7 +9,6 @@ use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
 use spitfire\_init\InitRequest;
-use spitfire\contracts\core\kernel\WebKernelInterface;
 use spitfire\core\Response;
 use spitfire\core\router\Router;
 use spitfire\core\router\RoutingMiddleware;
@@ -41,40 +40,11 @@ use spitfire\provider\Container;
  *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class WebKernel implements WebKernelInterface, RequestHandlerInterface
+interface WebKernelInterface extends KernelInterface
 {
 	
-	/**
-	 *
-	 * @var Router
-	 */
-	private $router;
 	
-	public function __construct(Container $provider)
-	{
-		/**
-		 * If a router has already been defined for the system to use from here on
-		 * out, we will do so.
-		 */
-		if ($provider->has(Router::class)) {
-			$this->router = $provider->get(Router::class);
-		}
-		
-		/**
-		 * Otherwise we will have the provider assemble one so we can use it the way
-		 * we prefer.
-		 */
-		else {
-			$router = $provider->assemble(Router::class, ['prefix' => '']);
-			assert($router instanceof Router);
-			$this->router = $router;
-			$provider->set(Router::class, $this->router);
-		}
-	}
-	
-	public function boot() : void
-	{
-	}
+	public function boot() : void;
 	
 	/**
 	 * The web kernel receives a request and processes it to generate a response. At the time
@@ -87,33 +57,7 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 	 * @param ServerRequestInterface $request
 	 * @return ResponseInterface
 	 */
-	public function handle(ServerRequestInterface $request): ResponseInterface
-	{
-		
-		try {
-			$notfound = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
-			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($this->router));
-			
-			return $routed->handle($request);
-		}
-		catch (\Exception $e) {
-			$handler = new ExceptionHandler();
-			return $handler->handle($e);
-		}
-	}
+	public function handle(ServerRequestInterface $request): ResponseInterface;
 	
-	public function router() : Router
-	{
-		return $this->router;
-	}
-	
-	public function initScripts(): array
-	{
-		return [
-			LoadConfiguration::class,
-			ProvidersRegister::class,
-			ProvidersInit::class,
-			InitRequest::class
-		];
-	}
+	public function router() : Router;
 }

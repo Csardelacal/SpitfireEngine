@@ -1,6 +1,6 @@
-<?php namespace spitfire\core\kernel;
+<?php namespace spitfire\contracts\core\kernel;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -20,16 +20,16 @@
  */
 
 /**
- * The kernel interface allows to define standard behaviors that a kernel must 
+ * The kernel interface allows to define standard behaviors that a kernel must
  * implement to get booted and be able to execute the way it's intended
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 interface KernelInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @return string[]
 	 */
 	public function initScripts(): array;
