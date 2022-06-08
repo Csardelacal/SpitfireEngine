@@ -2,7 +2,7 @@
 
 use spitfire\core\service\Provider;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@ use spitfire\core\service\Provider;
 /**
  * This init script allows our application to register all the service providers'
  * services that we need in order to make the component they provide work properly.
- * 
+ *
  * A service provider must be able to register components without any dependencies
  * on other components, if you need to depend on other components, please refer to
  * the init method.
@@ -32,7 +32,7 @@ use spitfire\core\service\Provider;
 class ProvidersRegister implements InitScriptInterface
 {
 	
-	public function exec(): void 
+	public function exec(): void
 	{
 		
 		/*

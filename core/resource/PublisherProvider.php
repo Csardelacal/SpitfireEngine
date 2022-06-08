@@ -8,7 +8,7 @@ use spitfire\core\config\directors\BuildConfigurationDirector;
 use spitfire\core\Locations;
 use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -30,19 +30,19 @@ use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
 /**
  * The director provider class registers the commands that spitfire provides to
  * applications using it.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class PublisherProvider extends ServiceProvider
 {
 	
 	/**
-	 * 
+	 *
 	 */
 	public function register(ContainerInterface $container)
 	{
 		/*
-		 * The director provider is only loaded in order to register the known 
+		 * The director provider is only loaded in order to register the known
 		 * spitfire provided services.
 		 */
 	}
@@ -54,7 +54,7 @@ class PublisherProvider extends ServiceProvider
 		$kernel = $container->get(ConsoleKernel::class);
 		
 		/*
-		 * We only need to register the directors if our kernel is actually the 
+		 * We only need to register the directors if our kernel is actually the
 		 * console kernel. We cannot work with directors on the web server.
 		 */
 		$locations = $container->get(Locations::class);
@@ -63,6 +63,5 @@ class PublisherProvider extends ServiceProvider
 			$locations->root('bin/published.json'),
 			$container->get(Publisher::class)
 		));
-		
 	}
 }

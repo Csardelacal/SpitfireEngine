@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\config\directors;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,9 +25,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * 
+ *
  * @todo Once we make SF depend on PHP8 we can prefix this like
- * 
+ *
  * #[AsCommand(
  *     name: 'config:build',
  *     description: 'Initializes the configuration and writes it to disk.',
@@ -37,14 +37,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class BuildConfigurationDirector extends Command
 {
-
+	
 	protected static $defaultName = 'config:build';
 	protected static $defaultDescription = 'Initializes the configuration and writes it to disk.';
-
+	
 	private $config;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $configFile;
@@ -72,7 +72,7 @@ class BuildConfigurationDirector extends Command
 		}
 		
 		/**
-		 * At this point in time, the application MUST have loaded the configuration from 
+		 * At this point in time, the application MUST have loaded the configuration from
 		 * the disk (even if it's the cached version), so we can just as Spitfire for the
 		 * config and write it back to the disk.
 		 */
@@ -84,5 +84,4 @@ class BuildConfigurationDirector extends Command
 		 */
 		return 0;
 	}
-	
 }

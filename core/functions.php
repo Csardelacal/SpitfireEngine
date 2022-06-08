@@ -94,7 +94,7 @@ function emit(ResponseInterface $message) : void
  * Ths function will boot a kernel, instancing it and executing the necessary scripts to
  * initialize it.
  *
- * @param KernelInterface $kernel 
+ * @param KernelInterface $kernel
  * @return KernelInterface
  * @throws ApplicationException
  */

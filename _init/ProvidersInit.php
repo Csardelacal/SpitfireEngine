@@ -2,7 +2,7 @@
 
 use spitfire\core\service\Provider;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,14 +25,14 @@ use spitfire\core\service\Provider;
  * The init script of any servive provider allows it to use the components
  * that it registered (and potentially the ones other components registered)
  * to make the component work.
- * 
+ *
  * Here it's recommended that your component publishes resources it may need,
  * initialize storage, or data so the main application can work.
- * 
+ *
  * Please note that the order in which the register calls are invoked is not
  * guaranteed. Checking that the components you need are properly intialized
  * is very recommended.
- * 
+ *
  * If your component depends on a component that is not yet intialized you can
  * manually do so, please make sure that the component is capable of handling
  * being invoked multiple times.
@@ -40,7 +40,7 @@ use spitfire\core\service\Provider;
 class ProvidersInit implements InitScriptInterface
 {
 	
-	public function exec(): void 
+	public function exec(): void
 	{
 		
 		/*

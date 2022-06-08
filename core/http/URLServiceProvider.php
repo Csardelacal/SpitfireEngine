@@ -18,13 +18,13 @@ class URLServiceProvider extends Provider
 		$config = $container->get(Configuration::class);
 		
 		/**
-		 * 
+		 *
 		 * @var Container
 		 */
 		$container = $container->get(Container::class);
 		
 		$container->set(
-			URLBuilder::class, 
+			URLBuilder::class,
 			$container->assemble(URLBuilder::class, [
 				'routes' => $container->get(Router::class)->getRoutes(),
 				'root'   => SpitFire::baseUrl(),

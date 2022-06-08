@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\support\directors;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * 
+ *
  */
 class CheckStoragePermissionsDirector extends Command
 {
@@ -58,8 +58,8 @@ class CheckStoragePermissionsDirector extends Command
 		}
 		
 		/**
-		 * Check if the public storage directory is writable. If this is not the 
-		 * case, the application cannot create files that can be served by the 
+		 * Check if the public storage directory is writable. If this is not the
+		 * case, the application cannot create files that can be served by the
 		 * web-server directly.
 		 */
 		if (is_writable($this->locations->publicStorage())) {
@@ -76,5 +76,4 @@ class CheckStoragePermissionsDirector extends Command
 		 */
 		return $success? 0 : 1;
 	}
-	
 }

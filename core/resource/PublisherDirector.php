@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -88,7 +88,7 @@ class PublisherDirector extends Command
 			
 			if (is_dir($existing) !== is_dir($publishing[$existing]['src'])) {
 				#This checks whether the target is a directory, and whether the file
-				#that we intend to overwrite it with is a directory. If this is the 
+				#that we intend to overwrite it with is a directory. If this is the
 				#case we fail with a message indicating that this is unacceptable.
 				
 				$output->writeln(sprintf('<error>File %s is a directory and being overwritten by a file, or viceversa</>', $existing))->ln();
@@ -98,7 +98,7 @@ class PublisherDirector extends Command
 		
 		foreach ($publishing as $target => $meta) {
 			if (!isset($published[$target]) && file_exists($target)) {
-				#In this scenario, the file does exist on the drive, but the 
+				#In this scenario, the file does exist on the drive, but the
 				#publishing file is unaware of it's existence. Making it impossible to
 				#override safely, since we didn't put it there.
 				
@@ -139,7 +139,7 @@ class PublisherDirector extends Command
 	
 	/**
 	 * This function recursively generates a changeset for the files to be published.
-	 * 
+	 *
 	 * @param string $from
 	 * @param string $to
 	 * @return string[][] An array containing the changes
@@ -152,10 +152,10 @@ class PublisherDirector extends Command
 			
 			while ($file = $dir->read()) {
 				if ($file == '.') {
-					continue; 
+					continue;
 				}
 				if ($file == '..') {
-					continue; 
+					continue;
 				}
 				
 				$_ret[$to] = ['md5' => null, 'src' => $from];

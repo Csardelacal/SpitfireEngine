@@ -2,7 +2,7 @@
 
 use Psr\Container\ContainerInterface;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -28,9 +28,9 @@ use Psr\Container\ContainerInterface;
 
 /**
  * A provider simply provides two methods that allow the application to register
- * services with the container, and to initialize the services after they have 
+ * services with the container, and to initialize the services after they have
  * been loaded.
- * 
+ *
  * The register method allows a service provider to load all the services it needs
  * onto the container, the init method then allows to initialize the services needed
  * for the application knowing that all services are enabled.
@@ -41,13 +41,13 @@ interface ProviderInterface
 	/**
 	 * Implementations of this function must only register services. Performing
 	 * other operations may lead to unexpected behavior.
-	 * 
+	 *
 	 */
 	public function register(ContainerInterface $container);
 	
 	/**
 	 * Use this to initialize your services, register published resources etc.
-	 * 
+	 *
 	 */
 	public function init(ContainerInterface $container);
 }

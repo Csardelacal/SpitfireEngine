@@ -9,7 +9,7 @@ use spitfire\provider\Container;
 class SessionProvider extends Provider
 {
 	
-	public function init(ContainerInterface $container) 
+	public function init(ContainerInterface $container)
 	{
 	}
 	
@@ -17,7 +17,7 @@ class SessionProvider extends Provider
 	{
 		
 		/**
-		 * 
+		 *
 		 * @var Container
 		 */
 		$container = $container->get(Container::class);
@@ -27,7 +27,7 @@ class SessionProvider extends Provider
 		
 		switch ($settings['handler']?? null) {
 			/**
-			 * If the file session handler is used, the system will write the 
+			 * If the file session handler is used, the system will write the
 			 * sessions to the folder the user indicated for this. Please note that
 			 * if this folder is not writable, the system will fail.
 			 */
@@ -45,7 +45,7 @@ class SessionProvider extends Provider
 				break;
 			/**
 			 * The user provided a configuration that we cannot associate with any
-			 * session handler that ships with spitfire, making it impossible to find this 
+			 * session handler that ships with spitfire, making it impossible to find this
 			 * session.
 			 */
 			default:

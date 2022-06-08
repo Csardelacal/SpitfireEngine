@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function spitfire;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -42,7 +42,7 @@ use function spitfire;
 /**
  * The console kernel provides mechanisms to allow a user to interact with the
  * application via the command line interface.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class ConsoleKernel implements KernelInterface
@@ -57,7 +57,7 @@ class ConsoleKernel implements KernelInterface
 	/**
 	 * @todo Populate the application name and version.
 	 */
-	public function __construct() 
+	public function __construct()
 	{
 		$this->application = new Application(__DIR__);
 		spitfire()->provider()->set(Application::class, $this->application);
@@ -75,7 +75,7 @@ class ConsoleKernel implements KernelInterface
 	/**
 	 * This method allows an application to register a command that the application
 	 * wishes to expose to the end-user of the application.
-	 * 
+	 *
 	 * @param Command $command
 	 * @return ConsoleKernel
 	 */
@@ -88,7 +88,7 @@ class ConsoleKernel implements KernelInterface
 	/**
 	 * The exec method takes a command, and a set of arguments to locate a single
 	 * command and execute it.
-	 * 
+	 *
 	 * @throws CommandNotFoundException
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
@@ -103,10 +103,10 @@ class ConsoleKernel implements KernelInterface
 	/**
 	 * The list of init scripts that need to be executed in order for the kernel to
 	 * be usable.
-	 * 
+	 *
 	 * @return string[]
 	 */
-	public function initScripts(): array 
+	public function initScripts(): array
 	{
 		return [
 			LoadConfiguration::class,
