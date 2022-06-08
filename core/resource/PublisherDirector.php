@@ -46,7 +46,11 @@ class PublisherDirector extends Command
 	protected function configure() : void
 	{
 		$this
-			->addArgument('tag', InputArgument::REQUIRED, 'Selects which tag to use. If omitted, the script will ask for a tag');
+			->addArgument(
+				'tag',
+				InputArgument::REQUIRED,
+				'Selects which tag to use. If omitted, the script will ask for a tag'
+			);
 	}
 	
 	protected function execute(InputInterface $input, OutputInterface $output)
@@ -82,7 +86,11 @@ class PublisherDirector extends Command
 			if (!is_dir($existing) && md5_file($existing) != $meta['md5']) {
 				#If the file has been modified since it was published, we need to warn
 				#the user about the situation and stop the publishing.
-				$output->writeln(sprintf('<error>File %s was modified on disk since it was published. Revert or delete the file to continue</>', $existing))->ln();
+				$output->writeln(sprintf(
+					'<error>File %s was modified on disk since it was published. '.
+					'Revert or delete the file to continue</>',
+					$existing
+				));
 				return -1;
 			}
 			
@@ -91,7 +99,10 @@ class PublisherDirector extends Command
 				#that we intend to overwrite it with is a directory. If this is the
 				#case we fail with a message indicating that this is unacceptable.
 				
-				$output->writeln(sprintf('<error>File %s is a directory and being overwritten by a file, or viceversa</>', $existing))->ln();
+				$output->writeln(sprintf(
+					'<error>File %s is a directory and being overwritten by a file, or viceversa</>',
+					$existing
+				));
 				return -1;
 			}
 		}
@@ -102,7 +113,10 @@ class PublisherDirector extends Command
 				#publishing file is unaware of it's existence. Making it impossible to
 				#override safely, since we didn't put it there.
 				
-				$output->writeln(sprintf('<error>File %s exists, but was not published by Spitfire. Delete the file to continue</>', $target))->ln();
+				$output->writeln(sprintf(
+					'<error>File %s exists, but was not published by Spitfire. Delete the file to continue</>',
+					$target
+				));
 				return -1;
 			}
 		}
