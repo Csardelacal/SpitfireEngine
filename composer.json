@@ -25,7 +25,7 @@
 	"require-dev": {
 		"phpunit/phpunit": "^9.5",
 		"monolog/monolog": "^2.2",
-		"phpstan/phpstan": "^1.4",
+		"phpstan/phpstan": "^1.7",
 		"pug-php/pug": "^3.4",
 		"magic3w/php-coding-standard": "^1.0"
 	},

@@ -320,17 +320,6 @@ function redirect(string $location, int $code = 302) : Response
 	);
 }
 
-function console()
-{
-	static $console = null;
-	
-	if ($console === null) {
-		$console = new Console();
-	}
-	
-	return $console;
-}
-
 /**
  * Retrieves the current path from the request. This will retrieve the path
  * without query string or document root.

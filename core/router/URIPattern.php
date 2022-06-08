@@ -54,7 +54,11 @@ class URIPattern
 	 * These are the variables that the user defined in their URL pattern. These are
 	 * matched and returned to the route.
 	 * 
-	 * @var Collection<string[]>
+	 * NOTE: PHPStan would notice that the arrays this collection contains (not the
+	 * collection itself) can never be empty. It was pretty adamant about the fact
+	 * that a Collection<array> cannot contain non-empty-array for some reason.
+	 * 
+	 * @var Collection<non-empty-array<int,string>>
 	 */
 	private $variables;
 	
@@ -116,7 +120,7 @@ class URIPattern
 		 */
 		preg_match_all('/\{([^\}]+)\}/', $pattern, $matches);
 		
-		$this->variables = collect($matches[1])->each(function ($match) {
+		$this->variables = (new Collection($matches[1]))->each(function (string $match) : array {
 			return explode(':', $match, 2);
 		});
 	}

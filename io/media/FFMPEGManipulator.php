@@ -129,8 +129,6 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 			$tmpo
 		));
 		
-		console()->info('Filesize is ' . new \spitfire\io\Filesize(filesize($tmpo)))->ln();
-		
 		$location->write(file_get_contents($tmpo));
 		
 		unlink($tmpi);

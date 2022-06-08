@@ -53,7 +53,7 @@ class CheckStoragePermissionsDirector extends Command
 			$output->writeln('Storage is writable');
 		}
 		else {
-			$output->writeln(sprintf('Storage (%s) is not writable', $this->locations->storage()));
+			$output->writeln(sprintf('<error>Failure</> Storage (%s) is not writable', $this->locations->storage()));
 			$success = false;
 		}
 		
@@ -66,7 +66,7 @@ class CheckStoragePermissionsDirector extends Command
 			$output->writeln('Storage is writable');
 		}
 		else {
-			$output->writeln(sprintf('Storage (%s) is not writable', $this->locations->publicStorage()));
+			$output->writeln(sprintf('<error>Failure</> Storage (%s) is not writable', $this->locations->publicStorage()));
 			$success = false;
 		}
 		
