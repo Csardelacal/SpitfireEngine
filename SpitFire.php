@@ -34,16 +34,9 @@ class SpitFire
 	 */
 	private $publisher;
 	
-	/**
-	 *
-	 * @var Cluster
-	 */
-	private $apps;
-	
 	public function __construct()
 	{
 		
-		$this->apps = new Cluster();
 		$this->publisher = new Publisher();
 		$this->locations = new Locations(defined('BASEDIR')? rtrim(BASEDIR, '\/') : __DIR__);
 		
@@ -52,18 +45,6 @@ class SpitFire
 		 * the framework provides to the application.
 		 */
 		$this->provider = new Container();
-	}
-	
-	/**
-	 * Returns the collection containing the apps that spitfire has registered.
-	 * You can use the collection to query for a certain application by their
-	 * url or classpath.
-	 *
-	 * @return Cluster
-	 */
-	public function apps()
-	{
-		return $this->apps;
 	}
 	
 	public static function baseUrl()
@@ -81,7 +62,7 @@ class SpitFire
 		 * could be generating bad URLs without our knowledge. This is usually a very bad
 		 * experience for the user who receives a URL they cannot access.
 		 */
-		if (php_sapi_name() === 'cli') {
+		if (cli()) {
 			throw new ApplicationException('CLI applications require the app.url config to be defined', 2104191131);
 		}
 		
@@ -115,7 +96,7 @@ class SpitFire
 	
 	/**
 	 * Returns the publisher for spitfire. This object allows the applications to
-	 * suggest pablishing resources to certain shared resources.
+	 * suggest publishing resources to certain shared resources.
 	 *
 	 * @return Publisher
 	 */

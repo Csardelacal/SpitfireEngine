@@ -5,7 +5,7 @@ use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\utils\Strings;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -37,14 +37,14 @@ class URIPattern
 {
 	
 	/**
-	 * The pattern is the string that we were given to extract data from the 
+	 * The pattern is the string that we were given to extract data from the
 	 * URL. This is mostly used for debugging and information purposes, letting
 	 * the developer know which rule we're working on.
 	 */
 	private $pattern;
 	
 	/**
-	 * The patterns used by this class to test the URL it receives. 
+	 * The patterns used by this class to test the URL it receives.
 	 *
 	 * @var string
 	 */
@@ -53,14 +53,18 @@ class URIPattern
 	/**
 	 * These are the variables that the user defined in their URL pattern. These are
 	 * matched and returned to the route.
-	 * 
-	 * @var Collection<string[]>
+	 *
+	 * NOTE: PHPStan would notice that the arrays this collection contains (not the
+	 * collection itself) can never be empty. It was pretty adamant about the fact
+	 * that a Collection<array> cannot contain non-empty-array for some reason.
+	 *
+	 * @var Collection<non-empty-array<int,string>>
 	 */
 	private $variables;
 	
 	/**
 	 * Indicates whether this is an open ended pattern. This implies that it'll
-	 * accept URL that are longer than the patterns it can test with (these 
+	 * accept URL that are longer than the patterns it can test with (these
 	 * additional parameters will get appended to the object).
 	 *
 	 * @var boolean
@@ -68,9 +72,9 @@ class URIPattern
 	private $open;
 	
 	/**
-	 * Instances a new URI Pattern. This class allows your application to test 
+	 * Instances a new URI Pattern. This class allows your application to test
 	 * whether a URL matches the pattern you gave to the constructor.
-	 * 
+	 *
 	 * @param string $pattern
 	 */
 	public function __construct($pattern)
@@ -98,10 +102,10 @@ class URIPattern
 		/**
 		 * Since SF0.2, we've started using handlebars to match URL components. This has a
 		 * series of advantages:
-		 * 
+		 *
 		 * 1. Handlebars do not usually occurr on URLs
 		 * 2. We can match patterns that contain prefixed components like `/user/@username` without black magic
-		 * 
+		 *
 		 * To do so, we generate a regular expression from the pattern we received, that we
 		 * can now use to test the routes and see whether they match.
 		 */
@@ -116,7 +120,7 @@ class URIPattern
 		 */
 		preg_match_all('/\{([^\}]+)\}/', $pattern, $matches);
 		
-		$this->variables = collect($matches[1])->each(function ($match) {
+		$this->variables = (new Collection($matches[1]))->each(function (string $match) : array {
 			return explode(':', $match, 2);
 		});
 	}
@@ -125,7 +129,7 @@ class URIPattern
 	 * Tests whether a given $uri matches the patterns that this object holds.
 	 * Please note that if the URI is too long and the pattern is not open
 	 * ended it will throw a missmatch exception.
-	 * 
+	 *
 	 * @param string $uri
 	 * @return \spitfire\core\router\Parameters
 	 */
@@ -139,7 +143,7 @@ class URIPattern
 		/**
 		 * Preg_match_all's return is really nasty to work with, it contains a multidimensional array,
 		 * which in our case always contains 1 item in the second layer, something like this
-		 * 
+		 *
 		 * array(4) {
 		 *   [0]=>
 		 *   array(1) {
@@ -153,10 +157,10 @@ class URIPattern
 		 *   }
 		 *   ...
 		 * }
-		 * 
+		 *
 		 * We use this function to conver it into something easier to work with by removing the intermediate
 		 * layer. Leaving us with something like this:
-		 * 
+		 *
 		 * array(4) {
 		 *   [0]=>
 		 *   string(59) "..."
@@ -164,7 +168,7 @@ class URIPattern
 		 *   string(5) "..."
 		 *   ...
 		 * }
-		 * 
+		 *
 		 * @var string[]
 		 */
 		$matches = array_map(function ($e) {
@@ -175,7 +179,7 @@ class URIPattern
 		
 		/**
 		 * The first match contains the entire URL, since it will match the complete
-		 * regular expression. Meaning that we have to discard it to keep the variables 
+		 * regular expression. Meaning that we have to discard it to keep the variables
 		 * that we need
 		 */
 		array_shift($matches);
@@ -183,9 +187,9 @@ class URIPattern
 		/**
 		 * The rest of the array contains the matches that we found. This is a bit of a complicated
 		 * expression, but the gist of it is really simple.
-		 * 
+		 *
 		 * - Every variable contains an array with a name and an optional default value in the keys 0 and 1
-		 * - preg_match writes the result of every capturing group into the matches 
+		 * - preg_match writes the result of every capturing group into the matches
 		 *   array as another array(since we have no nesting or similar they only have one key)
 		 * - We combine the variable name with either the match or the default for the variable
 		 */
@@ -204,12 +208,12 @@ class URIPattern
 	/**
 	 * Takes a parameter list and constructs a string URI from the combination
 	 * of patterns and parameters.
-	 * 
+	 *
 	 * @param string[] $parameters
 	 * @return string
 	 * @throws ApplicationException
 	 */
-	public function reverse($parameters) 
+	public function reverse($parameters)
 	{
 		/**
 		 * A second, very similar expression, is used to extract the variables that we need.
@@ -231,13 +235,13 @@ class URIPattern
 	public static function make($str)
 	{
 		if ($str instanceof URIPattern) {
-			return $str; 
+			return $str;
 		}
 		elseif (is_string($str)) {
-			return new URIPattern($str); 
+			return new URIPattern($str);
 		}
 		else {
-			throw new \InvalidArgumentException('Invalid pattern for URIPattern::make', 1706091621); 
+			throw new \InvalidArgumentException('Invalid pattern for URIPattern::make', 1706091621);
 		}
 	}
 }

@@ -66,11 +66,6 @@ parameters:
 			path: Model.php
 
 		-
-			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:cluster\\(\\)\\.$#"
-			count: 1
-			path: _init/LoadCluster.php
-
-		-
 			message: "#^Invalid array key type spitfire\\\\core\\\\type\\.$#"
 			count: 1
 			path: core/Headers.php
@@ -91,16 +86,6 @@ parameters:
 			path: core/Locations.php
 
 		-
-			message: "#^Parameter \\#2 \\$assoc of function json_decode expects bool, null given\\.$#"
-			count: 2
-			path: core/app/support/manifest/ComposerReader.php
-
-		-
-			message: "#^Undefined variable\\: \\$this$#"
-			count: 1
-			path: core/app/support/manifest/ComposerReader.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$fallback$#"
 			count: 1
 			path: core/config/Configuration.php
@@ -109,11 +94,6 @@ parameters:
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$key$#"
 			count: 1
 			path: core/config/Configuration.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:config\\(\\)\\.$#"
-			count: 1
-			path: core/config/directors/BuildConfigurationDirector.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:registerApp\\(\\)\\.$#"
@@ -174,36 +154,6 @@ parameters:
 			message: "#^Method spitfire\\\\provider\\\\Container\\:\\:call\\(\\) invoked with 2 parameters, 1 required\\.$#"
 			count: 1
 			path: core/http/request/handler/RouterClosureRequestHandler.php
-
-		-
-			message: "#^Call to method handle\\(\\) on an unknown class spitfire\\\\exceptions\\\\ExceptionHandler\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Instantiated class spifire\\\\io\\\\Stream not found\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\ExceptionHandler not found\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Parameter \\#1 \\$body of class spitfire\\\\core\\\\Response constructor expects Psr\\\\Http\\\\Message\\\\StreamInterface, spifire\\\\io\\\\Stream given\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Parameter \\#1 \\$handler of class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\DecoratingRequestHandler constructor expects Psr\\\\Http\\\\Server\\\\RequestHandlerInterface, spitfire\\\\core\\\\router\\\\RoutingMiddleware given\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
-
-		-
-			message: "#^Parameter \\#2 \\$middleware of class spitfire\\\\core\\\\http\\\\request\\\\handler\\\\DecoratingRequestHandler constructor expects Psr\\\\Http\\\\Server\\\\MiddlewareInterface, spitfire\\\\core\\\\http\\\\request\\\\handler\\\\StaticResponseRequestHandler given\\.$#"
-			count: 1
-			path: core/kernel/WebKernel.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$params$#"
@@ -1559,59 +1509,3 @@ parameters:
 			message: "#^Parameter \\$str of method spitfire\\\\utils\\\\Strings\\:\\:strToHTML\\(\\) has invalid type spitfire\\\\utils\\\\type\\.$#"
 			count: 1
 			path: utils/Strings.php
-
-		-
-			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: utils/database/DatabaseExportDirector.php
-
-		-
-			message: "#^Function basedir not found\\.$#"
-			count: 1
-			path: utils/database/DatabaseExportDirector.php
-
-		-
-			message: "#^Call to method getLayout\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 8
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Call to method getSchema\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 2
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Call to method getTarget\\(\\) on an unknown class Reference\\.$#"
-			count: 3
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Call to method newRecord\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Class Reference not found\\.$#"
-			count: 2
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Parameter \\$table of anonymous function has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: utils/database/DatabaseImportDirector.php
-
-		-
-			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: utils/database/DatabaseInitDirector.php
-
-		-
-			message: "#^Function basedir not found\\.$#"
-			count: 1
-			path: utils/database/DatabaseInitDirector.php
-

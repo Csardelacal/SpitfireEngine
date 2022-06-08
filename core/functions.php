@@ -94,20 +94,12 @@ function emit(ResponseInterface $message) : void
  * Ths function will boot a kernel, instancing it and executing the necessary scripts to
  * initialize it.
  *
- * @param class-string<KernelInterface> $kernel The name of the kernel to boot
+ * @param KernelInterface $kernel
  * @return KernelInterface
  * @throws ApplicationException
  */
-function boot(string $kernel) : KernelInterface
+function boot(KernelInterface $kernel) : KernelInterface
 {
-	$provider   = spitfire()->provider();
-	
-	/**
-	 * Ensure that the kernel is a kernel. If it's not a kernel, the application can't
-	 * use it and it will most definitely malfunction.
-	 */
-	assert((new ReflectionClass($kernel))->isSubclassOf(KernelInterface::class), 'Cannot boot non-kernel class');
-	
 	/**
 	 * Instance the new kernel. Kernels must be able to be instanced with minimum
 	 * available configuration and set up. At this point no service providers or
@@ -116,7 +108,7 @@ function boot(string $kernel) : KernelInterface
 	 * We use the service provider for this, allowing the developer to potentially
 	 * override the kernel with custom logic.
 	 */
-	$instance = $provider->get($kernel);
+	$instance = $kernel;
 	
 	/**
 	 * Loop over the kernel's init script and execute them, making the kernel function.
@@ -124,12 +116,6 @@ function boot(string $kernel) : KernelInterface
 	foreach ($instance->initScripts() as $script) {
 		(new $script($instance))->exec();
 	}
-	
-	/**
-	 * Set the kernel as the currently running kernel in the service container so the app
-	 * can find the kernel if needed
-	 */
-	$provider->set(KernelInterface::class, $kernel);
 	
 	/**
 	 * Return the kernel, so the application can work as expected.
@@ -332,17 +318,6 @@ function redirect(string $location, int $code = 302) : Response
 			'location' => $location
 		]
 	);
-}
-
-function console()
-{
-	static $console = null;
-	
-	if ($console === null) {
-		$console = new Console();
-	}
-	
-	return $console;
 }
 
 /**

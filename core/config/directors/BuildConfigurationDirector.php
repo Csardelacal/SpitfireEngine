@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\config\directors;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -19,58 +19,69 @@
  * MA 02110-1301  USA
  */
 
-use spitfire\mvc\Director;
+use spitfire\core\config\Configuration;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * 
+ *
+ * @todo Once we make SF depend on PHP8 we can prefix this like
+ *
+ * #[AsCommand(
+ *     name: 'config:build',
+ *     description: 'Initializes the configuration and writes it to disk.',
+ *     hidden: false,
+ *     aliases: ['config:cache']
+ * )]
  */
-class BuildConfigurationDirector extends Director
+class BuildConfigurationDirector extends Command
 {
 	
+	protected static $defaultName = 'config:build';
+	protected static $defaultDescription = 'Initializes the configuration and writes it to disk.';
+	
+	private $config;
+	
 	/**
-	 * 
-	 * @param array $parameters
-	 * @param \spitfire\cli\arguments\CLIParameters $arguments
-	 * @return int
+	 *
+	 * @var string
 	 */
-	public function exec(array $parameters, \spitfire\cli\arguments\CLIParameters $arguments): int 
+	private $configFile;
+	
+	public function __construct(string $configFile, Configuration $config)
 	{
-		
-		$cacheFile = spitfire()->locations()->root('bin/config.php');
+		$this->config = $config;
+		$this->configFile = $configFile;
+		parent::__construct();
+	}
+	
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+		$cacheFile = $this->configFile;
 		
 		/**
 		 * Check if the local storage is writable, if this is the case, we continue
 		 */
 		if (is_writable($cacheFile)) {
-			console()->success('Storage is writable')->ln();
+			$output->writeln('Storage is writable');
 		}
 		else {
-			console()->error(sprintf('Storage (%s) is not writable', $cacheFile))->ln();
+			$output->writeln(sprintf('Storage (%s) is not writable', $cacheFile));
 			return 1;
 		}
 		
 		/**
-		 * At this point in time, the application MUST have loaded the configuration from 
+		 * At this point in time, the application MUST have loaded the configuration from
 		 * the disk (even if it's the cached version), so we can just as Spitfire for the
 		 * config and write it back to the disk.
 		 */
-		$config = spitfire()->config();
-		file_put_contents($cacheFile, sprintf('return %s;', var_export($config->export())));
+		file_put_contents($cacheFile, sprintf('return %s;', var_export($this->config->export())));
 		
 		/**
 		 * We've successfully written the data back to the drive, and can now continue working
 		 * normally.
 		 */
 		return 0;
-	}
-	
-	/**
-	 * We do not accept any parameters to the storage writable check.
-	 * 
-	 * @return array
-	 */
-	public function parameters(): array 
-	{
-		return [];
 	}
 }

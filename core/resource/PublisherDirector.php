@@ -1,8 +1,12 @@
 <?php namespace spitfire\core\resource;
 
 use spitfire\cli\arguments\CLIParameters;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -22,37 +26,39 @@ use spitfire\cli\arguments\CLIParameters;
  */
 
 
-class PublisherDirector extends \spitfire\mvc\Director
+class PublisherDirector extends Command
 {
 	
-	public function command()
+	protected static $defaultName = 'resources:publish';
+	protected static $defaultDescription = 'Import resources from packages to the main repository.';
+	
+	private $publisher;
+	private $manifestFile;
+	
+	public function __construct(string $manifestFile, Publisher $publisher)
 	{
-		return 'spitfire::publish';
+		$this->manifestFile = $manifestFile;
+		$this->publisher = $publisher;
+		
+		parent::__construct();
 	}
 	
-	public function parameters() : array
+	protected function configure() : void
 	{
-		return [
-			'-v' => '--verbose',
-			'-t' => '--tag',
-			'--verbose' => [
-				'type' => 'bool',
-				'description' => 'Provide verbose output'
-			],
-			'--tag' => [
-				'required' => true,
-				'type' => 'string',
-				'description' => 'Selects which tag to use. If omitted, the script will ask for a tag'
-			]
-		];
+		$this
+			->addArgument(
+				'tag',
+				InputArgument::REQUIRED,
+				'Selects which tag to use. If omitted, the script will ask for a tag'
+			);
 	}
 	
-	public function exec(array $parameters, CLIParameters $arguments): int
+	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$publisher = spitfire()->publisher();
-		$file      = spitfire()->locations()->root('bin/published.json');
+		$publisher = $this->publisher;
+		$file      = $this->manifestFile;
 		$manifest  = file_exists($file)? json_decode(file_get_contents($file), true) : [];
-		$tag       = $parameters['tag'];
+		$tag       = $input->getArgument('tag');
 		
 		/**
 		 * Get the list of files that have been published to the system already,
@@ -80,27 +86,37 @@ class PublisherDirector extends \spitfire\mvc\Director
 			if (!is_dir($existing) && md5_file($existing) != $meta['md5']) {
 				#If the file has been modified since it was published, we need to warn
 				#the user about the situation and stop the publishing.
-				console()->error(sprintf('File %s was modified on disk since it was published. Revert or delete the file to continue', $existing))->ln();
+				$output->writeln(sprintf(
+					'<error>File %s was modified on disk since it was published. '.
+					'Revert or delete the file to continue</>',
+					$existing
+				));
 				return -1;
 			}
 			
 			if (is_dir($existing) !== is_dir($publishing[$existing]['src'])) {
 				#This checks whether the target is a directory, and whether the file
-				#that we intend to overwrite it with is a directory. If this is the 
+				#that we intend to overwrite it with is a directory. If this is the
 				#case we fail with a message indicating that this is unacceptable.
 				
-				console()->error(sprintf('File %s is a directory and being overwritten by a file, or viceversa', $existing))->ln();
+				$output->writeln(sprintf(
+					'<error>File %s is a directory and being overwritten by a file, or viceversa</>',
+					$existing
+				));
 				return -1;
 			}
 		}
 		
 		foreach ($publishing as $target => $meta) {
 			if (!isset($published[$target]) && file_exists($target)) {
-				#In this scenario, the file does exist on the drive, but the 
+				#In this scenario, the file does exist on the drive, but the
 				#publishing file is unaware of it's existence. Making it impossible to
 				#override safely, since we didn't put it there.
 				
-				console()->error(sprintf('File %s exists, but was not published by Spitfire. Delete the file to continue', $target))->ln();
+				$output->writeln(sprintf(
+					'<error>File %s exists, but was not published by Spitfire. Delete the file to continue</>',
+					$target
+				));
 				return -1;
 			}
 		}
@@ -137,7 +153,7 @@ class PublisherDirector extends \spitfire\mvc\Director
 	
 	/**
 	 * This function recursively generates a changeset for the files to be published.
-	 * 
+	 *
 	 * @param string $from
 	 * @param string $to
 	 * @return string[][] An array containing the changes
@@ -150,10 +166,10 @@ class PublisherDirector extends \spitfire\mvc\Director
 			
 			while ($file = $dir->read()) {
 				if ($file == '.') {
-					continue; 
+					continue;
 				}
 				if ($file == '..') {
-					continue; 
+					continue;
 				}
 				
 				$_ret[$to] = ['md5' => null, 'src' => $from];

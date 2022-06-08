@@ -1,6 +1,6 @@
 <?php namespace spitfire\storage\support\directors;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -19,21 +19,29 @@
  * MA 02110-1301  USA
  */
 
-use spitfire\mvc\Director;
+use spitfire\core\Locations;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * 
+ *
  */
-class CheckStoragePermissionsDirector extends Director
+class CheckStoragePermissionsDirector extends Command
 {
 	
-	/**
-	 * 
-	 * @param array $parameters
-	 * @param \spitfire\cli\arguments\CLIParameters $arguments
-	 * @return int
-	 */
-	public function exec(array $parameters, \spitfire\cli\arguments\CLIParameters $arguments): int 
+	protected static $defaultName = 'filesystem:check';
+	protected static $defaultDescription = 'Checks whether the storage has the necessary permissions.';
+	
+	private $locations;
+	
+	public function __construct(Locations $locations)
+	{
+		$this->locations = $locations;
+		parent::__construct();
+	}
+	
+	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		
 		$success = true;
@@ -41,24 +49,27 @@ class CheckStoragePermissionsDirector extends Director
 		/**
 		 * Check if the local storage is writable, if this is the case, we continue
 		 */
-		if (is_writable(spitfire()->locations()->storage())) {
-			console()->success('Storage is writable')->ln();
+		if (is_writable($this->locations->storage())) {
+			$output->writeln('Storage is writable');
 		}
 		else {
-			console()->error(sprintf('Storage (%s) is not writable', spitfire()->locations()->storage()))->ln();
+			$output->writeln(sprintf('<error>Failure</> Storage (%s) is not writable', $this->locations->storage()));
 			$success = false;
 		}
 		
 		/**
-		 * Check if the public storage directory is writable. If this is not the 
-		 * case, the application cannot create files that can be served by the 
+		 * Check if the public storage directory is writable. If this is not the
+		 * case, the application cannot create files that can be served by the
 		 * web-server directly.
 		 */
-		if (is_writable(spitfire()->locations()->publicStorage())) {
-			console()->success('Storage is writable')->ln();
+		if (is_writable($this->locations->publicStorage())) {
+			$output->writeln('Storage is writable');
 		}
 		else {
-			console()->error(sprintf('Storage (%s) is not writable', spitfire()->locations()->publicStorage()))->ln();
+			$output->writeln(sprintf(
+				'<error>Failure</> Storage (%s) is not writable',
+				$this->locations->publicStorage()
+			));
 			$success = false;
 		}
 		
@@ -67,15 +78,5 @@ class CheckStoragePermissionsDirector extends Director
 		 * zero state.
 		 */
 		return $success? 0 : 1;
-	}
-	
-	/**
-	 * We do not accept any parameters to the storage writable check.
-	 * 
-	 * @return array
-	 */
-	public function parameters(): array 
-	{
-		return [];
 	}
 }

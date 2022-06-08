@@ -5,17 +5,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\_init\LoadConfiguration;
 use spitfire\_init\ProvidersInit;
-use spitfire\_init\LoadCluster;
-use spitfire\_init\ProvidersFromManifest;
 use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
-use spifire\io\Stream;
 use spitfire\_init\InitRequest;
 use spitfire\core\Response;
 use spitfire\core\router\Router;
 use spitfire\core\router\RoutingMiddleware;
-use spitfire\exceptions\ExceptionHandler;
+use spitfire\io\stream\Stream;
 use spitfire\provider\Container;
 
 /*
@@ -93,8 +90,8 @@ class WebKernel implements KernelInterface, RequestHandlerInterface
 	{
 		
 		try {
-			$notfound = new StaticResponseRequestHandler(new Response(new Stream('Not found'), 404));
-			$routed   = new DecoratingRequestHandler(new RoutingMiddleware($this->router), $notfound);
+			$notfound = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
+			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($this->router));
 			
 			return $routed->handle($request);
 		}
@@ -114,9 +111,7 @@ class WebKernel implements KernelInterface, RequestHandlerInterface
 		return [
 			LoadConfiguration::class,
 			ProvidersRegister::class,
-			ProvidersFromManifest::class,
 			ProvidersInit::class,
-			LoadCluster::class,
 			InitRequest::class
 		];
 	}

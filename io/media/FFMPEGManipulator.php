@@ -2,7 +2,7 @@
 
 use spitfire\io\media\exceptions\EncoderUnavailableException;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -123,13 +123,11 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		
 		file_put_contents($tmpi, $this->src->read());
 		exec(sprintf(
-			'ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -r ntsc -crf 26 -vf "%s" %s 2>&1', 
-			$tmpi, 
-			implode(',', $this->operations), 
+			'ffmpeg -i %s -movflags faststart -pix_fmt yuv420p -r ntsc -crf 26 -vf "%s" %s 2>&1',
+			$tmpi,
+			implode(',', $this->operations),
 			$tmpo
 		));
-		
-		console()->info('Filesize is ' . new \spitfire\io\Filesize(filesize($tmpo)))->ln();
 		
 		$location->write(file_get_contents($tmpo));
 		

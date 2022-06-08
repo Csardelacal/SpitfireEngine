@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\http;
 
+use Psr\Container\ContainerInterface;
 use spitfire\core\config\Configuration;
 use spitfire\core\router\Router;
 use spitfire\core\service\Provider;
@@ -12,18 +13,18 @@ use spitfire\SpitFire;
 class URLServiceProvider extends Provider
 {
 	
-	public function register()
+	public function register(ContainerInterface $container)
 	{
-		$config = $this->container->get(Configuration::class);
+		$config = $container->get(Configuration::class);
 		
 		/**
-		 * 
+		 *
 		 * @var Container
 		 */
-		$container = $this->container->get(Container::class);
+		$container = $container->get(Container::class);
 		
 		$container->set(
-			URLBuilder::class, 
+			URLBuilder::class,
 			$container->assemble(URLBuilder::class, [
 				'routes' => $container->get(Router::class)->getRoutes(),
 				'root'   => SpitFire::baseUrl(),
@@ -32,7 +33,7 @@ class URLServiceProvider extends Provider
 		);
 	}
 	
-	public function init()
+	public function init(ContainerInterface $container)
 	{
 	}
 }

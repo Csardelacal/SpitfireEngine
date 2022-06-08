@@ -5,13 +5,17 @@ use spitfire\_init\LoadConfiguration;
 use spitfire\_init\ProvidersFromManifest;
 use spitfire\_init\ProvidersInit;
 use spitfire\_init\ProvidersRegister;
-use spitfire\cli\arguments\Parser;
 use spitfire\collection\Collection;
 use spitfire\core\kernel\exceptions\CommandNotFoundException;
 use spitfire\mvc\Director;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
 use function spitfire;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -38,7 +42,7 @@ use function spitfire;
 /**
  * The console kernel provides mechanisms to allow a user to interact with the
  * application via the command line interface.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class ConsoleKernel implements KernelInterface
@@ -46,13 +50,17 @@ class ConsoleKernel implements KernelInterface
 	
 	/**
 	 *
-	 * @var Collection<Director>
+	 * @var Application
 	 */
-	private $commands;
+	private $application;
 	
-	public function __construct() 
+	/**
+	 * @todo Populate the application name and version.
+	 */
+	public function __construct()
 	{
-		$this->commands = new Collection();
+		$this->application = new Application(__DIR__);
+		spitfire()->provider()->set(Application::class, $this->application);
 	}
 	
 	/**
@@ -67,76 +75,43 @@ class ConsoleKernel implements KernelInterface
 	/**
 	 * This method allows an application to register a command that the application
 	 * wishes to expose to the end-user of the application.
-	 * 
-	 * @param string $command
-	 * @param Director $body
+	 *
+	 * @param Command $command
 	 * @return ConsoleKernel
 	 */
-	public function register(string $command, Director $body) : ConsoleKernel
+	public function register(Command $command) : ConsoleKernel
 	{
-		$this->commands[$command] = $body;
+		$this->application->add($command);
 		return $this;
 	}
 	
 	/**
 	 * The exec method takes a command, and a set of arguments to locate a single
-	 * director and execute it.
-	 * 
+	 * command and execute it.
+	 *
 	 * @throws CommandNotFoundException
-	 * @param string $command
-	 * @param string[] $arguments
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
 	 * @return int
 	 */
-	public function exec(string $command, array $arguments) : int
+	public function handle(InputInterface $input, OutputInterface $output) : int
 	{
-		if (!$this->commands->has($command)) {
-			throw new CommandNotFoundException(sprintf('Command %s is not available', $command));
-		}
-		
-		/*@var $director Director*/
-		$director = $this->commands[$command];
-		
-		/*
-		 * This call applies the arguments we received from the user to the paramters
-		 * the application expects in order to proceed.
-		 * 
-		 * In order for this to work properly, the parser needs to understand the
-		 * input that the application expects, and match it against the input that
-		 * the user provided.
-		 */
-		$extracted = spitfire()->provider()->get(Parser::class)
-			->make($director->parameters())
-			->apply($arguments);
-		
-		return $director->exec($extracted->parameters(), $extracted->arguments());
-	}
-	
-	/**
-	 * The all method is intended as a mechanism to return a list of directors
-	 * available to the user, making it easier for them to select a command to
-	 * execute.
-	 * 
-	 * @return Collection<Director>
-	 */
-	public function all() : Collection
-	{
-		return $this->commands;
+		boot($this);
+		return $this->application->run($input, $output);
 	}
 	
 	/**
 	 * The list of init scripts that need to be executed in order for the kernel to
 	 * be usable.
-	 * 
+	 *
 	 * @return string[]
 	 */
-	public function initScripts(): array 
+	public function initScripts(): array
 	{
 		return [
 			LoadConfiguration::class,
 			ProvidersRegister::class,
-			ProvidersFromManifest::class,
 			ProvidersInit::class,
-			LoadCluster::class
 		];
 	}
 }

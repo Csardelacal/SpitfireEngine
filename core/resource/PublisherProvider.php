@@ -1,11 +1,8 @@
-<?php namespace spitfire\mvc\providers;
+<?php namespace spitfire\core\resource;
 
 use Psr\Container\ContainerInterface;
 use spitfire\core\kernel\ConsoleKernel;
-use spitfire\core\kernel\KernelInterface;
 use spitfire\core\service\Provider as ServiceProvider;
-
-use spitfire\core\app\support\directors\ManifestCacheBuildDirector;
 use spitfire\core\config\Configuration;
 use spitfire\core\config\directors\BuildConfigurationDirector;
 use spitfire\core\Locations;
@@ -36,7 +33,7 @@ use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
  *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class DirectorProvider extends ServiceProvider
+class PublisherProvider extends ServiceProvider
 {
 	
 	/**
@@ -62,11 +59,9 @@ class DirectorProvider extends ServiceProvider
 		 */
 		$locations = $container->get(Locations::class);
 		
-		$kernel->register(new BuildConfigurationDirector(
-			$locations->root('bin/config.php'),
-			$container->get(Configuration::class)
+		$kernel->register(new PublisherDirector(
+			$locations->root('bin/published.json'),
+			$container->get(Publisher::class)
 		));
-		
-		$kernel->register(new CheckStoragePermissionsDirector($locations));
 	}
 }
