@@ -73,9 +73,9 @@ class DriveDispatcher
 	 * are extracted by splitting it by forward slashes.
 	 *
 	 * @param string $drive
-	 * @return FileSystem
+	 * @return StorageFileSystem
 	 */
-	public function drive($drive) : FileSystem
+	public function drive($drive) : StorageFileSystem
 	{
 		$scheme = trim($drive, ':/');
 		
@@ -93,7 +93,7 @@ class DriveDispatcher
 		 */
 		assert(!empty($uri));
 		
-		$pieces = explode($uri, '://', 2);
+		$pieces = explode('://', $uri, 2);
 		
 		if (isset($pieces[1])) {
 			return [

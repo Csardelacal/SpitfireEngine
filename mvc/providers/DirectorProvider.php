@@ -10,6 +10,7 @@ use spitfire\core\config\Configuration;
 use spitfire\core\config\directors\BuildConfigurationDirector;
 use spitfire\core\Locations;
 use spitfire\storage\support\directors\CheckStoragePermissionsDirector;
+use spitfire\storage\support\directors\FileCopyDirector;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -68,5 +69,6 @@ class DirectorProvider extends ServiceProvider
 		));
 		
 		$kernel->register(new CheckStoragePermissionsDirector($locations));
+		$kernel->register(new FileCopyDirector);
 	}
 }
