@@ -11,19 +11,19 @@ use spitfire\io\stream\Stream;
  * This class merges the file Uploads coming from a client into the POST array,
  * allowing beans and programmers to have easier access to the data coming from
  * the client without trading in any security.
- * 
- * The class should not automatically store any data to avoid the user being able 
+ *
+ * The class should not automatically store any data to avoid the user being able
  * to inject uploads where unwanted. The class automatically names uploads when
  * storing to avoid collissions, returning the name of the file it stored.
- * 
+ *
  * @author César de la Cal <cesar@magic3w.com>
  */
 class UploadFile implements UploadedFileInterface
 {
 	/**
-	 * Contains the raw metadata that was initially sent with the _FILES array. 
+	 * Contains the raw metadata that was initially sent with the _FILES array.
 	 * The size entry contains the length in bytes of the buffer.
-	 * 
+	 *
 	 * @see http://php.net/manual/en/features.file-upload.post-method.php For the array structure used
 	 * @var int
 	 */
@@ -32,7 +32,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Contains the error code for the upload. This may be 0 if no error was generated
 	 * or any of the UPLOAD_ERR_XXX constants.
-	 * 
+	 *
 	 * @see http://php.net/manual/en/features.file-upload.errors.php
 	 * @var int
 	 */
@@ -41,7 +41,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Contains the content-type that the client suggested the payload may have. Please note
 	 * that it is not guaranteed the client provided truthful information
-	 * 
+	 *
 	 * @var string
 	 */
 	private $contentType;
@@ -49,7 +49,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Contains the filename that the client submitted. Again, this information may not be
 	 * properly sanitized.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $name;
@@ -57,21 +57,21 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * The path to the temprorary upload file that the web server has created for us. Please note that
 	 * this upload does not support streams.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $tmp;
 	
 	/**
 	 * Create a new upload based on SAPI file uploads.
-	 * 
+	 *
 	 * @param string $tmp
 	 * @param string $name
 	 * @param string $contentType
 	 * @param int $size
 	 * @param int $error
 	 */
-	public function __construct(string $tmp, string $name, string $contentType, int $size, int $error) 
+	public function __construct(string $tmp, string $name, string $contentType, int $size, int $error)
 	{
 		$this->tmp = $tmp;
 		$this->name = $name;
@@ -86,7 +86,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Returns a stream that can be used to operate on this file.
 	 * @inheritdoc
-	 * 
+	 *
 	 * @return StreamInterface
 	 */
 	public function getStream() : StreamInterface
@@ -104,7 +104,7 @@ class UploadFile implements UploadedFileInterface
 	 * Moves the file to a new location. Please note, the target location is a path, which implies
 	 * that the file will always be named the same way as the original upload.
 	 * @inheritdoc
-	 * 
+	 *
 	 * @param string $targetPath
 	 */
 	public function moveTo($targetPath)
@@ -121,7 +121,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Returns the size (in bytes) of the transmitted file.
 	 * @inheritdoc
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getSize() : int
@@ -132,7 +132,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Returns the error code (if any).
 	 * @inheritdoc
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getError() : int
@@ -142,7 +142,7 @@ class UploadFile implements UploadedFileInterface
 	
 	/**
 	 * Returns the filename the client transmitted.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getClientFilename() : string
@@ -152,7 +152,7 @@ class UploadFile implements UploadedFileInterface
 	
 	/**
 	 * Returns the content-type passed by the client.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getClientMediaType() : string
@@ -163,7 +163,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * Generates a copy of the upload object, replacing the filename with a prefix that prevents
 	 * collissions when writing to disk.
-	 * 
+	 *
 	 * @return UploadFile
 	 */
 	public function withUniqueName() : UploadFile
@@ -189,7 +189,7 @@ class UploadFile implements UploadedFileInterface
 	 *
 	 * @return Filesize
 	 */
-	static function getMaxUploadSize($sizes = null)
+	public static function getMaxUploadSize($sizes = null)
 	{
 		if (!isset($sizes)) {
 			$sizes = [
@@ -204,5 +204,39 @@ class UploadFile implements UploadedFileInterface
 		});
 		
 		return $sizes[0];
+	}
+	
+	/**
+	 *
+	 * @todo Support nested file arrays.
+	 */
+	public static function fromGlobals()
+	{
+		$_return = [];
+		
+		foreach ($_FILES as $key => $upload) {
+			
+			/**
+			 * We currently do not support uploads that are within nested arrays. This is a
+			 * known limitation, but it should be fine for our use case.
+			 *
+			 * We do not assert this, since it is entirely possible that a user submits bad
+			 * data during runtime.
+			 */
+			assume(!is_array($upload['name']), 'File array support is currently disabled');
+			
+			/**
+			 * Add the uploaded file to the list of uploads.
+			 */
+			$_return[$key] = new UploadFile(
+				$upload['tmp_name'],
+				$upload['name'],
+				$upload['type'],
+				$upload['size'],
+				$upload['error']
+			);
+		}
+		
+		return $_return;
 	}
 }

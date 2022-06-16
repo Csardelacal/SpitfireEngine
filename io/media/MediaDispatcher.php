@@ -1,10 +1,11 @@
 <?php namespace spitfire\io\media;
 
+use Psr\Http\Message\StreamInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\io\media\exceptions\EncoderUnavailableException;
 use spitfire\storage\objectStorage\Blob;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -34,9 +35,9 @@ class MediaDispatcher
 	private $associations = [];
 	
 	/**
-	 * 
+	 *
 	 * @throws ApplicationException
-	 * 
+	 *
 	 * @param string $mime
 	 * @param MediaManipulatorInterface $manipulator
 	 * @return void
@@ -52,22 +53,23 @@ class MediaDispatcher
 	}
 	
 	/**
-	 * 
+	 *
 	 * @throws EncoderUnavailableException
-	 * 
-	 * @param Blob $object
+	 *
+	 * @param StreamInterface $object
+	 * @param string $type
 	 * @return MediaManipulatorInterface
 	 */
-	public function load(\spitfire\storage\objectStorage\Blob$object) : MediaManipulatorInterface
+	public function load(StreamInterface $object, string $type) : MediaManipulatorInterface
 	{
-		if (isset($this->associations[$object->mime()])) {
-			$copy = clone $this->associations[$object->mime()];
+		if (isset($this->associations[$type])) {
+			$copy = clone $this->associations[$type];
 			$copy->load($object);
 			return $copy;
 		}
 		
 		throw new EncoderUnavailableException(
-			sprintf('No manipulator found for %s(%s)', $object->uri(), $object->mime()), 
+			sprintf('No manipulator found for media(%s)', $type),
 			1805301140
 		);
 	}

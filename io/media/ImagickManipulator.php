@@ -1,8 +1,11 @@
 <?php namespace spitfire\io\media;
 
+use \Imagick;
+use Psr\Http\Message\StreamInterface;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -55,24 +58,25 @@ class ImagickManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 	
-	public function load(\spitfire\storage\objectStorage\Blob $blob): MediaManipulatorInterface
+	public function load(StreamInterface $blob): MediaManipulatorInterface
 	{
 		if ($this->tmp) {
 			unlink($this->tmp);
 		}
 		
 		$this->tmp = '/tmp/' . rand();
-		file_put_contents($this->tmp, $blob->read());
+		file_put_contents($this->tmp, $blob->getContents());
 		
 		if (class_exists("Imagick")) {
 			set_time_limit(480);
 			$img = new Imagick();
 			$img->readimage($this->tmp . '[0]');
 			$img->setImageIndex(0);
-			return $this->img = $img;
+			$this->img = $img;
+			return $this;
 		}
 		else {
-			throw new PrivateException('Imagick was enabled, but not installed', 1805301039);
+			throw new ApplicationException('Imagick was enabled, but not installed', 1805301039);
 		}
 	}
 	
@@ -85,15 +89,15 @@ class ImagickManipulator implements MediaManipulatorInterface
 	public function scale($target, $side = MediaManipulatorInterface::WIDTH): MediaManipulatorInterface
 	{
 		if ($side === MediaManipulatorInterface::WIDTH) {
-			$this->img->scaleImage($target, 0); 
+			$this->img->scaleImage($target, 0);
 		}
 		else {
-			$this->img->scaleimage(0, $target); 
+			$this->img->scaleimage(0, $target);
 		}
 		return $this;
 	}
 	
-	public function store(\spitfire\storage\objectStorage\Blob $location): \spitfire\storage\objectStorage\Blob
+	public function store(StreamInterface $location, string $contentType = null): StreamInterface
 	{
 		$this->img->writeimage($this->tmp);
 		$location->write(file_get_contents($this->tmp));
@@ -120,7 +124,7 @@ class ImagickManipulator implements MediaManipulatorInterface
 	
 	public function background($r, $g, $b, $alpha = 0): MediaManipulatorInterface
 	{
-		$this->img->setimagebackgroundcolor(new \ImagickPixel(sprintf('rgba(%d, %d, %d, %f)'), $r, $g, $g, $alpha));
+		$this->img->setimagebackgroundcolor(new \ImagickPixel(sprintf('rgba(%d, %d, %d, %f)', $r, $g, $g, $alpha)));
 		$this->img->mergeimagelayers(Imagick::LAYERMETHOD_FLATTEN);
 		return $this;
 	}

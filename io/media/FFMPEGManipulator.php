@@ -1,6 +1,8 @@
 <?php namespace spitfire\io\media;
 
 use spitfire\io\media\exceptions\EncoderUnavailableException;
+use Psr\Http\Message\StreamInterface;
+use spitfire\io\stream\Stream;
 
 /*
  * The MIT License
@@ -72,7 +74,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 	
-	public function load(\spitfire\storage\objectStorage\Blob $blob): MediaManipulatorInterface
+	public function load(StreamInterface $blob): MediaManipulatorInterface
 	{
 		$this->src = $blob;
 		$this->operations = [];
@@ -116,7 +118,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 	
-	public function store(\spitfire\storage\objectStorage\Blob $location): \spitfire\storage\objectStorage\Blob
+	public function store(StreamInterface $location, string $contentType = null): StreamInterface
 	{
 		$tmpi = '/tmp/' . rand();
 		$tmpo = '/tmp/' . rand() . '.mp4';
@@ -162,7 +164,7 @@ class FFMPEGManipulator implements MediaManipulatorInterface
 		file_put_contents($tmpi, $this->src->read());
 		exec(sprintf('ffmpeg -i %s -ss 00:00:00 -vframes 1 %s 2>&1', $tmpi, $tmpo));
 		
-		return media()->load(storage()->retrieve('file://' . $tmpo));
+		return media()->load(new Stream(fopen($tmpo, 'r+'), true, true, true));
 	}
 	
 	public function dimensions()

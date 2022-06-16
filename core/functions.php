@@ -11,6 +11,7 @@ use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
 use spitfire\core\http\URLBuilder;
 use spitfire\exceptions\ApplicationException;
+use spitfire\exceptions\user\ApplicationException as UserApplicationException;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
 use spitfire\io\media\ImagickManipulator;
@@ -22,6 +23,7 @@ use spitfire\locale\DomainGroup;
 use spitfire\locale\Locale;
 use spitfire\SpitFire;
 use spitfire\storage\database\Settings;
+use spitfire\storage\DriveDispatcher as StorageDriveDispatcher;
 use spitfire\storage\objectStorage\DriveDispatcher;
 use spitfire\storage\objectStorage\NodeInterface;
 use spitfire\validation\rules\RegexValidationRule;
@@ -172,8 +174,16 @@ function assume(bool $condition, $failure) : void
 	 * The last case (if the failure code was a string) will instance a new exception without message,
 	 * this is the most common way to use this, since it will be the mechanism activated when using
 	 * the ::class magic constant.
+	 *
+	 * If the exception class does not exist, or is not a subclass of exception, we just throw an application
+	 * exception to let the user know that something went wrong.
 	 */
-	throw new $failure();
+	if (class_exists($failure) && (new ReflectionClass($failure))->isSubclassOf(Exception::class)) {
+		throw new $failure();
+	}
+	else {
+		throw new UserApplicationException($failure);
+	}
 }
 
 /**
@@ -430,27 +440,11 @@ function media()
  *
  * @staticvar type $dispatcher
  * @param type $uri
- * @return DriveDispatcher|NodeInterface
+ * @return StorageDriveDispatcher
  */
 function storage()
 {
-	
-	static $dispatcher = null;
-	
-	if (!$dispatcher) {
-		$defs = config('storage.engines');
-		$dispatcher = new \spitfire\storage\objectStorage\DriveDispatcher();
-		
-		foreach ($defs as $k => $e) {
-			$class = $e['type'];
-			$settings = $e['settings'];
-			$i = new $class($settings);
-			
-			$dispatcher->register($k, $i);
-		}
-	}
-	
-	return $dispatcher;
+	return spitfire()->provider()->get(StorageDriveDispatcher::class);
 }
 
 function mime($file)

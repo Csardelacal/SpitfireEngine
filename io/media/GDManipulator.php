@@ -1,10 +1,12 @@
 <?php namespace spitfire\io\media;
 
 use Exception;
+use Psr\Http\Message\StreamInterface;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\PrivateException;
 use spitfire\storage\objectStorage\Blob;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -32,6 +34,7 @@ class GDManipulator implements MediaManipulatorInterface
 {
 	
 	private $tmp;
+	private $img;
 	private $meta;
 	private $compression = 8;
 	
@@ -80,7 +83,7 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 	
-	public function load(Blob $blob): MediaManipulatorInterface
+	public function load(StreamInterface $blob): MediaManipulatorInterface
 	{
 		
 		if ($this->tmp) {
@@ -88,23 +91,23 @@ class GDManipulator implements MediaManipulatorInterface
 		}
 		
 		$this->tmp = '/tmp/' . rand();
-		file_put_contents($this->tmp, $blob->read());
+		file_put_contents($this->tmp, $blob->getContents());
 		
 		
 		$this->meta = getimagesize($this->tmp);
 		
 		if (!function_exists('imagecreatefrompng')) {
-			throw new PrivateException("GD is not installed.", 1805301100);
+			throw new ApplicationException("GD is not installed.", 1805301100);
 		}
 		
 		switch ($this->meta[2]) {
-			case IMAGETYPE_PNG: 
+			case IMAGETYPE_PNG:
 				$this->img = imagecreatefrompng($this->tmp);
 				imagealphablending($this->img, false);
 				imagesavealpha($this->img, true);
 				break;
 			/*
-			 * If the image is a webp file, we use GD to manipulate it just like we 
+			 * If the image is a webp file, we use GD to manipulate it just like we
 			 * would handle any other image type. Since WEBP supports transparency,
 			 * we will tell GD to handle transparency.
 			 */
@@ -113,14 +116,14 @@ class GDManipulator implements MediaManipulatorInterface
 				imagealphablending($this->img, false);
 				imagesavealpha($this->img, true);
 				break;
-			case IMAGETYPE_JPEG:  
+			case IMAGETYPE_JPEG:
 				$this->img = imagecreatefromjpeg($this->tmp);
 				break;
-			case IMAGETYPE_GIF: 
+			case IMAGETYPE_GIF:
 				$this->img = imagecreatefromgif($this->tmp);
 				break;
 			default:
-				throw new PrivateException('Unsupported image type: ' . $this->meta[2]);
+				throw new ApplicationException('Unsupported image type: ' . $this->meta[2]);
 		}
 		
 		return $this;
@@ -164,9 +167,13 @@ class GDManipulator implements MediaManipulatorInterface
 			$width = $this->meta[0] * $target / $this->meta[1];
 		}
 		
-		if ($side === MediaManipulatorInterface::WIDTH) {
+		elseif ($side === MediaManipulatorInterface::WIDTH) {
 			$width = $target;
 			$height = $this->meta[1] * $target / $this->meta[0];
+		}
+		
+		else {
+			throw new ApplicationException('Invalid scaling specified', 2206161209);
 		}
 		
 		$img = imagecreatetruecolor($width, $height);
@@ -182,39 +189,42 @@ class GDManipulator implements MediaManipulatorInterface
 		return $this;
 	}
 	
-	public function store(Blob $location): Blob
+	public function store(StreamInterface $location, string $contentType = null): StreamInterface
 	{
 		
 		if (!$location->isWritable()) {
-			throw new PrivateException('Cannot write to target', 1805301104);
+			throw new ApplicationException('Cannot write to target', 1805301104);
 		}
 		
-		switch (pathinfo($location->uri(), PATHINFO_EXTENSION)) {
+		switch ($contentType) {
 			case 'jpg':
 			case 'jpeg':
+			case 'image/jpeg':
 				imagejpeg($this->img, $this->tmp, $this->compression * 10);
 				break;
 			/*
 			 * Allows the system to manipulate webp files, an upcoming format pioneered
 			 * by Google that allows to reduce the overhead of images being transferred
 			 * significantly by reducing file size.
-			 * 
+			 *
 			 * The format supports transparency.
-			 * 
+			 *
 			 * Read more on: https://developers.google.com/speed/webp
 			 */
 			case 'webp':
+			case 'image/webp':
 				imagewebp($this->img, $this->tmp, $this->compression * 10);
 				break;
 			case 'png':
+			case 'image/png':
 			default:
 				imagepng($this->img, $this->tmp, $this->compression);
 				
 				try {
-					PNGQuant::compress($this->tmp, $this->tmp); 
+					PNGQuant::compress($this->tmp, $this->tmp);
 				}
 				catch (Exception$e) {
-/*If PNGQuant is not installed, we do nothing*/ 
+/*If PNGQuant is not installed, we do nothing*/
 				}
 		}
 		
@@ -234,7 +244,7 @@ class GDManipulator implements MediaManipulatorInterface
 			case 'image/gif':
 			case 'image/webp':
 				return true;
-			default: 
+			default:
 				return false;
 		}
 	}

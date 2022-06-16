@@ -19,7 +19,8 @@
 		"psr/http-message": "^1.0",
 		"magic3w/url-reflection": "^0.1.4||^0.2",
 		"respect/validation": "^2.2",
-		"symfony/console": "^5.4"
+		"symfony/console": "^5.4",
+		"league/flysystem": "^3.0"
 	},
 
 	"require-dev": {
@@ -27,12 +28,14 @@
 		"monolog/monolog": "^2.2",
 		"phpstan/phpstan": "^1.7",
 		"pug-php/pug": "^3.4",
-		"magic3w/php-coding-standard": "^1.0"
+		"magic3w/php-coding-standard": "^1.0",
+		"league/flysystem-aws-s3-v3": "^3.0"
 	},
 
 	"suggest": {
 		"monolog/monolog": "Provides logging capabilities for applications",
-		"guzzlehttp/guzzle": "PSR7 compatible HTTP messaging library"
+		"guzzlehttp/guzzle": "PSR7 compatible HTTP messaging library",
+		"league/flysystem-aws-s3-v3": "Storage driver for S3 compatible servers"
 	},
 	
 	"replace": {
