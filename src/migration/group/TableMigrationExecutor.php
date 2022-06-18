@@ -1,7 +1,8 @@
-<?php namespace spitfire\storage\database\drivers\mysqlpdo;
+<?php namespace spitfire\storage\database\migration\group;
 
 use PDO;
 use spitfire\collection\Collection;
+use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKey;
@@ -35,29 +36,24 @@ use spitfire\storage\database\LayoutInterface;
 class TableMigrationExecutor implements TableMigrationExecutorInterface
 {
 	
-	/**
-	 * The database connection used to apply the migrations.
-	 *
-	 * @var PDO
-	 */
-	private $pdo;
 	
 	/**
-	 * The name of the table receiving the changes.
+	 * The schema will contain all the migrated tables and data. Please note that
+	 * since this is a reference, the data is being written to the reference directly.
 	 *
-	 * @var LayoutInterface
+	 * @var Collection<TableMigrationExecutorInterface>
 	 */
-	private $table;
+	private $migrators;
 	
 	/**
 	 *
-	 * @param PDO $pdo
-	 * @param LayoutInterface $table
+	 * @param Collection<TableMigrationExecutorInterface> $migrators
 	 */
-	public function __construct(PDO $pdo, LayoutInterface $table)
+	public function __construct(Collection $migrators)
 	{
-		$this->pdo = $pdo;
-		$this->table = $table;
+		assert($migrators->containsOnly(TableMigrationExecutorInterface::class));
+		assert(!$migrators->isEmpty());
+		$this->migrators = $migrators;
 	}
 	
 	/**
@@ -69,20 +65,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function increments(string $name): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
 		
-		/**
-		 * An autoincrement field must always be paired with a primary index.
-		 *
-		 * @see https://dev.mysql.com/doc/refman/8.0/en/alter-table-examples.html
-		 */
-		$field = new Field($name, 'long:unsigned', false, true);
-		$index = new Index('_primary', new Collection([$field]), true, true);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($field), $grammar->addIndex($index)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->increments($name);
+		}
 		
 		return $this;
 	}
@@ -96,13 +82,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, $unsigned? 'int' : 'int:unsigned', false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($field)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->int($name, $unsigned);
+		}
 		
 		return $this;
 	}
@@ -117,19 +99,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function string(string $name, int $length): TableMigrationExecutorInterface
 	{
-		/**
-		 * Obviously, the length needs to be a positive number. Otherwise
-		 * this would be weird.
-		 */
-		assert($length > 0);
-		
-		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, 'string:' . $length, false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($field)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->string($name, $length);
+		}
 		
 		return $this;
 	}
@@ -144,13 +116,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function text(string $name): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, 'text', false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($field)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->text($name);
+		}
 		
 		return $this;
 	}
@@ -164,25 +132,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function enum(string $name, array $options): TableMigrationExecutorInterface
 	{
-		/**
-		 * Verify that none of the options contains a comma. This ensures that the developer
-		 * is not causing any inconsistent behavior. This code is only executed during testing
-		 * and is generally not expected to run in production.
-		 */
-		assert((new Collection($options))->filter(function (string $e) : bool {
-			return strstr($e, ',') !== false;
-		})->isEmpty());
 		
-		/**
-		 * Set up the grammar and add the field to the DBMS.
-		 */
-		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, 'enum:' . implode(',', $options), false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($field)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->enum($name, $options);
+		}
 		
 		return $this;
 	}
@@ -197,16 +150,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function index(string $name, array $fields): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		$_fields = (new Collection($fields))->each(function (string $name) {
-			return $this->table->getField($name);
-		});
-		$index = new Index($name, $_fields, false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addIndex($index)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->index($name, $fields);
+		}
 		
 		return $this;
 	}
@@ -223,30 +169,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function foreign(string $name, TableMigrationExecutorInterface $layout): TableMigrationExecutorInterface
 	{
-		/**
-		 * If the referenced layout does not have a primary key the code cannot
-		 * continue.
-		 */
-		assert($layout->layout()->getPrimaryKey() !== null);
 		
-		$grammar = new MySQLTableGrammar();
-		
-		/**
-		 * Create a field to host the data for the referenced field. Rename the field
-		 * to prefix it with the name we want to assign to this field.
-		 */
-		$reference = $layout->layout()->getPrimaryKey()->getFields()[0];
-		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), $reference->isNullable(), false);
-		
-		$index = new ForeignKey($name, $field, ($layout)->layout()->getTableReference()->getOutput($layout->layout()->getPrimaryKey()->getName()));
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[
-				$grammar->addColumn($field),
-				$grammar->addIndex($index)
-			]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->foreign($name, $layout);
+		}
 		
 		return $this;
 	}
@@ -262,15 +188,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function unique(string $name, array $fields): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		$index = new Index($name, (new Collection($fields))->each(function ($e) {
-			return $this->table->getField($e);
-		}), true, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addIndex($index)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->unique($name, $fields);
+		}
 		
 		return $this;
 	}
@@ -285,20 +205,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function primary(string $name, string $field): TableMigrationExecutorInterface
 	{
 		
-		$grammar = new MySQLTableGrammar();
-		
-		/**
-		 * An autoincrement field must always be paired with a primary index.
-		 *
-		 * @see https://dev.mysql.com/doc/refman/8.0/en/alter-table-examples.html
-		 */
-		$_field = $this->table->getField($name);
-		$index = new Index('_primary', new Collection([$_field]), true, true);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addIndex($index)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->primary($name, $field);
+		}
 		
 		return $this;
 	}
@@ -322,20 +231,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function timestamps(): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		
-		/**
-		 * The created and updated fields contain information to indicate
-		 * when the record was edited/added. This is often used to perform
-		 * housekeeping operations on the system.
-		 */
-		$created = new Field('created', 'int:unsigned', false, false);
-		$updated = new Field('updated', 'int:unsigned', false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($created), $grammar->addColumn($updated)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->timestamps();
+		}
 		
 		return $this;
 	}
@@ -352,13 +250,9 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function softDelete(): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		$removed = new Field('removed', 'int:unsigned', false, false);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->addColumn($removed)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->softDelete();
+		}
 		
 		return $this;
 	}
@@ -373,34 +267,18 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function drop(string $name): TableMigrationExecutorInterface
 	{
-		$field = $this->table->getField($name);
-		$grammar = new MySQLTableGrammar();
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->dropColumn($field)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->drop($name);
+		}
 		
 		return $this;
 	}
 	
 	public function dropIndex(string $name): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
-		
-		/**
-		 * Find the index that we
-		 */
-		$index = $this->table->getIndexes()->filter(function (IndexInterface $index) use ($name) {
-			return $index->getName() === $name;
-		})->first();
-		
-		assert($index !== null);
-		
-		$this->pdo->exec($grammar->alterTable(
-			$this->table->getTableName(),
-			[$grammar->dropIndex($index)]
-		));
+		foreach ($this->migrators as $migrator) {
+			$migrator->dropIndex($name);
+		}
 		
 		return $this;
 	}
@@ -412,6 +290,8 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function layout(): LayoutInterface
 	{
-		return $this->table;
+		$first = $this->migrators->first();
+		assert($first instanceof TableMigrationExecutorInterface);
+		return $first->layout();
 	}
 }

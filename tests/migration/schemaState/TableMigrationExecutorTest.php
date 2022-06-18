@@ -1,16 +1,25 @@
-<?php namespace spitfire\storage\database\tests\drivers\internal;
+<?php namespace spitfire\storage\database\tests\migration\schemaState;
 
-use Exception;
 use spitfire\storage\database\Schema;
 use PHPUnit\Framework\TestCase;
-use spitfire\event\Event;
+use spitfire\storage\database\Connection;
+use spitfire\storage\database\DriverInterface;
+use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\internal\MockDriver;
-use spitfire\storage\database\drivers\internal\SchemaMigrationExecutor;
-use spitfire\storage\database\drivers\internal\TableMigrationExecutor;
+use spitfire\storage\database\drivers\test\AbstractDriver;
+use spitfire\storage\database\drivers\test\AbstractResultSet;
+use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
 use spitfire\storage\database\events\RecordBeforeDeleteEvent;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
-use spitfire\storage\database\events\RecordEventPayload;
 use spitfire\storage\database\Field;
+use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
+use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
+use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
+use spitfire\storage\database\grammar\QueryGrammarInterface;
+use spitfire\storage\database\grammar\RecordGrammarInterface;
+use spitfire\storage\database\grammar\SchemaGrammarInterface;
+use spitfire\storage\database\grammar\SlashQuoter;
+use spitfire\storage\database\query\ResultInterface;
 use spitfire\storage\database\Record;
 
 /*
@@ -96,7 +105,38 @@ class TableMigrationExecutorTest extends TestCase
 		
 		$record = new Record(['created' => null]);
 		
-		$layout->events()->dispatch(new RecordBeforeInsertEvent(new MockDriver, $layout, $record), function () {
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter),
+				new MySQLSchemaGrammar
+			)
+		);
+		
+		$layout->events()->dispatch(new RecordBeforeInsertEvent($connection, $layout, $record), function () {
 		});
 		
 		$this->assertNotEquals($record->get('created'), null);
@@ -112,9 +152,39 @@ class TableMigrationExecutorTest extends TestCase
 		$migrator->id();
 		$migrator->softDelete();
 		
-		$driver = new MockDriver;
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter),
+				new MySQLSchemaGrammar
+			)
+		);
+		
 		$record = new Record(['removed' => null]);
-		$event  = new RecordBeforeDeleteEvent($driver, $layout, $record);
+		$event  = new RecordBeforeDeleteEvent($connection, $layout, $record);
 		$called = false;
 		
 		$layout->events()->dispatch(
@@ -124,12 +194,14 @@ class TableMigrationExecutorTest extends TestCase
 			}
 		);
 		
+		$time = time();
+		
 		$this->assertNotEquals($record->get('removed'), null);
-		$this->assertEquals($record->get('removed'), time());
+		$this->assertEquals($record->get('removed'), $time);
 		$this->assertEquals($called, false);
 		
-		$this->assertEquals(1, count($driver->getLog()));
-		$this->assertEquals('update', $driver->getLog()[0][0]);
-		$this->assertNotEquals(null, $driver->getLog()[0][1]['removed']);
+		$this->assertEquals(1, count($driver->queries));
+		$this->assertStringContainsStringIgnoringCase('update', $driver->queries[0]);
+		$this->assertStringContainsString($time, $driver->queries[0]);
 	}
 }

@@ -3,6 +3,7 @@
 use PDO;
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\grammar\RecordGrammarInterface;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\QuoterInterface;
 use spitfire\storage\database\Record;
@@ -30,7 +31,7 @@ use spitfire\storage\database\Record;
  * This class aggregates the logic to create record related SQL statements,
  * allowing the application to abstract it's behavior a little further.
  */
-class MySQLRecordGrammar
+class MySQLRecordGrammar implements RecordGrammarInterface
 {
 	
 	/**

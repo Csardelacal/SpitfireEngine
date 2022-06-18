@@ -27,8 +27,6 @@ use spitfire\storage\database\migration\TagManagerInterface;
  * This class is intended to create an interface for common migration operations
  * to be performed on schemas.
  *
- * @todo Add  an import method that migrates a schema onto an empty one
- * @todo Add empty/reset method that removes all tables from the schema
  */
 interface SchemaMigrationExecutorInterface
 {
@@ -94,7 +92,7 @@ interface SchemaMigrationExecutorInterface
 	 * Allows the schema to be tagged. This allows the application to maintain an in-channel
 	 * record of the state of the database, the migrations applied, etc.
 	 *
-	 * @return TagManagerInterface|null
+	 * @return TagManagerInterface
 	 */
-	public function tags() :? TagManagerInterface;
+	public function tags() : TagManagerInterface;
 }

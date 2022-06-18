@@ -69,7 +69,7 @@ class SoftDeleteListener implements ListenerInterface
 		 * a 'recycle-bin' or audit log before an incinerator runs and force deletes this.
 		 */
 		$event->getRecord()->set($this->field, time());
-		$event->getDriver()->update($event->getLayout(), $event->getRecord());
+		$event->getConnection()->update($event->getLayout(), $event->getRecord());
 		
 		$event->preventDefault();
 	}

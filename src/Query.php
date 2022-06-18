@@ -17,8 +17,6 @@ use spitfire\storage\database\query\SelectExpression;
  * The query provides a mechanism for assembling restrictions that Spitfire and
  * the DBMS driver can then convert into a SQL query (or similar, for NoSQL).
  *
- * @todo The properties are protected, when they should actually be private
- * @mixin RestrictionGroup
  */
 class Query
 {
@@ -30,7 +28,7 @@ class Query
 	 *
 	 * @var Alias
 	 */
-	protected $from;
+	private $from;
 	
 	/**
 	 * Allows the query to include complex resultsets that accommodate more elaborate
@@ -41,7 +39,6 @@ class Query
 	 * the query with the subquery (this needs to be performed by the developer or the
 	 * model system).
 	 *
-	 * @todo Introduce utility methods for the joins
 	 * @var Collection<Join>
 	 */
 	private $joins;
@@ -58,7 +55,7 @@ class Query
 	 *
 	 * @var Collection<SelectExpression>
 	 */
-	protected $select;
+	private $select;
 	
 	/**
 	 * Determines by which fields the result should be aggregated. This affects aggregation
@@ -70,13 +67,13 @@ class Query
 	 *
 	 * @var Collection<IdentifierInterface>
 	 */
-	protected $groupBy;
+	private $groupBy;
 	
 	/**
 	 *
 	 * @var Collection<OrderBy>
 	 */
-	protected $order;
+	private $order;
 	
 	/**
 	 * The number of records that should be skipped when working with the query's resultset.
@@ -200,9 +197,6 @@ class Query
 	/**
 	 * Defines a column or array of columns the system will be using to group
 	 * data when generating aggregates.
-	 *
-	 * @todo When adding aggregation, the system should automatically use the aggregation for extraction
-	 * @todo Currently the system only supports grouping and not aggregation, this is a bit of a strange situation that needs resolution
 	 *
 	 * @param IdentifierInterface[] $columns
 	 * @return Query Description
@@ -356,7 +350,7 @@ class Query
 			'%s(%s) {%s}',
 			implode('.', $this->from->input()->raw()),
 			implode('.', $this->from->output()->raw()),
-			implode(',', $this->where->restrictions()->toArray())
+			$this->where->restrictions()->count()
 		);
 	}
 }

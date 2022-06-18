@@ -52,7 +52,6 @@ class MySQLColumnGrammar
 	 * The column definition tells the DBMS the name, type and properties of a
 	 * column in a table.
 	 *
-	 * @todo This is duplicated from the SchemaGrammar and should be moved to a separate class
 	 * @param Field $column
 	 * @return string
 	 */
@@ -71,7 +70,6 @@ class MySQLColumnGrammar
 	 * DBMS it may support, the driver needs to appropriately translate these types
 	 * to values the DBMS may understand.
 	 *
-	 * @todo This is duplicated from the SchemaGrammar and should be moved to a separate class
 	 * @see https://dev.mysql.com/doc/refman/5.7/en/data-types.html
 	 * @throws ApplicationException
 	 * @param string $type
@@ -112,7 +110,6 @@ class MySQLColumnGrammar
 	 * shares support for nullable and auto_increment with MySQL it will just check
 	 * whether the column has these features.
 	 *
-	 * @todo This is duplicated from the SchemaGrammar and should be moved to a separate class
 	 * @param Field $column
 	 * @return string[]
 	 */

@@ -1,7 +1,18 @@
 <?php namespace spitfire\storage\database;
 
+use PDOStatement;
+use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\drivers\internal\SchemaMigrationExecutor;
+use spitfire\storage\database\drivers\Adapter;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
+use spitfire\storage\database\events\RecordBeforeInsertEvent;
+use spitfire\storage\database\grammar\mysql\QueryGrammarInterface;
+use spitfire\storage\database\grammar\mysql\RecordGrammarInterface;
+use spitfire\storage\database\grammar\SchemaGrammarInterface;
+use spitfire\storage\database\migration\group\SchemaMigrationExecutor as GroupSchemaMigrationExecutor;
+use spitfire\storage\database\migration\relational\SchemaMigrationExecutor as RelationalSchemaMigrationExecutor;
+use spitfire\storage\database\migration\schemaState\SchemaMigrationExecutor as SchemaStateSchemaMigrationExecutor;
+use spitfire\storage\database\query\ResultInterface;
 
 /**
  * A connection combines a database driver and a schema, allowing the application to
@@ -12,9 +23,9 @@ class Connection
 	
 	/**
 	 *
-	 * @var DriverInterface
+	 * @var Adapter
 	 */
-	private $driver;
+	private $adapter;
 	
 	/**
 	 *
@@ -24,10 +35,16 @@ class Connection
 	
 	/**
 	 *
+	 * @var SchemaMigrationExecutorInterface|null
 	 */
-	public function __construct(Schema $schema, DriverInterface $driver)
+	private $migrator;
+	
+	/**
+	 *
+	 */
+	public function __construct(Schema $schema, Adapter $adapter)
 	{
-		$this->driver = $driver;
+		$this->adapter = $adapter;
 		$this->schema = $schema;
 	}
 	
@@ -42,14 +59,27 @@ class Connection
 		return $this->schema;
 	}
 	
-	/**
-	 * Returns the driver used to manage this connection.
-	 *
-	 * @return DriverInterface
-	 */
-	public function getDriver() : DriverInterface
+	public function setSchema(Schema $schema) : Connection
 	{
-		return $this->driver;
+		$this->schema = $schema;
+		return $this;
+	}
+	
+	public function getAdapter() : Adapter
+	{
+		return $this->adapter;
+	}
+	
+	public function getMigrationExecutor() : SchemaMigrationExecutorInterface
+	{
+		if ($this->migrator === null) {
+			$this->migrator = new GroupSchemaMigrationExecutor(new Collection([
+				new RelationalSchemaMigrationExecutor($this),
+				new SchemaStateSchemaMigrationExecutor($this->schema)
+			]));
+		}
+		
+		return $this->migrator;
 	}
 	
 	/**
@@ -61,19 +91,17 @@ class Connection
 	 */
 	public function contains(MigrationOperationInterface $migration): bool
 	{
-		$manager = $this->driver->getMigrationExecutor($this->schema)->tags();
-		
-		if ($manager === null) {
-			return false;
-		}
+		$manager = $this->getMigrationExecutor()->tags();
 		
 		$tags = $manager->listTags();
 		
-		return !!array_search(
+		$result = false !== array_search(
 			'migration:' . $migration->identifier(),
 			$tags,
 			true
 		);
+		
+		return $result;
 	}
 	
 	/**
@@ -85,15 +113,10 @@ class Connection
 	 */
 	public function apply(MigrationOperationInterface $migration): void
 	{
-		$migrators = [
-			$this->driver->getMigrationExecutor($this->schema),
-			new SchemaMigrationExecutor($this->schema)
-		];
 		
-		foreach ($migrators as $migrator) {
-			$migration->up($migrator);
-			$migrator->tags() !== null? $migrator->tags()->tag('migration:' . $migration->identifier()) : null;
-		}
+		$migrator = $this->getMigrationExecutor();
+		$migration->up($migrator);
+		$migrator->tags()->tag('migration:' . $migration->identifier());
 	}
 	
 	/**
@@ -104,14 +127,100 @@ class Connection
 	 */
 	public function rollback(MigrationOperationInterface $migration): void
 	{
-		$migrators = [
-			$this->driver->getMigrationExecutor($this->schema),
-			new SchemaMigrationExecutor($this->schema)
-		];
+		$migrator = $this->getMigrationExecutor();
+		$migration->down($migrator);
+		$migrator->tags()->untag('migration:' . $migration->identifier());
+	}
+	
+	/**
+	 * Query the database for data. The query needs to encapsulate all the data
+	 * that is needed for our DBMS to execute the query.
+	 *
+	 * @param Query $query
+	 * @return ResultInterface
+	 */
+	public function query(Query $query): ResultInterface
+	{
+		$sql = $this->adapter->getQueryGrammar()->query($query);
+		return $this->adapter->getDriver()->read($sql);
+	}
+	
+	public function update(LayoutInterface $layout, Record $record): bool
+	{
+		$stmt   = $this->adapter->getRecordGrammar()->updateRecord($layout, $record);
+		$result = $this->adapter->getDriver()->write($stmt);
 		
-		foreach ($migrators as $migrator) {
-			$migration->down($migrator);
-			$migrator->tags() !== null? $migrator->tags()->untag('migration:' . $migration->identifier()) : null;
+		/**
+		 * Commit that the record has been written to the database. The record will be in sync
+		 * with the database.
+		 */
+		$record->commit();
+		
+		return $result !== false;
+	}
+	
+	
+	public function insert(LayoutInterface $layout, Record $record): bool
+	{
+		$event  = new RecordBeforeInsertEvent($this, $layout, $record);
+		
+		$layout->events()->dispatch(
+			$event,
+			function () {
+			}
+		);
+		
+		if ($event->isPrevented()) {
+			return true;
 		}
+		
+		$stmt = $this->adapter->getRecordGrammar()->insertRecord($layout, $record);
+		$result = $this->adapter->getDriver()->write($stmt);
+		
+		/**
+		 * In the event that the field is automatically incremented, the dbms
+		 * will provide us with the value it inserted. This value needs to be
+		 * stored to the record.
+		 */
+		$increment = $layout->getFields()->filter(function (Field $field) {
+			return $field->isAutoIncrement();
+		})->first();
+		
+		if ($increment !== null) {
+			$id = $this->adapter->getDriver()->lastInsertId();
+			$record->set($increment->getName(), $id);
+		}
+		
+		/**
+		 * Since the database data is now in sync with the contents of the
+		 * record, we can commit the record as containing the same data that
+		 * the DBMS does.
+		 */
+		$record->commit();
+		
+		return $result !== false;
+	}
+	
+	
+	public function delete(LayoutInterface $layout, Record $record): bool
+	{
+		$stmt = $this->adapter->getRecordGrammar()->deleteRecord($layout, $record);
+		$result = $this->adapter->getDriver()->write($stmt);
+		
+		return $result !== false;
+	}
+	
+	public function has(string $name): bool
+	{
+		$sql  = $this->adapter->getSchemaGrammar()->hasTable($this->schema->getName()?: '', $name);
+		$stmt = $this->adapter->getDriver()->read($sql);
+		
+		assert($stmt instanceof PDOStatement);
+		return ($stmt->fetchColumn()) > 0;
+	}
+	
+	public function __clone()
+	{
+		$this->migrator = null;
 	}
 }

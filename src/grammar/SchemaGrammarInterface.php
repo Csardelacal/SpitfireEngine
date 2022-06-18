@@ -1,6 +1,5 @@
-<?php namespace spitfire\storage\database\grammar\mysql;
+<?php namespace spitfire\storage\database\grammar;
 
-use spitfire\storage\database\grammar\SchemaGrammarInterface;
 use spitfire\storage\database\LayoutInterface;
 
 /*
@@ -30,19 +29,8 @@ use spitfire\storage\database\LayoutInterface;
  * This grammar allows Spitfire to perform common operations on schemas. Most commonly,
  * migration related operations.
  */
-class MySQLSchemaGrammar implements SchemaGrammarInterface
+interface SchemaGrammarInterface
 {
-	
-	/**
-	 *
-	 * @var MySQLColumnGrammar
-	 */
-	private $column;
-	
-	public function __construct()
-	{
-		$this->column = new MySQLColumnGrammar();
-	}
 	
 	/**
 	 * Prepares the necessary SQL to create a table on the DBMS.
@@ -51,39 +39,7 @@ class MySQLSchemaGrammar implements SchemaGrammarInterface
 	 * @param LayoutInterface $layout
 	 * @return string
 	 */
-	public function createTable(LayoutInterface $layout) : string
-	{
-		return sprintf(
-			'CREATE TABLE `%s` (%s)',
-			$layout->getTableName(),
-			$this->createDefinition($layout)
-		);
-	}
-	
-	/**
-	 * The create definition of a table contains a combination of fields and
-	 * constraints that are mixed together for the DBMS to create.
-	 *
-	 * @param LayoutInterface $layout
-	 * @return string
-	 */
-	protected function createDefinition(LayoutInterface $layout) : string
-	{
-		$columns = $layout->getFields();
-		$indexes = $layout->getIndexes();
-		
-		$_return = [];
-		
-		foreach ($columns as $column) {
-			$_return[] = $this->column->columnDefinition($column);
-		}
-		
-		foreach ($indexes as $index) {
-			$_return[] = $this->column->indexDefinition($index);
-		}
-		
-		return implode(', ', $_return);
-	}
+	public function createTable(LayoutInterface $layout) : string;
 	
 	/**
 	 * The SQL to rename a table is almost trivial. This should make it really easy
@@ -93,10 +49,7 @@ class MySQLSchemaGrammar implements SchemaGrammarInterface
 	 * @param string $to
 	 * @return string
 	 */
-	public function renameTable(string $from, string $to) : string
-	{
-		return sprintf('RENAME TABLE `%s` TO `%s`', $from, $to);
-	}
+	public function renameTable(string $from, string $to) : string;
 	
 	/**
 	 * Generates the necessary SQL to drop a table.
@@ -104,18 +57,7 @@ class MySQLSchemaGrammar implements SchemaGrammarInterface
 	 * @param string $tablename
 	 * @return string
 	 */
-	public function dropTable(string $tablename)
-	{
-		return sprintf('DROP TABLE `%s`', $tablename);
-	}
+	public function dropTable(string $tablename);
 	
-	public function hasTable(string $schemaName, string $tableName) : string
-	{
-		return sprintf(
-			"SELECT COUNT(*) AS `exists` FROM information_schema.TABLES 
-			WHERE TABLE_SCHEMA LIKE '%s' AND TABLE_TYPE LIKE 'BASE TABLE' AND TABLE_NAME = '%s'",
-			$schemaName,
-			$tableName
-		);
-	}
+	public function hasTable(string $schemaName, string $tableName) : string;
 }

@@ -1,15 +1,14 @@
-<?php namespace spitfire\storage\database\drivers\mysqlpdo;
+<?php namespace spitfire\storage\database\migration\relational;
 
-use BadMethodCallException;
 use Closure;
-use PDO;
-use PDOStatement;
+use spitfire\storage\database\Connection;
+use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
-use spitfire\storage\database\drivers\internal\TableMigrationExecutor as GenericTableMigrationExecutor;
-use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
+use spitfire\storage\database\migration\schemaState\TableMigrationExecutor as GenericTableMigrationExecutor;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\migration\TagManagerInterface;
+use spitfire\storage\database\query\ResultInterface;
 use spitfire\storage\database\Schema;
 
 /*
@@ -34,15 +33,28 @@ use spitfire\storage\database\Schema;
 /**
  * The schema migration executor allows migrations to modify the schema of the
  * database without requiring the user to actually write or maintain any SQL code.
+ *
  */
 class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 {
 	
 	/**
 	 *
-	 * @var PDO
+	 * @var TagManagerInterface|null
 	 */
-	private $pdo;
+	private $tags;
+	
+	/**
+	 *
+	 * @var Connection
+	 */
+	private $connection;
+	
+	/**
+	 *
+	 * @var Adapter
+	 */
+	private $adapter;
 	
 	/**
 	 *
@@ -50,10 +62,11 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	 */
 	private $schema;
 	
-	public function __construct(PDO $pdo, Schema $schema)
+	public function __construct(Connection $connection)
 	{
-		$this->pdo = $pdo;
-		$this->schema = $schema;
+		$this->connection = $connection;
+		$this->adapter = $connection->getAdapter();
+		$this->schema = $connection->getSchema();
 	}
 	
 	public function add(string $name, Closure $fn): SchemaMigrationExecutorInterface
@@ -61,10 +74,6 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		/**
 		 * Create a layout and a generic migration executor so we can apply the migration
 		 * to the table in a nested way before committing it to the DBMS.
-		 *
-		 * @todo This depends on the generic migration system, since it is required to
-		 * perform all the table operations before the table is created. Passing a blank
-		 * table will provide a mechanism to create the table
 		 */
 		$table = new Layout($name);
 		$migrator = new GenericTableMigrationExecutor($table);
@@ -78,8 +87,8 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		/**
 		 * Create the table according to the MySQL spec.
 		 */
-		$grammar = new MySQLSchemaGrammar();
-		$this->pdo->exec($grammar->createTable($table));
+		$grammar = $this->adapter->getSchemaGrammar();
+		$this->adapter->getDriver()->write($grammar->createTable($table));
 		
 		return $this;
 	}
@@ -94,8 +103,8 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	 */
 	public function rename(string $from, string $to): SchemaMigrationExecutorInterface
 	{
-		$grammar = new MySQLSchemaGrammar();
-		$this->pdo->exec($grammar->renameTable($from, $to));
+		$grammar = $this->adapter->getSchemaGrammar();
+		$this->adapter->getDriver()->write($grammar->renameTable($from, $to));
 		
 		return $this;
 	}
@@ -109,8 +118,8 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	 */
 	public function drop(string $name): SchemaMigrationExecutorInterface
 	{
-		$grammar = new MySQLSchemaGrammar();
-		$this->pdo->exec($grammar->dropTable($name));
+		$grammar = $this->adapter->getSchemaGrammar();
+		$this->adapter->getDriver()->write($grammar->dropTable($name));
 		
 		return $this;
 	}
@@ -125,7 +134,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	 */
 	public function table(string $name): TableMigrationExecutorInterface
 	{
-		return new TableMigrationExecutor($this->pdo, $this->schema->getLayoutByName($name));
+		return new TableMigrationExecutor($this->adapter, $this->schema->getLayoutByName($name));
 	}
 	
 	/**
@@ -146,7 +155,7 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	 */
 	public function execute(string $sql): SchemaMigrationExecutorInterface
 	{
-		$this->pdo->exec($sql);
+		$this->adapter->getDriver()->write($sql);
 		return $this;
 	}
 	
@@ -154,15 +163,19 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	{
 		assert($this->schema->getName() !== null);
 		
-		$grammar = new MySQLSchemaGrammar();
-		$stmt = $this->pdo->query($grammar->hasTable($this->schema->getName(), $name));
+		$grammar = $this->adapter->getSchemaGrammar();
+		$stmt = $this->adapter->getDriver()->read($grammar->hasTable($this->schema->getName(), $name));
 		
-		assert($stmt instanceof PDOStatement);
-		return ($stmt->fetch()[0]) > 0;
+		assert($stmt instanceof ResultInterface);
+		return ($stmt->fetchOne()) > 0;
 	}
 	
 	public function tags(): TagManagerInterface
 	{
-		throw new BadMethodCallException('Not yet implemented');
+		if (!$this->tags) {
+			$this->tags = new TagManager($this->connection);
+		}
+		
+		return $this->tags;
 	}
 }

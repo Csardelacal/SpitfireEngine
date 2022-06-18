@@ -1,4 +1,4 @@
-<?php namespace spitfire\storage\database\migration;
+<?php namespace spitfire\storage\database\migration\relational;
 
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
@@ -9,7 +9,7 @@ class TagLayoutMigration implements MigrationOperationInterface
 	
 	public function up(SchemaMigrationExecutorInterface $schema) : void
 	{
-		if ($schema->has('_tags')) {
+		if ($exists = $schema->has('_tags')) {
 			return;
 		}
 		

@@ -7,9 +7,6 @@ use spitfire\storage\database\query\Restriction;
 class RestrictionTest extends TestCase
 {
 	
-	/**
-	 * @todo This is not workking until we fix the layout and TableReference accordingly and rebase them
-	 */
 	public function testNegate()
 	{
 		$layout = new Layout('table');

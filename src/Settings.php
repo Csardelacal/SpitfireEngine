@@ -203,7 +203,6 @@ class Settings
 	 * URLs to store database credentials, which allow in turn to store the DB
 	 * settings outside of the application and on the server itself.
 	 *
-	 * @todo Move to external URL parser
 	 * @param string $url
 	 * @return Settings
 	 */

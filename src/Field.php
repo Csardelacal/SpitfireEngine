@@ -58,12 +58,6 @@ class Field
 	private $nullable;
 	
 	/**
-	 *
-	 * @var EventDispatch
-	 */
-	private $events;
-	
-	/**
 	 * Creates a new Database field. This fields provide information about
 	 * how the DBMS should hadle one of Spitfire's Model Fields. The Model
 	 * Fields, also referred to as Logical ones can contain data that
@@ -81,7 +75,6 @@ class Field
 		$this->nullable = $nullable;
 		$this->name = $name;
 		$this->autoIncrements = $autoIncrement;
-		$this->events = new EventDispatch();
 	}
 	
 	/**

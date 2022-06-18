@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\grammar\QueryGrammarInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\OrderBy;
 use spitfire\storage\database\Query;
@@ -36,7 +37,7 @@ use spitfire\storage\database\query\SelectExpression;
  * This class aggregates the logic to create record related SQL statements,
  * allowing the application to abstract it's behavior a little further.
  */
-class MySQLQueryGrammar
+class MySQLQueryGrammar implements QueryGrammarInterface
 {
 	
 	/**

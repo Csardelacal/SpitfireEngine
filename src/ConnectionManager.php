@@ -1,6 +1,9 @@
 <?php namespace spitfire\storage\database;
 
+use Psr\Container\ContainerInterface;
 use spitfire\collection\Collection;
+use spitfire\provider\Container;
+use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
 
 class ConnectionManager
@@ -14,6 +17,18 @@ class ConnectionManager
 	
 	/**
 	 *
+	 * @var ContainerInterface
+	 */
+	private $container;
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	private $schemaFile;
+	
+	/**
+	 *
 	 * @var mixed[]
 	 */
 	private $definitions;
@@ -22,9 +37,11 @@ class ConnectionManager
 	 *
 	 * @param mixed[] $definitions
 	 */
-	public function __construct(array $definitions)
+	public function __construct(ContainerInterface $container, array $definitions, string $schemaFile)
 	{
+		$this->container = $container;
 		$this->definitions = $definitions;
+		$this->schemaFile = $schemaFile;
 		$this->connections = new Collection();
 	}
 	
@@ -63,8 +80,8 @@ class ConnectionManager
 		 * allowing the application to verify that no data is being accessed that should not be
 		 * read.
 		 */
-		$schemaFile = $definition['schema'];
-		$schema = file_exists($schemaFile)? include($schemaFile) : new Schema($definition['name']);
+		$schemaFile = $definition['schema']?? $this->schemaFile;
+		$schema = file_exists($schemaFile)? include($schemaFile) : new Schema($settings->getSchema());
 		
 		/**
 		 * Initialize the driver, find the appropriate driver class, and instance it with the settings
@@ -73,16 +90,21 @@ class ConnectionManager
 		 * To ensure proper state, we verify the object we received is actually an instance of a Driver.
 		 */
 		$type   = $definition['driver'];
-		$driver = new $type($settings);
+		
+		$driver = $this->container->get(Container::class)->assemble($type, [
+			'settings' => $settings
+		]);
 		
 		assert($driver instanceof Driver);
+		
+		$driver->connect();
 		
 		/**
 		 * Create the connection, cache it, and return it. Please note that this does not yet guarantee
 		 * that the driver is working properly, drivers may be lazy with their connection to prevent
 		 * starting connections for applications that may not need them.
 		 */
-		$connection = new Connection($schema, $driver);
+		$connection = new Connection($schema, new Adapter($driver));
 		
 		return $connection;
 	}

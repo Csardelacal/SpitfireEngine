@@ -1,4 +1,4 @@
-<?php namespace spitfire\storage\database\drivers\internal;
+<?php namespace spitfire\storage\database\migration\schemaState;
 
 use spitfire\collection\Collection;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
@@ -79,7 +79,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
 	{
-		$this->table->putField($name, $unsigned? 'int:unsigned' : 'int', false, true);
+		$this->table->putField($name, $unsigned? 'int:unsigned' : 'int', true, false);
 		return $this;
 	}
 	

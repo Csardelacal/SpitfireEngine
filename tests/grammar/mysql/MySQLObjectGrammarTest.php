@@ -15,8 +15,6 @@ use spitfire\storage\database\TableReference;
 /**
  * The object grammar tests whether referencing tables and columns within the context
  * of queries is working properly.
- *
- * @todo We need tests here for the MySQL Subquery grammar here.
  */
 class MySQLObjectGrammarTest extends TestCase
 {
