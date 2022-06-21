@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d03b9517b5b9d69dc9b4b6382653acf",
+    "content-hash": "f91e12b982527689dc21db36a4e4163e",
     "packages": [
         {
             "name": "andrewbreksa/rsmq",
@@ -768,36 +768,6 @@
                 "source": "https://github.com/Respect/Validation/tree/2.2.3"
             },
             "time": "2021-03-19T14:12:45+00:00"
-        },
-        {
-            "name": "spitfire/caching",
-            "version": "0.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://phabricator.magic3w.com/source/spitfire-caching.git",
-                "reference": "4c122e9fdd79979143cde9b6dd1c561a9866062f"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "spitfire\\cache\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "César de la Cal Bretschneider",
-                    "email": "cesar@magic3w.com"
-                }
-            ],
-            "description": "Caching component for spitfire",
-            "time": "2020-10-28T14:49:56+00:00"
         },
         {
             "name": "spitfire/cli",
