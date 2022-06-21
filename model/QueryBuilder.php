@@ -117,7 +117,7 @@ class QueryBuilder
 	
 	public function all() : Collection
 	{
-		$result = $this->model->getConnection()->getDriver()->query($this->withDefaultMapping()->getQuery())->fetchAll();
+		$result = $this->model->getConnection()->query($this->withDefaultMapping()->getQuery())();
 		return new Collection();
 	}
 	
