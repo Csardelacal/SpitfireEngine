@@ -34,7 +34,7 @@ class QueryBuilderTest extends TestCase
 	private $logger;
 	
 	/**
-	 * 
+	 *
 	 * @var Model
 	 */
 	private $model;

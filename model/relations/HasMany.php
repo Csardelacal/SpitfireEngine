@@ -41,9 +41,9 @@ class HasMany extends Relationship implements RelationshipMultipleInterface
 	}
 	
 	/**
-	 * Eagerly load the children of a relationship. Please note that this receives a collection of 
+	 * Eagerly load the children of a relationship. Please note that this receives a collection of
 	 * parents and returns a collection grouped by their ID.
-	 * 
+	 *
 	 * @return Collection<Collection<Model>>
 	 */
 	public function eagerLoad(Collection $parents): Collection

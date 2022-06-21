@@ -35,12 +35,12 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 		/**
 		 * If we're looking for the parent of an element, all we have to do is look for the
 		 * element that the child is reporting is it's parent.
-		 * 
+		 *
 		 * For example, if a user (user_id, created) and a shopping_cart(userid, items) interact
 		 * we could assume that something like
-		 * 
+		 *
 		 * User::find()->where('cart', $cart)->first()->created
-		 * 
+		 *
 		 * Would just imply that we need to look which user_id the cart is registered to.
 		 */
 		$query->where(
@@ -55,7 +55,7 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 	 * have verified their email something like this:
 	 *
 	 * PostModel::query()->whereHas('user', function (Query $query) { $query->where('verified', true); });
-	 * 
+	 *
 	 * NOTE: Due to the way relationships work, this is extremely similar to the way belongsTo
 	 * relationships are constructed. Even though they are similar, the differences are subtle
 	 * and make a major difference in the output.

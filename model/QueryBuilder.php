@@ -86,7 +86,7 @@ class QueryBuilder
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string $type
 	 * @param callable(RestrictionGroupBuilder) $do
 	 * @return QueryBuilder

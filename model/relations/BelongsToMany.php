@@ -20,7 +20,7 @@ class BelongsToMany extends Relationship implements RelationshipMultipleInterfac
 	private $pivot;
 	
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $local;
@@ -43,7 +43,7 @@ class BelongsToMany extends Relationship implements RelationshipMultipleInterfac
 		$query = $this->getReferenced()->getModel()->query();
 		
 		/**
-		 * Find the layouts for the tables we need to use to operate the 
+		 * Find the layouts for the tables we need to use to operate the
 		 * relationship. In belongsToMany (or many-to-many) this means that
 		 * there's three tables involved.
 		 */

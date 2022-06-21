@@ -9,7 +9,7 @@ class ResultSetMapping
 	private $model;
 	
 	/**
-	 * 
+	 *
 	 * @var FieldIdentifier[]
 	 */
 	private $map;
