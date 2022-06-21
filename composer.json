@@ -9,7 +9,6 @@
 		"php" : "^7||^8",
 		"ext-gd" : "*",
 		"spitfire/dependency-provider": "^0.2.4",
-		"spitfire/caching": "^0.1.0",
 		"psr/log": "^1.1",
 		"spitfire/defer": "^0.2.2",
 		"spitfire/database": "^0.1.4",
