@@ -38,8 +38,9 @@ before_script:
   - composer install
   - composer dump-autoload
 
-script: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration=phpunit.xml tests
+script: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration=phpunit.xml --coverage-clover=coverage.clover tests
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
-    - if [ -f /tmp/coverage.xml ]; then php ocular.phar code-coverage:upload --format=php-clover /tmp/coverage.xml; fi;
+    - tail coverage.clover
+    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
