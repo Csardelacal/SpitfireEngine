@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\model\Model;
+use spitfire\storage\database\Record;
 use spitfire\storage\database\ResultSetInterface;
 
 class ResultSet
@@ -37,6 +38,12 @@ class ResultSet
 	public function fetch()
 	{
 		$raw = $this->resultset->fetch();
+		
+		if ($raw === null) {
+			return null;
+		}
+		
+		$record = new Record($raw);
 		$model = $this->model->make($raw);
 		$pivot = $this->pivot? $this->pivot->make($raw) : null;
 		

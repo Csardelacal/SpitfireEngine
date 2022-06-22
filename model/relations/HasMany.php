@@ -23,10 +23,10 @@ class HasMany extends Relationship implements RelationshipMultipleInterface
 		 * Create an or group and loop over the parents to build a query with all the
 		 * required parents.
 		 */
-		$query->group('OR', function (RestrictionGroupBuilder $group) use ($parents) {
+		$query->group('OR', function (QueryBuilder $query, RestrictionGroupBuilder $group) use ($parents) {
 			foreach ($parents as $parent) {
 				$group->where(
-					$this->query->getQuery()->getFrom()->output()->getOutput($this->getReferenced()->getField()),
+					$query->getQuery()->getFrom()->output()->getOutput($this->getReferenced()->getField()),
 					$parent->getPrimary()
 				);
 			}
@@ -37,7 +37,7 @@ class HasMany extends Relationship implements RelationshipMultipleInterface
 	
 	public function getQuery(): QueryBuilder
 	{
-		return $this->buildQuery(new Collection([$this->getModel()]));
+		return $this->buildQuery(new Collection($this->getModel()));
 	}
 	
 	/**

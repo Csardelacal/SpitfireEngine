@@ -7,6 +7,7 @@ use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
+use spitfire\storage\database\Field;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema as DatabaseSchema;
@@ -93,6 +94,7 @@ abstract class Model implements JsonSerializable
 	public function getData()
 	{
 		assert($this->hydrated);
+		assert($this->record !== null);
 		return $this->record->raw();
 	}
 	
@@ -150,25 +152,31 @@ abstract class Model implements JsonSerializable
 	{
 		$this->sync();
 		
+		assert($this->record !== null);
+		assert($this->hydrated);
+		
+		$primary = $this->getTable()->getPrimaryKey()->getFields()->first();
+		assert($primary instanceof Field);
+		
 		/**
 		 * If the primary key is assumed to be null on the dbms (which is not possible
 		 * the way we designed SF), the system will assume that the record does not exist
 		 * on the DBMS and therefore record a new entry in the table.
 		 */
-		if ($this->record->getPrimary() === null) {
+		if ($this->record->get($primary->getName()) === null) {
 			#Tell the table that the record is being stored
-			$event = new RecordBeforeInsertEvent($this->getConnection(), $this->record, $options);
+			$event = new RecordBeforeInsertEvent($this->getConnection(), $this->getTable(), $this->record, $options);
 			$fn = function (Record $record) {
 				#The insert function is in this closure, which allows the event to cancel storing the data
-				$this->getConnection()->insert($record);
+				$this->getConnection()->insert($this->getTable(), $record);
 			};
 		}
 		else {
 			#Tell the table that the record is being stored
-			$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->record, $options);
+			$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->getTable(), $this->record, $options);
 			$fn = function (Record $record) {
 				#The insert function is in this closure, which allows the event to cancel storing the data
-				$this->getConnection()->update($record);
+				$this->getConnection()->update($this->getTable(), $record);
 			};
 		}
 		
@@ -210,7 +218,7 @@ abstract class Model implements JsonSerializable
 	{
 		assert($this->hydrated);
 		
-		$primaryFields = $this->table->getPrimaryKey()->getFields();
+		$primaryFields = $this->getTable()->getPrimaryKey()->getFields();
 		$ret = array();
 		
 		foreach ($primaryFields as $field) {

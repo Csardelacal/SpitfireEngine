@@ -2,10 +2,7 @@
 
 use Psr\Container\ContainerInterface;
 use spitfire\core\kernel\ConsoleKernel;
-use spitfire\core\kernel\KernelInterface;
 use spitfire\core\service\Provider as ServiceProvider;
-
-use spitfire\core\app\support\directors\ManifestCacheBuildDirector;
 use spitfire\core\config\Configuration;
 use spitfire\core\config\directors\BuildConfigurationDirector;
 use spitfire\core\Locations;

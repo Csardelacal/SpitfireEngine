@@ -2,6 +2,7 @@
 
 use spitfire\model\Model;
 use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\Record;
 
 class ResultSetMapping
 {
@@ -37,16 +38,13 @@ class ResultSetMapping
 		return $this;
 	}
 	
-	public function make(array $data) : Model
+	public function make(Record $data) : Model
 	{
 		
-		$body = collect($this->map)->each(function (FieldIdentifier $e) use ($data) : mixed {
-			return $data[$e->raw()];
-		});
+		$body = $data->slice(collect($this->map)->each(function (FieldIdentifier $e) : string {
+			return $e->raw();
+		})->toArray());
 		
-		$copy = clone $this->model;
-		$copy->hydrate($body);
-		
-		return $copy;
+		return $this->model->withHydrate($body);
 	}
 }

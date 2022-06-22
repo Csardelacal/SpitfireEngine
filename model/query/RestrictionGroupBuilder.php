@@ -45,7 +45,7 @@ class RestrictionGroupBuilder
 			$relation = $this->query->getModel()->{$field}();
 			assert($relation instanceof RelationshipInterface);
 			
-			$relation->injector()->injectWhere($this->restrictionGroup, $value);
+			$relation->injector()->injectWhere($this->query->getQuery(), $this->restrictionGroup, $value);
 			return $this;
 		}
 		

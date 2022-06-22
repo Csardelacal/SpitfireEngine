@@ -76,7 +76,7 @@ class BuildConfigurationDirector extends Command
 		 * the disk (even if it's the cached version), so we can just as Spitfire for the
 		 * config and write it back to the disk.
 		 */
-		file_put_contents($cacheFile, sprintf('return %s;', var_export($this->config->export())));
+		file_put_contents($cacheFile, sprintf('return %s;', var_export($this->config->export(), true)));
 		
 		/**
 		 * We've successfully written the data back to the drive, and can now continue working

@@ -1,9 +1,6 @@
 <?php namespace spitfire\model;
 
 use spitfire\model\Model;
-use spitfire\model\Schema;
-use spitfire\storage\database\Table;
-use spitfire\validation\ValidationError;
 
 /**
  * Represents a table's field in a database. Contains information about the

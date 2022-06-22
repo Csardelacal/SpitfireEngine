@@ -86,7 +86,7 @@ class BelongsToMany extends Relationship implements RelationshipMultipleInterfac
 				 * Create an or group and loop over the parents to build a query with all the
 				 * required parents.
 				 */
-				$pivot->group('OR', function (RestrictionGroupBuilder $group) use ($parents, $pivot, $pivotLocal) {
+				$pivot->group(function (RestrictionGroupBuilder $group) use ($parents, $pivot, $pivotLocal) {
 					foreach ($parents as $parent) {
 						$group->where(
 							$pivot->getOutput($pivotLocal),
@@ -106,15 +106,11 @@ class BelongsToMany extends Relationship implements RelationshipMultipleInterfac
 		
 		foreach ($tablePivot->getFields() as $field) {
 			$_field = $pivot->getAlias()->output()->getOutput($field->getName());
+			$map->set($field->getName(), $_field);
 			$query->getQuery()->selectField($_field);
 		}
 		
-		return $query->withMapping(
-			new ResultSetMapping(
-				$this->pivot,
-				$map
-			)
-		);
+		return $query->withMapping($map);
 	}
 	
 	/**
