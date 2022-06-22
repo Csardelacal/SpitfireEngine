@@ -28,7 +28,8 @@
 		"phpstan/phpstan": "^1.7",
 		"pug-php/pug": "^3.4",
 		"magic3w/php-coding-standard": "^1.0",
-		"league/flysystem-aws-s3-v3": "^3.0"
+		"league/flysystem-aws-s3-v3": "^3.0",
+		"scrutinizer/ocular": "^1.9"
 	},
 
 	"suggest": {
