@@ -42,7 +42,8 @@ class ResultSetMapping
 	{
 		
 		$body = $data->slice(collect($this->map)->each(function (FieldIdentifier $e) : string {
-			return $e->raw();
+			$raw = $e->raw();
+			return array_pop($raw);
 		})->toArray());
 		
 		return $this->model->withHydrate($body);

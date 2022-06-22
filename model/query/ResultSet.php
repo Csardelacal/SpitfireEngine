@@ -44,8 +44,8 @@ class ResultSet
 		}
 		
 		$record = new Record($raw);
-		$model = $this->model->make($raw);
-		$pivot = $this->pivot? $this->pivot->make($raw) : null;
+		$model = $this->model->make($record);
+		$pivot = $this->pivot? $this->pivot->make($record) : null;
 		
 		$model->setPivot($pivot);
 		return $model;
@@ -56,8 +56,9 @@ class ResultSet
 		$all = $this->resultset->fetchAll();
 		
 		return $all->each(function (array $raw) : Model {
-			$model = $this->model->make($raw);
-			$pivot = $this->pivot? $this->pivot->make($raw) : null;
+			$record = new Record($raw);
+			$model = $this->model->make($record);
+			$pivot = $this->pivot? $this->pivot->make($record) : null;
 			
 			$model->setPivot($pivot);
 			return $model;

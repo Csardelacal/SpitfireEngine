@@ -7,7 +7,7 @@ use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
-use spitfire\storage\database\Field;
+use spitfire\storage\database\Field as DatabaseField;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema as DatabaseSchema;
@@ -120,6 +120,9 @@ abstract class Model implements JsonSerializable
 	 */
 	public function rehydrate() : void
 	{
+		assert($this->record !== null);
+		assert($this->hydrated);
+		
 		$raw = $this->record->raw();
 		
 		foreach ($raw as $k => $v) {
@@ -156,7 +159,7 @@ abstract class Model implements JsonSerializable
 		assert($this->hydrated);
 		
 		$primary = $this->getTable()->getPrimaryKey()->getFields()->first();
-		assert($primary instanceof Field);
+		assert($primary instanceof DatabaseField);
 		
 		/**
 		 * If the primary key is assumed to be null on the dbms (which is not possible
@@ -315,10 +318,10 @@ abstract class Model implements JsonSerializable
 		$this->sync();
 		
 		#Tell the table that the record is being deleted
-		$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->record, $options);
+		$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->getTable(), $this->record, $options);
 		$fn = function (Record $record) {
 			#The insert function is in this closure, which allows the event to cancel storing the data
-			$this->getConnection()->update($record);
+			$this->getConnection()->update($this->getTable(), $record);
 		};
 		
 		$this->getTable()->events()->dispatch($event, $fn);

@@ -12,23 +12,16 @@ use spitfire\core\Response;
 use spitfire\core\http\URLBuilder;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\user\ApplicationException as UserApplicationException;
+use spitfire\exceptions\user\NotFoundException;
 use spitfire\io\media\FFMPEGManipulator;
 use spitfire\io\media\GDManipulator;
 use spitfire\io\media\ImagickManipulator;
 use spitfire\io\media\MediaDispatcher;
 use spitfire\io\stream\Stream;
 use spitfire\io\template\View;
-use spitfire\locale\Domain;
-use spitfire\locale\DomainGroup;
-use spitfire\locale\Locale;
 use spitfire\SpitFire;
 use spitfire\storage\database\Settings;
 use spitfire\storage\DriveDispatcher as StorageDriveDispatcher;
-use spitfire\storage\objectStorage\DriveDispatcher;
-use spitfire\storage\objectStorage\NodeInterface;
-use spitfire\validation\rules\RegexValidationRule;
-use spitfire\validation\ValidationException;
-use spitfire\validation\ValidationRule;
 
 /**
  * This is a quick hand method to use Spitfire's main App class as a singleton.
@@ -513,7 +506,7 @@ function asset(string $name, string $scope = 'assets/') : string
 		/*
 		 * If the key exists, we generate a manifest object.
 		 */
-		$scopes[$scope] = new \spitfire\cache\MemoryCache(json_decode(file_get_contents($manifest)));
+		$scopes[$scope] = json_decode(file_get_contents($manifest));
 	}
 	
 	/**
@@ -532,9 +525,9 @@ function asset(string $name, string $scope = 'assets/') : string
 	 * Look for the asset inside the memory cache. This allows us to make use of
 	 * the versioned files without having to look them up every single time.
 	 */
-	$asset = $scopes[$scope]->get($name, function ($name) {
-		throw new \spitfire\exceptions\user\NotFoundException(sprintf('Asset %s is not available', $name));
-	});
+	assume(isset($scopes[$scope][$name]), NotFoundException::class);
+	
+	$asset = $scopes[$scope][$name];
 	
 	return '/' . implode('/', array_filter([
 			trim($base, '/'),
