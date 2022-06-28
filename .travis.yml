@@ -14,7 +14,7 @@ before_script:
   - sudo apt-get install -y ffmpeg
   - sudo apt-get install -y php$(phpenv version-name)-cli php$(phpenv version-name)-gd php$(phpenv version-name)-xml php$(phpenv version-name)-curl php$(phpenv version-name)-imagick
   - sudo apt-get install -y php$(phpenv version-name)-zip php$(phpenv version-name)-mbstring php$(phpenv version-name)-mysql  php$(phpenv version-name)-memcached
-  - sudo apt-get install -y php$(phpenv version-name)-memcache php$(phpenv version-name)-xdebug
+  - sudo apt-get install -y php$(phpenv version-name)-memcache php$(phpenv version-name)-xdebug pngquant
   
   # There's a need for a patch in order to make imagewebp work.
   # The script we pulled this from includes a lot of debugging output
