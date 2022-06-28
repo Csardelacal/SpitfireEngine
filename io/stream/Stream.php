@@ -407,6 +407,9 @@ class Stream implements StreamInterface
 		 */
 		$handle = fopen('php://temp/maxmemory:16777216', 'w+');
 		
+		fwrite($handle, $str);
+		fseek($handle, 0);
+		
 		if (!$handle) {
 			throw new RuntimeException('Could not allocate stream', 2108041130);
 		}

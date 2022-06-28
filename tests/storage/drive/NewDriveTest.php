@@ -1,14 +1,10 @@
 <?php namespace tests\storage\drive;
 
+use League\Flysystem\Filesystem as FlysystemFilesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use PHPUnit\Framework\TestCase;
-use spitfire\storage\drive\Directory;
-use spitfire\storage\drive\Driver;
-use spitfire\storage\drive\File;
-use spitfire\storage\drive\MountPoint;
-use spitfire\storage\objectStorage\DirectoryInterface;
-use spitfire\storage\objectStorage\DriveDispatcher;
-use spitfire\storage\objectStorage\FileInterface;
-use function storage;
+use spitfire\storage\DriveDispatcher;
+use spitfire\storage\FileSystem;
 
 /* 
  * The MIT License
@@ -43,15 +39,15 @@ class NewDriveTest extends TestCase
 	
 	public function testRead()
 	{
-		$this->storage = new DriveDispatcher;
-		$this->storage->register('file', new Driver('/'));
-		file_put_contents('/tmp/test.txt', 'Hello world');
-		$blob = $this->storage->retrieve('file:///tmp/test.txt');
+		$this->storage = new DriveDispatcher();
 		
-		$this->assertNotEmpty($blob->read());
-		$this->assertNotEmpty($blob->uri());
-		$this->assertEquals(strlen($this->string), $blob->stream()->writer()->write($this->string));
-		$blob->stream()->writer()->close();
-		$this->assertEquals(substr($this->string, 0, 5), $blob->stream()->reader()->read(5));
+		$this->storage->register('file', new FileSystem(
+			new FlysystemFilesystem(
+				new LocalFilesystemAdapter('/')
+			)
+		));
+		
+		file_put_contents('/tmp/test.txt', 'Hello world');
+		$this->assertNotEmpty($this->storage->read('file:///tmp/test.txt'));
 	}
 }

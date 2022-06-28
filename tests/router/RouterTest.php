@@ -56,7 +56,8 @@ class RouterTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		#Prepare a route that redirects with no parameters
@@ -75,7 +76,8 @@ class RouterTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		#Create a route with a trailing slash
@@ -95,7 +97,8 @@ class RouterTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		#Create a route without a trailing slash
@@ -115,7 +118,8 @@ class RouterTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		$p1 = $router->rewrite($request->withUri(URLReflection::fromURL('https://localhost/test/provided')));
