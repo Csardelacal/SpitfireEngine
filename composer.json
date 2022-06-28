@@ -41,6 +41,10 @@
 	"replace": {
 		"spitfire/contracts" : "self.version"
 	},
+	
+	"provide": {
+		"spitfire/contracts" : "self.version"
+	},
 
 	"autoload": {
 		"files": [
