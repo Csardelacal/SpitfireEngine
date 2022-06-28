@@ -61,9 +61,15 @@ class QueryBuilder
 		 * Extract the name of the fields so we can assign it back to the generic mapping
 		 * that will read the data from the query into the model.
 		 */
-		$fields = $copy->model->getTable()->getFields()->extract('getName')->toArray();
+		$fields = $copy->query->getFrom()->output()->getOutputs();
 		
-		$copy->mappings->push(new ResultSetMapping($this->model, array_combine($fields, $fields)));
+		$map = new ResultSetMapping($this->model);
+		
+		foreach ($fields as $_f) {
+			$map->set($_f->raw()[0], $_f);
+		}
+		
+		$copy->mappings->push($map);
 		
 		return $copy;
 	}
