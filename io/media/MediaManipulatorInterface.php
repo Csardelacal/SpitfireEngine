@@ -1,8 +1,9 @@
 <?php namespace spitfire\io\media;
 
+use Psr\Http\Message\StreamInterface;
 use spitfire\storage\objectStorage\Blob;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -42,9 +43,9 @@ interface MediaManipulatorInterface
 	
 	public function supports(string$mime) : bool;
 	
-	public function load(Blob$blob) : MediaManipulatorInterface;
+	public function load(StreamInterface $blob) : MediaManipulatorInterface;
 	
-	public function store(Blob$location) : Blob;
+	public function store(StreamInterface $location, string $contentType = null) : StreamInterface;
 	
 	public function fit($x, $y) : MediaManipulatorInterface;
 	
