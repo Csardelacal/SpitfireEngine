@@ -43,7 +43,7 @@
 	},
 	
 	"provide": {
-		"spitfire/contracts" : "self.version"
+		"spitfire/contracts" : "dev-master"
 	},
 
 	"autoload": {
