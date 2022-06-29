@@ -1,8 +1,7 @@
 language: php
 dist: focal
 php: 
-  - 7.4
-  - 8.0
+  - 8.1
 services:
   - mysql
 
@@ -15,13 +14,7 @@ before_script:
   - sudo apt-get install -y ffmpeg
   - sudo apt-get install -y php$(phpenv version-name)-cli php$(phpenv version-name)-gd php$(phpenv version-name)-xml php$(phpenv version-name)-curl php$(phpenv version-name)-imagick
   - sudo apt-get install -y php$(phpenv version-name)-zip php$(phpenv version-name)-mbstring php$(phpenv version-name)-mysql  php$(phpenv version-name)-memcached
-  - sudo apt-get install -y php$(phpenv version-name)-memcache php$(phpenv version-name)-xdebug
-  
-  # In September 2021, the Let's encrypt root authority certificate expired, this has
-  # caused git to reject our certificates on phabricator.magic3w.com. Updating the certs
-  # should do the trick here.
-  # See: https://stackoverflow.com/questions/35821245/github-server-certificate-verification-failed
-  - sudo apt-get install --reinstall ca-certificates && sudo update-ca-certificates
+  - sudo apt-get install -y php$(phpenv version-name)-memcache php$(phpenv version-name)-xdebug pngquant
   
   # There's a need for a patch in order to make imagewebp work.
   # The script we pulled this from includes a lot of debugging output
@@ -38,9 +31,12 @@ before_script:
   # Initialize the composer stuff.
   - composer install
   - composer dump-autoload
+  
+  # This file is brought in by a dependency, but is not compatible with the current version of PHP
+  - rm vendor/jms/serializer/src/Annotation/ReadOnly.php
 
-script: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration=phpunit.xml tests
+script: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration=phpunit.xml --coverage-clover=coverage.clover tests
 
 after_script:
-    - wget https://scrutinizer-ci.com/ocular.phar
-    - if [ -f /tmp/coverage.xml ]; then php ocular.phar code-coverage:upload --format=php-clover /tmp/coverage.xml; fi;
+    - tail coverage.clover
+    - vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover -v;

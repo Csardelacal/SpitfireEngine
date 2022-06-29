@@ -3,8 +3,6 @@
 use Exception;
 use Psr\Http\Message\StreamInterface;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
-use spitfire\storage\objectStorage\Blob;
 
 /*
  * The MIT License

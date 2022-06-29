@@ -3,7 +3,6 @@
 use Psr\Http\Message\StreamInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\io\media\exceptions\EncoderUnavailableException;
-use spitfire\storage\objectStorage\Blob;
 
 /*
  * The MIT License

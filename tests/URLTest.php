@@ -34,7 +34,7 @@ class URLTest extends TestCase
 		 */
 		$uri = new URLReflection('http', 'localhost', 80, '/', '');
 		$headers = new Headers();
-		$request = new Request('GET', $uri, $headers, [], $_SERVER, new Stream(null, false, false, false));
+		$request = new Request('GET', $uri, $headers, [], $_SERVER, new Stream(null, false, false, false), []);
 		
 		/**
 		 * Assemble a collection of routes that can be used for testing. We do this by creating

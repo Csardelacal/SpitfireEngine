@@ -1,10 +1,10 @@
 <?php namespace spitfire;
 
-use spitfire\core\app\Cluster;
 use spitfire\core\Locations;
 use spitfire\core\resource\Publisher;
 use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
+use const BASEDIR;
 
 /**
  * Dispatcher class of Spitfire. Calls all the required classes for Spitfire to run.

@@ -1,5 +1,9 @@
 <?php namespace tests\spitfire\io\media;
 
+use League\Flysystem\Filesystem as FlysystemFilesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use spitfire\io\stream\Stream;
+use spitfire\storage\FileSystem;
 use spitfire\storage\objectStorage\DriveDispatcher;
 
 /* 
@@ -39,13 +43,20 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 {
 	
 	private static $tmpdir = '/tmp';
+	
+	/**
+	 * 
+	 * @var FileSystem
+	 */
 	private $storage;
 	private $filename;
 	
 	public function setUp(): void
 	{
-		$this->storage = new DriveDispatcher;
-		$this->storage->register('file', new \spitfire\storage\drive\Driver('/'));
+		$this->storage = new FileSystem(
+			new FlysystemFilesystem(new LocalFilesystemAdapter('/'))
+		);
+		
 		$this->filename = __DIR__ . '/m3w.png';
 	}
 	
@@ -57,11 +68,16 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testOutputWEBP()
 	{
-		$img = media()->load($this->storage->retrieve('file:/' . $this->filename));
-		$output = $this->storage->retrieve('file:/' . self::$tmpdir . '/test.webp');
+		$img = media()->load(
+			$this->storage->readStream($this->filename),
+			$this->storage->mimeType($this->filename)
+		);
 		
+		
+		$output = new Stream(fopen(self::$tmpdir . '/test.webp', 'w+'), true, true, true);
 		$img->store($output);
-		$this->assertEquals(true, $output->exists());
+		
+		$this->assertNotEquals(0, $this->storage->fileSize(self::$tmpdir . '/test.webp'));
 		return $output;
 	}
 	
@@ -73,12 +89,18 @@ class WEBPManipulationTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testInputWEBP($output)
 	{
-		$loaded = media()->load($output);
+		$loaded = media()->load(
+			$this->storage->readStream(self::$tmpdir . '/test.webp'),
+			$this->storage->mimeType(self::$tmpdir . '/test.webp')
+		);
+		
 		$this->assertInstanceOf(\spitfire\io\media\GDManipulator::class, $loaded);
 	}
 	
-	public function tearDown() : void
+	public static function tearDownAfterClass(): void
 	{
-		//$this->storage->retrieve('file:/' . self::$tmpdir . '/test.webp')->delete();
+		(new FileSystem(
+			new FlysystemFilesystem(new LocalFilesystemAdapter('/'))
+		))->delete(self::$tmpdir . '/test.webp');
 	}
 }

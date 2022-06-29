@@ -1,7 +1,6 @@
 <?php namespace spitfire\io\media;
 
 use Psr\Http\Message\StreamInterface;
-use spitfire\storage\objectStorage\Blob;
 
 /*
  * The MIT License

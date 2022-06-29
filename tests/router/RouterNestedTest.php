@@ -42,7 +42,8 @@ class RouterNestedTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		$rewritten = $this->router->rewrite($request);
@@ -66,7 +67,8 @@ class RouterNestedTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		$request2 = new Request(
@@ -75,7 +77,8 @@ class RouterNestedTest extends TestCase
 			new Headers(), 
 			[], 
 			[], 
-			Stream::fromString('')
+			Stream::fromString(''),
+			[]
 		);
 		
 		$r1 = $this->router->rewrite($request1);
