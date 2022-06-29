@@ -137,6 +137,7 @@ abstract class Model implements JsonSerializable
 	public function sync() : void
 	{
 		assert($this->hydrated);
+		assert($this->record !== null);
 		$raw = $this->record->raw();
 		
 		foreach (array_keys($raw) as $k) {
@@ -315,6 +316,9 @@ abstract class Model implements JsonSerializable
 	
 	public function delete(array $options = [])
 	{
+		assert($this->hydrated);
+		assert($this->record !== null);
+		
 		$this->sync();
 		
 		#Tell the table that the record is being deleted

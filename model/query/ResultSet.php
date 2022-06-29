@@ -45,9 +45,12 @@ class ResultSet
 		
 		$record = new Record($raw);
 		$model = $this->model->make($record);
-		$pivot = $this->pivot? $this->pivot->make($record) : null;
 		
-		$model->setPivot($pivot);
+		if ($this->pivot !== null) {
+			$pivot = $this->pivot? $this->pivot->make($record) : null;
+			$model->setPivot($pivot);
+		}
+		
 		return $model;
 	}
 	
@@ -58,9 +61,13 @@ class ResultSet
 		return $all->each(function (array $raw) : Model {
 			$record = new Record($raw);
 			$model = $this->model->make($record);
-			$pivot = $this->pivot? $this->pivot->make($record) : null;
 			
-			$model->setPivot($pivot);
+		
+			if ($this->pivot !== null) {
+				$pivot = $this->pivot? $this->pivot->make($record) : null;
+				$model->setPivot($pivot);
+			}
+			
 			return $model;
 		});
 	}
