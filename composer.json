@@ -56,6 +56,11 @@
 		}
 
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"tests\\spitfire\\": "./tests"
+		}
+	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	
