@@ -4,9 +4,9 @@ use Attribute;
 
 /**
  * The table attribute allows a class to indicate that it holds a Model,
- * which can be mapped to a table with properties that can be mapped to 
+ * which can be mapped to a table with properties that can be mapped to
  * columns in the DBMS.
- * 
+ *
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 class Table
@@ -22,7 +22,7 @@ class Table
 	
 	/**
 	 * Get the value of name
-	 */ 
+	 */
 	public function getName() : string
 	{
 		return $this->name;

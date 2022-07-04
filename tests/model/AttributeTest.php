@@ -25,4 +25,3 @@ class AttributeTest extends TestCase
 		$this->assertEquals('test', $attribute->getName());
 	}
 }
-	
