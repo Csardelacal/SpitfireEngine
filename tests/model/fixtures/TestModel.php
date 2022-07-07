@@ -35,9 +35,10 @@ class TestModel extends Model
 	private int $example2;
 	
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
+	#[Column('int:unsigned')]
 	#[References('another')]
 	private int $foreign;
 }

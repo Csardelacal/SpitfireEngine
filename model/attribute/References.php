@@ -3,10 +3,10 @@
 use Attribute;
 
 /**
- * This attribute allows a programmer to determine whether the column references another 
+ * This attribute allows a programmer to determine whether the column references another
  * column in another table. This is required for relationships to work properly and for
  * the DBMS to understand the data it contains and the relations between it.
- * 
+ *
  * In most DBMS this attribute is equivalent to a foreign key. Since Spitfire does not support
  * foreign keys (as in foreign keys spanning multiple columns), we refer to this attribute
  * by a different name.

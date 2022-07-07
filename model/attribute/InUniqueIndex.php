@@ -15,18 +15,12 @@ use Attribute;
  *
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class InIndex
+class InUniqueIndex
 {
 	
 	private string $name;
 	
 	private int $priority;
-	
-	/**
-	 * This property is used as a transport when the system needs to connect this
-	 * attribute to the name of the property it is attached to.
-	 */
-	private string $context;
 	
 	public function __construct(string $name, int $priority = 0)
 	{
@@ -49,17 +43,5 @@ class InIndex
 	public function getPriority() : int
 	{
 		return $this->priority;
-	}
-	
-	public function withContext(string $prop) : InIndex
-	{
-		$copy = clone $this;
-		$copy->context = $prop;
-		return $copy;
-	}
-	
-	public function getContext() : string
-	{
-		return $this->context;
 	}
 }
