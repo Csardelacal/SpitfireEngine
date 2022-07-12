@@ -2,18 +2,26 @@
 
 use ReflectionAttribute;
 use ReflectionClass;
-use ReflectionProperty;
 use spitfire\collection\Collection;
+use spitfire\model\attribute\CharacterString;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\attribute\Column as ColumnAttribute;
+use spitfire\model\attribute\Enum;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
+use spitfire\model\attribute\Integer;
+use spitfire\model\attribute\Primary;
 use spitfire\model\attribute\References as ReferencesAttribute;
+use spitfire\model\attribute\SoftDelete;
+use spitfire\model\attribute\Text;
+use spitfire\model\attribute\Timestamps;
 use spitfire\model\Model;
+use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 use spitfire\storage\database\ForeignKey;
 use spitfire\storage\database\identifiers\FieldIdentifier;
 use spitfire\storage\database\Index;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
+use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
 
 class AttributeLayoutGenerator
 {
@@ -30,12 +38,16 @@ class AttributeLayoutGenerator
 		assert(count($tableAttribute) === 1);
 		
 		$layout = new Layout($tableAttribute[0]->newInstance()->getName());
-		$this->addColumns($layout, $reflection);
-		$this->addIndexes($layout, $reflection);
-		$this->addReferences($layout, $reflection);
+		$migrator = new TableMigrationExecutor($layout);
 		
-		#TODO : Add timestamps
-		#TODO : Add soft-deletes
+		$this->addColumns($migrator, $reflection);
+		$this->addPrimary($migrator, $reflection);
+		$this->addIndexes($migrator, $reflection);
+		$this->addReferences($migrator, $reflection);
+		#TODO : Add ID fields
+		$this->addSoftDeletes($migrator, $reflection);
+		$this->addTimestamps($migrator, $reflection);
+		
 		
 		return $layout;
 	}
@@ -43,32 +55,66 @@ class AttributeLayoutGenerator
 	/**
 	 * This method allows our application to add columns to our schema.
 	 */
-	private function addColumns(Layout $target, ReflectionClass $source) : void
+	private function addColumns(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
+		$available = [
+			Integer::class => function (string $name, TableMigrationExecutorInterface $migrator, Integer $integer) {
+				$migrator->int($name, $integer->isUnsigned());
+			},
+			CharacterString::class => function (string $name, TableMigrationExecutorInterface $migrator, CharacterString $string) {
+				$migrator->string($name, $string->getLength());
+			},
+			Text::class => function (string $name, TableMigrationExecutorInterface $migrator, Text $string) {
+				$migrator->text($name);
+			},
+			Enum::class => function (string $name, TableMigrationExecutorInterface $migrator, Enum $string) {
+				$migrator->enum($name, $string->getOptions());
+			}
+		];
+		
 		foreach ($props as $prop) {
-			$columnAttribute = $prop->getAttributes(ColumnAttribute::class);
-			assert(count($columnAttribute) === 1);
-			
 			/**
-			 * @var ColumnAttribute
+			 * This prevents an application from registering two types to a single
+			 * column, which would lead to disaster.
 			 */
-			$column = $columnAttribute[0]->newInstance();
+			$found = false;
 			
-			$target->putField(
-				$prop->getName(), #Note that the system uses the property name here
-				$column->getType(),
-				$column->isNullable(),
-				$column->isAutoincrement()
-			);
+			foreach ($available as $type => $action) {
+				/**
+				 * Check if the column is of type
+				 */
+				$columnAttribute = $prop->getAttributes($type);
+				
+				/**
+				 * If the property is not part of a field, we just continue.
+				 */
+				if (!$columnAttribute) {
+					continue;
+				}
+				
+				assert(count($columnAttribute) === 1);
+				assert($found === false);
+				
+				/**
+				 * @var ColumnAttribute
+				 */
+				$column = $columnAttribute[0]->newInstance();
+				
+				$action(
+					$prop->getName(), #Note that the system uses the property name here
+					$target,
+					$column
+				);
+			}
 		}
 	}
 	
 	/**
 	 * This method allows our application to add columns to our schema.
 	 */
-	private function addIndexes(Layout $target, ReflectionClass $source) : void
+	private function addIndexes(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
@@ -90,21 +136,39 @@ class AttributeLayoutGenerator
 		foreach ($grouped as $name => $columnAttributes) {
 			$columns = $columnAttributes
 				->sort(fn(InIndexAttribute $a, InIndexAttribute $b) => $a->getPriority() <=> $b->getPriority())
-				->each(fn(InIndexAttribute $e) => $target->getField($e->getContext()));
+				->each(fn(InIndexAttribute $e) => $e->getContext());
 			
-			$target->putIndex(new Index(
+			$target->index(
 				$name,
-				$columns,
-				false,
-				false
-			));
+				$columns->toArray()
+			);
+		}
+	}
+	
+	
+	/**
+	 * This method allows our application to add columns to our schema.
+	 */
+	private function addPrimary(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
+	{
+		$props = $source->getProperties();
+		
+		foreach ($props as $prop) {
+			$columnAttributes = $prop->getAttributes(Primary::class);
+			
+			if (empty($columnAttributes)) {
+				continue;
+			}
+			
+			assert(count($columnAttributes) === 1);
+			$target->primary('PRIMARY', $prop->getName());
 		}
 	}
 	
 	/**
 	 * This method allows our application to add columns to our schema.
 	 */
-	private function addReferences(Layout $target, ReflectionClass $source) : void
+	private function addReferences(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
@@ -122,11 +186,45 @@ class AttributeLayoutGenerator
 			 */
 			$reference = $referencesAttribute[0]->newInstance();
 			
-			$target->putIndex(new ForeignKey(
-				sprintf('fk_%s', $prop->getName()),
-				$target->getField($prop->getName()),
-				new FieldIdentifier([$reference->getTable(), $reference->getColumn()])
-			));
+			/**
+			 * This last parameter is a bit more delicate, since the DBAL requires the system to provide a layout from
+			 * which to extract metadata to build a compatible field. Please note that this requires the application
+			 * to have the layout metadata in the class it's referencing to be able to perform any usable work.
+			 */
+			$layout = (new AttributeLayoutGenerator())->make(new ReflectionClass($reference->getModel()));
+			
+			/**
+			 * Add the foreign key to the layout.
+			 */
+			$target->foreign(
+				$prop->getName(),
+				new TableMigrationExecutor($layout)
+			);
 		}
+	}
+	
+	private function addSoftDeletes(TableMigrationExecutorInterface $migrator, ReflectionClass $reflection)
+	{
+		$tableAttribute = $reflection->getAttributes(SoftDelete::class);
+		
+		if (empty($tableAttribute)) {
+			return;
+		}
+		
+		assert($reflection->getProperty('removed'));
+		$migrator->softDelete();
+	}
+	
+	private function addTimestamps(TableMigrationExecutorInterface $migrator, ReflectionClass $reflection)
+	{
+		$tableAttribute = $reflection->getAttributes(Timestamps::class);
+		
+		if (empty($tableAttribute)) {
+			return;
+		}
+		
+		assert($reflection->getProperty('created'));
+		assert($reflection->getProperty('updated'));
+		$migrator->timestamps();
 	}
 }

@@ -17,45 +17,27 @@ class References
 	
 	/**
 	 *
-	 * @var string
+	 * @var class-string
 	 */
-	private string $table;
+	private string $model;
 	
 	/**
 	 *
-	 * @var string
-	 */
-	private ?string $column;
-	
-	/**
-	 *
-	 * @param string $table
+	 * @param class-string $model
 	 * @param string|null $column
 	 */
-	public function __construct(string $table, string $column = null)
+	public function __construct(string $model)
 	{
-		$this->table = $table;
-		$this->column = $column;
+		$this->model = $model;
 	}
 	
 	/**
 	 * Get the value of table
 	 *
-	 * @return  string
+	 * @return  class-string
 	 */
-	public function getTable() : string
+	public function getModel() : string
 	{
-		return $this->table;
-	}
-	
-	/**
-	 * Get the value of column. If the value is null, the system should determine the
-	 * primary key of the remote table.
-	 *
-	 * @return  string|null
-	 */
-	public function getColumn() :? string
-	{
-		return $this->column;
+		return $this->model;
 	}
 }

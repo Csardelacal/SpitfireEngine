@@ -185,9 +185,9 @@ class QueryBuilderTest extends TestCase
 			}
 		};
 		
-		$model->setRecord(new Record(['_id' => 1]));
+		$instance = $model->withHydrate(new Record(['_id' => 1]));
 		
-		$builder->where('test', $model);
+		$builder->where('test', $instance);
 		
 		$connection->query($builder->getQuery());
 		

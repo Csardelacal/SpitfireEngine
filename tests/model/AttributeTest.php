@@ -9,6 +9,7 @@ use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKeyInterface;
 use spitfire\storage\database\Index;
 use tests\spitfire\model\fixtures\TestModel;
+use tests\spitfire\model\fixtures\TestModelWithImpliedColumns;
 
 class AttributeTest extends TestCase
 {
@@ -95,5 +96,18 @@ class AttributeTest extends TestCase
 		$this->assertCount(1, $index->getFields());
 		$this->assertEquals('fk_foreign', $index->getName());
 		$this->assertEquals('foreign', $index->getFields()[0]->getName());
+	}
+	
+	public function testWithImpliedColumns()
+	{
+		$reflection = new ReflectionClass(TestModelWithImpliedColumns::class);
+		$generator = new AttributeLayoutGenerator();
+		
+		$layout = $generator->make($reflection);
+		
+		#$this->assertEquals(true, $layout->hasField('_id'));
+		$this->assertEquals(true, $layout->hasField('created'));
+		$this->assertEquals(true, $layout->hasField('updated'));
+		$this->assertEquals(true, $layout->hasField('removed'));
 	}
 }
