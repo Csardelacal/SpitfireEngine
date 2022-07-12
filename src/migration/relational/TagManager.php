@@ -5,7 +5,7 @@ use spitfire\collection\OutOfBoundsException;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\Layout;
-use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
+use spitfire\storage\database\migration\schemaState\TableMigrationExecutor as SchemaStateTableMigrationExecutor;
 use spitfire\storage\database\migration\TagManagerInterface;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\Record;
@@ -69,7 +69,7 @@ class TagManager implements TagManagerInterface
 		catch (OutOfBoundsException $e) {
 			$layout = new Layout('_tags');
 			
-			$migrator = new TableMigrationExecutor($layout);
+			$migrator = new SchemaStateTableMigrationExecutor($layout);
 			$migrator->id();
 			$migrator->string('tag', 255);
 			$migrator->timestamps();

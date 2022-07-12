@@ -30,7 +30,7 @@
 	"require": {
 		"spitfire/collection": "^0.1.1",
 		"magic3w/url-reflection": "^0.2.0",
-		"psr/log": "^1.1",
+		"psr/log": "^3.0",
 		"spitfire/event": "^0.1.0",
 		"spitfire/exception": "^0.1.1",
 		"spitfire/contracts": "dev-master",
@@ -40,8 +40,8 @@
 		"phpunit/phpunit": "^9.5",
 		"phpstan/phpstan": "^1.7",
 		"magic3w/php-coding-standard": "^1.0",
-		"monolog/monolog": "^2.3",
-		"symfony/console": "^5.4",
+		"monolog/monolog": "^3.1",
+		"symfony/console": "^6.0",
 		"spitfire/engine": "dev-master"
 	},
 

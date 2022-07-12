@@ -98,7 +98,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, $unsigned? 'int' : 'int:unsigned', false, false);
+		$field = new Field($name, $unsigned? 'int' : 'int:unsigned', true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -125,7 +125,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		assert($length > 0);
 		
 		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, 'string:' . $length, false, false);
+		$field = new Field($name, 'string:' . $length, true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -146,7 +146,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function text(string $name): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, 'text', false, false);
+		$field = new Field($name, 'text', true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -178,7 +178,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * Set up the grammar and add the field to the DBMS.
 		 */
 		$grammar = new MySQLTableGrammar();
-		$field = new Field($name, 'enum:' . implode(',', $options), false, false);
+		$field = new Field($name, 'enum:' . implode(',', $options), true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -237,9 +237,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * to prefix it with the name we want to assign to this field.
 		 */
 		$reference = $layout->layout()->getPrimaryKey()->getFields()[0];
-		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), $reference->isNullable(), false);
+		$field = $this->table->putField($name, $reference->getType(), $reference->isNullable(), false);
 		
-		$index = new ForeignKey($name, $field, ($layout)->layout()->getTableReference()->getOutput($layout->layout()->getPrimaryKey()->getName()));
+		$index = new ForeignKey(
+			sprintf('fk_%s', $name),
+			$field,
+			($layout)->layout()->getTableReference()->getOutput($layout->layout()->getPrimaryKey()->getName())
+		);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),

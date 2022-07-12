@@ -172,7 +172,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		$reference = $layout->getPrimaryKey()->getFields()[0];
 		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), $reference->isNullable(), false);
 		
-		$index = new ForeignKey($name, $field, ($layout)->getTableReference()->getOutput($layout->getPrimaryKey()->getName()));
+		$index = new ForeignKey($name, $field, ($layout)->getTableReference()->getOutput($reference->getName()));
 		$this->table->putIndex($index);
 		
 		return $this;

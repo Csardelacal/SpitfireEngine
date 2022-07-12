@@ -39,7 +39,7 @@ interface ResultInterface
 	/**
 	 * Returns the next row of the result as a numeric array or FALSE if there are no more rows.
 	 *
-	 * @return list<mixed>|false
+	 * @return array<mixed>|false
 	 *
 	 * @throws Exception
 	 */
@@ -66,7 +66,7 @@ interface ResultInterface
 	/**
 	 * Returns an array containing all of the result rows represented as numeric arrays.
 	 *
-	 * @return list<list<mixed>>
+	 * @return array<array<mixed>>
 	 *
 	 * @throws Exception
 	 */
@@ -75,7 +75,7 @@ interface ResultInterface
 	/**
 	 * Returns an array containing all of the result rows represented as associative arrays.
 	 *
-	 * @return list<array<string,mixed>>
+	 * @return array<array<string,mixed>>
 	 *
 	 * @throws Exception
 	 */
@@ -84,7 +84,7 @@ interface ResultInterface
 	/**
 	 * Returns an array containing the values of the first column of the result.
 	 *
-	 * @return list<mixed>
+	 * @return array<mixed>
 	 *
 	 * @throws Exception
 	 */

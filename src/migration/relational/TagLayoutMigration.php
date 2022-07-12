@@ -9,7 +9,7 @@ class TagLayoutMigration implements MigrationOperationInterface
 	
 	public function up(SchemaMigrationExecutorInterface $schema) : void
 	{
-		if ($exists = $schema->has('_tags')) {
+		if ($schema->has('_tags')) {
 			return;
 		}
 		

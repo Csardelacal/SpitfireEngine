@@ -195,6 +195,17 @@ class Layout implements LayoutInterface
 	}
 	
 	/**
+	 * Returns true if the layout contains a certain field.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasIndex(string $name) : bool
+	{
+		return $this->indexes->filter(fn(IndexInterface $e) => $e->getName() === $name)->first() !== null;
+	}
+	
+	/**
 	 *
 	 * @return Collection<Field> The columns in this database table
 	 */
@@ -280,6 +291,19 @@ class Layout implements LayoutInterface
 	}
 	
 	/**
+	 * Returns true if the layout contains a certain field.
+	 *
+	 * @param string $name
+	 * @return IndexInterface
+	 */
+	public function getIndex(string $name) : IndexInterface
+	{
+		$res = $this->indexes->filter(fn(IndexInterface $e) => $e->getName() === $name)->first();
+		assert($res !== null);
+		return $res;
+	}
+	
+	/**
 	 * Removes an index by it's name from the database. Note that the default name
 	 * for primary indexes is _PRIMARY
 	 *
@@ -339,5 +363,12 @@ class Layout implements LayoutInterface
 	public function events() : EventDispatch
 	{
 		return $this->events;
+	}
+	
+	public function __clone()
+	{
+		$this->indexes = clone $this->indexes;
+		$this->fields = clone $this->fields;
+		$this->events = clone $this->events;
 	}
 }
