@@ -52,7 +52,6 @@ class FileCopyDirector extends Command
 			return 0;
 		}
 		catch (UnableToWriteFile $e) {
-			
 			/*
 			 * If any of our earlier checks failed, the application should return a non
 			 * zero state.

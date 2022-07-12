@@ -7,7 +7,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\exceptions\user\ApplicationException;
 use spitfire\io\stream\StreamSegment;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ use spitfire\io\stream\StreamSegment;
 /**
  * The ranged request middleware allows an application requesting data from our
  * application to indicate that they wish to only receive a part of the response.
- * 
+ *
  * This prevents unnecessary downloads when big file downloads get interrupted, or
  * when scrubbing through video in the client application.
  */
@@ -68,7 +68,11 @@ class RangedRequestMiddleware implements MiddlewareInterface
 			list($start, $end) = explode('-', substr($sent, 6));
 			$stream = $response->getBody();
 			
-			$segment = new StreamSegment($stream, (int)$start, $end ?: min($stream->getSize() - 1, intval($start) + 1.3 * 1024 * 1024));
+			$segment = new StreamSegment(
+				$stream,
+				(int)$start,
+				$end ?: min($stream->getSize() - 1, intval($start) + 1.3 * 1024 * 1024)
+			);
 			
 			return $response->withStatus(206)
 				->withHeader('Content-range', 'bytes ' . strval($segment->getStart()) . '-' . ($segment->getEnd()) . '/' . $stream->getSize())
