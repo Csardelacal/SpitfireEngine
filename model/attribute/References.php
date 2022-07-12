@@ -24,7 +24,6 @@ class References
 	/**
 	 *
 	 * @param class-string $model
-	 * @param string|null $column
 	 */
 	public function __construct(string $model)
 	{

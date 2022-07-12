@@ -1,12 +1,13 @@
 <?php namespace spitfire\model\utils;
 
+use Closure;
 use ReflectionAttribute;
 use ReflectionClass;
 use spitfire\collection\Collection;
 use spitfire\model\attribute\CharacterString;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\attribute\Column as ColumnAttribute;
-use spitfire\model\attribute\Enum;
+use spitfire\model\attribute\EnumType;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
 use spitfire\model\attribute\Integer;
 use spitfire\model\attribute\Primary;
@@ -16,9 +17,6 @@ use spitfire\model\attribute\Text;
 use spitfire\model\attribute\Timestamps;
 use spitfire\model\Model;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
-use spitfire\storage\database\ForeignKey;
-use spitfire\storage\database\identifiers\FieldIdentifier;
-use spitfire\storage\database\Index;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
@@ -54,6 +52,9 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
+	 * 
+	 * @todo This function is way longer than it should be and way more complicated than it
+	 * should.
 	 */
 	private function addColumns(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
 	{
@@ -69,10 +70,22 @@ class AttributeLayoutGenerator
 			Text::class => function (string $name, TableMigrationExecutorInterface $migrator, Text $string) {
 				$migrator->text($name);
 			},
-			Enum::class => function (string $name, TableMigrationExecutorInterface $migrator, Enum $string) {
+			EnumType::class => function (string $name, TableMigrationExecutorInterface $migrator, EnumType $string) {
 				$migrator->enum($name, $string->getOptions());
 			}
 		];
+		
+		
+		/**
+		 * 
+		 * @template T
+		 * @param class-string<T> $classname
+		 * @return callable(string,TableMigrationExecutorInterface,T):void $action
+		 */
+		$transformer = function (string $classname) use ($available) : Closure
+		{
+			return $available[$classname];
+		};
 		
 		foreach ($props as $prop) {
 			/**
@@ -81,7 +94,7 @@ class AttributeLayoutGenerator
 			 */
 			$found = false;
 			
-			foreach ($available as $type => $action) {
+			foreach (array_keys($available) as /** @var class-string */ $type) {
 				/**
 				 * Check if the column is of type
 				 */
@@ -97,16 +110,12 @@ class AttributeLayoutGenerator
 				assert(count($columnAttribute) === 1);
 				assert($found === false);
 				
-				/**
-				 * @var ColumnAttribute
-				 */
 				$column = $columnAttribute[0]->newInstance();
+				assert($column instanceof $type);
 				
-				$action(
-					$prop->getName(), #Note that the system uses the property name here
-					$target,
-					$column
-				);
+				$transformer($type)($prop->getName(), $target, $column);
+				
+				$found = true;
 			}
 		}
 	}
@@ -133,7 +142,7 @@ class AttributeLayoutGenerator
 		
 		$grouped = $attributes->groupBy(fn(InIndexAttribute $e) => $e->getName());
 		
-		foreach ($grouped as $name => $columnAttributes) {
+		foreach ($grouped as $name => /** @var Collection<InIndexAttribute> */$columnAttributes) {
 			$columns = $columnAttributes
 				->sort(fn(InIndexAttribute $a, InIndexAttribute $b) => $a->getPriority() <=> $b->getPriority())
 				->each(fn(InIndexAttribute $e) => $e->getContext());

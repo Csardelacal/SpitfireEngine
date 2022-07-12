@@ -24,7 +24,7 @@ class Integer
 	/**
 	 * Get the value of unsigned
 	 */
-	public function isUnsigned() : string
+	public function isUnsigned() : bool
 	{
 		return $this->unsigned;
 	}

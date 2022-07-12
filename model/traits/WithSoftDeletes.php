@@ -10,7 +10,7 @@ trait WithSoftDeletes
 		return $this->removed !== null;
 	}
 	
-	public function getDeletionTimestamp() : int
+	public function getDeletionTimestamp() :? int
 	{
 		return $this->removed;
 	}

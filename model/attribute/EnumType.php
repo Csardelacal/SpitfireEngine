@@ -7,7 +7,7 @@ use Attribute;
  * application to automatically generate fields or columns for the given element.
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Enum
+class EnumType
 {
 	
 	/**
@@ -31,7 +31,7 @@ class Enum
 	/**
 	 * Get the value of nullable
 	 */
-	public function isNullable() : string
+	public function isNullable() : bool
 	{
 		return $this->nullable;
 	}

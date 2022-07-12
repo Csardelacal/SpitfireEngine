@@ -29,7 +29,7 @@ class CharacterString
 	/**
 	 * Get the value of nullable
 	 */
-	public function isNullable() : string
+	public function isNullable() : bool
 	{
 		return $this->nullable;
 	}
