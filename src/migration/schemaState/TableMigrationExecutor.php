@@ -170,9 +170,14 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * to prefix it with the name we want to assign to this field.
 		 */
 		$reference = $layout->getPrimaryKey()->getFields()[0];
-		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), $reference->isNullable(), false);
+		$field = $this->table->putField($name, $reference->getType(), $reference->isNullable(), false);
 		
-		$index = new ForeignKey($name, $field, ($layout)->getTableReference()->getOutput($reference->getName()));
+		$index = new ForeignKey(
+			sprintf('fk_%s', $name),
+			$field,
+			($layout)->getTableReference()->getOutput($reference->getName())
+		);
+		
 		$this->table->putIndex($index);
 		
 		return $this;
