@@ -19,6 +19,7 @@
  * MA 02110-1301  USA
  */
 
+use League\Flysystem\UnableToWriteFile;
 use spitfire\core\Locations;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -43,16 +44,20 @@ class FileCopyDirector extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		
-		$success = true;
 		$output->writeln($input->getArgument('from'));
 		$output->writeln($input->getArgument('to'));
 		
-		storage()->writeStream($input->getArgument('to'), storage()->readStream($input->getArgument('from')));
-		
-		/*
-		 * If any of our earlier checks failed, the application should return a non
-		 * zero state.
-		 */
-		return $success? 0 : 1;
+		try {
+			storage()->writeStream($input->getArgument('to'), storage()->readStream($input->getArgument('from')));
+			return 0;
+		}
+		catch (UnableToWriteFile $e) {
+			
+			/*
+			 * If any of our earlier checks failed, the application should return a non
+			 * zero state.
+			 */
+			return 1;
+		}
 	}
 }

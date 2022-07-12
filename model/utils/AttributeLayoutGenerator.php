@@ -6,7 +6,6 @@ use ReflectionClass;
 use spitfire\collection\Collection;
 use spitfire\model\attribute\CharacterString;
 use spitfire\model\attribute\Table as TableAttribute;
-use spitfire\model\attribute\Column as ColumnAttribute;
 use spitfire\model\attribute\EnumType;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
 use spitfire\model\attribute\Integer;
@@ -16,7 +15,7 @@ use spitfire\model\attribute\SoftDelete;
 use spitfire\model\attribute\Text;
 use spitfire\model\attribute\Timestamps;
 use spitfire\model\Model;
-use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use spitfire\storage\database\drivers\TableMigrationExecutorInterface as MigratorInterface;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
@@ -52,38 +51,37 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
-	 * 
+	 *
 	 * @todo This function is way longer than it should be and way more complicated than it
 	 * should.
 	 */
-	private function addColumns(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
+	private function addColumns(MigratorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
 		$available = [
-			Integer::class => function (string $name, TableMigrationExecutorInterface $migrator, Integer $integer) {
+			Integer::class => function (string $name, MigratorInterface $migrator, Integer $integer) {
 				$migrator->int($name, $integer->isUnsigned());
 			},
-			CharacterString::class => function (string $name, TableMigrationExecutorInterface $migrator, CharacterString $string) {
+			CharacterString::class => function (string $name, MigratorInterface $migrator, CharacterString $string) {
 				$migrator->string($name, $string->getLength());
 			},
-			Text::class => function (string $name, TableMigrationExecutorInterface $migrator, Text $string) {
+			Text::class => function (string $name, MigratorInterface $migrator, Text $string) {
 				$migrator->text($name);
 			},
-			EnumType::class => function (string $name, TableMigrationExecutorInterface $migrator, EnumType $string) {
+			EnumType::class => function (string $name, MigratorInterface $migrator, EnumType $string) {
 				$migrator->enum($name, $string->getOptions());
 			}
 		];
 		
 		
 		/**
-		 * 
+		 *
 		 * @template T
 		 * @param class-string<T> $classname
-		 * @return callable(string,TableMigrationExecutorInterface,T):void $action
+		 * @return callable(string,MigratorInterface,T):void $action
 		 */
-		$transformer = function (string $classname) use ($available) : Closure
-		{
+		$transformer = function (string $classname) use ($available) : Closure {
 			return $available[$classname];
 		};
 		
@@ -103,7 +101,7 @@ class AttributeLayoutGenerator
 				/**
 				 * If the property is not part of a field, we just continue.
 				 */
-				if (!$columnAttribute) {
+				if (empty($columnAttribute)) {
 					continue;
 				}
 				
@@ -123,7 +121,7 @@ class AttributeLayoutGenerator
 	/**
 	 * This method allows our application to add columns to our schema.
 	 */
-	private function addIndexes(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
+	private function addIndexes(MigratorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
@@ -158,7 +156,7 @@ class AttributeLayoutGenerator
 	/**
 	 * This method allows our application to add columns to our schema.
 	 */
-	private function addPrimary(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
+	private function addPrimary(MigratorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
@@ -177,7 +175,7 @@ class AttributeLayoutGenerator
 	/**
 	 * This method allows our application to add columns to our schema.
 	 */
-	private function addReferences(TableMigrationExecutorInterface $target, ReflectionClass $source) : void
+	private function addReferences(MigratorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
@@ -212,7 +210,7 @@ class AttributeLayoutGenerator
 		}
 	}
 	
-	private function addSoftDeletes(TableMigrationExecutorInterface $migrator, ReflectionClass $reflection)
+	private function addSoftDeletes(MigratorInterface $migrator, ReflectionClass $reflection)
 	{
 		$tableAttribute = $reflection->getAttributes(SoftDelete::class);
 		
@@ -224,7 +222,7 @@ class AttributeLayoutGenerator
 		$migrator->softDelete();
 	}
 	
-	private function addTimestamps(TableMigrationExecutorInterface $migrator, ReflectionClass $reflection)
+	private function addTimestamps(MigratorInterface $migrator, ReflectionClass $reflection)
 	{
 		$tableAttribute = $reflection->getAttributes(Timestamps::class);
 		
