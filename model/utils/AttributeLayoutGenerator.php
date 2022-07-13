@@ -7,8 +7,9 @@ use spitfire\collection\Collection;
 use spitfire\model\attribute\CharacterString;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\attribute\EnumType;
+use spitfire\model\attribute\Id;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
-use spitfire\model\attribute\Integer;
+use spitfire\model\attribute\Integer as IntegerAttribute;
 use spitfire\model\attribute\Primary;
 use spitfire\model\attribute\References as ReferencesAttribute;
 use spitfire\model\attribute\SoftDelete;
@@ -41,7 +42,7 @@ class AttributeLayoutGenerator
 		$this->addPrimary($migrator, $reflection);
 		$this->addIndexes($migrator, $reflection);
 		$this->addReferences($migrator, $reflection);
-		#TODO : Add ID fields
+		$this->addId($migrator, $reflection);
 		$this->addSoftDeletes($migrator, $reflection);
 		$this->addTimestamps($migrator, $reflection);
 		
@@ -60,7 +61,7 @@ class AttributeLayoutGenerator
 		$props = $source->getProperties();
 		
 		$available = [
-			Integer::class => function (string $name, MigratorInterface $migrator, Integer $integer) {
+			IntegerAttribute::class => function (string $name, MigratorInterface $migrator, IntegerAttribute $integer) {
 				$migrator->int($name, $integer->isUnsigned());
 			},
 			CharacterString::class => function (string $name, MigratorInterface $migrator, CharacterString $string) {
@@ -233,5 +234,17 @@ class AttributeLayoutGenerator
 		assert($reflection->getProperty('created'));
 		assert($reflection->getProperty('updated'));
 		$migrator->timestamps();
+	}
+	
+	private function addId(MigratorInterface $migrator, ReflectionClass $reflection)
+	{
+		$tableAttribute = $reflection->getAttributes(Id::class);
+		
+		if (empty($tableAttribute)) {
+			return;
+		}
+		
+		assert($reflection->getProperty('_id'));
+		$migrator->id();
 	}
 }

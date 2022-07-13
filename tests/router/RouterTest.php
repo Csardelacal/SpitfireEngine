@@ -5,12 +5,10 @@
  * check that rewriting basic strings and Objects will work properly.
  */
 
-use Closure;
 use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
 use spitfire\core\Headers;
 use spitfire\core\Request;
-use spitfire\core\router\Route;
 use spitfire\core\router\Router;
 use spitfire\core\router\RouterResult;
 use spitfire\io\stream\Stream;

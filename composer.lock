@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1bb2ab7e88d1deea2f2d5449029ceeab",
+    "content-hash": "a2f5e8696476de058c602643384f13ea",
     "packages": [
         {
             "name": "andrewbreksa/rsmq",

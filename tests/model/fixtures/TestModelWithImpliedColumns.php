@@ -8,6 +8,7 @@ use spitfire\model\attribute\SoftDelete;
 use spitfire\model\attribute\Table;
 use spitfire\model\attribute\Timestamps;
 use spitfire\model\Model;
+use spitfire\model\traits\WithId;
 use spitfire\model\traits\WithSoftDeletes;
 use spitfire\model\traits\WithTimestamps;
 
@@ -18,7 +19,7 @@ use spitfire\model\traits\WithTimestamps;
 class TestModelWithImpliedColumns extends Model
 {
 	
-	use WithSoftDeletes, WithTimestamps;
+	use WithSoftDeletes, WithTimestamps, WithId;
 	
 	/**
 	 *
