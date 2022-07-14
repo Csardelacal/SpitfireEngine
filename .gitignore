@@ -7,3 +7,6 @@ Documentation/*
 /nbproject/private/
 /.phpunit.result.cache
 /vendor
+/bin
+/app
+/config

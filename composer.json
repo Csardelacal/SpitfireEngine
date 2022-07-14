@@ -58,7 +58,8 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"tests\\spitfire\\": "./tests"
+			"tests\\spitfire\\": "./tests",
+			"app\\": "./app"
 		}
 	},
 	"minimum-stability": "dev",

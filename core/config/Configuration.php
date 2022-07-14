@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\config;
 
+use spitfire\contracts\ConfigurationInterface;
 use spitfire\support\arrays\DotNotationAccessor;
 
 /* 
@@ -42,7 +43,7 @@ use spitfire\support\arrays\DotNotationAccessor;
  * note. If you need to configure something in an array style fashion you're probably
  * better off using service providers.
  */
-class Configuration
+class Configuration implements ConfigurationInterface
 {
 	
 	/**
