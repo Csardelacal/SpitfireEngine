@@ -234,12 +234,13 @@ class Layout implements LayoutInterface
 	 * Add a unique index spanning the given fields. Please note that the index will receive
 	 * a random name to ensure it's unique.
 	 *
+	 * @param string $name
 	 * @param Field[] $fields
 	 * @return Index
 	 */
-	public function unique(...$fields) : Index
+	public function unique(string $name, ...$fields) : Index
 	{
-		$index = new Index('idx_'. rand(), new Collection($fields), true);
+		$index = new Index($name, new Collection($fields), true);
 		$this->indexes->push($index);
 		
 		return $index;

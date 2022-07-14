@@ -31,6 +31,6 @@ class Index
 		$_a = $a->getFields()->each(fn(Field $e) : string => $e->getName())->join(':');
 		$_b = $b->getFields()->each(fn(Field $e) : string => $e->getName())->join(':');
 		
-		return $_a !== $_b;
+		return $_a === $_b;
 	}
 }

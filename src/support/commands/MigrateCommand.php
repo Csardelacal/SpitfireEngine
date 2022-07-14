@@ -1,5 +1,6 @@
 <?php namespace spitfire\storage\database\support\commands;
 
+use Brick\VarExporter\VarExporter;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\migration\schemaState\SchemaMigrationExecutor;
@@ -150,7 +151,7 @@ class MigrateCommand extends Command
 			 */
 			file_put_contents(
 				$this->schemaCacheFile,
-				sprintf('<?php return %s;', var_export($schema, true))
+				sprintf('<?php return %s;', VarExporter::export($schema))
 			);
 		}
 		

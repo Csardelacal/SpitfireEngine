@@ -34,7 +34,7 @@ class TagManager implements TagManagerInterface
 	 */
 	public function tag(string $tag): void
 	{
-		$record = new Record(['tag' => $tag]);
+		$record = new Record(['tag' => $tag, 'created' => null, 'updated' => null, '_id' => null]);
 		$this->connection->insert($this->connection->getSchema()->getLayoutByName('_tags'), $record);
 	}
 	
@@ -59,14 +59,14 @@ class TagManager implements TagManagerInterface
 	 */
 	public function listTags(): array
 	{
-		try {
+		if ($this->connection->getSchema()->hasLayoutByName('_tags')) {
 			$layout = $this->connection->getSchema()->getLayoutByName('_tags');
 		}
 		/**
 		 * This is a very special case. When the tag schema is not yet consolidated, but the
 		 * system already has _tags created.
 		 */
-		catch (OutOfBoundsException $e) {
+		else {
 			$layout = new Layout('_tags');
 			
 			$migrator = new SchemaStateTableMigrationExecutor($layout);

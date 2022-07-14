@@ -53,7 +53,7 @@ class Generator
 			 * In case the indexes are not identical, we need to make sure that we add them to the
 			 * list of changes.
 			 */
-			elseif (IndexUtils::equals($index, $base->getIndex($index->getName()))) {
+			elseif (!IndexUtils::equals($index, $base->getIndex($index->getName()))) {
 				$_result->addIndex($index);
 			}
 		}

@@ -66,7 +66,7 @@ class Index implements IndexInterface
 	public function __construct(string $name, Collection $fields, bool $unique = false, bool $primary = false)
 	{
 		$this->name = $name;
-		$this->fields = $fields;
+		$this->fields = $fields->each(fn($e) => clone $e);
 		$this->unique = $unique;
 		$this->primary = $primary;
 	}
