@@ -1,8 +1,9 @@
 <?php namespace spitfire\core\config;
 
+use spitfire\contracts\ConfigurationInterface;
 use spitfire\support\arrays\DotNotationAccessor;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,24 +26,24 @@ use spitfire\support\arrays\DotNotationAccessor;
  * Configuration contains an array of data parsed from a configuration file (or
  * multiple, in the event of the configuration referring to a directory that contains
  * configuration files).
- * 
+ *
  * Due to the fact that configuration is cached, the system generates configuration
- * by invoking a static method that will recursively walk over all the files and 
+ * by invoking a static method that will recursively walk over all the files and
  * import the data, assembling a tree of arrays.
- * 
- * When caching the configuration, the loaded environments are also cached and 
- * therefore your application's cache will need to be rebuilt in order to load 
+ *
+ * When caching the configuration, the loaded environments are also cached and
+ * therefore your application's cache will need to be rebuilt in order to load
  * new environments.
- * 
- * Configuration files are automatically flattened, so that information can be 
+ *
+ * Configuration files are automatically flattened, so that information can be
  * read with dot notation easily.
- * 
+ *
  * NOTE: Configuration does not support arrays (this is why they are flattened). I seem
  * to get tripped up by this concept myself a lot, and this is why I'm adding this
  * note. If you need to configure something in an array style fashion you're probably
  * better off using service providers.
  */
-class Configuration
+class Configuration implements ConfigurationInterface
 {
 	
 	/**
@@ -61,7 +62,7 @@ class Configuration
 	 */
 	private $interface;
 	
-	public function __construct($data = []) 
+	public function __construct($data = [])
 	{
 		$this->data = $data;
 		$this->interface = new DotNotationAccessor($this->data);
@@ -70,11 +71,11 @@ class Configuration
 	/**
 	 * Retrieve a configuration from the repository. You may not retrieve a config
 	 * as an array.
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $fallback
 	 */
-	public function get(string $key, $fallback = null) 
+	public function get(string $key, $fallback = null)
 	{
 		return $this->interface->has($key)? $this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN) : $fallback;
 	}
@@ -83,26 +84,26 @@ class Configuration
 	 * Set a configuration. Please note that all the code that went before will not have
 	 * received the configuration. Also, you should consider replacing calls to this with
 	 * writing to the configuration directly whenever possible.
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @return Configuration
 	 */
-	public function set(string $key, $value = null) 
+	public function set(string $key, $value = null)
 	{
 		$this->interface->set($key, $value);
 		return $this;
 	}
 	
 	/**
-	 * Import the configuration from a file. These files can contain executable code, or 
+	 * Import the configuration from a file. These files can contain executable code, or
 	 * environment calls, but whenever caching is enabled the configuration will be computed
 	 * once and not be regenerated until you request it.
-	 * 
+	 *
 	 * @param string $namespace
 	 * @param mixed[] $values
 	 */
-	public function import(string $namespace, $values) 
+	public function import(string $namespace, $values)
 	{
 		$this->interface->set($namespace, $values);
 		return $this;
@@ -111,11 +112,11 @@ class Configuration
 	/**
 	 * Retrieve a configuration from the repository. You may not retrieve a config
 	 * as an array.
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $fallback
 	 */
-	public function export() 
+	public function export()
 	{
 		return $this->data;
 	}

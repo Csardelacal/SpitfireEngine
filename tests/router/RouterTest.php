@@ -1,16 +1,14 @@
 <?php namespace tests\spitfire\core\router\Route;
 
-/* 
+/*
  * This file helps testing the basic functionality of Spitfire's router. It will
  * check that rewriting basic strings and Objects will work properly.
  */
 
-use Closure;
 use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
 use spitfire\core\Headers;
 use spitfire\core\Request;
-use spitfire\core\router\Route;
 use spitfire\core\router\Router;
 use spitfire\core\router\RouterResult;
 use spitfire\io\stream\Stream;
@@ -20,7 +18,7 @@ class RouterTest extends TestCase
 {
 	
 	/**
-	 * 
+	 *
 	 * @var Router
 	 */
 	private $router;
@@ -32,7 +30,7 @@ class RouterTest extends TestCase
 	
 	/**
 	 * Tests the creation of routes. This will just request the router to create
-	 * a route and verify that the returned value is a Route and not something 
+	 * a route and verify that the returned value is a Route and not something
 	 * else.
 	 */
 	public function testCreateRoute()
@@ -43,7 +41,7 @@ class RouterTest extends TestCase
 	}
 	
 	/**
-	 * This method tests the different string rewriting options that Spitfire 
+	 * This method tests the different string rewriting options that Spitfire
 	 * will provide you with when creating routes.
 	 */
 	public function testStringRoute()
@@ -51,11 +49,11 @@ class RouterTest extends TestCase
 		
 		$router = $this->router;
 		$request = new Request(
-			'GET', 
-			URLReflection::fromURL('https://localhost/test/test/hello-world'), 
-			new Headers(), 
-			[], 
-			[], 
+			'GET',
+			URLReflection::fromURL('https://localhost/test/test/hello-world'),
+			new Headers(),
+			[],
+			[],
 			Stream::fromString(''),
 			[]
 		);
@@ -71,11 +69,11 @@ class RouterTest extends TestCase
 	{
 		$router = new Router('/');
 		$request = new Request(
-			'GET', 
-			URLReflection::fromURL('https://localhost/this/is/a/test'), 
-			new Headers(), 
-			[], 
-			[], 
+			'GET',
+			URLReflection::fromURL('https://localhost/this/is/a/test'),
+			new Headers(),
+			[],
+			[],
 			Stream::fromString(''),
 			[]
 		);
@@ -88,15 +86,15 @@ class RouterTest extends TestCase
 		$this->assertEquals(false, $route1->test($request->withUri(URLReflection::fromURL('https://localhost/this/is/a/test/with/more'))), 'The route should not match excessive content');
 	}
 	
-	public function testTrailingSlashStringRoute2() 
+	public function testTrailingSlashStringRoute2()
 	{
 		$router = new Router('/');
 		$request = new Request(
-			'GET', 
-			URLReflection::fromURL('https://localhost/this/is/a/test'), 
-			new Headers(), 
-			[], 
-			[], 
+			'GET',
+			URLReflection::fromURL('https://localhost/this/is/a/test'),
+			new Headers(),
+			[],
+			[],
 			Stream::fromString(''),
 			[]
 		);
@@ -113,11 +111,11 @@ class RouterTest extends TestCase
 		$router->get('/test/{param1}', [TestController::class, 'index']);
 		
 		$request = new Request(
-			'GET', 
-			URLReflection::fromURL('https://localhost/this/is/a/test'), 
-			new Headers(), 
-			[], 
-			[], 
+			'GET',
+			URLReflection::fromURL('https://localhost/this/is/a/test'),
+			new Headers(),
+			[],
+			[],
 			Stream::fromString(''),
 			[]
 		);
@@ -131,7 +129,7 @@ class RouterTest extends TestCase
 		$this->assertEquals(false, $p3->success());
 	}
 	
-	public function testMixedURLS() 
+	public function testMixedURLS()
 	{
 		$router  = $this->router;
 		$route   = $router->get('/@{param1}', ['UserController', 'index']);
@@ -140,7 +138,7 @@ class RouterTest extends TestCase
 		$this->assertEquals('provided', $rewrite->getParameter('param1'));
 	}
 	
-	public function testURLReversal() 
+	public function testURLReversal()
 	{
 		$router  = $this->router;
 		$route   = $router->get('/@{param1}', ['UserController', 'index']);

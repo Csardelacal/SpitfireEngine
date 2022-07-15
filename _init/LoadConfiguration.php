@@ -1,5 +1,6 @@
 <?php namespace spitfire\_init;
 
+use spitfire\contracts\ConfigurationInterface;
 use spitfire\core\config\Configuration;
 use spitfire\core\config\ConfigurationLoader;
 use spitfire\core\Environment;
@@ -43,5 +44,6 @@ class LoadConfiguration implements InitScriptInterface
 		$config = $loader->make();
 		
 		spitfire()->provider()->set(Configuration::class, $config);
+		spitfire()->provider()->set(ConfigurationInterface::class, $config);
 	}
 }
