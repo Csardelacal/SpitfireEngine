@@ -1068,16 +1068,16 @@
         },
         {
             "name": "spitfire/dependency-provider",
-            "version": "0.2.6",
+            "version": "0.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Magic3W/provider.git",
-                "reference": "95e15f990519ecc35dc9e0ef9330ab232bb1f79a"
+                "reference": "b65a7319d13ff98eef58341136b5b8d1b0ab2dca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Magic3W/provider/zipball/95e15f990519ecc35dc9e0ef9330ab232bb1f79a",
-                "reference": "95e15f990519ecc35dc9e0ef9330ab232bb1f79a",
+                "url": "https://api.github.com/repos/Magic3W/provider/zipball/b65a7319d13ff98eef58341136b5b8d1b0ab2dca",
+                "reference": "b65a7319d13ff98eef58341136b5b8d1b0ab2dca",
                 "shasum": ""
             },
             "require": {
@@ -1102,9 +1102,9 @@
             "description": "Service Container. Implements PSR 11",
             "support": {
                 "issues": "https://github.com/Magic3W/provider/issues",
-                "source": "https://github.com/Magic3W/provider/tree/0.2.6"
+                "source": "https://github.com/Magic3W/provider/tree/0.2.7"
             },
-            "time": "2022-06-11T12:53:47+00:00"
+            "time": "2022-07-14T12:07:31+00:00"
         },
         {
             "name": "spitfire/event",
@@ -1907,16 +1907,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.231.5",
+            "version": "3.231.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4ea642d1c7f8002037ef46e5f17c9fc1273a6021"
+                "reference": "54c5fe6667c73010d954ce4c4d657d093f0bdcbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4ea642d1c7f8002037ef46e5f17c9fc1273a6021",
-                "reference": "4ea642d1c7f8002037ef46e5f17c9fc1273a6021",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/54c5fe6667c73010d954ce4c4d657d093f0bdcbf",
+                "reference": "54c5fe6667c73010d954ce4c4d657d093f0bdcbf",
                 "shasum": ""
             },
             "require": {
@@ -1993,9 +1993,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.5"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.6"
             },
-            "time": "2022-07-13T18:36:03+00:00"
+            "time": "2022-07-14T18:20:54+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -2921,16 +2921,16 @@
         },
         {
             "name": "magic3w/php-coding-standard",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Magic3W/php-coding-standard.git",
-                "reference": "a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a"
+                "reference": "e4a182055099e1f49d46f96b238b94706f7f0051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Magic3W/php-coding-standard/zipball/a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a",
-                "reference": "a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a",
+                "url": "https://api.github.com/repos/Magic3W/php-coding-standard/zipball/e4a182055099e1f49d46f96b238b94706f7f0051",
+                "reference": "e4a182055099e1f49d46f96b238b94706f7f0051",
                 "shasum": ""
             },
             "require": {
@@ -2950,9 +2950,9 @@
             "description": "Magic3W Coding standard for PHP projects.",
             "support": {
                 "issues": "https://github.com/Magic3W/php-coding-standard/issues",
-                "source": "https://github.com/Magic3W/php-coding-standard/tree/1.0.0"
+                "source": "https://github.com/Magic3W/php-coding-standard/tree/1.0.1"
             },
-            "time": "2022-02-01T12:46:42+00:00"
+            "time": "2022-07-15T10:52:22+00:00"
         },
         {
             "name": "monolog/monolog",

@@ -13,7 +13,6 @@ class ModelServiceProvider implements ProviderInterface
 	
 	public function register(ContainerInterface $container)
 	{
-		
 	}
 	
 	public function init(ContainerInterface $container)

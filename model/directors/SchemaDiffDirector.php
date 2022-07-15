@@ -30,7 +30,11 @@ class SchemaDiffDirector extends Command
 	protected function configure()
 	{
 		$this->addArgument(
-			'dir', InputArgument::OPTIONAL, 'The directory to retrieve models from', $this->modelDir);
+			'dir',
+			InputArgument::OPTIONAL,
+			'The directory to retrieve models from',
+			$this->modelDir
+		);
 	}
 	
 	protected function execute(InputInterface $input, OutputInterface $output) : int
@@ -38,8 +42,7 @@ class SchemaDiffDirector extends Command
 		$files = glob($input->getArgument('dir') . '/*.php');
 		$models = new Collection();
 		
-		foreach ($files as $file)
-		{
+		foreach ($files as $file) {
 			$output->writeln($file);
 			include $file;
 		}
@@ -56,7 +59,6 @@ class SchemaDiffDirector extends Command
 		}
 		
 		foreach ($models as /** @var ReflectionClass */$model) {
-			
 			$layout = (new AttributeLayoutGenerator())->make($model);
 			
 			if ($this->schema->hasLayoutByName($layout->getTableName())) {
@@ -92,7 +94,6 @@ class SchemaDiffDirector extends Command
 			else {
 				$output->writeln('Missing layout for model ' . $model->getName());
 			}
-			
 		}
 		
 		
