@@ -6,7 +6,7 @@ use spitfire\App;
  * The Session class allows your application to write data to a persistent space
  * that automatically expires after a given time. This class allows you to quickly
  * and comfortably select the persistence mechanism you want and continue working.
- * 
+ *
  * This class is a <strong>singleton</strong>. I've been working on reducing the
  * amount of single instance objects inside of spitfire, but this class is somewhat
  * special. It represents a single and global resource inside of PHP and therefore
@@ -25,21 +25,21 @@ class Session
 	
 	/**
 	 * The Session allows the application to maintain a persistence across HTTP
-	 * requests by providing the user with a cookie and maintaining the data on 
-	 * the server. Therefore, you can consider all the data you read from the 
+	 * requests by providing the user with a cookie and maintaining the data on
+	 * the server. Therefore, you can consider all the data you read from the
 	 * session to be safe because it stems from the server.
-	 * 
+	 *
 	 * You need to question the fact that the data actually belongs to the same
 	 * user, since this may not be guaranteed all the time.
-	 * 
+	 *
 	 * @param SessionHandler $handler
 	 */
-	protected function __construct(SessionHandler$handler = null)
+	public function __construct(SessionHandler$handler = null)
 	{
 		$lifetime = 2592000;
 		
 		if (!$handler) {
-			$handler = new FileSessionHandler(realpath(session_save_path()), $lifetime); 
+			$handler = new FileSessionHandler(realpath(session_save_path()), $lifetime);
 		}
 		
 		$this->handler = $handler;
@@ -59,31 +59,24 @@ class Session
 	
 	public function set($key, $value, $app = null)
 	{
-		if ($app === null) {
-			$app = current_context()->app;
-		}
-		/* @var $app App */
-		$namespace = ($app->getMapping()->getNameSpace())? $app->getMapping()->getNameSpace() : '*';
+		$namespace = '*';
 		
 		if (!self::sessionId()) {
-			$this->start(); 
+			$this->start();
 		}
 		$_SESSION[$namespace][$key] = $value;
 	}
 	
 	public function get($key, $app = null)
 	{
-		if ($app === null) {
-			$app = current_context()->app;
-		}
-		/* @var $app App */
-		$namespace = $app && $app->getMapping()->getNameSpace()? $app->getMapping()->getNameSpace() : '*';
+		
+		$namespace = '*';
 		
 		if (!isset($_COOKIE[session_name()])) {
-			return null; 
+			return null;
 		}
 		if (!self::sessionId()) {
-			$this->start(); 
+			$this->start();
 		}
 		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
 	}
@@ -124,27 +117,27 @@ class Session
 	public function start()
 	{
 		if (self::sessionId()) {
-			return; 
+			return;
 		}
 		$this->handler->attach();
 		session_start();
 		
 		/*
 		 * This is a fallback mechanism that allows dynamic extension of sessions,
-		 * otherwise a twenty minute session would end after 20 minutes even 
+		 * otherwise a twenty minute session would end after 20 minutes even
 		 * if the user was actively using it.
-		 * 
+		 *
 		 * Sessions are httponly, this means that they are not available to the client
 		 * application running within the user-agent. This should mititgate potential
 		 * XSS attacks that would use JS to extract the cookie to impersonate the user.
-		 * 
+		 *
 		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
 		 */
 		$lifetime = 2592000;
 		
 		setcookie(
-			session_name(), 
-			self::sessionId(), 
+			session_name(),
+			self::sessionId(),
 			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => true, 'httponly' => true]
 		);
 	}
@@ -153,13 +146,13 @@ class Session
 	 * Destroys the session. This code will automatically unset the session cookie,
 	 * and delete the file (or whichever mechanism is used).
 	 */
-	public function destroy() : bool 
+	public function destroy() : bool
 	{
 		$this->start();
 		
 		setcookie(
-			session_name(), 
-			'', 
+			session_name(),
+			'',
 			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => true, 'httponly' => true]
 		);
 		
@@ -178,24 +171,24 @@ class Session
 		static $instance = null;
 		
 		if ($instance !== null) {
-			return $instance; 
+			return $instance;
 		}
 		return $instance = spitfire()->provider()->get(self::class);
 	}
 	
 	/**
-	 * Returns the session ID being used. 
-	 * 
-	 * Since March 2017 the Spitfire session will validate that the session 
+	 * Returns the session ID being used.
+	 *
+	 * Since March 2017 the Spitfire session will validate that the session
 	 * identifier returned is valid. A valid session ID is up to 128 characters
 	 * long and contains only alphanumeric characters, dashes and commas.
-	 * 
+	 *
 	 * @todo Move to instance
-	 * 
+	 *
 	 * @param boolean $allowRegen Allows the function to provide a new SID in case
 	 *                            of the session ID not being valid.
-	 * 
-	 * @return boolean
+	 *
+	 * @return string
 	 * @throws \Exception
 	 */
 	public static function sessionId($allowRegen = true)
@@ -209,7 +202,7 @@ class Session
 			return $sid;
 		}
 		
-		#Otherwise we'll attempt to repair the broken 
+		#Otherwise we'll attempt to repair the broken
 		if (!$allowRegen || !session_regenerate_id()) {
 			throw new \Exception('Session ID ' . ($allowRegen? 'generation' : 'validation') . ' failed');
 		}

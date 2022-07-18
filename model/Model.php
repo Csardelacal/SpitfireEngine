@@ -3,7 +3,6 @@
 use JsonSerializable;
 use ReflectionClass;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
@@ -150,7 +149,7 @@ abstract class Model implements JsonSerializable
 	 * of database error it throws an Exception and leaves the state of the
 	 * record unchanged.
 	 *
-	 * @throws PrivateException
+	 * @throws ApplicationException
 	 */
 	public function store(array $options = [])
 	{

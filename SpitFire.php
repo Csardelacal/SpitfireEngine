@@ -44,6 +44,7 @@ class SpitFire
 		 * the framework provides to the application.
 		 */
 		$this->provider = new Container();
+		$this->provider()->set(Locations::class, $this->locations);
 	}
 	
 	public static function baseUrl()

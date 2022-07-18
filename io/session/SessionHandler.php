@@ -14,19 +14,7 @@ abstract class SessionHandler implements SessionHandlerInterface
 	
 	public function attach()
 	{
-		if ($this instanceof \SessionHandlerInterface) {
-			session_set_save_handler($this);
-		}
-		else {
-			session_set_save_handler(
-				array($this, 'start'),
-				array($this, 'close'),
-				array($this, 'read'),
-				array($this, 'write'),
-				array($this, 'destroy'),
-				array($this, 'gc')
-			);
-		}
+		session_set_save_handler($this);
 	}
 	
 	public function getTimeout()
@@ -51,10 +39,10 @@ abstract class SessionHandler implements SessionHandlerInterface
 		$this->open($savePath, $sessionName);
 	}
 	
-	abstract public function open($savePath, $sessionName);
-	abstract public function close();
-	abstract public function read($id);
-	abstract public function write($id, $data);
-	abstract public function destroy($id);
-	abstract public function gc($maxlifetime);
+	abstract public function open($savePath, $sessionName) : bool;
+	abstract public function close() : bool;
+	abstract public function read($id) : string|false;
+	abstract public function write($id, $data) : bool;
+	abstract public function destroy($id) : bool;
+	abstract public function gc($maxlifetime) : int|false;
 }
