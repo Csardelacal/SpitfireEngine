@@ -1,0 +1,530 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "da81204828f6d703f6a37f32b90ec252",
+    "packages": [
+        {
+            "name": "brick/varexporter",
+            "version": "0.3.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brick/varexporter.git",
+                "reference": "3e263cd718d242594c52963760fee2059fd5833c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brick/varexporter/zipball/3e263cd718d242594c52963760fee2059fd5833c",
+                "reference": "3e263cd718d242594c52963760fee2059fd5833c",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^4.0",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.2",
+                "phpunit/phpunit": "^8.5 || ^9.0",
+                "vimeo/psalm": "4.23.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Brick\\VarExporter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A powerful alternative to var_export(), which can export closures and objects without __set_state()",
+            "keywords": [
+                "var_export"
+            ],
+            "support": {
+                "issues": "https://github.com/brick/varexporter/issues",
+                "source": "https://github.com/brick/varexporter/tree/0.3.7"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/BenMorel",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-06-29T23:37:57+00:00"
+        },
+        {
+            "name": "magic3w/url-reflection",
+            "version": "0.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magic3W/url-reflection.git",
+                "reference": "dd735b64948f367ec98db6206589e26fca2e3047"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magic3W/url-reflection/zipball/dd735b64948f367ec98db6206589e26fca2e3047",
+                "reference": "dd735b64948f367ec98db6206589e26fca2e3047",
+                "shasum": ""
+            },
+            "require": {
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.77",
+                "phpunit/phpunit": "^9.3",
+                "squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "magic3w\\http\\url\\reflection\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Allows applications to have a URL parsed and retrieve information about it's components",
+            "support": {
+                "issues": "https://github.com/Magic3W/url-reflection/issues",
+                "source": "https://github.com/Magic3W/url-reflection/tree/0.2.1"
+            },
+            "time": "2022-05-19T12:41:12+00:00"
+        },
+        {
+            "name": "nikic/php-parser",
+            "version": "v4.14.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "34bea19b6e03d8153165d8f30bba4c3be86184c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/34bea19b6e03d8153165d8f30bba4c3be86184c1",
+                "reference": "34bea19b6e03d8153165d8f30bba4c3be86184c1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "ircmaxell/php-yacc": "^0.0.7",
+                "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0 || ^9.0"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.9-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/nikic/PHP-Parser/issues",
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.14.0"
+            },
+            "time": "2022-05-31T20:59:12+00:00"
+        },
+        {
+            "name": "psr/container",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/c71ecc56dfe541dbd90c5360474fbc405f8d5963",
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common Container Interface (PHP FIG PSR-11)",
+            "homepage": "https://github.com/php-fig/container",
+            "keywords": [
+                "PSR-11",
+                "container",
+                "container-interface",
+                "container-interop",
+                "psr"
+            ],
+            "support": {
+                "issues": "https://github.com/php-fig/container/issues",
+                "source": "https://github.com/php-fig/container/tree/2.0.2"
+            },
+            "time": "2021-11-05T16:47:00+00:00"
+        },
+        {
+            "name": "psr/http-message",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/master"
+            },
+            "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
+            "name": "psr/log",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/3.0.0"
+            },
+            "time": "2021-07-14T16:46:02+00:00"
+        },
+        {
+            "name": "spitfire/collection",
+            "version": "0.1.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spitfire-php/collection.git",
+                "reference": "3e29d20b5bb0e2ad1b4c165c4c73831e7ecf932b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/3e29d20b5bb0e2ad1b4c165c4c73831e7ecf932b",
+                "reference": "3e29d20b5bb0e2ad1b4c165c4c73831e7ecf932b",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.64",
+                "phpunit/phpunit": "^9.4",
+                "squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\collection\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Provides collections for spitfire/engine",
+            "support": {
+                "issues": "https://github.com/spitfire-php/collection/issues",
+                "source": "https://github.com/spitfire-php/collection/tree/0.1.7"
+            },
+            "time": "2022-07-12T12:38:43+00:00"
+        },
+        {
+            "name": "spitfire/contracts",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spitfire-php/contracts.git",
+                "reference": "38a214dc20cf6b619f0f78e973138835ab9df9c0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spitfire-php/contracts/zipball/38a214dc20cf6b619f0f78e973138835ab9df9c0",
+                "reference": "38a214dc20cf6b619f0f78e973138835ab9df9c0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7||^8",
+                "psr/container": "^1.1.1|^2.0.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\contracts\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Contract package for Spitfire. Use this to write code compatible with the framework",
+            "homepage": "https://spitfirephp.com",
+            "support": {
+                "issues": "https://github.com/spitfire-php/contracts/issues",
+                "source": "https://github.com/spitfire-php/contracts/tree/master"
+            },
+            "time": "2022-06-08T13:30:40+00:00"
+        },
+        {
+            "name": "spitfire/dependency-provider",
+            "version": "0.2.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magic3W/provider.git",
+                "reference": "b65a7319d13ff98eef58341136b5b8d1b0ab2dca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magic3W/provider/zipball/b65a7319d13ff98eef58341136b5b8d1b0ab2dca",
+                "reference": "b65a7319d13ff98eef58341136b5b8d1b0ab2dca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">7",
+                "psr/container": "^2.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.4",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\provider\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Service Container. Implements PSR 11",
+            "support": {
+                "issues": "https://github.com/Magic3W/provider/issues",
+                "source": "https://github.com/Magic3W/provider/tree/0.2.7"
+            },
+            "time": "2022-07-14T12:07:31+00:00"
+        },
+        {
+            "name": "spitfire/event",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spitfire-php/event.git",
+                "reference": "8e47cfd76f9786c5910675af63b4b5d612ac7c85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spitfire-php/event/zipball/8e47cfd76f9786c5910675af63b4b5d612ac7c85",
+                "reference": "8e47cfd76f9786c5910675af63b4b5d612ac7c85",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.4",
+                "phpunit/phpunit": "^9.4",
+                "squizlabs/php_codesniffer": "dev-dev/scope-indent-blank-lines"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\event\\": "./src",
+                    "spitfire\\event\\tests\\": "./tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Event and plugin mechanism for spitfire",
+            "support": {
+                "issues": "https://github.com/spitfire-php/event/issues",
+                "source": "https://github.com/spitfire-php/event/tree/0.1.0"
+            },
+            "time": "2022-02-07T16:01:42+00:00"
+        },
+        {
+            "name": "spitfire/exception",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spitfire-php/exceptions.git",
+                "reference": "02b1d64efe48d8a379013cd341e7865c0768779f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spitfire-php/exceptions/zipball/02b1d64efe48d8a379013cd341e7865c0768779f",
+                "reference": "02b1d64efe48d8a379013cd341e7865c0768779f",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.71",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "spitfire\\exceptions\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "César de la Cal Bretschneider",
+                    "email": "cesar@magic3w.com"
+                }
+            ],
+            "description": "Exception interfaces for spitfire",
+            "support": {
+                "issues": "https://github.com/spitfire-php/exceptions/issues",
+                "source": "https://github.com/spitfire-php/exceptions/tree/0.1.1"
+            },
+            "time": "2021-03-23T11:55:24+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "spitfire/contracts": 20
+    },
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}
