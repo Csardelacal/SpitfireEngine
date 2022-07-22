@@ -114,16 +114,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "34a68067b7ae3b836ea5e57e1fc432478372a4f5"
+                "reference": "1a941703dfb649f9b821e7bc425e782f576a805e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/34a68067b7ae3b836ea5e57e1fc432478372a4f5",
-                "reference": "34a68067b7ae3b836ea5e57e1fc432478372a4f5",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/1a941703dfb649f9b821e7bc425e782f576a805e",
+                "reference": "1a941703dfb649f9b821e7bc425e782f576a805e",
                 "shasum": ""
             },
             "require": {
@@ -184,7 +184,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.1.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.1.1"
             },
             "funding": [
                 {
@@ -200,7 +200,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-29T17:29:54+00:00"
+            "time": "2022-07-18T09:59:40+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -1008,16 +1008,16 @@
         },
         {
             "name": "spitfire/dependency-provider",
-            "version": "0.2.6",
+            "version": "0.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Magic3W/provider.git",
-                "reference": "95e15f990519ecc35dc9e0ef9330ab232bb1f79a"
+                "reference": "b65a7319d13ff98eef58341136b5b8d1b0ab2dca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Magic3W/provider/zipball/95e15f990519ecc35dc9e0ef9330ab232bb1f79a",
-                "reference": "95e15f990519ecc35dc9e0ef9330ab232bb1f79a",
+                "url": "https://api.github.com/repos/Magic3W/provider/zipball/b65a7319d13ff98eef58341136b5b8d1b0ab2dca",
+                "reference": "b65a7319d13ff98eef58341136b5b8d1b0ab2dca",
                 "shasum": ""
             },
             "require": {
@@ -1042,9 +1042,9 @@
             "description": "Service Container. Implements PSR 11",
             "support": {
                 "issues": "https://github.com/Magic3W/provider/issues",
-                "source": "https://github.com/Magic3W/provider/tree/0.2.6"
+                "source": "https://github.com/Magic3W/provider/tree/0.2.7"
             },
-            "time": "2022-06-11T12:53:47+00:00"
+            "time": "2022-07-14T12:07:31+00:00"
         },
         {
             "name": "spitfire/engine",
@@ -1052,12 +1052,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Csardelacal/SpitfireEngine.git",
-                "reference": "1d2890164ddae0e2630b5bc179a4d05e41bb0eb6"
+                "reference": "3a73676a0e9a0035c48c05a44715c176599d9776"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Csardelacal/SpitfireEngine/zipball/1d2890164ddae0e2630b5bc179a4d05e41bb0eb6",
-                "reference": "1d2890164ddae0e2630b5bc179a4d05e41bb0eb6",
+                "url": "https://api.github.com/repos/Csardelacal/SpitfireEngine/zipball/3a73676a0e9a0035c48c05a44715c176599d9776",
+                "reference": "3a73676a0e9a0035c48c05a44715c176599d9776",
                 "shasum": ""
             },
             "require": {
@@ -1086,7 +1086,7 @@
                 "league/flysystem-aws-s3-v3": "^3.0",
                 "magic3w/php-coding-standard": "^1.0",
                 "monolog/monolog": "^3.1",
-                "phpstan/phpstan": "^1.7",
+                "phpstan/phpstan": "^1.8",
                 "phpunit/phpunit": "^9.5",
                 "pug-php/pug": "^3.4",
                 "scrutinizer/ocular": "^1.9"
@@ -1117,7 +1117,7 @@
                 "issues": "https://github.com/Csardelacal/SpitfireEngine/issues",
                 "source": "https://github.com/Csardelacal/SpitfireEngine/tree/master"
             },
-            "time": "2022-07-14T00:04:49+00:00"
+            "time": "2022-07-18T11:16:04+00:00"
         },
         {
             "name": "spitfire/event",
@@ -1940,16 +1940,16 @@
         },
         {
             "name": "magic3w/php-coding-standard",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Magic3W/php-coding-standard.git",
-                "reference": "a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a"
+                "reference": "e4a182055099e1f49d46f96b238b94706f7f0051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Magic3W/php-coding-standard/zipball/a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a",
-                "reference": "a8c4094a1c7ec365e4d4d2cbcac8a6157631c54a",
+                "url": "https://api.github.com/repos/Magic3W/php-coding-standard/zipball/e4a182055099e1f49d46f96b238b94706f7f0051",
+                "reference": "e4a182055099e1f49d46f96b238b94706f7f0051",
                 "shasum": ""
             },
             "require": {
@@ -1969,9 +1969,9 @@
             "description": "Magic3W Coding standard for PHP projects.",
             "support": {
                 "issues": "https://github.com/Magic3W/php-coding-standard/issues",
-                "source": "https://github.com/Magic3W/php-coding-standard/tree/1.0.0"
+                "source": "https://github.com/Magic3W/php-coding-standard/tree/1.0.1"
             },
-            "time": "2022-02-01T12:46:42+00:00"
+            "time": "2022-07-15T10:52:22+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2475,16 +2475,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "8dbba631fa32f4b289404469c2afd6122fd61d67"
+                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8dbba631fa32f4b289404469c2afd6122fd61d67",
-                "reference": "8dbba631fa32f4b289404469c2afd6122fd61d67",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c53312ecc575caf07b0e90dee43883fdf90ca67c",
+                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c",
                 "shasum": ""
             },
             "require": {
@@ -2510,7 +2510,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.8.1"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.2"
             },
             "funding": [
                 {
@@ -2530,7 +2530,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-12T16:08:06+00:00"
+            "time": "2022-07-20T09:57:31+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
