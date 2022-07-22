@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2f5e8696476de058c602643384f13ea",
+    "content-hash": "0dccef7c4d99843d6e41eb9e8e19afef",
     "packages": [
         {
             "name": "andrewbreksa/rsmq",
@@ -114,16 +114,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "34a68067b7ae3b836ea5e57e1fc432478372a4f5"
+                "reference": "1a941703dfb649f9b821e7bc425e782f576a805e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/34a68067b7ae3b836ea5e57e1fc432478372a4f5",
-                "reference": "34a68067b7ae3b836ea5e57e1fc432478372a4f5",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/1a941703dfb649f9b821e7bc425e782f576a805e",
+                "reference": "1a941703dfb649f9b821e7bc425e782f576a805e",
                 "shasum": ""
             },
             "require": {
@@ -184,7 +184,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.1.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.1.1"
             },
             "funding": [
                 {
@@ -200,7 +200,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-29T17:29:54+00:00"
+            "time": "2022-07-18T09:59:40+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -959,66 +959,6 @@
                 "source": "https://github.com/spitfire-php/collection/tree/0.1.7"
             },
             "time": "2022-07-12T12:38:43+00:00"
-        },
-        {
-            "name": "spitfire/database",
-            "version": "0.1.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spitfire-php/database.git",
-                "reference": "773e625ddcbbbee2f018f37382c0c7db03c202d4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spitfire-php/database/zipball/773e625ddcbbbee2f018f37382c0c7db03c202d4",
-                "reference": "773e625ddcbbbee2f018f37382c0c7db03c202d4",
-                "shasum": ""
-            },
-            "require": {
-                "brick/varexporter": "^0.3.7",
-                "magic3w/url-reflection": "^0.2.0",
-                "psr/log": "^3.0",
-                "spitfire/collection": "^0.1.1",
-                "spitfire/contracts": "dev-master",
-                "spitfire/dependency-provider": "^0.2.5",
-                "spitfire/event": "^0.1.0",
-                "spitfire/exception": "^0.1.1"
-            },
-            "require-dev": {
-                "magic3w/php-coding-standard": "^1.0",
-                "monolog/monolog": "^3.1",
-                "phpstan/phpstan": "^1.7",
-                "phpunit/phpunit": "^9.5",
-                "spitfire/engine": "dev-master",
-                "symfony/console": "^6.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "spitfire\\storage\\database\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "César de la Cal Bretschneider",
-                    "email": "cesar@magic3w.com"
-                }
-            ],
-            "description": "Database components for spitfire/engine",
-            "support": {
-                "issues": "https://github.com/spitfire-php/database/issues",
-                "source": "https://github.com/spitfire-php/database/tree/0.1.6"
-            },
-            "time": "2022-07-14T00:23:17+00:00"
         },
         {
             "name": "spitfire/defer",
@@ -1907,16 +1847,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.231.6",
+            "version": "3.231.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "54c5fe6667c73010d954ce4c4d657d093f0bdcbf"
+                "reference": "8f8742caa42b260950320c98ddc5da4926e2373d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/54c5fe6667c73010d954ce4c4d657d093f0bdcbf",
-                "reference": "54c5fe6667c73010d954ce4c4d657d093f0bdcbf",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8f8742caa42b260950320c98ddc5da4926e2373d",
+                "reference": "8f8742caa42b260950320c98ddc5da4926e2373d",
                 "shasum": ""
             },
             "require": {
@@ -1993,9 +1933,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.12"
             },
-            "time": "2022-07-14T18:20:54+00:00"
+            "time": "2022-07-22T18:19:47+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -2865,21 +2805,21 @@
         },
         {
             "name": "league/flysystem-aws-s3-v3",
-            "version": "3.0.22",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-aws-s3-v3.git",
-                "reference": "e5fc508faf83df2fbd2a215d2b4bea9584906221"
+                "reference": "fa46ce9fbad9bfc73d8b160ffeb2c1793fe9c73b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/e5fc508faf83df2fbd2a215d2b4bea9584906221",
-                "reference": "e5fc508faf83df2fbd2a215d2b4bea9584906221",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/fa46ce9fbad9bfc73d8b160ffeb2c1793fe9c73b",
+                "reference": "fa46ce9fbad9bfc73d8b160ffeb2c1793fe9c73b",
                 "shasum": ""
             },
             "require": {
                 "aws/aws-sdk-php": "^3.132.4",
-                "league/flysystem": "^2.0.0 || ^3.0.0",
+                "league/flysystem": "^3.0.0",
                 "league/mime-type-detection": "^1.0.0",
                 "php": "^8.0.2"
             },
@@ -2915,9 +2855,23 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem-aws-s3-v3/issues",
-                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/3.0.22"
+                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/3.1.1"
             },
-            "time": "2022-06-29T07:09:46+00:00"
+            "funding": [
+                {
+                    "url": "https://offset.earth/frankdejonge",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/frankdejonge",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/league/flysystem",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-07-18T09:31:34+00:00"
         },
         {
             "name": "magic3w/php-coding-standard",
@@ -3699,16 +3653,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "8dbba631fa32f4b289404469c2afd6122fd61d67"
+                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8dbba631fa32f4b289404469c2afd6122fd61d67",
-                "reference": "8dbba631fa32f4b289404469c2afd6122fd61d67",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c53312ecc575caf07b0e90dee43883fdf90ca67c",
+                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c",
                 "shasum": ""
             },
             "require": {
@@ -3734,7 +3688,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.8.1"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.2"
             },
             "funding": [
                 {
@@ -3754,7 +3708,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-12T16:08:06+00:00"
+            "time": "2022-07-20T09:57:31+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -5928,7 +5882,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "spitfire/contracts": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

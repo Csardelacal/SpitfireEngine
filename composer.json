@@ -11,7 +11,6 @@
 		"spitfire/dependency-provider": "^0.2.4",
 		"psr/log": "^3.0",
 		"spitfire/defer": "^0.2.2",
-		"spitfire/database": "^0.1.5",
 		"spitfire/collection": "^0.1.2",
 		"psr/http-server-middleware": "^1.0",
 		"psr/http-factory": "^1.0",
@@ -19,7 +18,11 @@
 		"magic3w/url-reflection": "^0.1.4||^0.2",
 		"respect/validation": "^2.2",
 		"symfony/console": "^6.1",
-		"league/flysystem": "^3.0"
+		"league/flysystem": "^3.0",
+		"spitfire/event": "^0.1.0",
+		"spitfire/exception": "^0.1.1",
+		"spitfire/contracts": "dev-master",
+		"brick/varexporter": "^0.3.7"
 	},
 
 	"require-dev": {
@@ -29,7 +32,8 @@
 		"pug-php/pug": "^3.4",
 		"magic3w/php-coding-standard": "^1.0",
 		"league/flysystem-aws-s3-v3": "^3.0",
-		"scrutinizer/ocular": "^1.9"
+		"scrutinizer/ocular": "^1.9",
+		"symfony/console": "^6.0"
 	},
 
 	"suggest": {
@@ -39,11 +43,13 @@
 	},
 	
 	"replace": {
-		"spitfire/contracts" : "self.version"
+		"spitfire/contracts" : "self.version",
+		"spitfire/database" : "self.version"
 	},
 	
 	"provide": {
-		"spitfire/contracts" : "dev-master"
+		"spitfire/contracts" : "self.version",
+		"spitfire/database" : "self.version"
 	},
 
 	"autoload": {
@@ -52,6 +58,7 @@
 		],
 		"psr-4": {
 			"spitfire\\": "./",
+			"spitfire\\storage\\": "./src/storage/",
 			"spitfire\\contracts\\": "./src/contracts/"
 		}
 
@@ -92,5 +99,11 @@
                 "type": "vcs",
                 "url": "https://github.com/Csardelacal/PHP_Codesniffer"
             }
-    ]
+    ],
+	
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    }
 }

@@ -4,6 +4,11 @@
             "name": "contracts",
             "directory": "src/contracts/",
             "target": "git@github.com:spitfire-php/contracts.git"
+        },
+        {
+            "name": "database",
+            "directory": "src/storage/database/",
+            "target": "git@github.com:spitfire-php/database.git"
         }
     ]
 }
