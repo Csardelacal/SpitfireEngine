@@ -1,5 +1,6 @@
 <?php namespace spitfire;
 
+use spitfire\contracts\core\LocationsInterface;
 use spitfire\core\Locations;
 use spitfire\core\resource\Publisher;
 use spitfire\exceptions\ApplicationException;
@@ -45,6 +46,7 @@ class SpitFire
 		 */
 		$this->provider = new Container();
 		$this->provider()->set(Locations::class, $this->locations);
+		$this->provider()->set(LocationsInterface::class, $this->locations);
 	}
 	
 	public static function baseUrl()
