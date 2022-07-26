@@ -68,7 +68,7 @@ class RouterActionRequestHandler implements RequestHandlerInterface
 	
 	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
-		$parameters = $this->route->test($request->getUri());
+		$parameters = $this->route->test($request->getUri()->getPath());
 		
 		$controller = new $this->controller;
 		$action     = $this->action;

@@ -53,7 +53,7 @@ class RouterClosureRequestHandler implements RequestHandlerInterface
 	
 	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
-		$parameters = $this->route->test($request->getUri());
+		$parameters = $this->route->test($request->getUri()->getPath());
 		
 		/**
 		 * The router has a special ability, allowing it to convert strings into models

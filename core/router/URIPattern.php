@@ -133,7 +133,7 @@ class URIPattern
 	 * @param string $uri
 	 * @return \spitfire\core\router\Parameters
 	 */
-	public function test($uri) :? Parameters
+	public function test(string $uri) :? Parameters
 	{
 		
 		if (!preg_match_all($this->expression, $uri, $raw)) {

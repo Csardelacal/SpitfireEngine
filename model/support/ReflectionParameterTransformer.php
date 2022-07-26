@@ -73,6 +73,11 @@ class ReflectionParameterTransformer
 				continue;
 			}
 			
+			if ($_e->isBuiltin()) {
+				$_return[$_n] = $param;
+				continue;
+			}
+			
 			/**
 			 * For our next trick, we're going to need a reflection of the class that the
 			 * developer is expecting us to provide, otherwise we cannot tell if it is a 
