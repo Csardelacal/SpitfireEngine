@@ -18,7 +18,7 @@ class ClosureResponseRequestHandler implements RequestHandlerInterface
 	
 	/**
 	 *
-	 * @var ResponseInterface
+	 * @var Closure The closure must return a ResponseInterface
 	 */
 	private $response;
 	
@@ -27,6 +27,10 @@ class ClosureResponseRequestHandler implements RequestHandlerInterface
 	 */
 	private $params;
 	
+	/**
+	 * 
+	 * @param Closure $response The closure must return a ResponseInterface
+	 */
 	public function __construct(Closure $response, array $params)
 	{
 		$this->response = $response;

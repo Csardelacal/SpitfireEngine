@@ -1,7 +1,6 @@
 <?php namespace spitfire\io\media;
 
-use spitfire\exceptions\FileNotFoundException;
-use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\ApplicationException;
 
 class PNGQuant
 {
@@ -23,7 +22,7 @@ class PNGQuant
 	public static function compress($img, $target = null)
 	{
 		if (!file_exists($img)) {
-			throw new FileNotFoundException("File does not exist: $img");
+			throw new ApplicationException("File does not exist: $img");
 		}
 		
 		$descriptors = array(array('pipe', 'r'), array('pipe', 'w'), array('pipe', 'w'));
@@ -41,10 +40,12 @@ class PNGQuant
 			
 			$code = proc_close($proc); //Not yet being used, this is just a test
 		}
+		else {
+			throw new ApplicationException('Could not initialize PNGQuant process');
+		}
 		
 		if (!$compressed_png_content) {
-			die($error_output);
-			throw new PrivateException('Compressing PNG failed. Is pngquant 1.8+ installed on the server?');
+			throw new ApplicationException('Compressing PNG failed. Is pngquant 1.8+ installed on the server?');
 		}
 		
 		file_put_contents($target? : $img, $compressed_png_content);

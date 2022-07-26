@@ -121,6 +121,10 @@ class QueryBuilder
 	{
 	}
 	
+	/**
+	 * 
+	 * @return Collection<Model>
+	 */
 	public function all() : Collection
 	{
 		$result = $this->model->getConnection()->query($this->withDefaultMapping()->getQuery())();

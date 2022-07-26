@@ -56,10 +56,10 @@ class Headers
 	 * it might be the case that your application needs to unset a header that 
 	 * was set earlier.
 	 * 
-	 * @param type $header
+	 * @param string $header
 	 * @return $this
 	 */
-	public function unset($header)
+	public function unset(string $header)
 	{
 		if (array_key_exists($header, $this->headers)) {
 			unset($this->headers[$header]); 

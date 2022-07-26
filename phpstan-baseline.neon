@@ -1,21 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Invalid array key type spitfire\\\\core\\\\type\\.$#"
-			count: 1
-			path: core/Headers.php
-
-		-
-			message: "#^Parameter \\#1 \\$key of function array_key_exists expects int\\|string, spitfire\\\\core\\\\type given\\.$#"
-			count: 1
-			path: core/Headers.php
-
-		-
-			message: "#^Parameter \\$header of method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) has invalid type spitfire\\\\core\\\\type\\.$#"
-			count: 1
-			path: core/Headers.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$fallback$#"
 			count: 1
 			path: core/config/Configuration.php
@@ -51,16 +36,6 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) invoked with 2 parameters, 1 required\\.$#"
-			count: 1
-			path: core/http/CORS.php
-
-		-
-			message: "#^Parameter \\#1 \\$header of method spitfire\\\\core\\\\Headers\\:\\:unset\\(\\) expects spitfire\\\\core\\\\type, string given\\.$#"
-			count: 3
-			path: core/http/CORS.php
-
-		-
 			message: "#^Property spitfire\\\\core\\\\http\\\\LanguageAccept\\:\\:\\$locale \\(string\\) does not accept null\\.$#"
 			count: 1
 			path: core/http/LanguageAccept.php
@@ -69,16 +44,6 @@ parameters:
 			message: "#^Cannot call method getPriority\\(\\) on string\\.$#"
 			count: 2
 			path: core/http/LanguageAcceptParser.php
-
-		-
-			message: "#^Property spitfire\\\\core\\\\http\\\\request\\\\handler\\\\ClosureResponseRequestHandler\\:\\:\\$response \\(Psr\\\\Http\\\\Message\\\\ResponseInterface\\) does not accept Closure\\.$#"
-			count: 1
-			path: core/http/request/handler/ClosureResponseRequestHandler.php
-
-		-
-			message: "#^Method spitfire\\\\provider\\\\Container\\:\\:call\\(\\) invoked with 2 parameters, 1 required\\.$#"
-			count: 1
-			path: core/http/request/handler/RouterClosureRequestHandler.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$params$#"
@@ -169,41 +134,6 @@ parameters:
 			message: "#^Property spitfire\\\\io\\\\lock\\\\FileLock\\:\\:\\$file is never read, only written\\.$#"
 			count: 1
 			path: io/lock/FileLock.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\FileNotFoundException not found\\.$#"
-			count: 1
-			path: io/media/PNGQuant.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$img    string The file to read in\\)\\: Unexpected token \"\\$img\", expected type at offset 551$#"
-			count: 1
-			path: io/media/PNGQuant.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$target string The file to write to\\)\\: Unexpected token \"\\$target\", expected type at offset 597$#"
-			count: 1
-			path: io/media/PNGQuant.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\FileNotFoundException\\.$#"
-			count: 1
-			path: io/media/PNGQuant.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: io/media/PNGQuant.php
-
-		-
-			message: "#^Variable \\$compressed_png_content might not be defined\\.$#"
-			count: 1
-			path: io/media/PNGQuant.php
-
-		-
-			message: "#^Variable \\$error_output might not be defined\\.$#"
-			count: 1
-			path: io/media/PNGQuant.php
 
 		-
 			message: "#^Instanceof between \\*NEVER\\* and Throwable will always evaluate to false\\.$#"
@@ -586,36 +516,6 @@ parameters:
 			path: model/adapters/bridgeadapter.php
 
 		-
-			message: "#^Class spitfire\\\\DateTime not found\\.$#"
-			count: 1
-			path: model/adapters/datetimeadapter.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\DateTime not found\\.$#"
-			count: 2
-			path: model/adapters/datetimeadapter.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\DateTimeAdapter\\:\\:dbGetData\\(\\) should return string but returns array\\<int\\|string, mixed\\>\\.$#"
-			count: 1
-			path: model/adapters/datetimeadapter.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
-			count: 2
-			path: model/adapters/enumadapter.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
-			count: 1
-			path: model/adapters/enumadapter.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
-			count: 2
-			path: model/adapters/enumadapter.php
-
-		-
 			message: "#^Access to constant TYPE_AND on an unknown class spitfire\\\\storage\\\\database\\\\RestrictionGroup\\.$#"
 			count: 1
 			path: model/adapters/m2madapter.php
@@ -914,11 +814,6 @@ parameters:
 			message: "#^Parameter \\$model of method spitfire\\\\model\\\\fields\\\\StringField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
 			count: 2
 			path: model/fields/StringField.php
-
-		-
-			message: "#^Parameter \\$model of method DatetimeField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 2
-			path: model/fields/datetime.php
 
 		-
 			message: "#^Parameter \\$model of method EnumField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"

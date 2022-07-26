@@ -2,6 +2,7 @@
 
 use Psr\Container\ContainerInterface;
 use spitfire\contracts\ConfigurationInterface;
+use spitfire\contracts\core\LocationsInterface;
 use spitfire\contracts\services\ProviderInterface;
 use spitfire\provider\Container;
 use spitfire\storage\database\Connection;

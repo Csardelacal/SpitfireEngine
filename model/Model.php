@@ -24,6 +24,13 @@ abstract class Model implements JsonSerializable
 {
 	
 	/**
+	 * Which of the model's fields are part of the public API.
+	 * 
+	 * @var string[]
+	 */
+	public $api = [];
+	
+	/**
 	 * The actual data that the record contains. The record is basically a wrapper
 	 * around the array that allows to validate data on the go and to alert the
 	 * programmer about inconsistent types.
@@ -133,6 +140,8 @@ abstract class Model implements JsonSerializable
 	/**
 	 * This performs the opposite operation to rehydrating, it writes data from the model
 	 * into the record so it can be written to the DBMS.
+	 * 
+	 * @todo This needs to work for private properties too.
 	 */
 	public function sync() : void
 	{
@@ -367,8 +376,8 @@ abstract class Model implements JsonSerializable
 	{
 		$raw = [];
 		
-		foreach ($this->record as $name => $adapter) {
-			$raw[$name] = $adapter->usrGetData();
+		foreach ($this->record->raw() as $name => $value) {
+			$raw[$name] = $value;
 		}
 		
 		return $raw;

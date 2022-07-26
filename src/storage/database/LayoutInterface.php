@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\event\EventDispatch;
+use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\NotFoundException;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
@@ -110,6 +111,23 @@ interface LayoutInterface
 	 * @return Index
 	 */
 	public function index($name, ...$fields) : Index;
+	
+	/**
+	 * Find an index by it's name within the layout.
+	 * 
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasIndex(string $name) : bool;
+	
+	/**
+	 * Get an index by it's name within the layout
+	 * 
+	 * @param string $name
+	 * @return IndexInterface The index
+	 * @throws ApplicationException
+	 */
+	public function getIndex(string $name) : IndexInterface;
 	
 	/**
 	 * Set the primary index to a certain field.

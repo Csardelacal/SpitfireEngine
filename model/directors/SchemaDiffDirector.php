@@ -73,7 +73,7 @@ class SchemaDiffDirector extends Command
 				}
 				
 				foreach ($diff->right()->getFields() as $field) {
-					$output->writeln(sprintf('<bg=red>Remove field</>', $field->getName()));
+					$output->writeln(sprintf('<bg=red>Remove field</>'));
 					$output->writeln(sprintf(' %s', $field->getName()));
 					$output->writeln(sprintf(' %s', $field->getType()));
 					$output->writeln(sprintf(' %s', $field->isNullable()? 'Nullable' : 'Not null'));

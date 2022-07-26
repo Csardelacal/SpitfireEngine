@@ -180,7 +180,7 @@ class CORS
 	public function cache($seconds)
 	{
 		if ($seconds === false) {
-			$this->headers->unset('Access-Control-Max-Age', '-1'); 
+			$this->headers->set('Access-Control-Max-Age', '-1'); 
 		}
 		else {
 			$this->headers->set('Access-Control-Max-Age', $seconds); 

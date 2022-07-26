@@ -1,16 +1,16 @@
 <?php namespace spitfire\storage\database\diff;
 
 use spitfire\storage\database\Field;
-use spitfire\storage\database\Layout;
+use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\support\utils\Index as IndexUtils;
 
 class Generator
 {
 	
-	private Layout $left;
-	private Layout $right;
+	private LayoutInterface $left;
+	private LayoutInterface $right;
 	
-	public function __construct(Layout $left, Layout $right)
+	public function __construct(LayoutInterface $left, LayoutInterface $right)
 	{
 		$this->left = $left;
 		$this->right = $right;
@@ -24,7 +24,7 @@ class Generator
 		);
 	}
 	
-	public function toBeAdded(Layout $base, Layout $projection) : ToBeAdded
+	public function toBeAdded(LayoutInterface $base, LayoutInterface $projection) : ToBeAdded
 	{
 		$_result = new ToBeAdded();
 		
