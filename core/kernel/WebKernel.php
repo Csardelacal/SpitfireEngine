@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\kernel;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -43,6 +44,13 @@ use spitfire\io\stream\Stream;
 class WebKernel implements WebKernelInterface, RequestHandlerInterface
 {
 	
+	private ContainerInterface $container;
+	
+	public function __construct(ContainerInterface $container)
+	{
+		$this->container = $container;
+	}
+	
 	public function boot() : void
 	{
 	}
@@ -54,17 +62,20 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 	 *
 	 * If the application ran into a different error than not having a route available, Spitfire
 	 * will issue an appropriate error page.
+	 * 
+	 * @todo The router should not be dinamically retrieved. But I'm running into a chicken/egg problem
+	 * where the router's service provider needs to be started by the kernel and the kernel needs the
+	 * router to determine where it should be sending stuff to.
 	 *
 	 * @param ServerRequestInterface $request
-	 * @param Router $router
 	 * @return ResponseInterface
 	 */
-	public function handle(ServerRequestInterface $request, Router $router): ResponseInterface
+	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
 		
 		try {
 			$notfound = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
-			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($router));
+			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($this->container->get(Router::class)));
 			
 			return $routed->handle($request);
 		}
