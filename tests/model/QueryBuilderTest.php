@@ -170,7 +170,7 @@ class QueryBuilderTest extends TestCase
 		);
 		
 		$model = new class () extends Model {
-			
+			private int $_id;
 			
 			public function getTableName()
 			{

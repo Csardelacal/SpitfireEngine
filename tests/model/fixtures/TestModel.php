@@ -41,4 +41,9 @@ class TestModel extends Model
 	#[Integer(true)]
 	#[References(ForeignModel::class)]
 	private int $foreign;
+	
+	public function getTest(): string
+	{
+		return $this->test;
+	}
 }

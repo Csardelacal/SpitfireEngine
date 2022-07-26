@@ -112,7 +112,7 @@ abstract class Model implements JsonSerializable
 	 *
 	 * @return self
 	 */
-	public function withHydrate(Record $record) : Model
+	public function withHydrate(Record $record) : self
 	{
 		$copy = clone $this;
 		$copy->record = $record;
@@ -124,6 +124,12 @@ abstract class Model implements JsonSerializable
 	/**
 	 * Rehydrating reads the data from the underlying record into the model. This allows
 	 * the model to use properties properly and provides PHP with native behacviors.
+	 * 
+	 * @todo This prevents models from using inheritance, we currently are using traits for
+	 * most of the model extensions. Extending one model from another could have applications
+	 * in future revisions, but the use case currently doesn't justify the complexity.
+	 * 
+	 * @see https://3v4l.org/rGs73
 	 */
 	public function rehydrate() : void
 	{
@@ -131,9 +137,16 @@ abstract class Model implements JsonSerializable
 		assert($this->hydrated);
 		
 		$raw = $this->record->raw();
+		$reflection = new ReflectionClass($this);
 		
 		foreach ($raw as $k => $v) {
-			$this->$k = $v;
+			$prop = $reflection->getProperty($k);
+			
+			/**
+			 * @todo Remove the set accessible call, this is deprecated since PHP8.1
+			 */
+			$prop->setAccessible(true);
+			$prop->setValue($this, $v);
 		}
 	}
 	
