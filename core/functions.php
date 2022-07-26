@@ -5,7 +5,7 @@ use Psr\Http\Message\StreamInterface;
 use spitfire\App;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
-use spitfire\contracts\core\kernel\KernelInterface;
+use spitfire\contracts\core\kernel;
 use spitfire\core\Environment;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
@@ -87,34 +87,42 @@ function emit(ResponseInterface $message) : void
  * Ths function will boot a kernel, instancing it and executing the necessary scripts to
  * initialize it.
  *
- * @template T of KernelInterface
+ * @template T of kernel\KernelInterface
  * @param T $kernel
  * @return T
  * @throws ApplicationException
  */
-function boot(KernelInterface $kernel) : KernelInterface
+function boot(kernel\KernelInterface $kernel) : kernel\KernelInterface
 {
+	$provider = spitfire()->provider();
+	$interfaces = [
+		kernel\KernelInterface::class,
+		kernel\ConsoleKernelInterface::class,
+		kernel\WebKernelInterface::class
+	];
+	
 	/**
-	 * Instance the new kernel. Kernels must be able to be instanced with minimum
-	 * available configuration and set up. At this point no service providers or
-	 * similar are running.
-	 *
-	 * We use the service provider for this, allowing the developer to potentially
-	 * override the kernel with custom logic.
+	 * Spitfire provides three interfaces that an application can depend on. The generic
+	 * kernel, the  console and the web kernels. The application can depend on those to
+	 * construct behavior.
 	 */
-	$instance = $kernel;
+	foreach ($interfaces as $classname) {
+		if ($kernel instanceof $classname) {
+			$provider->set($classname, $kernel);
+		}
+	}
 	
 	/**
 	 * Loop over the kernel's init script and execute them, making the kernel function.
 	 */
-	foreach ($instance->initScripts() as $script) {
-		(new $script($instance))->exec();
+	foreach ($kernel->initScripts() as $script) {
+		(new $script($kernel))->exec();
 	}
 	
 	/**
 	 * Return the kernel, so the application can work as expected.
 	 */
-	return $instance;
+	return $kernel;
 }
 
 /**

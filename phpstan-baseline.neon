@@ -31,11 +31,6 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Class spitfire\\\\cache\\\\MemoryCache does not have a constructor and must be instantiated without any parameters\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
 			message: "#^Constant APP_DIRECTORY not found\\.$#"
 			count: 1
 			path: core/functions.php
