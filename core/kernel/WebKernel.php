@@ -14,7 +14,6 @@ use spitfire\core\Response;
 use spitfire\core\router\Router;
 use spitfire\core\router\RoutingMiddleware;
 use spitfire\io\stream\Stream;
-use spitfire\provider\Container;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -44,34 +43,6 @@ use spitfire\provider\Container;
 class WebKernel implements WebKernelInterface, RequestHandlerInterface
 {
 	
-	/**
-	 *
-	 * @var Router
-	 */
-	private $router;
-	
-	public function __construct(Container $provider)
-	{
-		/**
-		 * If a router has already been defined for the system to use from here on
-		 * out, we will do so.
-		 */
-		if ($provider->has(Router::class)) {
-			$this->router = $provider->get(Router::class);
-		}
-		
-		/**
-		 * Otherwise we will have the provider assemble one so we can use it the way
-		 * we prefer.
-		 */
-		else {
-			$router = $provider->assemble(Router::class, ['prefix' => '']);
-			assert($router instanceof Router);
-			$this->router = $router;
-			$provider->set(Router::class, $this->router);
-		}
-	}
-	
 	public function boot() : void
 	{
 	}
@@ -85,14 +56,15 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 	 * will issue an appropriate error page.
 	 *
 	 * @param ServerRequestInterface $request
+	 * @param Router $router
 	 * @return ResponseInterface
 	 */
-	public function handle(ServerRequestInterface $request): ResponseInterface
+	public function handle(ServerRequestInterface $request, Router $router): ResponseInterface
 	{
 		
 		try {
 			$notfound = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
-			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($this->router));
+			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($router));
 			
 			return $routed->handle($request);
 		}
@@ -100,11 +72,6 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 			$handler = new ExceptionHandler();
 			return $handler->handle($e);
 		}
-	}
-	
-	public function router() : Router
-	{
-		return $this->router;
 	}
 	
 	public function initScripts(): array

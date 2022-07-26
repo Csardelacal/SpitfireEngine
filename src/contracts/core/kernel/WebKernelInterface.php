@@ -55,9 +55,8 @@ interface WebKernelInterface extends KernelInterface
 	 * will issue an appropriate error page.
 	 *
 	 * @param ServerRequestInterface $request
+	 * @param Router $router
 	 * @return ResponseInterface
 	 */
-	public function handle(ServerRequestInterface $request): ResponseInterface;
-	
-	public function router() : Router;
+	public function handle(ServerRequestInterface $request, Router $router): ResponseInterface;
 }
