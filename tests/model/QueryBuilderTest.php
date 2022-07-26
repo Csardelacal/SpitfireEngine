@@ -1,7 +1,7 @@
 <?php namespace tests\spitfire\model;
 
 use PHPUnit\Framework\TestCase;
-use spitfire\model\ConnectionManager;
+use spitfire\storage\database\ConnectionManager;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\QueryBuilder;
@@ -128,14 +128,7 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$manager = spitfire()->provider()->get(ConnectionManager::class);
-		$manager->put($id, $connection);
-		$manager->setDefault($id);
-		
-		spitfire()->provider()->set(ConnectionManager::class, $manager);
-		
-		$this->model->setConnection($id);
-		$this->model2->setConnection($id);
+		spitfire()->provider()->set(Connection::class, $connection);
 	}
 	
 	public function testBelongsToWhere()

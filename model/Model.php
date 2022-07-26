@@ -4,6 +4,7 @@ use JsonSerializable;
 use ReflectionClass;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Connection;
+use spitfire\storage\database\ConnectionManager;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
 use spitfire\storage\database\Field as DatabaseField;
@@ -362,7 +363,7 @@ abstract class Model implements JsonSerializable
 	 *
 	 * @return array
 	 */
-	public function jsonSerialize()
+	public function jsonSerialize() : mixed
 	{
 		$raw = [];
 		
@@ -380,7 +381,7 @@ abstract class Model implements JsonSerializable
 	{
 		return $this->connection !== null?
 		spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
-		spitfire()->provider()->get(ConnectionManager::class)->getDefault();
+		spitfire()->provider()->get(Connection::class);
 	}
 	
 	public function setConnection(string $id) : Model
