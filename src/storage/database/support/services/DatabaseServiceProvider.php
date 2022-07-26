@@ -16,9 +16,10 @@ class DatabaseServiceProvider implements ProviderInterface
 	 */
 	public function register(ContainerInterface $container)
 	{
+		$drive   = $container->get(LocationsInterface::class);
 		$config  = $container->get(ConfigurationInterface::class);
 		$default = $config->get('database.default');
-		$schema  = $config->get('app.database.schema', 'bin/schema.php');
+		$schema  = $drive->root($config->get('app.database.schema', 'bin/schema.php'));
 		$manager = new ConnectionManager($container, $config->get('database.connections'), $schema);
 		
 		/**
