@@ -27,7 +27,8 @@ class AbstractResultSet implements ResultInterface
 	 */
 	public function fetchNumeric()
 	{
-		$next = next($this->result);
+		$next = current($this->result);
+		next($this->result);
 		
 		if ($next === false) {
 			return false;
@@ -42,7 +43,8 @@ class AbstractResultSet implements ResultInterface
 	 */
 	public function fetchAssociative()
 	{
-		$next = next($this->result);
+		$next = current($this->result);
+		next($this->result);
 		
 		if ($next === false) {
 			return false;
@@ -57,7 +59,8 @@ class AbstractResultSet implements ResultInterface
 	 */
 	public function fetchOne()
 	{
-		$next = next($this->result);
+		$next = current($this->result);
+		next($this->result);
 		
 		if ($next === false) {
 			return false;
@@ -74,7 +77,8 @@ class AbstractResultSet implements ResultInterface
 	{
 		$_return = [];
 		
-		while ($row = next($this->result)) {
+		while ($row = current($this->result)) {
+			next($this->result);
 			$_return[] = array_values($row);
 		}
 		
@@ -96,7 +100,8 @@ class AbstractResultSet implements ResultInterface
 	{
 		$_return = [];
 		
-		while ($row = next($this->result)) {
+		while ($row = current($this->result)) {
+			next($this->result);
 			$_return[] = reset($row);
 		}
 		

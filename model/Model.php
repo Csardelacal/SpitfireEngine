@@ -4,6 +4,7 @@ use JsonSerializable;
 use ReflectionClass;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Connection;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\ConnectionManager;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
@@ -24,13 +25,6 @@ abstract class Model implements JsonSerializable
 {
 	
 	/**
-	 * Which of the model's fields are part of the public API.
-	 * 
-	 * @var string[]
-	 */
-	public $api = [];
-	
-	/**
 	 * The actual data that the record contains. The record is basically a wrapper
 	 * around the array that allows to validate data on the go and to alert the
 	 * programmer about inconsistent types.
@@ -48,9 +42,9 @@ abstract class Model implements JsonSerializable
 	
 	/**
 	 *
-	 * @var string|null
+	 * @var ConnectionInterface
 	 */
-	private $connection = null;
+	private ConnectionInterface $connection;
 	
 	private $prefix = '';
 	
@@ -66,6 +60,11 @@ abstract class Model implements JsonSerializable
 	 * @var Model|null
 	 */
 	private $pivot = null;
+	
+	public function __construct(ConnectionInterface $connection)
+	{
+		$this->connection = $connection;
+	}
 	
 	/**
 	 * Returns the record this model is working on. This requires the model to be
@@ -256,7 +255,7 @@ abstract class Model implements JsonSerializable
 	
 	public function query() : QueryBuilder
 	{
-		return new QueryBuilder($this);
+		return (new QueryBuilder($this))->withDefaultMapping();
 	}
 	
 	/**
@@ -399,16 +398,8 @@ abstract class Model implements JsonSerializable
 	/**
 	 * @todo This should return a database connection
 	 */
-	public function getConnection() : Connection
+	public function getConnection() : ConnectionInterface
 	{
-		return $this->connection !== null?
-		spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
-		spitfire()->provider()->get(Connection::class);
-	}
-	
-	public function setConnection(string $id) : Model
-	{
-		$this->connection = $id;
-		return $this;
+		return $this->connection;
 	}
 }

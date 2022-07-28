@@ -15,7 +15,7 @@ use spitfire\storage\database\query\ResultInterface;
  * A connection combines a database driver and a schema, allowing the application to
  * maintain a context for the schema it's working on.
  */
-class Connection
+class Connection implements ConnectionInterface
 {
 	
 	/**

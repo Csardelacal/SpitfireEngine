@@ -2,6 +2,7 @@
 
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\QueryBuilder;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
@@ -57,7 +58,7 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 			 * The subquery is just a regular query being performed on the remote model (the
 			 * one being referenced).
 			 */
-			$subquery = $this->referenced->getModel()->query();
+			$subquery = new QueryBuilder($this->referenced->getModel());
 			
 			/**
 			 * We then let the developer apply any additional restrictions they whish to perform.

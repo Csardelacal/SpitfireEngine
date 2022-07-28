@@ -64,39 +64,6 @@ class QueryBuilderTest extends TestCase
 		
 		spitfire()->provider()->set(Schema::class, $this->schema);
 		
-		$this->model = new class ($this->layout) extends Model {
-			
-			public function getTableName()
-			{
-				return 'test';
-			}
-		};
-		
-		$this->model2 = new class ($this->model) extends Model {
-			private $parent;
-			
-			public function __construct(Model $parent)
-			{
-				$this->parent = $parent;
-			}
-			
-			public function test()
-			{
-				return new BelongsToOne(new Field($this, 'test_id'), new Field($this->parent, '_id'));
-			}
-			
-			public function getTableName()
-			{
-				return 'test2';
-			}
-		};
-		
-		$schema = new Schema('test');
-		$schema->putLayout($this->layout);
-		$schema->putLayout($this->layout2);
-		
-		$id = rand();
-		
 		$driver = new class extends AbstractDriver {
 			public $queries = [];
 			
@@ -127,6 +94,44 @@ class QueryBuilderTest extends TestCase
 				new MySQLSchemaGrammar
 			)
 		);
+		
+		$this->model = new class ($connection) extends Model {
+			private int $_id = 0;
+			
+			public function getId() 
+			{
+				return $this->_id;
+			}
+			
+			public function getTableName()
+			{
+				return 'test';
+			}
+		};
+		
+		$this->model2 = new class ($connection, $this->model) extends Model {
+			private $parent;
+			
+			public function __construct(Connection $connection, Model $parent)
+			{
+				$this->parent = $parent;
+				parent::__construct($connection);
+			}
+			
+			public function test()
+			{
+				return new BelongsToOne(new Field($this, 'test_id'), new Field($this->parent, '_id'));
+			}
+			
+			public function getTableName()
+			{
+				return 'test2';
+			}
+		};
+		
+		$schema = new Schema('test');
+		$schema->putLayout($this->layout);
+		$schema->putLayout($this->layout2);
 		
 		spitfire()->provider()->set(Connection::class, $connection);
 	}
@@ -169,7 +174,7 @@ class QueryBuilderTest extends TestCase
 			$this->model2
 		);
 		
-		$model = new class () extends Model {
+		$model = new class ($connection) extends Model {
 			private int $_id;
 			
 			public function getTableName()
@@ -221,9 +226,9 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$builder = new QueryBuilder(
+		$builder = (new QueryBuilder(
 			$this->model2
-		);
+		))->withDefaultMapping();
 		
 		$builder->whereHas('test', function (QueryBuilder $builder) {
 			$builder->where('my_stick', 'is better than bacon');
@@ -236,5 +241,64 @@ class QueryBuilderTest extends TestCase
 		$this->assertCount(1, $driver->queries);
 		$this->assertStringContainsString('`_id` FROM `test`', $driver->queries[0]);
 		$this->assertStringContainsString("`.`my_stick` = 'is better than bacon' AND", $driver->queries[0]);
+	}
+	
+	
+	public function testFirstRecord()
+	{
+		
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([
+					['_id' => 1]
+				]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$this->schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter()),
+				new MySQLSchemaGrammar
+			)
+		);
+		
+		$model = new class ($connection) extends Model {
+			private int $_id = 0;
+			
+			public function getId() 
+			{
+				return $this->_id;
+			}
+			
+			public function getTableName()
+			{
+				return 'test';
+			}
+		};
+		
+		$builder = (new QueryBuilder(
+			$model
+		))->withDefaultMapping();
+		
+		$result = $builder->first();
+		$this->assertInstanceOf(get_class($model), $result);
 	}
 }

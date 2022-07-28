@@ -4,6 +4,7 @@ Documentation/*
 *.sublime-project
 
 *.sublime-workspace
+cov.xml
 /nbproject/private/
 /.phpunit.result.cache
 /vendor
