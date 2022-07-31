@@ -191,21 +191,6 @@ parameters:
 			path: model/Schema.php
 
 		-
-			message: "#^Parameter \\#1 \\$fields of class spitfire\\\\model\\\\Index constructor expects spitfire\\\\collection\\\\Collection\\<spitfire\\\\model\\\\Field\\>\\|null, array given\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Parameter \\#1 \\$fields of class spitfire\\\\model\\\\Index constructor expects spitfire\\\\collection\\\\Collection\\<spitfire\\\\model\\\\Field\\>\\|null, array\\{spitfire\\\\model\\\\fields\\\\IntegerField\\} given\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:__construct\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 2
-			path: model/Schema.php
-
-		-
 			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:setTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: model/Schema.php

@@ -63,7 +63,7 @@ class QueryBuilder
 		/**
 		 * Extract the name of the fields so we can assign it back to the generic mapping
 		 * that will read the data from the query into the model.
-		 * 
+		 *
 		 * @var Collection<FieldIdentifier>
 		 */
 		$fields = $selected->each(fn(SelectExpression $e) => $e->getInput());
@@ -99,7 +99,7 @@ class QueryBuilder
 	/**
 	 *
 	 * @param string $type
-	 * @param callable(RestrictionGroupBuilder) $do
+	 * @param callable(RestrictionGroupBuilder):void $do
 	 * @return QueryBuilder
 	 */
 	public function group(string $type, callable $do) : QueryBuilder
@@ -123,7 +123,7 @@ class QueryBuilder
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param callable():Model|null $or This function can either: return null, return a model
 	 * or throw an exception
 	 * @return Model|null
@@ -145,21 +145,44 @@ class QueryBuilder
 			return $or === null? null : $or();
 		}
 		
+		/**
+		 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
+		 * differentiate properly.
+		 */
+		
 		return $this->eagerLoad(new Collection([$this->model->withHydrate(new Record($row))]))->first();
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return Collection<Model>
 	 */
 	public function all() : Collection
 	{
+		/**
+		 *
+		 * @todo implement
+		 */
 		$result = $this->model->getConnection()->query($this->withDefaultMapping()->getQuery());
 		return new Collection();
 	}
 	
 	public function range(int $offset, int $size) : Collection
 	{
+		/*
+		 * Fetch a single row from the database.
+		 */
+		$result = $this->model->getConnection()->query($this->getQuery());
+		$rows   = $result->fetchAllAssociative();
+		
+		return $this->eagerLoad((new Collection($rows))->each(function (array $row) : Model {
+			
+			/**
+			 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
+			 * differentiate properly.
+			 */
+			return new $this->model->withHydrate(new Record($row));
+		}));
 	}
 	
 	public function count() : int
@@ -177,7 +200,7 @@ class QueryBuilder
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param Collection<Model> $records
 	 */
 	protected function eagerLoad(Collection $records) : Collection
@@ -191,7 +214,7 @@ class QueryBuilder
 			/**
 			 * @todo This needs to make use of reflection so it can be used properly.
 			 */
-			foreach($records as $record) {
+			foreach ($records as $record) {
 				$record->{$relation} = $children[$record->getPrimary()];
 			}
 		}

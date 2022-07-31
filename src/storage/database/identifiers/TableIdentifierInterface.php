@@ -50,9 +50,9 @@ interface TableIdentifierInterface extends IdentifierInterface
 	 * Returns the components of the identifier. This can be any combination of
 	 * strings that identifies a field or table inside the DBMS or a query.
 	 *
-	 * @return IdentifierInterface
+	 * @return FieldIdentifier
 	 */
-	public function getOutput(string $name): IdentifierInterface;
+	public function getOutput(string $name): FieldIdentifier;
 	
 	
 	public function withAlias() : TableIdentifierInterface;
