@@ -69,15 +69,36 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 	 * where the router's service provider needs to be started by the kernel and the kernel needs the
 	 * router to determine where it should be sending stuff to.
 	 *
+	 * @todo Let the user define the middleware stack.
+	 *
 	 * @param ServerRequestInterface $request
 	 * @return ResponseInterface
 	 */
 	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
-		
+		/**
+		 * The most core behavior is to return a 404 page, which indicates that the framework has
+		 * been unable to come up with a response.
+		 */
 		$notfound  = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
-		$routed    = new DecoratingRequestHandler($notfound, new RoutingMiddleware($this->container->get(Router::class)));
-		$exception = new DecoratingRequestHandler($routed, new ExceptionHandler($this->container->get(LocationsInterface::class)));
+		
+		/**
+		 * We wrap this response in a routing middleware, which attempts to find a route in our router
+		 * and send a response based on it.
+		 */
+		$routed    = new DecoratingRequestHandler(
+			$notfound,
+			new RoutingMiddleware($this->container->get(Router::class))
+		);
+		
+		/**
+		 * Finally, we wrap all of them in a exception handler, which allows our application to catch any
+		 * exceptions in the response generating code and stop.
+		 */
+		$exception = new DecoratingRequestHandler(
+			$routed,
+			new ExceptionHandler($this->container->get(LocationsInterface::class))
+		);
 		
 		return $exception->handle($request);
 	}

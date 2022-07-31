@@ -39,8 +39,12 @@ abstract class RecordEvent extends Event
 	 * @param Record $record
 	 * @param string[] $options
 	 */
-	public function __construct(ConnectionInterface $driver, LayoutInterface $layout, Record $record, array $options = [])
-	{
+	public function __construct(
+		ConnectionInterface $driver,
+		LayoutInterface $layout,
+		Record $record,
+		array $options = []
+	) {
 		$this->record = $record;
 		$this->layout = $layout;
 		$this->options = $options;
