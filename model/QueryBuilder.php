@@ -19,7 +19,10 @@ class QueryBuilder
 	
 	use Queriable;
 	
-	
+	/**
+	 *
+	 * @var Model
+	 */
 	private $model;
 	
 	/**
@@ -181,7 +184,7 @@ class QueryBuilder
 			 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
 			 * differentiate properly.
 			 */
-			return new $this->model->withHydrate(new Record($row));
+			return $this->model->withHydrate(new Record($row));
 		}));
 	}
 	
@@ -195,8 +198,7 @@ class QueryBuilder
 			'c'
 		);
 		
-		$res = $this->model->getConnection()->getDriver()->query($query)->fetch();
-		return $res['c'];
+		return $this->model->getConnection()->query($query)->fetchOne();
 	}
 	
 	/**

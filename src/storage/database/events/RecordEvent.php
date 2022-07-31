@@ -1,7 +1,6 @@
 <?php namespace spitfire\storage\database\events;
 
 use spitfire\event\Event;
-use spitfire\storage\database\Connection;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Record;
@@ -11,7 +10,7 @@ abstract class RecordEvent extends Event
 	
 	/**
 	 *
-	 * @var Connection
+	 * @var ConnectionInterface
 	 */
 	private $driver;
 	
@@ -70,7 +69,7 @@ abstract class RecordEvent extends Event
 		return $this->options;
 	}
 	
-	public function getConnection() : Connection
+	public function getConnection() : ConnectionInterface
 	{
 		return $this->driver;
 	}

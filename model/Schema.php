@@ -72,51 +72,6 @@ class Schema
 		}
 	}
 	
-	
-	/**
-	 * @param string $name
-	 * @param string[] $options
-	 * @return EnumField
-	 */
-	public function enum(string $name, array $options) : EnumField
-	{
-		return $this->setField($name, new EnumField($options));
-	}
-	
-	/**
-	 *
-	 * @param string $name
-	 * @param class-string $to
-	 * @return Reference
-	 */
-	public function reference(string $name, string $to) : Reference
-	{
-		return $this->setField($name, new Reference($to));
-	}
-	
-	/**
-	 *
-	 * @param string $name
-	 * @param class-string $target
-	 * @param string $role
-	 * @return ChildrenField
-	 */
-	public function children(string $name, $target, $role) : ChildrenField
-	{
-		return $this->setField($name, new ChildrenField($target, $role));
-	}
-	
-	/**
-	 *
-	 * @param string $name
-	 * @param class-string $target
-	 * @return ManyToManyField
-	 */
-	public function many(string $name, $target) : ManyToManyField
-	{
-		return $this->setField($name, new ManyToManyField($target));
-	}
-	
 	/**
 	 * Returns the whole list of fields this model contains. This are logical fields
 	 * and therefore can contain data that is too complex to be stored directly

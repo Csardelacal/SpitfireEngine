@@ -491,16 +491,6 @@ parameters:
 			path: model/adapters/ReferenceAdapter.php
 
 		-
-			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/bridgeadapter.php
-
-		-
-			message: "#^Parameter \\$value of method spitfire\\\\model\\\\adapters\\\\BridgeAdapter\\:\\:addValue\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/bridgeadapter.php
-
-		-
 			message: "#^Access to constant TYPE_AND on an unknown class spitfire\\\\storage\\\\database\\\\RestrictionGroup\\.$#"
 			count: 1
 			path: model/adapters/m2madapter.php
