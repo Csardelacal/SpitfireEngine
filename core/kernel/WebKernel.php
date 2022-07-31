@@ -11,6 +11,8 @@ use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
 use spitfire\_init\InitRequest;
 use spitfire\contracts\core\kernel\WebKernelInterface;
+use spitfire\contracts\core\LocationsInterface;
+use spitfire\core\exceptions\ExceptionHandler;
 use spitfire\core\Response;
 use spitfire\core\router\Router;
 use spitfire\core\router\RoutingMiddleware;
@@ -62,27 +64,43 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 	 *
 	 * If the application ran into a different error than not having a route available, Spitfire
 	 * will issue an appropriate error page.
-	 * 
+	 *
 	 * @todo The router should not be dinamically retrieved. But I'm running into a chicken/egg problem
 	 * where the router's service provider needs to be started by the kernel and the kernel needs the
 	 * router to determine where it should be sending stuff to.
+	 *
+	 * @todo Let the user define the middleware stack.
 	 *
 	 * @param ServerRequestInterface $request
 	 * @return ResponseInterface
 	 */
 	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
+		/**
+		 * The most core behavior is to return a 404 page, which indicates that the framework has
+		 * been unable to come up with a response.
+		 */
+		$notfound  = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
 		
-		try {
-			$notfound = new StaticResponseRequestHandler(new Response(Stream::fromString('Not found'), 404));
-			$routed   = new DecoratingRequestHandler($notfound, new RoutingMiddleware($this->container->get(Router::class)));
-			
-			return $routed->handle($request);
-		}
-		catch (\Exception $e) {
-			$handler = new ExceptionHandler();
-			return $handler->handle($e);
-		}
+		/**
+		 * We wrap this response in a routing middleware, which attempts to find a route in our router
+		 * and send a response based on it.
+		 */
+		$routed    = new DecoratingRequestHandler(
+			$notfound,
+			new RoutingMiddleware($this->container->get(Router::class))
+		);
+		
+		/**
+		 * Finally, we wrap all of them in a exception handler, which allows our application to catch any
+		 * exceptions in the response generating code and stop.
+		 */
+		$exception = new DecoratingRequestHandler(
+			$routed,
+			new ExceptionHandler($this->container->get(LocationsInterface::class))
+		);
+		
+		return $exception->handle($request);
 	}
 	
 	public function initScripts(): array

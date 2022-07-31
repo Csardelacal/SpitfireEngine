@@ -191,21 +191,6 @@ parameters:
 			path: model/Schema.php
 
 		-
-			message: "#^Parameter \\#1 \\$fields of class spitfire\\\\model\\\\Index constructor expects spitfire\\\\collection\\\\Collection\\<spitfire\\\\model\\\\Field\\>\\|null, array given\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Parameter \\#1 \\$fields of class spitfire\\\\model\\\\Index constructor expects spitfire\\\\collection\\\\Collection\\<spitfire\\\\model\\\\Field\\>\\|null, array\\{spitfire\\\\model\\\\fields\\\\IntegerField\\} given\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:__construct\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 2
-			path: model/Schema.php
-
-		-
 			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:setTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
 			path: model/Schema.php
@@ -504,16 +489,6 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 3
 			path: model/adapters/ReferenceAdapter.php
-
-		-
-			message: "#^Call to method getTable\\(\\) on an unknown class spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/bridgeadapter.php
-
-		-
-			message: "#^Parameter \\$value of method spitfire\\\\model\\\\adapters\\\\BridgeAdapter\\:\\:addValue\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/bridgeadapter.php
 
 		-
 			message: "#^Access to constant TYPE_AND on an unknown class spitfire\\\\storage\\\\database\\\\RestrictionGroup\\.$#"

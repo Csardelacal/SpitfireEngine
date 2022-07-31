@@ -271,7 +271,7 @@ class Query
 		return $copy;
 	}
 	
-	public function aggregate(FieldIdentifier $field, Aggregate $fn, string $alias) : Query
+	public function aggregate(IdentifierInterface $field, Aggregate $fn, string $alias) : Query
 	{
 		$this->select->push(new SelectExpression($field, $alias, $fn));
 		return $this;

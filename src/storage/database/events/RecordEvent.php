@@ -1,9 +1,7 @@
 <?php namespace spitfire\storage\database\events;
 
 use spitfire\event\Event;
-use spitfire\storage\database\Connection;
-use spitfire\storage\database\DriverInterface;
-use spitfire\storage\database\drivers\Adapter;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\LayoutInterface;
 use spitfire\storage\database\Record;
 
@@ -12,7 +10,7 @@ abstract class RecordEvent extends Event
 	
 	/**
 	 *
-	 * @var Connection
+	 * @var ConnectionInterface
 	 */
 	private $driver;
 	
@@ -36,12 +34,16 @@ abstract class RecordEvent extends Event
 	
 	/**
 	 *
-	 * @param Connection $driver
+	 * @param ConnectionInterface $driver
 	 * @param Record $record
 	 * @param string[] $options
 	 */
-	public function __construct(Connection $driver, LayoutInterface $layout, Record $record, array $options = [])
-	{
+	public function __construct(
+		ConnectionInterface $driver,
+		LayoutInterface $layout,
+		Record $record,
+		array $options = []
+	) {
 		$this->record = $record;
 		$this->layout = $layout;
 		$this->options = $options;
@@ -67,7 +69,7 @@ abstract class RecordEvent extends Event
 		return $this->options;
 	}
 	
-	public function getConnection() : Connection
+	public function getConnection() : ConnectionInterface
 	{
 		return $this->driver;
 	}
