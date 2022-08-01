@@ -254,7 +254,7 @@ class QueryBuilderTest extends TestCase
 			{
 				$this->queries[] = $sql;
 				return new AbstractResultSet([
-					['_id' => 1]
+					['_id' => 1, 'my_stick' => '']
 				]);
 			}
 			
@@ -282,6 +282,7 @@ class QueryBuilderTest extends TestCase
 		
 		$model = new class ($connection) extends Model {
 			private int $_id = 0;
+			private string $my_stick;
 			
 			public function getId() 
 			{

@@ -27,9 +27,15 @@ class QueryBuilder
 	
 	/**
 	 *
+	 * @var ResultSetMapping
+	 */
+	private ResultSetMapping $mapping;
+	
+	/**
+	 *
 	 * @var Collection<ResultSetMapping>
 	 */
-	private $mappings;
+	private Collection $pivots;
 	
 	/**
 	 * The with method allows the user to determine relations that should be
@@ -50,7 +56,7 @@ class QueryBuilder
 		$this->model = $model;
 		
 		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
-		$this->mappings = new Collection();
+		$this->pivots = new Collection();
 	}
 	
 	public function withDefaultMapping() : QueryBuilder
@@ -77,7 +83,7 @@ class QueryBuilder
 			$map->set($_f->raw()[0], $_f);
 		}
 		
-		$copy->mappings->push($map);
+		$copy->mapping = $map;
 		
 		return $copy;
 	}
@@ -85,7 +91,14 @@ class QueryBuilder
 	public function withMapping(ResultSetMapping $mapping) : QueryBuilder
 	{
 		$copy = clone $this;
-		$copy->mappings->push($mapping);
+		$copy->mapping = $mapping;
+		return $copy;
+	}
+	
+	public function withPivot(ResultSetMapping $mapping) : QueryBuilder
+	{
+		$copy = clone $this;
+		$copy->pivots->push($mapping);
 		return $copy;
 	}
 	
@@ -153,7 +166,7 @@ class QueryBuilder
 		 * differentiate properly.
 		 */
 		
-		return $this->eagerLoad(new Collection([$this->model->withHydrate(new Record($row))]))->first();
+		return $this->eagerLoad(new Collection([$this->mapping->make(new Record($row))]))->first();
 	}
 	
 	/**
@@ -184,7 +197,7 @@ class QueryBuilder
 			 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
 			 * differentiate properly.
 			 */
-			return $this->model->withHydrate(new Record($row));
+			return $this->mapping->make(new Record($row));
 		}));
 	}
 	
