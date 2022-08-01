@@ -68,19 +68,10 @@ class QueryBuilder
 		 * our model so it can be hydrated.
 		 */
 		$selected = $copy->query->selectAll();
-		
-		/**
-		 * Extract the name of the fields so we can assign it back to the generic mapping
-		 * that will read the data from the query into the model.
-		 *
-		 * @var Collection<FieldIdentifier>
-		 */
-		$fields = $selected->each(fn(SelectExpression $e) => $e->getInput());
-		
 		$map = new ResultSetMapping($this->model);
 		
-		foreach ($fields as $_f) {
-			$map->set($_f->raw()[0], $_f);
+		foreach ($selected as $select) {
+			$map->set($select->getName()[1], $select->getInput());
 		}
 		
 		$copy->mapping = $map;

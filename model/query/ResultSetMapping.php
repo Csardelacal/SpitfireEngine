@@ -1,7 +1,7 @@
 <?php namespace spitfire\model\query;
 
 use spitfire\model\Model;
-use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Record;
 
 class ResultSetMapping
@@ -11,7 +11,7 @@ class ResultSetMapping
 	
 	/**
 	 *
-	 * @var FieldIdentifier[]
+	 * @var IdentifierInterface[]
 	 */
 	private $map;
 	
@@ -32,7 +32,7 @@ class ResultSetMapping
 		return $this->map[$field];
 	}
 	
-	public function set(string $name, FieldIdentifier $field)
+	public function set(string $name, IdentifierInterface $field)
 	{
 		$this->map[$name] = $field;
 		return $this;
@@ -41,7 +41,7 @@ class ResultSetMapping
 	public function make(Record $data) : Model
 	{
 		
-		$body = $data->slice(collect($this->map)->each(function (FieldIdentifier $e) : string {
+		$body = $data->slice(collect($this->map)->each(function (IdentifierInterface $e) : string {
 			$raw = $e->raw();
 			return array_pop($raw);
 		})->toArray());
