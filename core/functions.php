@@ -44,25 +44,6 @@ function spitfire()
 }
 
 /**
- *
- * Registers a new Application in Spitfire, allowing it to handle requests directed
- * to it.
- *
- * @param string $name The name of the Application
- * @param string $namespace The namespace in which the requests will be sent to
- *             the application.
- * @return App The App created by the system, use this to pass parameters and
- *             configuration to the application.
- */
-function app($name, $namespace)
-{
-	$appName = $name . 'App';
-	$app = new $appName(APP_DIRECTORY . $name . DIRECTORY_SEPARATOR, $namespace);
-	spitfire()->registerApp($app, $namespace);
-	return $app;
-}
-
-/**
  * A very basic function to dispatch a response to the server environment. This sets the
  * status code for the response, dispatches the headers that the application set, and finally
  * emits the body.
@@ -440,8 +421,6 @@ function media()
 
 /**
  *
- * @staticvar type $dispatcher
- * @param type $uri
  * @return StorageDriveDispatcher
  */
 function storage()
@@ -540,7 +519,7 @@ function asset(string $name, string $scope = 'assets/') : string
 	
 	return '/' . implode('/', array_filter([
 			trim($base, '/'),
-			trim($scope?? '', '/'),
+			trim($scope, '/'),
 			trim($asset, '/')
 		]));
 }

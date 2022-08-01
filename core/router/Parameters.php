@@ -44,9 +44,11 @@ class Parameters
 	 * Imports a set of parameters parsed by the router. Usually, this will be a
 	 * single element provided by the route.
 	 * 
-	 * @param string[] $params
+	 * @param string $key
+	 * @param string|null $value
+	 * @return Parameters
 	 */
-	public function addParameter($key, $value)
+	public function addParameter(string $key, string $value = null) : Parameters
 	{
 		$this->parameters[$key] = $value;
 		return $this;

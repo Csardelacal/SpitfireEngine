@@ -113,8 +113,7 @@ class Configuration implements ConfigurationInterface
 	 * Retrieve a configuration from the repository. You may not retrieve a config
 	 * as an array.
 	 *
-	 * @param string $key
-	 * @param mixed $fallback
+	 * @return mixed[]
 	 */
 	public function export()
 	{

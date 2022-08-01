@@ -1,37 +1,8 @@
 parameters:
 	ignoreErrors:
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$fallback$#"
-			count: 1
-			path: core/config/Configuration.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$key$#"
-			count: 1
-			path: core/config/Configuration.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\SpitFire\\:\\:registerApp\\(\\)\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Constant APP_DIRECTORY not found\\.$#"
-			count: 1
-			path: core/functions.php
 
 		-
 			message: "#^Function db\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$uri$#"
-			count: 1
-			path: core/functions.php
-
-		-
-			message: "#^Variable \\$scope on left side of \\?\\? always exists and is not nullable\\.$#"
 			count: 1
 			path: core/functions.php
 
@@ -44,11 +15,6 @@ parameters:
 			message: "#^Cannot call method getPriority\\(\\) on string\\.$#"
 			count: 2
 			path: core/http/LanguageAcceptParser.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$params$#"
-			count: 1
-			path: core/router/Parameters.php
 
 		-
 			message: "#^Access to an undefined property spitfire\\\\core\\\\router\\\\RewriteRule\\:\\:\\$protocol\\.$#"
