@@ -36,13 +36,6 @@ class Schema
 {
 	
 	/**
-	 * The indexes the table can use to optimize the search performance.
-	 *
-	 * @var Collection <Index>
-	 */
-	private $indexes;
-	
-	/**
 	 * Contains a reference to the table this model is 'templating'. This
 	 * means that the current model is attached to said table and offers to
 	 * it information about the data that is stored to the DBMS and the format
@@ -70,53 +63,6 @@ class Schema
 		else {
 			return null;
 		}
-	}
-	
-	/**
-	 * Returns the whole list of fields this model contains. This are logical fields
-	 * and therefore can contain data that is too complex to be stored directly
-	 * by a DB Engine, the table object is in charge of providing a list of
-	 * DB Friendly fields.
-	 *
-	 * @return Field[]
-	 */
-	public function getFields()
-	{
-		return $this->fields;
-	}
-	
-	/**
-	 * Returns the 'name' of the model. The name of a model is obtained by
-	 * removing the Model part of tit's class name. It's best practice to
-	 * avoid the usage of this function for anything rather than logging.
-	 *
-	 * This function has a special use case, it also defines the name of the
-	 * future table. By changing this you change the table this model uses
-	 * on DBMS, this is particularly useful when creating multiple models
-	 * that refer to a single dataset like 'People' and 'Adults'.
-	 *
-	 * @staticvar string $name
-	 * @return string
-	 */
-	final public function getName()
-	{
-		return $this->name;
-	}
-	
-	/**
-	 * Returns the tablename spitfire considers best for this Model. This
-	 * value is calculated by using the Model's name and replacing any
-	 * <b>\</b> with hyphens to make the name database friendly.
-	 *
-	 * Hyphens are the only chars that DBMS tend to accept that class names
-	 * do not. So this way we avoid any colissions in names that could be
-	 * coincidentally similar.
-	 *
-	 * @return string
-	 */
-	public function getTableName()
-	{
-		return trim(str_replace('\\', '-', $this->getName()), '-_ ');
 	}
 	
 	/**
@@ -160,107 +106,5 @@ class Schema
 	public function getBaseRestrictions(Query$query)
 	{
 		//Do nothing, this is meant for overriding
-	}
-	
-	public function index()
-	{
-		$fields = func_get_args();
-		$index = new Index($fields);
-		
-		$this->indexes->push($index);
-		return $index;
-	}
-	
-	/**
-	 * Returns the collection of indexes that are contained in this model.
-	 *
-	 * @return Collection <Index>
-	 */
-	public function getIndexes()
-	{
-		return $this->indexes;
-	}
-	
-	/**
-	 * Returns a list of fields which compound the primary key of this model.
-	 * The primary key is a set of records that identify a unique record.
-	 *
-	 * @return Index
-	 */
-	public function getPrimary()
-	{
-		#Fetch the field list
-		$indexes = $this->indexes;
-		
-		#Loop over the indexes and get the primary one
-		foreach ($indexes as $index) {
-			if ($index->isPrimary()) {
-				return $index;
-			}
-		}
-		
-		#If there was no index, then return a null value
-		return null;
-	}
-	
-	/**
-	 * The getters and setters for this class allow us to create fields with
-	 * a simplified syntax and access them just like they were properties
-	 * of the object. Please note that some experts recommend avoiding magic
-	 * methods for performance reasons. In this case you can use the field()
-	 * method.
-	 *
-	 * @param string $name
-	 * @param Field  $value
-	 */
-	public function __set($name, $value)
-	{
-		$this->setField($name, $value);
-	}
-	
-	/**
-	 * The getters and setters for this class allow us to create fields with
-	 * a simplified syntax and access them just like they were properties
-	 * of the object. Please note that some experts recommend avoiding magic
-	 * methods for performance reasons. In this case you can use the field()
-	 * method.
-	 *
-	 * @param string $name
-	 * @throws PrivateException
-	 * @return Field
-	 */
-	public function __get($name)
-	{
-		if (isset($this->fields[$name])) {
-			return $this->fields[$name];
-		}
-		else {
-			throw new PrivateException('Schema: No field ' . $name . ' found');
-		}
-	}
-	
-	/**
-	 * Removes a field from the Schema. This is a somewhat rare method, since you
-	 * should avoid it's usage in production environments and you should REALLY
-	 * know what you're doing before using it.
-	 *
-	 * @param string $name
-	 * @throws PrivateException
-	 */
-	public function __unset($name)
-	{
-		#Check if the field actually exists.
-		if (!isset($this->fields[$name])) {
-			throw new PrivateException('Schema: Could not delete. No field ' . $name . ' found');
-		}
-		
-		#Get the field
-		$f = $this->fields[$name];
-		unset($this->fields[$name]);
-		
-		#Find an index that may contain the field and remove it too
-		$this->indexes = $this->indexes->filter(function ($e) use ($f) {
-			return !$e->contains($f);
-		});
 	}
 }

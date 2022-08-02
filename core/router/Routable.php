@@ -166,13 +166,13 @@ abstract class Routable
 			 * For routes that map to a controller, the application should default to
 			 * naming the route Controller:action
 			 */
-			$route = new Route($match, $handler, $method, $protocol);
+			$route = new Route($match, $handler, $method);
 			$route->setName(implode(':', $target));
 		}
 		
 		elseif ($target instanceof Closure) {
 			$handler = new RouterClosureRequestHandler($match, $target);
-			$route = new Route($match, $handler, $method, $protocol);
+			$route = new Route($match, $handler, $method);
 		}
 		
 		else {

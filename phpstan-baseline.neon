@@ -7,21 +7,6 @@ parameters:
 			path: core/functions.php
 
 		-
-			message: "#^Property spitfire\\\\core\\\\http\\\\LanguageAccept\\:\\:\\$locale \\(string\\) does not accept null\\.$#"
-			count: 1
-			path: core/http/LanguageAccept.php
-
-		-
-			message: "#^Cannot call method getPriority\\(\\) on string\\.$#"
-			count: 2
-			path: core/http/LanguageAcceptParser.php
-
-		-
-			message: "#^Access to an undefined property spitfire\\\\core\\\\router\\\\RewriteRule\\:\\:\\$protocol\\.$#"
-			count: 1
-			path: core/router/RewriteRule.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$URI$#"
 			count: 1
 			path: core/router/Route.php
@@ -127,11 +112,6 @@ parameters:
 			path: model/Index.php
 
 		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
-			count: 2
-			path: model/Schema.php
-
-		-
 			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getBaseRestrictions\\(\\) has invalid return type spitfire\\\\model\\\\type\\.$#"
 			count: 1
 			path: model/Schema.php
@@ -142,18 +122,8 @@ parameters:
 			path: model/Schema.php
 
 		-
-			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getPrimary\\(\\) should return spitfire\\\\model\\\\Index but returns null\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
 			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getTable\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\Table\\.$#"
 			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
-			count: 2
 			path: model/Schema.php
 
 		-
@@ -164,11 +134,6 @@ parameters:
 		-
 			message: "#^Property spitfire\\\\model\\\\Schema\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
 			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
-			count: 2
 			path: model/Schema.php
 
 		-
@@ -455,136 +420,6 @@ parameters:
 			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
 			count: 3
 			path: model/adapters/ReferenceAdapter.php
-
-		-
-			message: "#^Access to constant TYPE_AND on an unknown class spitfire\\\\storage\\\\database\\\\RestrictionGroup\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:fetchAll\\(\\)\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Call to method getBridge\\(\\) on an unknown class spitfire\\\\model\\\\ManyToManyField\\.$#"
-			count: 2
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Call to method getModel\\(\\) on an unknown class spitfire\\\\model\\\\ManyToManyField\\.$#"
-			count: 2
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Call to method getPrimaryData\\(\\) on an unknown class Model\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Call to method getQuery\\(\\) on an unknown class Model\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Call to method getTarget\\(\\) on an unknown class spitfire\\\\model\\\\ManyToManyField\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Elseif branch is unreachable because previous condition is always true\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:getField\\(\\) should return ManyToManyField but returns spitfire\\\\model\\\\ManyToManyField\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:getModel\\(\\) has invalid return type spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:getModel\\(\\) should return spitfire\\\\Model but returns Model\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:next\\(\\) with return type void returns Model\\|false but should not return anything\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:rewind\\(\\) with return type void returns Model\\|false but should not return anything\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^PHPDoc tag @throws with type spitfire\\\\exceptions\\\\PrivateException is not subtype of Throwable$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Parameter \\#1 \\$parentField of class spitfire\\\\model\\\\adapters\\\\BridgeAdapter constructor expects ManyToManyField, spitfire\\\\model\\\\ManyToManyField given\\.$#"
-			count: 2
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Parameter \\$data of method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:usrSetData\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Parameter \\$model of method spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:__construct\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 2
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$children \\(array\\<Model\\>\\) does not accept void\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$children has unknown class Model as its type\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$field \\(spitfire\\\\model\\\\ManyToManyField\\) does not accept ManyToManyField\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$field has unknown class spitfire\\\\model\\\\ManyToManyField as its type\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$parent \\(Model\\) does not accept spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter\\:\\:\\$parent has unknown class Model as its type\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PrivateException\\.$#"
-			count: 1
-			path: model/adapters/m2madapter.php
 
 		-
 			message: "#^Call to an undefined method spitfire\\\\storage\\\\database\\\\Query\\:\\:getQueryTable\\(\\)\\.$#"

@@ -53,7 +53,7 @@ class LanguageAccept
 	 * 
 	 * E.g. fr-fr and fr-ca which is the french spoken in France and Canada respectively.
 	 *
-	 * @var string 
+	 * @var string|null
 	 */
 	private $locale;
 	

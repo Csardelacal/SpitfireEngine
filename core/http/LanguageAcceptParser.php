@@ -93,12 +93,13 @@ class LanguageAcceptParser
 		#We do do no validation at this point, even though it may be interesting to
 		#do it here and not loop over the components later.
 		$pieces = explode(',', $this->header);
-		array_walk($pieces, function (&$e) {
-			$e = new LanguageAccept($e);
-		});
+		
+		$parsed = array_map(function (string $e) : LanguageAccept {
+			return new LanguageAccept($e);
+		}, $pieces);
 		
 		#Data gets sorted by priority. Even if usually the browser will do this for us.
-		usort($pieces, function ($a, $b) {
+		usort($parsed, function (LanguageAccept $a, LanguageAccept $b) {
 			$pa = $a->getPriority();
 			$pb = $b->getPriority();
 			
@@ -108,6 +109,6 @@ class LanguageAcceptParser
 			return $pa > $pb? -1 : 1;
 		});
 		
-		return array_merge($pieces, array(new LanguageAccept($this->default)));
+		return array_merge($parsed, array(new LanguageAccept($this->default)));
 	}
 }
