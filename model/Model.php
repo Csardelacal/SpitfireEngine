@@ -124,11 +124,11 @@ abstract class Model implements JsonSerializable
 	/**
 	 * Rehydrating reads the data from the underlying record into the model. This allows
 	 * the model to use properties properly and provides PHP with native behacviors.
-	 * 
+	 *
 	 * @todo This prevents models from using inheritance, we currently are using traits for
 	 * most of the model extensions. Extending one model from another could have applications
 	 * in future revisions, but the use case currently doesn't justify the complexity.
-	 * 
+	 *
 	 * @see https://3v4l.org/rGs73
 	 */
 	public function rehydrate() : void
@@ -148,7 +148,7 @@ abstract class Model implements JsonSerializable
 				 */
 				$prop->setAccessible(true);
 				$prop->setValue($this, $v);
-			} 
+			}
 			/**
 			 * We actually don't care if the reflection couldn't load the property, if
 			 * the model doesn't have it, the application should not be able to load it.
@@ -166,7 +166,7 @@ abstract class Model implements JsonSerializable
 	/**
 	 * This performs the opposite operation to rehydrating, it writes data from the model
 	 * into the record so it can be written to the DBMS.
-	 * 
+	 *
 	 * @todo This needs to work for private properties too.
 	 */
 	public function sync() : void
@@ -176,7 +176,9 @@ abstract class Model implements JsonSerializable
 		$raw = $this->record->raw();
 		
 		foreach (array_keys($raw) as $k) {
-			if (!property_exists($this, $k)) { continue; }
+			if (!property_exists($this, $k)) {
+				continue;
+			}
 			$this->record->set($k, $this->$k);
 		}
 	}
@@ -206,7 +208,8 @@ abstract class Model implements JsonSerializable
 		if ($this->record->get($primary->getName()) === null) {
 			#Tell the table that the record is being stored
 			$event = new RecordBeforeInsertEvent($this->getConnection(), $this->getTable(), $this->record, $options);
-			$fn = function (Record $record) {
+			$fn = function (RecordBeforeInsertEvent $event) {
+				$record = $event->getRecord();
 				#The insert function is in this closure, which allows the event to cancel storing the data
 				$this->getConnection()->insert($this->getTable(), $record);
 			};
@@ -214,7 +217,8 @@ abstract class Model implements JsonSerializable
 		else {
 			#Tell the table that the record is being stored
 			$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->getTable(), $this->record, $options);
-			$fn = function (Record $record) {
+			$fn = function (RecordBeforeUpdateEvent $event) {
+				$record = $event->getRecord();
 				#The insert function is in this closure, which allows the event to cancel storing the data
 				$this->getConnection()->update($this->getTable(), $record);
 			};

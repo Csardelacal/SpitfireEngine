@@ -3,9 +3,9 @@
 trait WithId
 {
 	
-	private int $_id;
+	private ?int $_id;
 	
-	public function getId() : int
+	public function getId() :? int
 	{
 		return $this->_id;
 	}
