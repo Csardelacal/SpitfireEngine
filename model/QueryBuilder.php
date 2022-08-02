@@ -71,12 +71,17 @@ class QueryBuilder
 		$map = new ResultSetMapping($this->model);
 		
 		foreach ($selected as $select) {
-			$map->set($select->getName()[1], $select->getInput());
+			$map->set($select->getName(), $select->getInput());
 		}
 		
 		$copy->mapping = $map;
 		
 		return $copy;
+	}
+	
+	public function getMapping() : ResultSetMapping
+	{
+		return $this->mapping;
 	}
 	
 	public function withMapping(ResultSetMapping $mapping) : QueryBuilder

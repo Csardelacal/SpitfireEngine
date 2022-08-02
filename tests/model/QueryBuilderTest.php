@@ -45,6 +45,7 @@ class QueryBuilderTest extends TestCase
 		$this->layout = new Layout('test');
 		$this->layout->putField('_id', 'int:unsigned', false, true);
 		$this->layout->putField('my_stick', 'string:255', false, false);
+		$this->layout->putField('my_test', 'string:255', false, false);
 		$this->layout->primary($this->layout->getField('_id'));
 		
 		$this->layout2 = new Layout('test2');
@@ -254,7 +255,7 @@ class QueryBuilderTest extends TestCase
 			{
 				$this->queries[] = $sql;
 				return new AbstractResultSet([
-					['_id' => 1, 'my_stick' => '']
+					['_id' => 1, 'my_stick' => '', 'my_test' => '']
 				]);
 			}
 			
@@ -283,6 +284,7 @@ class QueryBuilderTest extends TestCase
 		$model = new class ($connection) extends Model {
 			private int $_id = 0;
 			private string $my_stick;
+			private string $my_test;
 			
 			public function getId() 
 			{
@@ -298,6 +300,9 @@ class QueryBuilderTest extends TestCase
 		$builder = (new QueryBuilder(
 			$model
 		))->withDefaultMapping();
+		
+		$mapping = $builder->getMapping();
+		$this->assertEquals('my_stick', $mapping->map('my_stick')->raw()[1]);
 		
 		$result = $builder->first();
 		$this->assertInstanceOf(get_class($model), $result);

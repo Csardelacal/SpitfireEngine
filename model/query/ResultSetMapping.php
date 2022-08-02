@@ -26,7 +26,7 @@ class ResultSetMapping
 		return $this->model;
 	}
 	
-	public function map(string $field)
+	public function map(string $field) : IdentifierInterface
 	{
 		assert(array_key_exists($field, $this->map));
 		return $this->map[$field];
