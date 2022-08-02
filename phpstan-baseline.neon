@@ -212,16 +212,6 @@ parameters:
 			path: model/adapters/ChildrenAdapter.php
 
 		-
-			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
-			count: 1
-			path: model/adapters/ChildrenAdapter.php
-
-		-
-			message: "#^Elseif branch is unreachable because previous condition is always true\\.$#"
-			count: 1
-			path: model/adapters/ChildrenAdapter.php
-
-		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
 			count: 1
 			path: model/adapters/ChildrenAdapter.php
@@ -298,11 +288,6 @@ parameters:
 
 		-
 			message: "#^Property spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\:\\:\\$parent has unknown class spitfire\\\\Model as its type\\.$#"
-			count: 1
-			path: model/adapters/ChildrenAdapter.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between iterable\\<spitfire\\\\Model\\>&spitfire\\\\model\\\\adapters\\\\ManyToManyAdapter and \\$this\\(spitfire\\\\model\\\\adapters\\\\ChildrenAdapter\\) will always evaluate to false\\.$#"
 			count: 1
 			path: model/adapters/ChildrenAdapter.php
 

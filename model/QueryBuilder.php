@@ -171,12 +171,20 @@ class QueryBuilder
 	 */
 	public function all() : Collection
 	{
-		/**
-		 *
-		 * @todo implement
+		/*
+		 * Fetch a single row from the database.
 		 */
-		$result = $this->model->getConnection()->query($this->withDefaultMapping()->getQuery());
-		return new Collection();
+		$result = $this->model->getConnection()->query($this->getQuery());
+		$rows   = $result->fetchAllAssociative();
+		
+		return $this->eagerLoad((new Collection($rows))->each(function (array $row) : Model {
+			
+			/**
+			 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
+			 * differentiate properly.
+			 */
+			return $this->mapping->make(new Record($row));
+		}));
 	}
 	
 	public function range(int $offset, int $size) : Collection
@@ -184,7 +192,10 @@ class QueryBuilder
 		/*
 		 * Fetch a single row from the database.
 		 */
-		$result = $this->model->getConnection()->query($this->getQuery());
+		$query  = clone $this->getQuery();
+		$query->range($offset, $size);
+		
+		$result = $this->model->getConnection()->query($query);
 		$rows   = $result->fetchAllAssociative();
 		
 		return $this->eagerLoad((new Collection($rows))->each(function (array $row) : Model {
