@@ -9,6 +9,8 @@ use spitfire\event\EventDispatch;
  *
  * This class should be extended by each driver to allow it to use them in an
  * efficient manner for them.
+ *
+ * @todo Adding a mechanism to establish defaults would be nice.
  */
 class Field
 {

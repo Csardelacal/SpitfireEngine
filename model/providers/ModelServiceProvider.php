@@ -6,6 +6,9 @@ use spitfire\contracts\services\ProviderInterface;
 use spitfire\core\kernel\ConsoleKernel;
 use spitfire\core\Locations;
 use spitfire\model\directors\SchemaDiffDirector;
+use spitfire\model\ModelFactory;
+use spitfire\provider\Container;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\Schema;
 
 class ModelServiceProvider implements ProviderInterface
@@ -13,6 +16,15 @@ class ModelServiceProvider implements ProviderInterface
 	
 	public function register(ContainerInterface $container)
 	{
+		/**
+		 * The model factory should make it easy for us to access the database
+		 * without initializing it, since we rely on the application having all
+		 * the bits and pieces ready for us.
+		 */
+		$container->get(Container::class)->set(
+			ModelFactory::class,
+			new ModelFactory($container->get(ConnectionInterface::class))
+		);
 	}
 	
 	public function init(ContainerInterface $container)

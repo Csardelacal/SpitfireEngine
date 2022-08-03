@@ -2,7 +2,6 @@
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use spitfire\App;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
 use spitfire\contracts\core\kernel;
@@ -19,8 +18,8 @@ use spitfire\io\media\ImagickManipulator;
 use spitfire\io\media\MediaDispatcher;
 use spitfire\io\stream\Stream;
 use spitfire\io\template\View;
+use spitfire\model\ModelFactory;
 use spitfire\SpitFire;
-use spitfire\storage\database\Settings;
 use spitfire\storage\DriveDispatcher as StorageDriveDispatcher;
 
 /**
@@ -193,27 +192,11 @@ function fail(int $status, string $message = '') : void
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *
- * @return \spitfire\storage\database\DB
+ * @return ModelFactory
  */
 function db()
 {
-	static $db = null;
-	
-	#If we're requesting the standard driver and have it cached, we use this
-	if ($db !== null) {
-		return $db;
-	}
-	
-	#If no options were passed, we try to fetch them from the configuration
-	$driver   = config('storage.database.driver', 'mysqlpdo');
-	$settings = Settings::fromURL(config('storage.database.' . $driver));
-	
-	#Instantiate the driver
-	$driver = 'spitfire\storage\database\drivers\\' . $settings->getDriver() . '\Driver';
-	$driver = new $driver($settings);
-	
-	#If no options were provided we will assume that this is the standard DB handler
-	return $db = $driver;
+	return spitfire()->provider()->get(ModelFactory::class);
 }
 
 /**

@@ -2,11 +2,6 @@ parameters:
 	ignoreErrors:
 
 		-
-			message: "#^Function db\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: core/functions.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$URI$#"
 			count: 1
 			path: core/router/Route.php
@@ -610,16 +605,6 @@ parameters:
 			message: "#^Parameter \\$model of method FloatField\\:\\:getAdapter\\(\\) has invalid type spitfire\\\\Model\\.$#"
 			count: 2
 			path: model/fields/float.php
-
-		-
-			message: "#^Call to method table\\(\\) on an unknown class spitfire\\\\storage\\\\database\\\\DB\\.$#"
-			count: 1
-			path: model/support/ReflectionParameterTransformer.php
-
-		-
-			message: "#^Class spitfire\\\\Model not found\\.$#"
-			count: 2
-			path: model/support/ReflectionParameterTransformer.php
 
 		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"

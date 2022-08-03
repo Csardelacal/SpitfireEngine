@@ -4,22 +4,22 @@ use ReflectionClass;
 use ReflectionFunctionAbstract;
 use ReflectionNamedType;
 use spitfire\exceptions\user\ApplicationException;
-use spitfire\Model;
+use spitfire\model\Model;
 
 /**
  * This class allows different components to reuse the logic the database has
  * to create parameters for different functions/methods.
- * 
+ *
  * The transformer receives:
- * 
+ *
  * * A reflection of a function or method that may contain parameters expecting a subtype of model
  * * A list of parameters that we provide for this function that may contain ID for a db record
- * 
+ *
  * The transformer then returns:
- * 
+ *
  *  * The parameters, replacing those that were incompatible with their expected model type with a looked up version
- * 
- * 
+ *
+ *
  * NOTE: This sorts the parameters by the order they are expected in within the parameters, but keys
  * them according to the names of the parameters. For example:
  */
@@ -80,7 +80,7 @@ class ReflectionParameterTransformer
 			
 			/**
 			 * For our next trick, we're going to need a reflection of the class that the
-			 * developer is expecting us to provide, otherwise we cannot tell if it is a 
+			 * developer is expecting us to provide, otherwise we cannot tell if it is a
 			 * subclass of model.
 			 */
 			$_type = $_e->getName();
@@ -98,7 +98,7 @@ class ReflectionParameterTransformer
 			/**
 			 * Fetch the database record that we expected from the database.
 			 */
-			$model = db()->table($_e->getName())->getById($param);
+			$model = db()->fetch($_e->getName(), $param);
 			
 			/**
 			 * Perform a sanity check in the development environment to ensure the consistency

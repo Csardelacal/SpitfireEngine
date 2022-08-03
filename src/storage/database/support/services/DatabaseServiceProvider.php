@@ -6,6 +6,8 @@ use spitfire\contracts\core\LocationsInterface;
 use spitfire\contracts\services\ProviderInterface;
 use spitfire\provider\Container;
 use spitfire\storage\database\Connection;
+use spitfire\storage\database\ConnectionGlobal;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\ConnectionManager;
 
 class DatabaseServiceProvider implements ProviderInterface
@@ -31,6 +33,7 @@ class DatabaseServiceProvider implements ProviderInterface
 		
 		$container->set(ConnectionManager::class, $manager);
 		$container->set(Connection::class, $manager->get($default));
+		$container->set(ConnectionInterface::class, new ConnectionGlobal());
 	}
 	
 	/**
