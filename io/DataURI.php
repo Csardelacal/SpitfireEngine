@@ -1,7 +1,7 @@
 <?php namespace spitfire\io;
 
 use finfo;
-use spitfire\exceptions\FileNotFoundException;
+use spitfire\exceptions\user\ApplicationException;
 
 class DataURI
 {
@@ -40,13 +40,13 @@ class DataURI
 	 * 
 	 * @param string $file
 	 * @return DataURI
-	 * @throws FileNotFoundException
+	 * @throws ApplicationException
 	 */
 	public static function fromFile($file)
 	{
 		#Check if the file exists in the first place
 		if (!file_exists($file)) {
-			throw new FileNotFoundException($file . ' does not exist'); 
+			throw new ApplicationException($file . ' does not exist'); 
 		}
 		
 		#Retrieve the mime type

@@ -62,18 +62,6 @@ abstract class BaseAdapter implements AdapterInterface
 	}
 	
 	/**
-	 * Returns the data as it should be stored by the DBMS. Please note that most
-	 * DBMS don't accept any complex types like Arrays and Objects directly, this
-	 * method allows to prepare the data accordingly before storing it.
-	 * 
-	 * @return mixed
-	 */
-	public function dbGetData()
-	{
-		return array($this->field->getName() => $this->data);
-	}
-	
-	/**
 	 * When the database defines the data it is important that it also overrides 
 	 * the src element, setting this element as in sync again. This is important
 	 * as otherwise the element will find data that is not in sync even though
@@ -162,16 +150,5 @@ abstract class BaseAdapter implements AdapterInterface
 	public function rollback()
 	{
 		$this->data = $this->src;
-	}
-	
-	/**
-	 * Returns whether the data is valid or not. This data is stored inside a 
-	 * ValidationResult class allowing further checks.
-	 * 
-	 * @return \spitfire\validation\ValidationResult
-	 */
-	public function validate()
-	{
-		return $this->field->validate($this->data);
 	}
 }

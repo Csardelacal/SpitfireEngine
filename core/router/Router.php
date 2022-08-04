@@ -137,8 +137,8 @@ class Router extends Routable
 	/**
 	 *
 	 *
-	 * @var string $scope
-	 * @var Closure $do
+	 * @param string $scope
+	 * @param Closure $do
 	 * @return Router
 	 */
 	public function scope(string $scope, Closure $do = null) : Router

@@ -1,6 +1,6 @@
 <?php namespace spitfire\io;
 
-use spitfire\exceptions\PrivateException;
+use spitfire\exceptions\ApplicationException;
 
 class Filesize
 {
@@ -36,12 +36,12 @@ class Filesize
 	 * @param string $str
 	 *
 	 * @return Filesize
-	 * @throws PrivateException
+	 * @throws ApplicationException
 	 */
 	public static function parse($str)
 	{
 		if (!preg_match('/^(\d+)\s*([TGMK])b?$/i', $str, $matches)) {
-			throw new PrivateException("Unable to parse file size ($str)");
+			throw new ApplicationException("Unable to parse file size ($str)");
 		}
 		
 		$unit = $matches[2];

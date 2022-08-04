@@ -60,11 +60,8 @@ class Route extends RewriteRule
 	
 	/**
 	 * 
-	 * @param string $URI
-	 * @param string $method
-	 * @param string $protocol
-	 * @param string $extension
-	 * @return void
+	 * @param ServerRequestInterface $request
+	 * @return Parameters|null
 	 */
 	public function rewrite(ServerRequestInterface $request) :? Parameters
 	{
