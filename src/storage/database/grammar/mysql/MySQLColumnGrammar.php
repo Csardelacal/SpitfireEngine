@@ -3,6 +3,7 @@
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKeyInterface;
+use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Index;
 use spitfire\storage\database\IndexInterface;
@@ -180,12 +181,12 @@ class MySQLColumnGrammar
 		 * is and how to handle it.
 		 */
 		elseif ($index instanceof ForeignKeyInterface) {
-			$referenced  = $index->getReferencedField()->each(function (IdentifierInterface $field) {
-				return $this->object->identifier($field);
+			$referenced  = $index->getReferencedField()->each(function (FieldIdentifierInterface $field) {
+				return $this->object->identifier($field->removeScope());
 			});
 			
 			return sprintf(
-				'FOREIGN KEY %s (%s) REFERENCES `%s` (%s)',
+				'FOREIGN KEY %s (%s) REFERENCES %s (%s)',
 				$index->getName(),
 				$fields->join(', '),
 				$this->object->identifier($index->getReferencedTable()),

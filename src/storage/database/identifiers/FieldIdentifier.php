@@ -11,7 +11,7 @@
  *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
-class FieldIdentifier implements IdentifierInterface
+class FieldIdentifier implements FieldIdentifierInterface
 {
 	/**
 	 * The actual database field.
@@ -40,5 +40,10 @@ class FieldIdentifier implements IdentifierInterface
 	public function raw(): array
 	{
 		return $this->raw;
+	}
+	
+	public function removeScope() : FieldIdentifier
+	{
+		return new FieldIdentifier([end($this->raw)]);
 	}
 }

@@ -307,4 +307,69 @@ class QueryBuilderTest extends TestCase
 		$result = $builder->first();
 		$this->assertInstanceOf(get_class($model), $result);
 	}
+	
+	/**
+	 * Test whether the query builder can add restrictions to the query.
+	 */
+	public function testWhere()
+	{
+		
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([
+					['_id' => 1, 'my_stick' => '', 'my_test' => '']
+				]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$this->schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter()),
+				new MySQLSchemaGrammar
+			)
+		);
+		
+		$model = new class ($connection) extends Model {
+			private int $_id = 0;
+			private string $my_stick;
+			private string $my_test;
+			
+			public function getId() 
+			{
+				return $this->_id;
+			}
+			
+			public function getTableName()
+			{
+				return 'test';
+			}
+		};
+		
+		$builder = (new QueryBuilder(
+			$model
+		))->withDefaultMapping();
+		
+		$builder->where('_id', 1);
+		$restrictions = $builder->getQuery()->getRestrictions();
+		
+		$this->assertEquals(1, $restrictions->restrictions()->count());
+	}
 }
