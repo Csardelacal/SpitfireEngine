@@ -2,8 +2,8 @@
 
 use spitfire\collection\Collection;
 use spitfire\model\Model;
+use spitfire\storage\database\query\ResultInterface;
 use spitfire\storage\database\Record;
-use spitfire\storage\database\ResultSetInterface;
 
 class ResultSet
 {
@@ -23,12 +23,12 @@ class ResultSet
 	/**
 	 * The underlying resultset
 	 *
-	 * @var ResultSetInterface
+	 * @var ResultInterface
 	 */
 	private $resultset;
 	
 	
-	public function __construct(ResultSetInterface $result, ResultSetMapping $model, ResultSetMapping $pivot = null)
+	public function __construct(ResultInterface $result, ResultSetMapping $model, ResultSetMapping $pivot = null)
 	{
 		$this->resultset = $result;
 		$this->model = $model;
@@ -37,9 +37,9 @@ class ResultSet
 	
 	public function fetch()
 	{
-		$raw = $this->resultset->fetch();
+		$raw = $this->resultset->fetchAssociative();
 		
-		if ($raw === null) {
+		if ($raw === false) {
 			return null;
 		}
 		
@@ -47,7 +47,7 @@ class ResultSet
 		$model = $this->model->make($record);
 		
 		if ($this->pivot !== null) {
-			$pivot = $this->pivot? $this->pivot->make($record) : null;
+			$pivot = $this->pivot->make($record);
 			$model->setPivot($pivot);
 		}
 		
@@ -56,7 +56,7 @@ class ResultSet
 	
 	public function fetchAll() : Collection
 	{
-		$all = $this->resultset->fetchAll();
+		$all = new Collection($this->resultset->fetchAllAssociative());
 		
 		return $all->each(function (array $raw) : Model {
 			$record = new Record($raw);
@@ -64,7 +64,7 @@ class ResultSet
 			
 		
 			if ($this->pivot !== null) {
-				$pivot = $this->pivot? $this->pivot->make($record) : null;
+				$pivot = $this->pivot->make($record);
 				$model->setPivot($pivot);
 			}
 			

@@ -3,6 +3,7 @@
 use spitfire\collection\Collection;
 use spitfire\model\query\Queriable;
 use spitfire\model\query\RestrictionGroupBuilder;
+use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
 use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Aggregate;
@@ -33,9 +34,9 @@ class QueryBuilder
 	
 	/**
 	 *
-	 * @var Collection<ResultSetMapping>
+	 * @var ResultSetMapping
 	 */
-	private Collection $pivots;
+	private ?ResultSetMapping $pivot = null;
 	
 	/**
 	 * The with method allows the user to determine relations that should be
@@ -54,9 +55,7 @@ class QueryBuilder
 	public function __construct(Model $model)
 	{
 		$this->model = $model;
-		
 		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
-		$this->pivots = new Collection();
 	}
 	
 	public function withDefaultMapping() : QueryBuilder
@@ -94,7 +93,7 @@ class QueryBuilder
 	public function withPivot(ResultSetMapping $mapping) : QueryBuilder
 	{
 		$copy = clone $this;
-		$copy->pivots->push($mapping);
+		$copy->pivot = $mapping;
 		return $copy;
 	}
 	
@@ -145,8 +144,12 @@ class QueryBuilder
 		/*
 		 * Fetch a single row from the database.
 		 */
-		$result = $this->model->getConnection()->query($this->getQuery());
-		$row    = $result->fetchAssociative();
+		$result = new ResultSet(
+			$this->model->getConnection()->query($this->getQuery()),
+			$this->mapping,
+			$this->pivot
+		);
+		$row    = $result->fetch();
 		
 		/**
 		 * If there is no more rows in the result (alas, there have never been any), the application
@@ -162,7 +165,7 @@ class QueryBuilder
 		 * differentiate properly.
 		 */
 		
-		return $this->eagerLoad(new Collection([$this->mapping->make(new Record($row))]))->first();
+		return $this->eagerLoad(new Collection([$row]))->first();
 	}
 	
 	/**
@@ -174,17 +177,15 @@ class QueryBuilder
 		/*
 		 * Fetch a single row from the database.
 		 */
-		$result = $this->model->getConnection()->query($this->getQuery());
-		$rows   = $result->fetchAllAssociative();
+		$result = new ResultSet(
+			$this->model->getConnection()->query($this->getQuery()),
+			$this->mapping,
+			$this->pivot
+		);
 		
-		return $this->eagerLoad((new Collection($rows))->each(function (array $row) : Model {
-			
-			/**
-			 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
-			 * differentiate properly.
-			 */
-			return $this->mapping->make(new Record($row));
-		}));
+		$rows   = $result->fetchAll();
+		
+		return $this->eagerLoad($rows);
 	}
 	
 	public function range(int $offset, int $size) : Collection
@@ -195,17 +196,15 @@ class QueryBuilder
 		$query  = clone $this->getQuery();
 		$query->range($offset, $size);
 		
-		$result = $this->model->getConnection()->query($query);
-		$rows   = $result->fetchAllAssociative();
 		
-		return $this->eagerLoad((new Collection($rows))->each(function (array $row) : Model {
-			
-			/**
-			 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
-			 * differentiate properly.
-			 */
-			return $this->mapping->make(new Record($row));
-		}));
+		$result = new ResultSet(
+			$this->model->getConnection()->query($query),
+			$this->mapping,
+			$this->pivot
+		);
+		
+		$rows   = $result->fetchAll();
+		return $this->eagerLoad($rows);
 	}
 	
 	public function count() : int

@@ -17,6 +17,7 @@ use spitfire\storage\database\query\SelectExpression;
  * The query provides a mechanism for assembling restrictions that Spitfire and
  * the DBMS driver can then convert into a SQL query (or similar, for NoSQL).
  *
+ * @mixin RestrictionGroup
  */
 class Query
 {
