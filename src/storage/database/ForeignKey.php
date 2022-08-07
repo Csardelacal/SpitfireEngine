@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\identifiers\TableIdentifier;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
@@ -104,7 +105,7 @@ class ForeignKey implements ForeignKeyInterface
 	 * In the event of the application planning to return multiple fields as part
 	 * of the index, they would have to be appropriately sorted, so they correlate.
 	 *
-	 * @return Collection<IdentifierInterface>
+	 * @return Collection<FieldIdentifierInterface>
 	 */
 	public function getReferencedField(): Collection
 	{

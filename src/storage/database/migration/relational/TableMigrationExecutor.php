@@ -235,14 +235,18 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		/**
 		 * Create a field to host the data for the referenced field. Rename the field
 		 * to prefix it with the name we want to assign to this field.
+		 * 
+		 * We swap the field to being nullable, because the remote will always be the primary
+		 * key, which is not nullable, but this makes no sense in the reference.
 		 */
 		$reference = $layout->layout()->getPrimaryKey()->getFields()[0];
-		$field = $this->table->putField($name, $reference->getType(), $reference->isNullable(), false);
+		$field = $this->table->putField($name, $reference->getType(), true, false);
+		$primary = $layout->layout()->getPrimaryKey()->getFields()->first()->getName();
 		
 		$index = new ForeignKey(
 			sprintf('fk_%s', $name),
 			$field,
-			($layout)->layout()->getTableReference()->getOutput($layout->layout()->getPrimaryKey()->getName())
+			($layout)->layout()->getTableReference()->getOutput($primary)
 		);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(

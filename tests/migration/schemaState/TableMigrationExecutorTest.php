@@ -3,9 +3,7 @@
 use spitfire\storage\database\Schema;
 use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\Connection;
-use spitfire\storage\database\DriverInterface;
 use spitfire\storage\database\drivers\Adapter;
-use spitfire\storage\database\drivers\internal\MockDriver;
 use spitfire\storage\database\drivers\test\AbstractDriver;
 use spitfire\storage\database\drivers\test\AbstractResultSet;
 use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
@@ -15,9 +13,6 @@ use spitfire\storage\database\Field;
 use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
-use spitfire\storage\database\grammar\QueryGrammarInterface;
-use spitfire\storage\database\grammar\RecordGrammarInterface;
-use spitfire\storage\database\grammar\SchemaGrammarInterface;
 use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\query\ResultInterface;
 use spitfire\storage\database\Record;
@@ -203,5 +198,22 @@ class TableMigrationExecutorTest extends TestCase
 		$this->assertEquals(1, count($driver->queries));
 		$this->assertStringContainsStringIgnoringCase('update', $driver->queries[0]);
 		$this->assertStringContainsString($time, $driver->queries[0]);
+	}
+	
+	
+	public function testForeignKey()
+	{
+		$schema = new Schema('test');
+		$layout = $schema->newLayout('test');
+		$layout2 = $schema->newLayout('test2');
+		
+		$migrator = new TableMigrationExecutor($layout);
+		$migrator->id();
+		
+		$migrator2 = new TableMigrationExecutor($layout2);
+		$migrator2->foreign('test', $migrator);
+		
+		$this->assertInstanceOf(Field::class, $layout2->getField('test'));
+		$this->assertEquals(true, $layout2->getField('test')->isNullable());
 	}
 }

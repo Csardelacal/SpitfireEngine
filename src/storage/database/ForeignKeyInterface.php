@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
+use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 
@@ -45,7 +46,7 @@ interface ForeignKeyInterface extends IndexInterface
 	 * the application to properly define indexes that do only exist for the
 	 * purpose of linking two tables.
 	 *
-	 * @return Collection<IdentifierInterface>
+	 * @return Collection<FieldIdentifierInterface>
 	 */
 	public function getReferencedField() : Collection;
 }
