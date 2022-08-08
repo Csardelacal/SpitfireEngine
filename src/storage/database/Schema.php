@@ -81,7 +81,7 @@ class Schema
 	 */
 	public function getLayoutByName(string $name) : Layout
 	{
-		assert($this->layouts->has($name));
+		assert($this->layouts->has($name), sprintf('Schema has no layout %s', $name));
 		return $this->layouts[$name];
 	}
 	
