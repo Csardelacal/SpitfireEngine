@@ -45,7 +45,7 @@ class ExceptionHandler implements MiddlewareInterface
 			}
 			
 			return new Response(
-				Stream::fromString($e->getTraceAsString()),
+				Stream::fromString(strval($e)),
 				500
 			);
 		}
