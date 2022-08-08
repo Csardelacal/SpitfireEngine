@@ -1,7 +1,7 @@
 <?php namespace spitfire\io;
 
 use spitfire\io\session\Session;
-use spitfire\exceptions\PublicException;
+use spitfire\exceptions\user\ApplicationException;
 
 class XSSToken
 {
@@ -41,7 +41,7 @@ class XSSToken
 		$pieces = explode(':', $token);
 		
 		if (count($pieces) !== 3) {
-			throw new PublicException('Malformed XSRF Token', 401);
+			throw new ApplicationException('Malformed XSRF Token', 401);
 		}
 		
 		list($expires, $salt, $hash) = $pieces;

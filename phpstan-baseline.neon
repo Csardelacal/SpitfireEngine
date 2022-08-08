@@ -2,16 +2,6 @@ parameters:
 	ignoreErrors:
 
 		-
-			message: "#^Instantiated class spitfire\\\\exceptions\\\\PublicException not found\\.$#"
-			count: 1
-			path: io/XSSToken.php
-
-		-
-			message: "#^Throwing object of an unknown class spitfire\\\\exceptions\\\\PublicException\\.$#"
-			count: 1
-			path: io/XSSToken.php
-
-		-
 			message: "#^Property spitfire\\\\io\\\\lock\\\\FileLock\\:\\:\\$file is never read, only written\\.$#"
 			count: 1
 			path: io/lock/FileLock.php
@@ -40,31 +30,6 @@ parameters:
 			message: "#^Result of method spitfire\\\\collection\\\\Collection\\<mixed\\>\\:\\:rewind\\(\\) \\(void\\) is used\\.$#"
 			count: 1
 			path: model/Index.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getBaseRestrictions\\(\\) has invalid return type spitfire\\\\model\\\\type\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getBaseRestrictions\\(\\) should return spitfire\\\\model\\\\type but return statement is missing\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\Schema\\:\\:getTable\\(\\) has invalid return type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Parameter \\$table of method spitfire\\\\model\\\\Schema\\:\\:setTable\\(\\) has invalid type spitfire\\\\storage\\\\database\\\\Table\\.$#"
-			count: 1
-			path: model/Schema.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\Schema\\:\\:\\$table has unknown class spitfire\\\\storage\\\\database\\\\Table as its type\\.$#"
-			count: 1
-			path: model/Schema.php
 
 		-
 			message: "#^Method spitfire\\\\model\\\\adapters\\\\AdapterInterface\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
