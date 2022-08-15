@@ -15,7 +15,7 @@ use spitfire\utils\Mixin;
  * @todo Add a cache that maintains the data that the surrogate contains.
  * @mixin Record
  */
-class SurrogateRecord
+class ActiveRecord
 {
 	
 	use Mixin;
@@ -66,9 +66,9 @@ class SurrogateRecord
 	 *
 	 * @param string $field
 	 * @param mixed $value
-	 * @return SurrogateRecord
+	 * @return ActiveRecord
 	 */
-	public function set(string $field, $value) : SurrogateRecord
+	public function set(string $field, $value) : ActiveRecord
 	{
 		assert($this->has($field));
 		
@@ -91,7 +91,7 @@ class SurrogateRecord
 		/**
 		 * If the relationship does not contain any data, and it's a belongstoone relation
 		 * we skip loading the data since we know there is none.
-		 * 
+		 *
 		 * @todo Move this to the appropriate relationship
 		 */
 		if ($relationship instanceof BelongsToOne && $this->record->get($field) === null) {
@@ -103,5 +103,15 @@ class SurrogateRecord
 		 *
 		 */
 		return $relationship->resolve($this);
+	}
+	
+	public function getUnderlyingRecord() : Record
+	{
+		return $this->record;
+	}
+	
+	public function getModel() : Model
+	{
+		return $this->model;
 	}
 }

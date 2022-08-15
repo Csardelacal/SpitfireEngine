@@ -27,7 +27,7 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 	 * If the query wishes to find items that belong to another model, all we
 	 * have to do is look for those where the referencing field matches the
 	 * id of the parent model.
-	 * 
+	 *
 	 * @param DatabaseQuery $context
 	 * @param RestrictionGroup $query
 	 * @param Model $model

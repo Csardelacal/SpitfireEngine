@@ -4,9 +4,7 @@ use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\Connection;
 use spitfire\storage\database\ConnectionInterface;
-use spitfire\storage\database\ConnectionManager;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
 use spitfire\storage\database\Field as DatabaseField;
@@ -30,7 +28,7 @@ abstract class Model implements JsonSerializable
 	 * around the array that allows to validate data on the go and to alert the
 	 * programmer about inconsistent types.
 	 *
-	 * @var Record|null
+	 * @var ActiveRecord|null
 	 */
 	private $record;
 	
@@ -68,12 +66,12 @@ abstract class Model implements JsonSerializable
 	}
 	
 	/**
-	 * Returns the record this model is working on. This requires the model to be
+	 * Returns the activerecord this model is working on. This requires the model to be
 	 * hydrated to work.
 	 *
-	 * @return Record
+	 * @return ActiveRecord
 	 */
-	public function getRecord() : Record
+	public function getActiveRecord() : ActiveRecord
 	{
 		assert($this->record !== null);
 		return $this->record;
@@ -83,12 +81,12 @@ abstract class Model implements JsonSerializable
 	 * Returns the record this model is working on. This requires the model to be
 	 * hydrated to work.
 	 *
-	 * @return Model
+	 * @return Record
 	 */
-	public function setRecord(Record $record) : Model
+	public function getRecord() : Record
 	{
-		$this->record = $record;
-		return $this;
+		assert($this->record !== null);
+		return $this->record->getUnderlyingRecord();
 	}
 	
 	/**
@@ -112,8 +110,10 @@ abstract class Model implements JsonSerializable
 	 *
 	 * @return self
 	 */
-	public function withHydrate(Record $record) : self
+	public function withHydrate(ActiveRecord $record) : self
 	{
+		assert(!$this->hydrated);
+		assert($record->getModel() === $this);
 		$copy = clone $this;
 		$copy->record = $record;
 		$copy->hydrated = true;
@@ -207,7 +207,12 @@ abstract class Model implements JsonSerializable
 		 */
 		if ($this->record->get($primary->getName()) === null) {
 			#Tell the table that the record is being stored
-			$event = new RecordBeforeInsertEvent($this->getConnection(), $this->getTable(), $this->record, $options);
+			$event = new RecordBeforeInsertEvent(
+				$this->getConnection(),
+				$this->getTable(),
+				$this->record->getUnderlyingRecord(),
+				$options
+			);
 			$fn = function (RecordBeforeInsertEvent $event) {
 				$record = $event->getRecord();
 				#The insert function is in this closure, which allows the event to cancel storing the data
@@ -216,7 +221,12 @@ abstract class Model implements JsonSerializable
 		}
 		else {
 			#Tell the table that the record is being stored
-			$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->getTable(), $this->record, $options);
+			$event = new RecordBeforeUpdateEvent(
+				$this->getConnection(),
+				$this->getTable(),
+				$this->record->getUnderlyingRecord(),
+				$options
+			);
 			$fn = function (RecordBeforeUpdateEvent $event) {
 				$record = $event->getRecord();
 				#The insert function is in this closure, which allows the event to cancel storing the data
@@ -324,14 +334,7 @@ abstract class Model implements JsonSerializable
 		return $this->prefix . Strings::plural($reflection->getShortName());
 	}
 	
-	public function __set(string $field, $value)
-	{
-		assert($this->hydrated);
-		assert($this->record->has($field));
-		$this->record->set($field, $value);
-	}
-	
-	public function __get($field)
+	protected function lazy(string $field)
 	{
 		assert($this->hydrated);
 		assert($this->record->has($field));
@@ -362,7 +365,12 @@ abstract class Model implements JsonSerializable
 		$this->sync();
 		
 		#Tell the table that the record is being deleted
-		$event = new RecordBeforeUpdateEvent($this->getConnection(), $this->getTable(), $this->record, $options);
+		$event = new RecordBeforeUpdateEvent(
+			$this->getConnection(),
+			$this->getTable(),
+			$this->record->getUnderlyingRecord(),
+			$options
+		);
 		$fn = function (Record $record) {
 			#The insert function is in this closure, which allows the event to cancel storing the data
 			$this->getConnection()->update($this->getTable(), $record);

@@ -12,7 +12,7 @@ interface RelationshipInjectorInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @param RestrictionGroupBuilder $query
 	 * @param callable(RestrictionGroupBuilder):void|null $payload
 	 */
@@ -21,7 +21,7 @@ interface RelationshipInjectorInterface
 	/**
 	 * Usually, testing for absence is symmetrical to testing for existence, but in order to allow
 	 * the application to customize it if needed, this is an option.
-	 * 
+	 *
 	 * @param RestrictionGroupBuilder $query
 	 * @param null|callable(RestrictionGroupBuilder):void $payload
 	 */

@@ -47,7 +47,7 @@ class RestrictionGroupBuilder
 	}
 	
 	/**
-	 * 
+	 *
 	 * @todo These methods imply that only a querybuilder can use them
 	 * @param string $relation
 	 * @param callable(RestrictionGroupBuilder):void|null $body
@@ -59,7 +59,7 @@ class RestrictionGroupBuilder
 		assert($relation instanceof RelationshipInterface);
 		
 		$relation->injector()->existence(
-			$this, 
+			$this,
 			$body
 		);
 		
@@ -67,7 +67,7 @@ class RestrictionGroupBuilder
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string $relation
 	 * @param callable(RestrictionGroupBuilder):void|null $body
 	 */

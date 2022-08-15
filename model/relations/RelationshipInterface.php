@@ -1,8 +1,8 @@
 <?php namespace spitfire\model\relations;
 
 use spitfire\collection\Collection;
+use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
-use spitfire\model\SurrogateRecord;
 
 /**
  * A relationship describes how two models connect with each other. This is useful
@@ -11,11 +11,11 @@ use spitfire\model\SurrogateRecord;
 interface RelationshipInterface
 {
 	
-	public function resolve(SurrogateRecord $record) : RelationshipContent;
+	public function resolve(ActiveRecord $record) : RelationshipContent;
 	
 	/**
 	 *
-	 * @param Collection<SurrogateRecord> $records
+	 * @param Collection<ActiveRecord> $records
 	 * @return Collection<RelationshipContent>
 	 */
 	public function resolveAll(Collection $records) : Collection;
