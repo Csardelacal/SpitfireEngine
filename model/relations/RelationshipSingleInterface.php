@@ -1,6 +1,8 @@
 <?php namespace spitfire\model\relations;
 
-use spitfire\Model;
+use spitfire\collection\Collection;
+use spitfire\model\Model;
+use spitfire\model\SurrogateRecord;
 
 /**
  * A relationship describes how two models connect with each other. This is useful

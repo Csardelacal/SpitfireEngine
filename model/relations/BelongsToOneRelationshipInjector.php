@@ -48,7 +48,7 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 	 * PostModel::query()->whereHas('user', function (Query $query) { $query->where('verified', true); });
 	 *
 	 * @param RestrictionGroup $query
-	 * @param callable(DatabaseQuery):void $fn
+	 * @param callable(QueryBuilder):void $fn
 	 * @return void
 	 */
 	public function injectWhereHas(RestrictionGroup $query, callable $fn) : void

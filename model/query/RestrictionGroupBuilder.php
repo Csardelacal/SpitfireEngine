@@ -41,26 +41,44 @@ class RestrictionGroupBuilder
 				throw new BadMethodCallException('Invalid argument count for where', 2202231731);
 		}
 		
-		if ($value instanceof Model) {
-			$relation = $this->query->getModel()->{$field}();
-			assert($relation instanceof RelationshipInterface);
-			
-			$relation->injector()->injectWhere($this->query->getQuery(), $this->restrictionGroup, $value);
-			return $this;
-		}
-		
 		$table = $this->query->getQuery()->getFrom()->output();
 		$this->restrictionGroup->where($table->getOutput($field), $operator, $value);
 		return $this;
 	}
 	
-	public function whereHas($relation, $value) : RestrictionGroupBuilder
+	/**
+	 * 
+	 * @todo These methods imply that only a querybuilder can use them
+	 * @param string $relation
+	 * @param callable(RestrictionGroupBuilder):void|null $body
+	 */
+	public function has(string $relation, callable $body = null) : self
 	{
 		
 		$relation = $this->query->getModel()->{$relation}();
 		assert($relation instanceof RelationshipInterface);
 		
-		$relation->injector()->injectWhereHas($this->restrictionGroup, $value);
+		$relation->injector()->existence(
+			$this, 
+			$body
+		);
+		
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @param string $relation
+	 * @param callable(RestrictionGroupBuilder):void|null $body
+	 */
+	public function hasNo(string $relation, callable $body = null) : self
+	{
+		
+		$relation = $this->query->getModel()->{$relation}();
+		assert($relation instanceof RelationshipInterface);
+		
+		$relation->injector()->absence($this, $body);
+		
 		return $this;
 	}
 }

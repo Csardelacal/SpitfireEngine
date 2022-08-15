@@ -1,24 +1,23 @@
 <?php namespace spitfire\model;
 
+use BadMethodCallException;
 use spitfire\collection\Collection;
-use spitfire\model\query\Queriable;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
 use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\identifiers\FieldIdentifier;
 use spitfire\storage\database\Query as DatabaseQuery;
-use spitfire\storage\database\query\SelectExpression;
-use spitfire\storage\database\Record;
+use spitfire\utils\Mixin;
 
 /**
  *
+ * @mixin RestrictionGroupBuilder
  */
 class QueryBuilder
 {
 	
-	use Queriable;
+	use Mixin;
 	
 	/**
 	 *
@@ -56,6 +55,7 @@ class QueryBuilder
 	{
 		$this->model = $model;
 		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
+		$this->mixin(fn() => new RestrictionGroupBuilder($this, $this->query->getRestrictions()));
 	}
 	
 	public function withDefaultMapping() : QueryBuilder

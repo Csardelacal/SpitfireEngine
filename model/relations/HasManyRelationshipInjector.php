@@ -3,6 +3,8 @@
 use spitfire\collection\Collection;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\QueryBuilder;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
 
@@ -62,12 +64,12 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 	 * and make a major difference in the output.
 	 *
 	 * @param RestrictionGroup $query
-	 * @param callable(RestrictionGroup):void $fn
+	 * @param callable(QueryBuilder):void $fn
 	 * @return void
 	 */
 	public function injectWhereHas(RestrictionGroup $query, callable $fn) : void
 	{
-		$query->whereExists(function (DatabaseQuery $parent) use ($fn) : DatabaseQuery {
+		$query->whereExists(function (TableIdentifierInterface $parent) use ($fn) : DatabaseQuery {
 			/**
 			 * The subquery is just a regular query being performed on the remote model (the
 			 * one being referenced).
@@ -88,7 +90,7 @@ class HasManyRelationshipInjector implements RelationshipInjectorInterface
 			
 			$query->where(
 				$query->getFrom()->output()->getOutput($this->referenced->getField()),
-				$parent->getFrom()->output()->getOutput($primary)
+				$parent->getOutput($primary)
 			);
 			
 			/**

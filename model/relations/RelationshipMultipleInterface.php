@@ -1,6 +1,7 @@
 <?php namespace spitfire\model\relations;
 
 use spitfire\collection\Collection;
+use spitfire\model\SurrogateRecord;
 use Traversable;
 
 /**
