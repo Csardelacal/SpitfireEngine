@@ -117,7 +117,7 @@ class Request implements ServerRequestInterface
 	 *
 	 * @var Headers
 	 */
-	private $headers;
+	private Headers $headers;
 	
 	/**
 	 * The HTTP verb that is used to indicate what the server should do with the data
@@ -450,8 +450,8 @@ class Request implements ServerRequestInterface
 	 */
 	public function withHeader($name, $value): Request
 	{
-		$headers = $this->headers->all();
-		$headers[$name] = (array)$value;
+		$headers = clone $this->headers;
+		$headers->set($name, (array)$value);
 		
 		$copy = clone $this;
 		$copy->headers = $headers;
@@ -468,8 +468,8 @@ class Request implements ServerRequestInterface
 	 */
 	public function withAddedHeader($name, $value): Request
 	{
-		$headers = $this->headers->all();
-		$headers[$name] = array_merge($headers[$name], (array)$value);
+		$headers = clone $this->headers;
+		$headers->addTo($name, (array)$value);
 		
 		$copy = clone $this;
 		$copy->headers = $headers;
@@ -484,8 +484,8 @@ class Request implements ServerRequestInterface
 	 */
 	public function withoutHeader($name): Request
 	{
-		$headers = $this->headers->all();
-		unset($headers[$name]);
+		$headers = clone $this->headers;
+		$headers->unset($name);
 		
 		$copy = clone $this;
 		$copy->headers = $headers;

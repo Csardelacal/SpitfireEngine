@@ -6,7 +6,7 @@ use spitfire\core\http\CORS;
 /**
  * The headers file allows an application to manipulate the headers of the response
  * before sending them to the client.
- * 
+ *
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
  */
 class Headers
@@ -50,25 +50,31 @@ class Headers
 		return $this;
 	}
 	
+	public function addTo($header, $value)
+	{
+		$this->headers[$header] = array_merge($this->headers[$header]?? [], (array)$value);
+		return $this;
+	}
+	
 	/**
 	 * Allows the application to remove a header from the current response. While
 	 * this is usually not the case (applications shouldn't be fighting internally)
-	 * it might be the case that your application needs to unset a header that 
+	 * it might be the case that your application needs to unset a header that
 	 * was set earlier.
-	 * 
+	 *
 	 * @param string $header
 	 * @return $this
 	 */
 	public function unset(string $header)
 	{
 		if (array_key_exists($header, $this->headers)) {
-			unset($this->headers[$header]); 
+			unset($this->headers[$header]);
 		}
 		return $this;
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return string[]
 	 */
 	public function get($header) : array
@@ -76,7 +82,11 @@ class Headers
 		return $this->headers[$header]?? [];
 	}
 	
-	public function all()
+	/**
+	 *
+	 * @return string[][]
+	 */
+	public function all() : array
 	{
 		return $this->headers;
 	}
@@ -85,7 +95,7 @@ class Headers
 	 * Send the headers to the client. Once the headers have been sent, the application
 	 * can no longer manipulate the headers. This method must be called before any
 	 * output is sent to the browser.
-	 * 
+	 *
 	 * Usually Spitfire will buffer all the output, so this should usually not be
 	 * an issue.
 	 */
@@ -100,10 +110,10 @@ class Headers
 	
 	/**
 	 * This method allows the application to define the content type it wishes to
-	 * send with the response. It prevents the user from having to define the 
+	 * send with the response. It prevents the user from having to define the
 	 * headers manually and automatically sets an adequate charset depending on
 	 * the app's settings.
-	 * 
+	 *
 	 * @param string $str
 	 * @param string|null $encoding
 	 */
@@ -134,7 +144,7 @@ class Headers
 	 * Manipulate these Header's CORS options. This returns a CORS object that can
 	 * be used to define how applications running on clients on a different origin
 	 * are allowed to interact with the resources on this server.
-	 * 
+	 *
 	 * @return CORS
 	 */
 	public function cors()
@@ -146,21 +156,21 @@ class Headers
 	{
 		#Check if the call was valid
 		if (!is_numeric($code)) {
-			throw new BadMethodCallException('Invalid argument. Requires a number', 1509031352); 
+			throw new BadMethodCallException('Invalid argument. Requires a number', 1509031352);
 		}
 		if (!isset($this->states[$code])) {
-			throw new BadMethodCallException('Invalid status code', 1509031353); 
+			throw new BadMethodCallException('Invalid status code', 1509031353);
 		}
 		
 		$this->status = $code;
 	}
 	
-	public function getStatus() 
+	public function getStatus()
 	{
 		return $this->status;
 	}
 	
-	public function getReasonPhrase() 
+	public function getReasonPhrase()
 	{
 		return $this->states[$this->status];
 	}
