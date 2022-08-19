@@ -2,7 +2,6 @@
 
 use spitfire\contracts\core\LocationsInterface;
 use spitfire\core\Locations;
-use spitfire\core\resource\Publisher;
 use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
 
@@ -28,16 +27,9 @@ class SpitFire
 	 */
 	private $locations;
 	
-	/**
-	 *
-	 * @var Publisher
-	 */
-	private $publisher;
-	
 	public function __construct()
 	{
 		
-		$this->publisher = new Publisher();
 		$this->locations = new Locations(defined('BASEDIR')? rtrim(BASEDIR, '\/') : __DIR__);
 		
 		/*
@@ -94,16 +86,5 @@ class SpitFire
 	public function provider()
 	{
 		return $this->provider;
-	}
-	
-	/**
-	 * Returns the publisher for spitfire. This object allows the applications to
-	 * suggest publishing resources to certain shared resources.
-	 *
-	 * @return Publisher
-	 */
-	public function publisher()
-	{
-		return $this->publisher;
 	}
 }
