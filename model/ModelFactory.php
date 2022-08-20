@@ -73,6 +73,6 @@ class ModelFactory
 		}
 		
 		$record = new Record($empty);
-		return $model->withHydrate($record);
+		return $model->withHydrate(new ActiveRecord($model, $record));
 	}
 }
