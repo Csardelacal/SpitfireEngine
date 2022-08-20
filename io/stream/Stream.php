@@ -6,7 +6,7 @@ use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use spitfire\exceptions\ApplicationException;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@ use spitfire\exceptions\ApplicationException;
  */
 
 /**
- * 
+ *
  */
 class Stream implements StreamInterface
 {
@@ -34,25 +34,25 @@ class Stream implements StreamInterface
 	/**
 	 * The handle used to manipulate the stream. This class basically is a PSR7
 	 * conforming wrapper around this stream.
-	 * 
+	 *
 	 * @var resource|null
 	 */
 	private $handle;
 	
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $seekable;
 	
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $writable;
 	
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $readable;
@@ -64,7 +64,7 @@ class Stream implements StreamInterface
 	public const READABLE = ['w', 'w+', 'a', 'a+', 'r', 'r+'];
 	
 	/**
-	 * 
+	 *
 	 * @param resource $handle
 	 * @param bool $seekable
 	 * @param bool $writable
@@ -81,7 +81,7 @@ class Stream implements StreamInterface
 	/**
 	 * Closes the stream. After this method has been invoked, the stream will no longer
 	 * be usable.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function close(): void
@@ -100,7 +100,7 @@ class Stream implements StreamInterface
 	/**
 	 * Detaches the stream from the underlying stream. Please note that this does not
 	 * free the underlying resource.
-	 * 
+	 *
 	 * @return resource|null
 	 */
 	public function detach()
@@ -118,7 +118,7 @@ class Stream implements StreamInterface
 	/**
 	 * Returns the size (in bytes) of the stream. If the data is not available, the method
 	 * returns a null value.
-	 * 
+	 *
 	 * @return int|null
 	 */
 	public function getSize(): ?int
@@ -131,9 +131,9 @@ class Stream implements StreamInterface
 	}
 	
 	/**
-	 * Tells the current position of the seeking cursor on the stream. If the stream is not seekable 
+	 * Tells the current position of the seeking cursor on the stream. If the stream is not seekable
 	 * this will fail with a runtime exception.
-	 * 
+	 *
 	 * @throws \RuntimeException on error.
 	 * @return int Position of the file pointer
 	 */
@@ -153,12 +153,12 @@ class Stream implements StreamInterface
 	}
 	
 	/**
-	 * Returns true if we hit the end of the stream or whether the stream can continue to be 
+	 * Returns true if we hit the end of the stream or whether the stream can continue to be
 	 * read from.
-	 * 
-	 * If the stream is detached, this method returns true. Implying that the stream can not 
+	 *
+	 * If the stream is detached, this method returns true. Implying that the stream can not
 	 * be read from any further.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function eof(): bool
@@ -174,7 +174,7 @@ class Stream implements StreamInterface
 	/**
 	 * Returns true if the stream allows being seeked through. Detached streams are implied to not
 	 * be seekable (since they do not exist)
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isSeekable(): bool
@@ -186,7 +186,7 @@ class Stream implements StreamInterface
 	 * Seek to a position in the stream.
 	 *
 	 * @see http://www.php.net/manual/en/function.fseek.php
-	 * 
+	 *
 	 * @throws \RuntimeException on failure.
 	 * @param int $offset Stream offset
 	 * @param int $whence Specifies how the cursor position will be calculated
@@ -216,7 +216,7 @@ class Stream implements StreamInterface
 	 * @see seek()
 	 * @see http://www.php.net/manual/en/function.fseek.php
 	 * @throws \RuntimeException on failure.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function rewind(): void
@@ -226,7 +226,7 @@ class Stream implements StreamInterface
 	
 	/**
 	 * If the stream can be written to, this method will return true.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isWritable()
@@ -238,7 +238,7 @@ class Stream implements StreamInterface
 	 * Write data to the stream.
 	 *
 	 * @throws \RuntimeException on failure.
-	 * 
+	 *
 	 * @param string $string The string that is to be written.
 	 * @return int Returns the number of bytes written to the stream.
 	 */
@@ -255,7 +255,7 @@ class Stream implements StreamInterface
 	
 	/**
 	 * If the stream can be read from, this method will return true.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isReadable()
@@ -268,11 +268,11 @@ class Stream implements StreamInterface
 	 * of the seek cursor onward.
 	 *
 	 * @throws \RuntimeException on failure.
-	 * 
+	 *
 	 * @param int $length Read up to $length bytes from the object and return
 	 *     them. Fewer than $length bytes may be returned if underlying stream
 	 *     call returns fewer bytes.
-	 * @return string Returns the data read from the stream, or an empty string if 
+	 * @return string Returns the data read from the stream, or an empty string if
 	 *     no bytes are available.
 	 */
 	public function read($length): string
@@ -296,13 +296,17 @@ class Stream implements StreamInterface
 	
 	/**
 	 * Reads the remaining data from the stream into a string and returns it.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getContents() : string
 	{
 		if (!$this->handle) {
 			throw new RuntimeException('Could not read a detached stream', 2108041119);
+		}
+		
+		if (!$this->readable) {
+			throw new RuntimeException('Could not read a write-only stream', 2208201319);
 		}
 		
 		$result = stream_get_contents($this->handle);
@@ -336,7 +340,7 @@ class Stream implements StreamInterface
 		$meta = stream_get_meta_data($this->handle);
 		
 		/**
-		 * If a key was selected, we return only that key. Whoever came up with 
+		 * If a key was selected, we return only that key. Whoever came up with
 		 * this was a monster :')
 		 */
 		if ($key) {
@@ -349,7 +353,7 @@ class Stream implements StreamInterface
 	/**
 	 * This is a convenience method to allow the printing of streams directly to the
 	 * output, making it more convenient.
-	 * 
+	 *
 	 * @throws ApplicationException
 	 * @return string
 	 */
@@ -375,10 +379,10 @@ class Stream implements StreamInterface
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string|StreamInterface $str
 	 * @return StreamInterface
-	 */	
+	 */
 	public static function fromString($str): StreamInterface
 	{
 		/**
@@ -396,13 +400,13 @@ class Stream implements StreamInterface
 		}
 		
 		/**
-		 * We create a handle to a temporary stream. Please note that we have a small modification 
+		 * We create a handle to a temporary stream. Please note that we have a small modification
 		 * to prevent PHP from prematurely writing to a temp-file. By default, PHP will write
 		 * data to a temporary file as soon as the stream hits 2MB.
-		 * 
+		 *
 		 * We do not want that, since many of our responses work with data that can be a bit over
 		 * 2MB, but modern servers do have enough RAM to handle a bit more data in memory.
-		 * 
+		 *
 		 * The magic number stands for 16MB.
 		 */
 		$handle = fopen('php://temp/maxmemory:16777216', 'w+');
@@ -415,6 +419,7 @@ class Stream implements StreamInterface
 		}
 		
 		$meta = stream_get_meta_data($handle);
+		$mode = trim($meta['mode'], 'bt');
 		
 		/**
 		 * Instance the new stream.
@@ -422,8 +427,8 @@ class Stream implements StreamInterface
 		return new Stream(
 			$handle,
 			$meta['seekable'],
-			array_search($meta['mode'], self::READABLE, true) !== false,
-			array_search($meta['mode'], self::WRITABLE, true) !== false
+			array_search($mode, self::READABLE, true) !== false,
+			array_search($mode, self::WRITABLE, true) !== false
 		);
 	}
 }

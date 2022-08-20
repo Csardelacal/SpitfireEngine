@@ -34,11 +34,13 @@ class FileSystem
 		$handle = $this->fs->readStream($location);
 		$meta   = stream_get_meta_data($handle);
 		
+		$mode = trim($meta['mode'], 'bt');
+		
 		return new Stream(
 			$handle,
 			$meta['seekable'],
-			in_array($meta['mode'], Stream::READABLE) !== false,
-			in_array($meta['mode'], Stream::WRITABLE) !== false
+			in_array($mode, Stream::READABLE) !== false,
+			in_array($mode, Stream::WRITABLE) !== false
 		);
 	}
 	

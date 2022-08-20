@@ -2,18 +2,6 @@
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use spitfire\_init\LoadConfiguration;
-use spitfire\_init\ProvidersInit;
-use spitfire\_init\ProvidersRegister;
-use spitfire\core\http\request\handler\StaticResponseRequestHandler;
-use spitfire\core\http\request\handler\DecoratingRequestHandler;
-use spitfire\_init\InitRequest;
-use spitfire\core\Response;
-use spitfire\core\router\Router;
-use spitfire\core\router\RoutingMiddleware;
-use spitfire\io\stream\Stream;
-use spitfire\provider\Container;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.

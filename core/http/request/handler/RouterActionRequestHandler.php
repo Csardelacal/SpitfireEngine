@@ -4,13 +4,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionMethod;
-use spitfire\core\Response;
-use spitfire\core\router\Route;
 use spitfire\core\router\URIPattern;
 use spitfire\exceptions\ApplicationException;
+use spitfire\io\stream\Stream;
 use spitfire\model\support\ReflectionParameterTransformer;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -33,15 +32,15 @@ use spitfire\model\support\ReflectionParameterTransformer;
  * The router action handler allows the application to map a route to an action
  * within a controller. This generates a request handler that will use the route
  * to extract parameters and appropriately invoke the action.
- * 
+ *
  * For example, when building a route, the application is unable to determine how
  * the route's parameters will be resolved. The route /user/{id} will be mapped to
  * the UserController::retrieve action that receives the id as a parameter.
- * 
+ *
  * This means that for a request to /user/1 the route is created without knowledge
- * of the requested url, but the router must return a request handler capable of 
+ * of the requested url, but the router must return a request handler capable of
  * handling the URL /user/1
- * 
+ *
  * This leaves two options, returning a request handler that is able to reuse the route
  * to retrieve the parameters it needs, or creating a single use request handler that
  * ignores the request it receives. We're choosing the first approach for this.
@@ -50,7 +49,7 @@ class RouterActionRequestHandler implements RequestHandlerInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var URIPattern
 	 */
 	private $route;
@@ -80,7 +79,14 @@ class RouterActionRequestHandler implements RequestHandlerInterface
 		$reflection = new ReflectionMethod($controller, $action);
 		$params     = ReflectionParameterTransformer::transformParameters($reflection, $parameters->getParameters());
 		
-		$response   = spitfire()->provider()->callMethod($controller, $action, $params);
+		/**
+		 * Generate a response, please note that the output the controller generates is
+		 * redirected to stderr to prevent the application from getting overwhelmed.
+		 */
+		$response   = redirectOutput(
+			new Stream(fopen('php://stderr', 'w'), false, false, true),
+			fn() => spitfire()->provider()->callMethod($controller, $action, $params)
+		);
 		
 		if ($response instanceof ResponseInterface) {
 			return $response;
