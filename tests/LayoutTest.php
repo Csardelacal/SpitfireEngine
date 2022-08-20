@@ -1,6 +1,5 @@
 <?php namespace spitfire\storage\database\tests;
 
-use AssertionError;
 use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\storage\database\Field;

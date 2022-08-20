@@ -70,7 +70,7 @@ class ForeignKey implements ForeignKeyInterface
 	public function __construct(string $name, Field $field, IdentifierInterface $referenced)
 	{
 		$this->name  = $name;
-		$this->field = $field;
+		$this->field = clone $field;
 		$this->referenced = $referenced;
 	}
 	
