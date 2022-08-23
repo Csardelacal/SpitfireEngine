@@ -1,6 +1,7 @@
 <?php namespace spitfire\model\relations;
 
 use spitfire\collection\Collection;
+use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
@@ -15,6 +16,37 @@ use spitfire\model\QueryBuilder;
  */
 class BelongsToOne extends Relationship implements RelationshipSingleInterface
 {
+	
+	
+	public function resolve(ActiveRecord $record): RelationshipContent
+	{
+		/**
+		 * Start by querying the referenced model. This is the model for which we
+		 * wish to return data.
+		 */
+		$query = $this->getReferenced()->getModel()->query();
+		
+		/**
+		 * Find the record that this one belongs to. Please note that this is a single
+		 * record. This relationship does not support returning multiple ones.
+		 */
+		$query->where(
+			$this->getReferenced()->getName(),
+			$record->get($this->getField()->getName())
+		);
+		
+		/**
+		 * We execute the query with all(), even though there may only be one record, but
+		 * the idea behind it is that the Content needs a Collection anyway, and it allows
+		 * us to healthcheck the system with assertions.
+		 */
+		$result = $query->all();
+		
+		assert($result->count() === 1);
+		assert($result->first() instanceof ($this->getReferenced()->getModel()));
+		
+		return new RelationshipContent(true, $result);
+	}
 	
 	public function buildQuery(Collection $parents) : QueryBuilder
 	{

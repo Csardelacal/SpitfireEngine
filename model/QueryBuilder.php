@@ -1,6 +1,5 @@
 <?php namespace spitfire\model;
 
-use BadMethodCallException;
 use spitfire\collection\Collection;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSet;
