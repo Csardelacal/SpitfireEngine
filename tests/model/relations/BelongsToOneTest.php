@@ -1,6 +1,8 @@
 <?php namespace tests\spitfire\model\relations;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\collection\Collection;
+use spitfire\model\ActiveRecord;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\relations\BelongsToOne;
@@ -21,7 +23,14 @@ class BelongsToOneTest extends TestCase
 {
 	private static $connection;
 	
-		
+	/**
+	 * Resets the connection between tests.
+	 */
+	public function setUp() : void
+	{
+		self::$connection = null;
+	}
+	
 	/**
 	 * This test is a bit nonsensical, because the Model would usually be eagerly loaded
 	 * with the appropriate data. But this code would be executed if belongstoone models
@@ -55,12 +64,60 @@ class BelongsToOneTest extends TestCase
 			}
 		};
 		
-		$instance = $model->withHydrate(new Record(['_id' => 1, 'test' => 1]));
+		$record = new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1]));
+		$instance = $model->withHydrate($record);
 		$query = $instance->remote()->getQuery();
 		
 		$query->first();
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
 		$this->assertStringContainsString(".`test` = '1'", $queries[0]);
+	}
+	
+	/**
+	 * This test focuses on resolveAll, which is the main method of eagerly loading
+	 * belongstoone relationships and the one we should be using to fetch these relationships.
+	 */
+	public function testResolveAll()
+	{
+		
+		$model = new class(self::connection()) extends Model
+		{
+			
+			private $_id;
+			private $test;
+			
+			public function remote() : BelongsToOne
+			{
+				return new BelongsToOne(
+					new Field($this, 'test'),
+					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
+				);
+			}
+			
+			public function setTest(TestModel $t)
+			{
+				$this->test = $t;
+			}
+			
+			public function getTableName()
+			{
+				return 'test';
+			}
+		};
+		
+		$records = new Collection([
+			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
+			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 2])),
+			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 3])),
+			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
+			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 5])),
+		]);
+		
+		$model->remote()->resolveAll($records);
+		
+		$queries = self::$connection->getAdapter()->getDriver()->queries;
+		$this->assertStringContainsString(".`test` = '1' OR", $queries[0]);
+		$this->assertStringContainsString(".`test` = '2' OR", $queries[0]);
 	}
 	
 	public static function connection()
