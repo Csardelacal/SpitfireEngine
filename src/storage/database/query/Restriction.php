@@ -42,6 +42,7 @@ class Restriction
 	
 	const LIKE_OPERATOR  = 'LIKE';
 	const EQUAL_OPERATOR = '=';
+	const NOT_EQUAL_OPERATOR = '!=';
 	
 	/**
 	 * Instances a new restriction.

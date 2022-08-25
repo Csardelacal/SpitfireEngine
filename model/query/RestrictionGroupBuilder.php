@@ -1,15 +1,15 @@
 <?php namespace spitfire\model\query;
 
 use BadMethodCallException;
-use spitfire\model\Model;
-use spitfire\model\QueryBuilder;
+use spitfire\model\QueryBuilderInterface;
 use spitfire\model\relations\RelationshipInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\query\RestrictionGroup;
 
-class RestrictionGroupBuilder
+class RestrictionGroupBuilder implements RestrictionGroupBuilderInterface
 {
 	
-	private $query;
+	private $table;
 	
 	/**
 	 *
@@ -17,9 +17,9 @@ class RestrictionGroupBuilder
 	 */
 	private $restrictionGroup;
 	
-	public function __construct(QueryBuilder $queryBuilder, RestrictionGroup $restrictionGroup)
+	public function __construct(TableIdentifierInterface $table, RestrictionGroup $restrictionGroup)
 	{
-		$this->query = $queryBuilder;
+		$this->table = $table;
 		$this->restrictionGroup = $restrictionGroup;
 	}
 	
@@ -41,44 +41,12 @@ class RestrictionGroupBuilder
 				throw new BadMethodCallException('Invalid argument count for where', 2202231731);
 		}
 		
-		$table = $this->query->getQuery()->getFrom()->output();
-		$this->restrictionGroup->where($table->getOutput($field), $operator, $value);
+		$this->restrictionGroup->where($this->table->getOutput($field), $operator, $value);
 		return $this;
 	}
 	
-	/**
-	 *
-	 * @todo These methods imply that only a querybuilder can use them
-	 * @param string $relation
-	 * @param callable(RestrictionGroupBuilder):void|null $body
-	 */
-	public function has(string $relation, callable $body = null) : self
+	public function getDBRestrictions()
 	{
-		
-		$relation = $this->query->getModel()->{$relation}();
-		assert($relation instanceof RelationshipInterface);
-		
-		$relation->injector()->existence(
-			$this,
-			$body
-		);
-		
-		return $this;
-	}
-	
-	/**
-	 *
-	 * @param string $relation
-	 * @param callable(RestrictionGroupBuilder):void|null $body
-	 */
-	public function hasNo(string $relation, callable $body = null) : self
-	{
-		
-		$relation = $this->query->getModel()->{$relation}();
-		assert($relation instanceof RelationshipInterface);
-		
-		$relation->injector()->absence($this, $body);
-		
-		return $this;
+		return $this->restrictionGroup;
 	}
 }

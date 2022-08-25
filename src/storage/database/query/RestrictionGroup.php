@@ -105,6 +105,24 @@ class RestrictionGroup
 	}
 	
 	/**
+	 * Adds a restriction to the current query. Restraining the data a field
+	 * in it can contain.
+	 *
+	 * @see  http://www.spitfirephp.com/wiki/index.php/Method:spitfire/storage/database/Query::addRestriction
+	 *
+	 * @param callable(TableIdentifierInterface):Query $generator
+	 * @return RestrictionGroup
+	 */
+	public function whereNotExists($generator) : RestrictionGroup
+	{
+		$value = $generator($this->table);
+		assert($value instanceof Query);
+		
+		$this->restrictions->push(new Restriction(null, Restriction::NOT_EQUAL_OPERATOR, $value));
+		return $this;
+	}
+	
+	/**
 	 * @param string $type
 	 * @return RestrictionGroup
 	 */

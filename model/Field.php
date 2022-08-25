@@ -36,7 +36,7 @@ class Field
 	}
 	
 	/**
-	 * 
+	 *
 	 * @deprecated
 	 * @see Field::getName
 	 */

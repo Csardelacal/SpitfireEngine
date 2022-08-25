@@ -331,7 +331,7 @@ abstract class Model implements JsonSerializable
 	public function getTableName()
 	{
 		$reflection = new ReflectionClass($this);
-		return $this->prefix . Strings::plural($reflection->getShortName());
+		return $this->prefix . Strings::plural(Strings::snake($reflection->getShortName()));
 	}
 	
 	protected function lazy(string $field)

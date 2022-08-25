@@ -1,6 +1,7 @@
 <?php namespace spitfire\model;
 
 use spitfire\collection\Collection;
+use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
@@ -13,7 +14,7 @@ use spitfire\utils\Mixin;
  *
  * @mixin RestrictionGroupBuilder
  */
-class QueryBuilder
+class QueryBuilder implements QueryBuilderInterface
 {
 	
 	use Mixin;
@@ -54,7 +55,7 @@ class QueryBuilder
 	{
 		$this->model = $model;
 		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
-		$this->mixin(fn() => new RestrictionGroupBuilder($this, $this->query->getRestrictions()));
+		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
 	}
 	
 	public function withDefaultMapping() : QueryBuilder
@@ -109,13 +110,24 @@ class QueryBuilder
 	/**
 	 *
 	 * @param string $type
-	 * @param callable(RestrictionGroupBuilder):void $do
+	 * @param callable(ExtendedRestrictionGroupBuilder):void $do
 	 * @return QueryBuilder
 	 */
 	public function group(string $type, callable $do) : QueryBuilder
 	{
 		$group = $this->query->getRestrictions()->group($type);
-		$do(new RestrictionGroupBuilder($this, $group));
+		$do(new ExtendedRestrictionGroupBuilder($this, $group));
+		return $this;
+	}
+	
+	public function getRestrictions(): RestrictionGroupBuilder
+	{
+		return new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions());
+	}
+	
+	public function restrictions(callable $do): QueryBuilder
+	{
+		$do($this->getRestrictions());
 		return $this;
 	}
 	

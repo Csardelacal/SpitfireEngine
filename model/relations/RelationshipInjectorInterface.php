@@ -1,6 +1,7 @@
 <?php namespace spitfire\model\relations;
 
-use spitfire\model\query\RestrictionGroupBuilder;
+use spitfire\model\query\ExtendedRestrictionGroupBuilder as RestrictionGroupBuilder;
+use spitfire\model\query\RestrictionGroupBuilderInterface;
 
 /**
  * A relationship describes how two models connect with each other. This is useful
@@ -14,7 +15,7 @@ interface RelationshipInjectorInterface
 	/**
 	 *
 	 * @param RestrictionGroupBuilder $query
-	 * @param callable(RestrictionGroupBuilder):void|null $payload
+	 * @param callable(RestrictionGroupBuilderInterface):void|null $payload
 	 */
 	public function existence(RestrictionGroupBuilder $query, callable $payload = null) : void;
 	
@@ -23,7 +24,7 @@ interface RelationshipInjectorInterface
 	 * the application to customize it if needed, this is an option.
 	 *
 	 * @param RestrictionGroupBuilder $query
-	 * @param null|callable(RestrictionGroupBuilder):void $payload
+	 * @param null|callable(RestrictionGroupBuilderInterface):void $payload
 	 */
 	public function absence(RestrictionGroupBuilder $query, callable $payload = null) : void;
 }

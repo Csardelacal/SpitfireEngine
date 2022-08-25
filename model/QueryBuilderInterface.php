@@ -22,7 +22,7 @@ interface QueryBuilderInterface
 	
 	/**
 	 * Provides access to the restrictions that are applied to this query in particular.
-	 * 
+	 *
 	 * @return RestrictionGroupBuilder
 	 */
 	public function getRestrictions() : RestrictionGroupBuilder;
