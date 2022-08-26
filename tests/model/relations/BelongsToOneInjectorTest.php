@@ -76,12 +76,64 @@ class BelongsToOneInjectorTest extends TestCase
 		$this->assertStringContainsString("WHERE EXISTS (SELECT", $queries[0]);
 		
 		$this->assertStringMatchesFormat(
-			"SELECT `test_%d`.`_id`, `test_%d`.`test` " . 
-			"FROM `test` AS `test_%d` " . 
-			"WHERE EXISTS (SELECT `test_models_%d`.`example2` " . 
+			"SELECT `test_%d`.`_id`, `test_%d`.`test` " .
+			"FROM `test` AS `test_%d` " .
+			"WHERE EXISTS (SELECT `test_models_%d`.`example2` " .
 			"FROM `test_models` AS `test_models_%d` WHERE " .
-			"`test_models_%d`.`example` = '1' AND ". 
-			"`test_models_%d`.`example2` = `test_%d`.`test`)", 
+			"`test_models_%d`.`example` = '1' AND ".
+			"`test_models_%d`.`example2` = `test_%d`.`test`)",
+			$queries[0]
+		);
+	}
+	
+	/**
+	 */
+	public function testCreateQueryWithNotExists()
+	{
+		
+		$model = new class(self::connection()) extends Model
+		{
+			
+			private $_id;
+			private $test;
+			
+			public function remote() : BelongsToOne
+			{
+				return new BelongsToOne(
+					new Field($this, 'test'),
+					new Field(new TestModel(BelongsToOneInjectorTest::connection()), 'example2')
+				);
+			}
+			
+			public function setTest(TestModel $t)
+			{
+				$this->test = $t;
+			}
+			
+			public function getTableName()
+			{
+				return 'test';
+			}
+		};
+		
+		$query = $model->query();
+		$query->restrictions(
+			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->hasNo(
+				'remote',
+				fn(QueryBuilder $query) => $query->where('example', 1)
+			)
+		);
+		
+		$query->first();
+		$queries = self::$connection->getAdapter()->getDriver()->queries;
+		
+		$this->assertStringMatchesFormat(
+			"SELECT `test_%d`.`_id`, `test_%d`.`test` " .
+			"FROM `test` AS `test_%d` " .
+			"WHERE NOT EXISTS (SELECT `test_models_%d`.`example2` " .
+			"FROM `test_models` AS `test_models_%d` WHERE " .
+			"`test_models_%d`.`example` = '1' AND ".
+			"`test_models_%d`.`example2` = `test_%d`.`test`)",
 			$queries[0]
 		);
 	}

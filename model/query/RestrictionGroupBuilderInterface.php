@@ -4,5 +4,4 @@ interface RestrictionGroupBuilderInterface
 {
 	
 	public function where(...$args) : self;
-	
 }
