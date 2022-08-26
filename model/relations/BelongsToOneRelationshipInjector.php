@@ -3,12 +3,9 @@
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
-use spitfire\model\query\RestrictionGroupBuilder;
-use spitfire\model\query\ResultSetMapping;
 use spitfire\model\QueryBuilder;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
-use spitfire\storage\database\query\JoinTable;
 use spitfire\storage\database\query\RestrictionGroup;
 
 class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
@@ -26,44 +23,6 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 		
 		assert($this->field->getName() !== null);
 		assert($this->referenced->getName() !== null);
-	}
-	
-	private function makeJoin(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): JoinTable
-	{
-		$query = $restrictions->context();
-		
-		/**
-		 * Create a subquery that will link the table we're querying with the table we're referencing.
-		 * The user provided closure can write restrictions into that query.
-		 */
-		$restrictions->getDBRestrictions()
-			->whereExists(function (TableIdentifierInterface $table) use ($payload): DatabaseQuery {
-				$model = $this->referenced->getModel();
-				$builder = $model->query();
-				$payload($builder->getRestrictions());
-				
-				/**
-				 * Create the restriction that filters the second table by connecting it to the first one.
-				 * This is the part that generates the ON table.ref_id = referenced._id
-				 */
-				$builder->getRestrictions()->where(
-					$builder->getQuery()->getOutput($this->referenced->getName()),
-					$table->getOutput($this->field->getName())
-				);
-				
-				return $builder->getQuery();
-			});
-		$join = $query->getQuery()->joinTable(
-			$this->referenced->getModel()->getTable()->getTableReference(),
-			fn(JoinTable $join, DatabaseQuery $ctx) => $payload(new RestrictionGroupBuilder($join->getAlias()->output(), $join->getRestrictions()))
-		);
-		
-		$join->on(
-			$query->getQuery()->getOutput($this->field->getName()),
-			$join->getOutput($this->referenced->getName())
-		);
-		
-		return $join;
 	}
 	
 	/**
