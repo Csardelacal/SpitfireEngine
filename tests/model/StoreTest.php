@@ -89,7 +89,7 @@ class StoreTest extends TestCase
 			}
 		};
 		
-		$instance = $model->withHydrate(new Record([
+		$instance = $model->withSelfHydrate(new Record([
 			'_id' => null,
 			'my_stick' => '',
 			'my_test'  => '',

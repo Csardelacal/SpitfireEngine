@@ -152,7 +152,7 @@ class BelongsToOneTest extends TestCase
 				$t->int('test', true);
 			});
 			
-			$migrator->add('TestModels', function (TableMigrationExecutor $t) {
+			$migrator->add('test_models', function (TableMigrationExecutor $t) {
 				$t->int('test', true);
 			});
 			

@@ -104,6 +104,18 @@ abstract class Model implements JsonSerializable
 	}
 	
 	/**
+	 * More often than not, the system will wish to hydrate a database record
+	 * directly. This gets very verbose, this function just hydrates a model
+	 * with an active record for this model
+	 *
+	 * @return self
+	 */
+	public function withSelfHydrate(Record $record) : self
+	{
+		return $this->withHydrate(new ActiveRecord($this, $record));
+	}
+	
+	/**
 	 * Creates a copy of the model that is hydrated with the given record. This
 	 * allows the application to distinguish between models that carry a payload
 	 * and the ones that provide relationships and schema information.
@@ -173,13 +185,25 @@ abstract class Model implements JsonSerializable
 	{
 		assert($this->hydrated);
 		assert($this->record !== null);
-		$raw = $this->record->raw();
 		
-		foreach (array_keys($raw) as $k) {
-			if (!property_exists($this, $k)) {
-				continue;
+		/**
+		 * Prepare the raw data and the reflection we need to perform the sync.
+		 */
+		$keys = $this->record->keys();
+		$reflection = new ReflectionClass($this);
+		
+		foreach ($keys as $k) {
+			try {
+				$property = $reflection->getProperty($k);
+				$this->record->set($k, $property->getValue($this));
 			}
-			$this->record->set($k, $this->$k);
+			/**
+			 *
+			 * @see Model::rehydrate()
+			 */
+			catch (ReflectionException $e) {
+				trigger_error(sprintf('Model is missing property %s', $k), E_USER_NOTICE);
+			}
 		}
 	}
 	

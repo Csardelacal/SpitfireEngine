@@ -1,8 +1,6 @@
 <?php namespace spitfire\model\query;
 
 use BadMethodCallException;
-use spitfire\model\QueryBuilderInterface;
-use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\query\RestrictionGroup;
 

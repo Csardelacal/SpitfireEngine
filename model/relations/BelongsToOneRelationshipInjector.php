@@ -3,6 +3,7 @@
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
+use spitfire\model\query\RestrictionGroupBuilderInterface;
 use spitfire\model\QueryBuilder;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
@@ -41,7 +42,7 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 			->whereExists(function (TableIdentifierInterface $table) use ($payload): DatabaseQuery {
 				$model = $this->referenced->getModel();
 				$builder = new QueryBuilder($model);
-				$payload($builder);
+				$payload($builder->getRestrictions());
 				
 				/**
 				 * Create the restriction that filters the second table by connecting it to the first one.
@@ -74,7 +75,7 @@ class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
 			->whereNotExists(function (TableIdentifierInterface $table) use ($payload): DatabaseQuery {
 				$model = $this->referenced->getModel();
 				$builder = new QueryBuilder($model);
-				$payload($builder);
+				$payload($builder->getRestrictions());
 				
 				/**
 				 * Create the restriction that filters the second table by connecting it to the first one.

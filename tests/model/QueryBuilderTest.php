@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\ConnectionManager;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
@@ -184,7 +185,7 @@ class QueryBuilderTest extends TestCase
 			}
 		};
 		
-		$instance = $model->withHydrate(new Record(['_id' => 1]));
+		$instance = $model->withSelfHydrate(new Record(['_id' => 1]));
 		
 		$builder->where('test', $instance);
 		
@@ -231,7 +232,7 @@ class QueryBuilderTest extends TestCase
 			$this->model2
 		))->withDefaultMapping();
 		
-		$builder->whereHas('test', function (QueryBuilder $builder) {
+		$builder->has('test', function (RestrictionGroupBuilder $builder) {
 			$builder->where('my_stick', 'is better than bacon');
 		});
 		

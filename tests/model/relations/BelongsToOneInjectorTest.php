@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
+use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
@@ -67,7 +68,7 @@ class BelongsToOneInjectorTest extends TestCase
 		$query->restrictions(
 			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->has(
 				'remote',
-				fn(QueryBuilder $query) => $query->where('example', 1)
+				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
 			)
 		);
 		
@@ -120,7 +121,7 @@ class BelongsToOneInjectorTest extends TestCase
 		$query->restrictions(
 			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->hasNo(
 				'remote',
-				fn(QueryBuilder $query) => $query->where('example', 1)
+				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
 			)
 		);
 		
@@ -154,7 +155,10 @@ class BelongsToOneInjectorTest extends TestCase
 				public function read(string $sql): ResultInterface
 				{
 					$this->queries[] = $sql;
-					return new AbstractResultSet([['test' => 1]]);
+					return new AbstractResultSet([[
+						'_id' => 1,
+						'test' => 1
+					]]);
 				}
 				
 				public function lastInsertId(): string|false
