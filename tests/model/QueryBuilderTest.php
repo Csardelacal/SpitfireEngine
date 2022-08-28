@@ -100,7 +100,7 @@ class QueryBuilderTest extends TestCase
 		$this->model = new class ($connection) extends Model {
 			private int $_id = 0;
 			
-			public function getId() 
+			public function getId()
 			{
 				return $this->_id;
 			}
@@ -287,7 +287,7 @@ class QueryBuilderTest extends TestCase
 			private string $my_stick;
 			private string $my_test;
 			
-			public function getId() 
+			public function getId()
 			{
 				return $this->_id;
 			}
@@ -353,7 +353,7 @@ class QueryBuilderTest extends TestCase
 			private string $my_stick;
 			private string $my_test;
 			
-			public function getId() 
+			public function getId()
 			{
 				return $this->_id;
 			}

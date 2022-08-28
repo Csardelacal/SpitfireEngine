@@ -21,6 +21,17 @@ class BelongsToOne extends Relationship implements RelationshipSingleInterface
 	
 	public function resolve(ActiveRecord $record): RelationshipContent
 	{
+		
+		$value = $record->get($this->getField()->getName());
+		
+		/**
+		 * If the value is null, there is no referenced element available. Since null
+		 * implies, by convention that there is nothing on the other side.
+		 */
+		if ($value === null) {
+			return new RelationshipContent(true, new Collection());
+		}
+		
 		/**
 		 * Start by querying the referenced model. This is the model for which we
 		 * wish to return data.
@@ -33,7 +44,7 @@ class BelongsToOne extends Relationship implements RelationshipSingleInterface
 		 */
 		$query->where(
 			$this->getReferenced()->getName(),
-			$record->get($this->getField()->getName())
+			$value
 		);
 		
 		/**

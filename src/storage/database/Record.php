@@ -152,7 +152,7 @@ class Record
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return string[]
 	 */
 	public function keys() : array
