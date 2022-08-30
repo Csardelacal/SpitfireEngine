@@ -16,7 +16,7 @@ use spitfire\storage\database\query\RestrictionGroup;
  * child. This makes it a single relationship, since models using this
  * relationship will have a single parent.
  */
-class HasMany extends Relationship implements RelationshipMultipleInterface
+class HasMany extends Relationship implements RelationshipInterface
 {
 	
 	public function resolve(ActiveRecord $record): RelationshipContent
@@ -144,6 +144,6 @@ class HasMany extends Relationship implements RelationshipMultipleInterface
 	
 	public function injector(): RelationshipInjectorInterface
 	{
-		return new HasManyRelationshipInjector($this->getField(), $this->getReferenced());
+		return new DirectRelationshipInjector($this->getField(), $this->getReferenced());
 	}
 }

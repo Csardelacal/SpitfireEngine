@@ -15,7 +15,7 @@ use spitfire\storage\database\query\RestrictionGroup;
  * child. This makes it a single relationship, since models using this
  * relationship will have a single parent.
  */
-class BelongsToOne extends Relationship implements RelationshipSingleInterface
+class BelongsToOne extends Relationship implements RelationshipInterface
 {
 	
 	
@@ -158,6 +158,6 @@ class BelongsToOne extends Relationship implements RelationshipSingleInterface
 	
 	public function injector(): RelationshipInjectorInterface
 	{
-		return new BelongsToOneRelationshipInjector($this->getField(), $this->getReferenced());
+		return new DirectRelationshipInjector($this->getField(), $this->getReferenced());
 	}
 }

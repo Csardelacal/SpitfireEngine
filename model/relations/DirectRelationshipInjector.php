@@ -9,7 +9,12 @@ use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
 
-class BelongsToOneRelationshipInjector implements RelationshipInjectorInterface
+/**
+ * Direct relationships are usually the BelongsToOne or HasMany kind of. Querying for
+ * existence or absence, simply means looking up whether the remote (referenced) table
+ * contains a record that matches what we established.
+ */
+class DirectRelationshipInjector implements RelationshipInjectorInterface
 {
 	
 	private $field;
