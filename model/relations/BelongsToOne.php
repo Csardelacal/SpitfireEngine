@@ -55,7 +55,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 		$result = $query->all();
 		
 		assert($result->count() === 1);
-		assert(get_class($result->first()) === get_class($this->getReferenced()->getModel()));
+		assert($result->containsOnly(get_class($this->getReferenced()->getModel())));
 		
 		return new RelationshipContent(true, $result);
 	}

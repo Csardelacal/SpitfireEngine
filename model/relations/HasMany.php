@@ -46,7 +46,7 @@ class HasMany extends Relationship implements RelationshipInterface
 		 * If the result is not empty, we perform a sanity check to ensure that the model
 		 * we received is of the type we expected.
 		 */
-		assert($result->isEmpty() || get_class($result->first()) === get_class($this->getReferenced()->getModel()));
+		assert($result->containsOnly(get_class($this->getReferenced()->getModel())));
 		
 		return new RelationshipContent(false, $result);
 	}

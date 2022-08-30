@@ -7,7 +7,12 @@ trait Mixin
 	
 	private object $mixin;
 	
-	protected function mixin(object $mixin)
+	/**
+	 *
+	 * @param object|Closure $mixin
+	 * @return void
+	 */
+	protected function mixin(object $mixin) : void
 	{
 		$this->mixin = $mixin;
 	}
