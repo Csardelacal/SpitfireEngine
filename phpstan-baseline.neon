@@ -2,11 +2,6 @@ parameters:
 	ignoreErrors:
 
 		-
-			message: "#^Property spitfire\\\\io\\\\lock\\\\FileLock\\:\\:\\$file is never read, only written\\.$#"
-			count: 1
-			path: io/lock/FileLock.php
-
-		-
 			message: "#^Instanceof between \\*NEVER\\* and Throwable will always evaluate to false\\.$#"
 			count: 1
 			path: io/stp/StackTracePrinter.php

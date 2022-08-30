@@ -423,26 +423,6 @@ function mime($file)
 
 /**
  *
- * @staticvar \spitfire\io\lock\FileLockFactory $handler
- * @param \spitfire\io\lock\FileLockFactory $set
- * @return \spitfire\io\lock\FileLockFactory
- */
-function lock($set = null)
-{
-	static $handler;
-	
-	if ($set) {
-		$handler = $set;
-	}
-	if (!$handler) {
-		$handler = new \spitfire\io\lock\FileLockFactory(dirname(dirname(__FILE__)) . '/bin/usr/lock');
-	}
-	
-	return $handler;
-}
-
-/**
- *
  * @todo Move this code into URLBuilder::asset and invoke it from there.
  * @param string $name
  * @param string $scope A directory to scope this to. If an application builds it's
