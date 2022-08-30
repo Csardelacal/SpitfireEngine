@@ -55,7 +55,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 		$result = $query->all();
 		
 		assert($result->count() === 1);
-		assert($result->first() instanceof ($this->getReferenced()->getModel()));
+		assert(get_class($result->first()) === get_class($this->getReferenced()->getModel()));
 		
 		return new RelationshipContent(true, $result);
 	}
@@ -77,7 +77,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 		$query->group(RestrictionGroup::TYPE_OR, function (RestrictionGroupBuilder $group) use ($records) {
 			foreach ($records as $record) {
 				assert($record instanceof ActiveRecord);
-				assert($record->getModel() instanceof ($this->getField()->getModel()));
+				assert(get_class($record->getModel()) === get_class($this->getField()->getModel()));
 				
 				$group->where(
 					$this->getReferenced()->getName(),
@@ -96,7 +96,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 			/**
 			 * Health check: See if the resulting model is actually the type that we were expecting
 			 */
-			assert($item instanceof ($this->getReferenced()->getModel()));
+			assert(get_class($item) === get_class($this->getReferenced()->getModel()));
 			
 			/**
 			 * Group the items by their referenced ID. Please note that on the remote table this

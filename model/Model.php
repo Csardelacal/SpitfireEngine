@@ -4,6 +4,7 @@ use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
 use spitfire\exceptions\ApplicationException;
+use spitfire\model\relations\RelationshipContent;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
@@ -269,7 +270,7 @@ abstract class Model implements JsonSerializable
 	 * When editing the primary key value this will ALWAYS return the data that
 	 * the system assumes to be in the database.
 	 *
-	 * @return int|string
+	 * @return int|float|string
 	 */
 	public function getPrimary()
 	{
@@ -281,7 +282,12 @@ abstract class Model implements JsonSerializable
 			throw new ApplicationException('Record has no primary key', 2101181306);
 		}
 		
-		return $this->record->get($fields[0]->getName());
+		$result = $this->record->get($fields[0]->getName());
+		
+		assert($result !== null);
+		assert(!($result instanceof RelationshipContent));
+		
+		return $result;
 	}
 	
 	/**

@@ -13,6 +13,11 @@ use spitfire\utils\Mixin;
  * model and the physical data in the Record.
  *
  * @todo Add a cache that maintains the data that the surrogate contains.
+ *
+ * @method bool has(string $key)
+ * @method string[] raw()
+ * @method string[] keys()
+ *
  * @mixin Record
  */
 class ActiveRecord
@@ -46,7 +51,7 @@ class ActiveRecord
 	 * this method will fail when attempting to read a non-existing field.
 	 *
 	 * @param string $field
-	 * @return mixed
+	 * @return int|float|string|null|RelationshipContent
 	 */
 	public function get(string $field)
 	{

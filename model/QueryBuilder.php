@@ -12,6 +12,7 @@ use spitfire\utils\Mixin;
 
 /**
  *
+ * @method RestrictionGroupBuilder where(...$args)
  * @mixin RestrictionGroupBuilder
  */
 class QueryBuilder implements QueryBuilderInterface
