@@ -103,43 +103,18 @@ class HasMany extends Relationship implements RelationshipInterface
 		return $_return;
 	}
 	
-	public function buildQuery(Collection $parents) : QueryBuilder
-	{
-		$query = $this->getReferenced()->getModel()->query();
-		
-		/**
-		 * Create an or group and loop over the parents to build a query with all the
-		 * required parents.
-		 */
-		$query->group('OR', function (ExtendedRestrictionGroupBuilder $group) use ($parents) {
-			foreach ($parents as $parent) {
-				$group->where(
-					$this->getReferenced()->getName(),
-					$parent->getPrimary()
-				);
-			}
-		});
-		
-		return $query;
-	}
-	
 	public function getQuery(): QueryBuilder
 	{
-		return $this->buildQuery(new Collection([$this->getField()->getModel()]));
-	}
-	
-	/**
-	 * Eagerly load the children of a relationship. Please note that this receives a collection of
-	 * parents and returns a collection grouped by their ID.
-	 *
-	 * @param Collection<Model> $parents
-	 * @return Collection<Collection<Model>>
-	 */
-	public function eagerLoad(Collection $parents): Collection
-	{
-		return $this->buildQuery($parents)->all()->groupBy(function (Model $e) {
-			return $e->{$this->getReferenced()->getField()};
-		});
+		$parent = $this->getField()->getModel();
+		assert($parent->getActiveRecord() !== null);
+		
+		$query = $this->getReferenced()->getModel()->query();
+		$query->where(
+			$this->getReferenced()->getName(),
+			$parent->get($this->getField()->getName())
+		);
+		
+		return $query;
 	}
 	
 	public function injector(): RelationshipInjectorInterface

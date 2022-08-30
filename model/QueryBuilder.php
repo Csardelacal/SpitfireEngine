@@ -234,7 +234,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @param Collection<Model> $records
+	 * @param Collection<ActiveRecord> $records
 	 */
 	protected function eagerLoad(Collection $records) : Collection
 	{
@@ -242,13 +242,14 @@ class QueryBuilder implements QueryBuilderInterface
 			$meta = $this->model->$relation();
 			assert($meta instanceof RelationshipInterface);
 			
-			$children = $meta->eagerLoad($records);
+			$children = $meta->resolveAll($records);
 			
 			/**
 			 * @todo This needs to make use of reflection so it can be used properly.
 			 */
 			foreach ($records as $record) {
-				$record->{$relation} = $children[$record->getPrimary()];
+				/**@var $record Record */
+				$record->set($relation, $children[$record->getPrimary()]);
 			}
 		}
 		

@@ -1,6 +1,7 @@
 <?php namespace spitfire\model;
 
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\model\relations\RelationshipContent;
 use spitfire\model\relations\RelationshipInterface;
@@ -63,6 +64,26 @@ class ActiveRecord
 		}
 		
 		return $this->record->get($field)?? null;
+	}
+	
+	/**
+	 * The value of the primary key, null means that the software expects the
+	 * database to assign this record a primary key on insert.
+	 *
+	 * When editing the primary key value this will ALWAYS return the data that
+	 * the system assumes to be in the database.
+	 *
+	 * @return int|float|string
+	 */
+	public function getPrimary()
+	{
+		$fields = $this->model->getTable()->getPrimaryKey()->getFields();
+		
+		if ($fields->isEmpty()) {
+			throw new ApplicationException('Record has no primary key', 2101181306);
+		}
+		
+		return $this->record->get($fields[0]->getName());
 	}
 	
 	
