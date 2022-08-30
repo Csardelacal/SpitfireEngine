@@ -48,8 +48,8 @@ class HasManyTest extends TestCase
 			public function remote() : HasMany
 			{
 				return new HasMany(
-					/*gets referenced*/new Field($this, '_id'),
-					/*by*/new Field(new TestModel(HasManyTest::connection()), 'test')
+					new Field($this, '_id'), # gets referenced by
+					new Field(new TestModel(HasManyTest::connection()), 'test')
 				);
 			}
 			
@@ -90,8 +90,8 @@ class HasManyTest extends TestCase
 			public function remote() : HasMany
 			{
 				return new HasMany(
-					/*gets referenced*/new Field($this, '_id'),
-					/*by*/new Field(new TestModel(HasManyTest::connection()), 'test')
+					new Field($this, '_id'), # gets referenced by
+					new Field(new TestModel(HasManyTest::connection()), 'test')
 				);
 			}
 			
