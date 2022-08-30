@@ -302,6 +302,7 @@ abstract class Model implements JsonSerializable
 	public function getPrimaryData()
 	{
 		assert($this->hydrated);
+		assert($this->record !== null);
 		
 		$primaryFields = $this->getTable()->getPrimaryKey()->getFields();
 		$ret = array();
