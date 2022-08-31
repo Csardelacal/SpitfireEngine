@@ -327,6 +327,7 @@ abstract class Model implements JsonSerializable
 	public function get(string $name)
 	{
 		assert($this->hydrated);
+		assert($this->record !== null);
 		return $this->record->get($name);
 	}
 	
