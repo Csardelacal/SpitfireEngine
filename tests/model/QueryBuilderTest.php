@@ -368,9 +368,10 @@ class QueryBuilderTest extends TestCase
 			$model
 		))->withDefaultMapping();
 		
-		$builder->where('_id', 1);
+		$where = $builder->where('_id', 1);
 		$restrictions = $builder->getQuery()->getRestrictions();
 		
+		$this->assertInstanceOf(QueryBuilder::class, $where);
 		$this->assertEquals(1, $restrictions->restrictions()->count());
 	}
 }

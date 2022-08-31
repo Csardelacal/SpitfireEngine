@@ -12,7 +12,6 @@ use spitfire\utils\Mixin;
 
 /**
  *
- * @method RestrictionGroupBuilder where(...$args)
  * @mixin RestrictionGroupBuilder
  */
 class QueryBuilder implements QueryBuilderInterface
@@ -142,6 +141,12 @@ class QueryBuilder implements QueryBuilderInterface
 	public function with(array $with)
 	{
 		$this->with = $with;
+		return $this;
+	}
+	
+	public function where(...$args) : QueryBuilder
+	{
+		(new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()))->where(...$args);
 		return $this;
 	}
 	
