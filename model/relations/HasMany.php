@@ -33,7 +33,7 @@ class HasMany extends Relationship implements RelationshipInterface
 		 */
 		$query->where(
 			$this->getReferenced()->getName(),
-			$record->get($this->getField()->getName())
+			$record->getUnderlyingRecord()->get($this->getField()->getName())
 		);
 		
 		/**
@@ -72,7 +72,7 @@ class HasMany extends Relationship implements RelationshipInterface
 				
 				$group->where(
 					$this->getReferenced()->getName(),
-					$record->get($this->getField()->getName())
+					$record->getUnderlyingRecord()->get($this->getField()->getName())
 				);
 			}
 		});

@@ -22,7 +22,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 	public function resolve(ActiveRecord $record): RelationshipContent
 	{
 		
-		$value = $record->get($this->getField()->getName());
+		$value = $record->getUnderlyingRecord()->get($this->getField()->getName());
 		
 		/**
 		 * If the value is null, there is no referenced element available. Since null
@@ -81,7 +81,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 				
 				$group->where(
 					$this->getReferenced()->getName(),
-					$record->get($this->getField()->getName())
+					$record->getUnderlyingRecord()->get($this->getField()->getName())
 				);
 			}
 		});

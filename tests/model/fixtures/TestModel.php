@@ -5,10 +5,13 @@ use spitfire\model\attribute\Integer;
 use spitfire\model\attribute\References;
 use spitfire\model\attribute\Table;
 use spitfire\model\Model;
+use spitfire\model\traits\WithId;
 
 #[Table('test')]
 class TestModel extends Model
 {
+	
+	use WithId;
 	
 	/**
 	 *

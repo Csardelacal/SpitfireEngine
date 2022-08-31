@@ -40,10 +40,17 @@ class ActiveRecord
 	 */
 	private Record $record;
 	
+	/**
+	 *
+	 * @var Collection<RelationshipContent>
+	 */
+	private Collection $cache;
+	
 	public function __construct(Model $model, Record $record)
 	{
 		$this->model = $model;
 		$this->record = $record;
+		$this->cache  = new Collection();
 		$this->mixin($record);
 	}
 	
@@ -96,13 +103,27 @@ class ActiveRecord
 	 */
 	public function set(string $field, $value) : ActiveRecord
 	{
-		assert($this->has($field));
+		assert($this->has($field), sprintf('Record does not have expected field %s', $field));
 		
-		if ($value instanceof Model) {
-			$value = $value->getPrimary();
+		if ($this->cache->has($field)) {
+			unset($this->cache[$field]);
 		}
 		
-		$this->record->set($field, $value);
+		if (!($value instanceof RelationshipContent)) {
+			$this->record->set($field, $value);
+			return $this;
+		}
+		
+		/**
+		 * If the data can be cached, we cache it. This prevents database roundtrips.
+		 * The only data being cached is relationship related.
+		 */
+		$this->cache[$field] = $value;
+		
+		if ($value->isSingle()) {
+			$this->record->set($field, $value->getPayload()->first()?->getPrimary());
+		}
+		
 		return $this;
 	}
 	
@@ -113,6 +134,10 @@ class ActiveRecord
 	{
 		$relationship = $this->model->$field();
 		assert($relationship instanceof RelationshipInterface);
+		
+		if ($this->cache->has($field)) {
+			return $this->cache[$field];
+		}
 		
 		/**
 		 * If the relationship does not contain any data, and it's a belongstoone relation

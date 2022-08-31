@@ -3,6 +3,7 @@
 use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
+use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\model\relations\RelationshipContent;
 use spitfire\storage\database\ConnectionInterface;
@@ -149,18 +150,24 @@ abstract class Model implements JsonSerializable
 		assert($this->hydrated);
 		assert($this->record !== null);
 		
-		$raw = $this->record->raw();
+		$keys = $this->record->keys();
 		$reflection = new ReflectionClass($this);
 		
-		foreach ($raw as $k => $v) {
+		foreach ($keys as $k) {
 			try {
 				$prop = $reflection->getProperty($k);
+				
+				$value = $this->record->get($k);
+				
+				if ($value instanceof RelationshipContent) {
+					$value = $value->isSingle()? $value->getPayload()->first() : $value->getPayload();
+				}
 				
 				/**
 				 * @todo Remove the set accessible call, this is deprecated since PHP8.1
 				 */
 				$prop->setAccessible(true);
-				$prop->setValue($this, $v);
+				$prop->setValue($this, $value);
 			}
 			/**
 			 * We actually don't care if the reflection couldn't load the property, if
@@ -196,7 +203,16 @@ abstract class Model implements JsonSerializable
 		foreach ($keys as $k) {
 			try {
 				$property = $reflection->getProperty($k);
-				$this->record->set($k, $property->getValue($this));
+				$value = $property->getValue($this);
+				
+				if ($value instanceof Model) {
+					$value = new RelationshipContent(true, new Collection([$value]));
+				}
+				elseif ($value instanceof Collection) {
+					$value = new RelationshipContent(false, $value);
+				}
+				
+				$this->record->set($k, $value);
 			}
 			/**
 			 *
@@ -370,7 +386,7 @@ abstract class Model implements JsonSerializable
 	protected function lazy(string $field)
 	{
 		assert($this->hydrated);
-		assert($this->record);
+		assert($this->record !== null);
 		assert($this->record->has($field));
 		return $this->record->get($field);
 	}
@@ -378,7 +394,7 @@ abstract class Model implements JsonSerializable
 	public function __isset($name)
 	{
 		assert($this->hydrated);
-		assert($this->record);
+		assert($this->record !== null);
 		return $this->record->has($name);
 	}
 	
@@ -418,7 +434,7 @@ abstract class Model implements JsonSerializable
 	public function setPivot(Model $pivot) : Model
 	{
 		assert($this->hydrated);
-		assert($this->record);
+		assert($this->record !== null);
 		
 		$this->pivot = $pivot;
 		return $this;
@@ -431,7 +447,7 @@ abstract class Model implements JsonSerializable
 	public function pivot() :? Model
 	{
 		assert($this->hydrated);
-		assert($this->record);
+		assert($this->record !== null);
 		return $this->pivot;
 	}
 	

@@ -50,7 +50,7 @@ class AttributeTest extends TestCase
 		$generator = new AttributeLayoutGenerator();
 		
 		$layout = $generator->make($reflection);
-		$this->assertCount(4, $layout->getFields());
+		$this->assertCount(5, $layout->getFields());
 		
 		/**
 		 * Make sure all the fields we added are available.
@@ -74,9 +74,9 @@ class AttributeTest extends TestCase
 		
 		$layout = $generator->make($reflection);
 		$indexes = $layout->getIndexes()->filter(fn($e) => $e instanceof Index);
-		$this->assertCount(1, $indexes);
+		$this->assertCount(2, $indexes);
 		
-		$index = $indexes[0];
+		$index = $indexes[1];
 		
 		$this->assertCount(2, $index->getFields());
 		$this->assertEquals('example2', $index->getFields()[0]->getName());
