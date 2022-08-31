@@ -27,41 +27,6 @@ parameters:
 			path: model/Index.php
 
 		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\AdapterInterface\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
-			count: 1
-			path: model/adapters/AdapterInterface.php
-
-		-
-			message: "#^Method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:getModel\\(\\) has invalid return type Model\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^PHPDoc tag @param for parameter \\$model with type Model is not subtype of native type spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^Parameter \\$model of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:__construct\\(\\) has invalid type Model\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^Parameter \\$model of method spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:__construct\\(\\) has invalid type spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:\\$model \\(Model\\) does not accept spitfire\\\\Model\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
-			message: "#^Property spitfire\\\\model\\\\adapters\\\\BaseAdapter\\:\\:\\$model has unknown class Model as its type\\.$#"
-			count: 1
-			path: model/adapters/BaseAdapter.php
-
-		-
 			message: "#^Instantiated class spitfire\\\\exceptions\\\\PrivateException not found\\.$#"
 			count: 1
 			path: mvc/Invoke.php
