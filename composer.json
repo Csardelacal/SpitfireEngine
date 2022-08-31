@@ -21,7 +21,6 @@
 		"league/flysystem": "^3.0",
 		"spitfire/event": "^0.1.0",
 		"spitfire/exception": "^0.1.1",
-		"spitfire/contracts": "dev-master",
 		"brick/varexporter": "^0.3.7"
 	},
 
@@ -32,8 +31,7 @@
 		"pug-php/pug": "^3.4",
 		"magic3w/php-coding-standard": "^1.0",
 		"league/flysystem-aws-s3-v3": "^3.0",
-		"scrutinizer/ocular": "^1.9",
-		"symfony/console": "^6.0"
+		"scrutinizer/ocular": "^1.9"
 	},
 
 	"suggest": {
