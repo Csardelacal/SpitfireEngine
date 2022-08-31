@@ -1,12 +1,13 @@
 <?php namespace spitfire\core\config;
 
-use spitfire\core\Environment;
 use spitfire\core\Locations;
+use Dotenv\Dotenv;
+use spitfire\contracts\core\LocationsInterface;
 
 class ConfigurationLoader
 {
 	
-	private $locations;
+	private LocationsInterface $locations;
 	
 	public function __construct(Locations $locations)
 	{
@@ -17,7 +18,7 @@ class ConfigurationLoader
 	{
 		
 		$config = new Configuration();
-		spitfire()->provider()->set(Environment::class, new Environment($this->locations->root('.env')));
+		(Dotenv::createImmutable($this->locations->root()))->load();
 		
 		/*
 		 * This function walks the directory for the config and loads the appropriate

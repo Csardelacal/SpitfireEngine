@@ -17,5 +17,6 @@ class LoadConfigurationTest extends TestCase
 		
 		$this->assertEquals(false, $config->get('app.php.test', false));
 		$this->assertEquals("hello world", $config->get('app.test'));
+		$this->assertEquals("example", $config->get('app.demo'));
 	}
 }

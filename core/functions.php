@@ -5,7 +5,6 @@ use Psr\Http\Message\StreamInterface;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
 use spitfire\contracts\core\kernel;
-use spitfire\core\Environment;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
 use spitfire\core\http\URLBuilder;
@@ -541,28 +540,14 @@ function config($key, $fallback = null)
  * @return string|null
  */
 function env(string $param) :? string
-{
-	$provider = spitfire()->provider();
-	
+{	
 	/**
 	 * If no parameter was given, the application would be unable to work with it.
 	 */
 	assert($param !== '');
+	assert(array_key_exists($param, $_ENV));
 	
-	/**
-	 * If the user is performing an empty lookup, or the environment has not yet been
-	 * set, the application should fail.
-	 */
-	if (!$provider->has(Environment::class)) {
-		throw new ApplicationException('Environment was read before it was loaded');
-	}
-	
-	/**
-	 * @var Environment
-	 */
-	$env = $provider->get(Environment::class);
-	
-	return $env->read($param);
+	return $_ENV[$param];
 }
 
 /**

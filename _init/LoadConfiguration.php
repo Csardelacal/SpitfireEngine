@@ -3,7 +3,7 @@
 use spitfire\contracts\ConfigurationInterface;
 use spitfire\core\config\Configuration;
 use spitfire\core\config\ConfigurationLoader;
-use spitfire\core\Environment;
+use Dotenv\Dotenv;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -38,7 +38,7 @@ class LoadConfiguration implements InitScriptInterface
 			return;
 		}
 		
-		spitfire()->provider()->set(Environment::class, new Environment(spitfire()->locations()->root('.env')));
+		(Dotenv::createImmutable(spitfire()->locations()->root()))->load();
 		
 		$loader = new ConfigurationLoader(spitfire()->locations());
 		$config = $loader->make();

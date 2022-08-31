@@ -1,5 +1,6 @@
 <?php
 
 return [
-	'test' => 'hello world'
+	'test' => 'hello world',
+	'demo' => env('demo')
 ];
