@@ -450,6 +450,9 @@ abstract class Model implements JsonSerializable
 	 */
 	public function jsonSerialize() : mixed
 	{
+		assert($this->hydrated);
+		assert($this->record !== null);
+		
 		$raw = [];
 		
 		foreach ($this->record->raw() as $name => $value) {
