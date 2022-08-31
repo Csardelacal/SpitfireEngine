@@ -1,10 +1,10 @@
 <?php namespace tests\spitfire\model\relations;
 
 use PHPUnit\Framework\TestCase;
-use spitfire\collection\Collection;
-use spitfire\model\ActiveRecord;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\query\ExtendedRestrictionGroupBuilder;
+use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
@@ -15,11 +15,10 @@ use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\migration\schemaState\SchemaMigrationExecutor;
 use spitfire\storage\database\migration\schemaState\TableMigrationExecutor;
 use spitfire\storage\database\query\ResultInterface;
-use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema;
 use tests\spitfire\model\fixtures\TestModel;
 
-class BelongsToOneTest extends TestCase
+class BelongsToOneInjectorTest extends TestCase
 {
 	private static $connection;
 	
@@ -49,7 +48,7 @@ class BelongsToOneTest extends TestCase
 			{
 				return new BelongsToOne(
 					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
+					new Field(new TestModel(BelongsToOneInjectorTest::connection()), 'example2')
 				);
 			}
 			
@@ -64,20 +63,32 @@ class BelongsToOneTest extends TestCase
 			}
 		};
 		
-		$record = new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1]));
-		$instance = $model->withHydrate($record);
-		$query = $instance->remote()->getQuery();
+		$query = $model->query();
+		$query->restrictions(
+			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->has(
+				'remote',
+				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
+			)
+		);
 		
 		$query->first();
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
-		$this->assertStringContainsString(".`test` = '1'", $queries[0]);
+		$this->assertStringContainsString("WHERE EXISTS (SELECT", $queries[0]);
+		
+		$this->assertStringMatchesFormat(
+			"SELECT `test_%d`.`_id`, `test_%d`.`test` " .
+			"FROM `test` AS `test_%d` " .
+			"WHERE EXISTS (SELECT `test_models_%d`.`example2` " .
+			"FROM `test_models` AS `test_models_%d` WHERE " .
+			"`test_models_%d`.`example` = '1' AND ".
+			"`test_models_%d`.`example2` = `test_%d`.`test`)",
+			$queries[0]
+		);
 	}
 	
 	/**
-	 * This test focuses on resolveAll, which is the main method of eagerly loading
-	 * belongstoone relationships and the one we should be using to fetch these relationships.
 	 */
-	public function testResolveAll()
+	public function testCreateQueryWithNotExists()
 	{
 		
 		$model = new class(self::connection()) extends Model
@@ -90,7 +101,7 @@ class BelongsToOneTest extends TestCase
 			{
 				return new BelongsToOne(
 					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
+					new Field(new TestModel(BelongsToOneInjectorTest::connection()), 'example2')
 				);
 			}
 			
@@ -105,20 +116,28 @@ class BelongsToOneTest extends TestCase
 			}
 		};
 		
-		$records = new Collection([
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 2])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 3])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 5])),
-		]);
+		$query = $model->query();
+		$query->restrictions(
+			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->hasNo(
+				'remote',
+				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
+			)
+		);
 		
-		$model->remote()->resolveAll($records);
-		
+		$query->first();
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
-		$this->assertStringContainsString(".`test` = '1' OR", $queries[0]);
-		$this->assertStringContainsString(".`test` = '2' OR", $queries[0]);
+		
+		$this->assertStringMatchesFormat(
+			"SELECT `test_%d`.`_id`, `test_%d`.`test` " .
+			"FROM `test` AS `test_%d` " .
+			"WHERE NOT EXISTS (SELECT `test_models_%d`.`example2` " .
+			"FROM `test_models` AS `test_models_%d` WHERE " .
+			"`test_models_%d`.`example` = '1' AND ".
+			"`test_models_%d`.`example2` = `test_%d`.`test`)",
+			$queries[0]
+		);
 	}
+	
 	
 	public static function connection()
 	{
@@ -135,7 +154,10 @@ class BelongsToOneTest extends TestCase
 				public function read(string $sql): ResultInterface
 				{
 					$this->queries[] = $sql;
-					return new AbstractResultSet([['test' => 1]]);
+					return new AbstractResultSet([[
+						'_id' => 1,
+						'test' => 1
+					]]);
 				}
 				
 				public function lastInsertId(): string|false
@@ -154,6 +176,8 @@ class BelongsToOneTest extends TestCase
 			
 			$migrator->add('test_models', function (TableMigrationExecutor $t) {
 				$t->int('test', true);
+				$t->int('example', true);
+				$t->int('example2', true);
 			});
 			
 			$adapter = new Adapter(

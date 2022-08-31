@@ -30,6 +30,16 @@ class Field
 		return $this->model;
 	}
 	
+	public function getName()
+	{
+		return $this->name;
+	}
+	
+	/**
+	 *
+	 * @deprecated
+	 * @see Field::getName
+	 */
 	public function getField()
 	{
 		return $this->name;

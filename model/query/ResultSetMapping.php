@@ -1,5 +1,6 @@
 <?php namespace spitfire\model\query;
 
+use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Record;
@@ -46,6 +47,6 @@ class ResultSetMapping
 			return array_pop($raw);
 		})->toArray());
 		
-		return $this->model->withHydrate($body);
+		return $this->model->withHydrate(new ActiveRecord($this->model, $body));
 	}
 }

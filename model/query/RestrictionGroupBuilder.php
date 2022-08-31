@@ -1,15 +1,13 @@
 <?php namespace spitfire\model\query;
 
 use BadMethodCallException;
-use spitfire\model\Model;
-use spitfire\model\QueryBuilder;
-use spitfire\model\relations\RelationshipInterface;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\query\RestrictionGroup;
 
-class RestrictionGroupBuilder
+class RestrictionGroupBuilder implements RestrictionGroupBuilderInterface
 {
 	
-	private $query;
+	private $table;
 	
 	/**
 	 *
@@ -17,9 +15,9 @@ class RestrictionGroupBuilder
 	 */
 	private $restrictionGroup;
 	
-	public function __construct(QueryBuilder $queryBuilder, RestrictionGroup $restrictionGroup)
+	public function __construct(TableIdentifierInterface $table, RestrictionGroup $restrictionGroup)
 	{
-		$this->query = $queryBuilder;
+		$this->table = $table;
 		$this->restrictionGroup = $restrictionGroup;
 	}
 	
@@ -41,26 +39,12 @@ class RestrictionGroupBuilder
 				throw new BadMethodCallException('Invalid argument count for where', 2202231731);
 		}
 		
-		if ($value instanceof Model) {
-			$relation = $this->query->getModel()->{$field}();
-			assert($relation instanceof RelationshipInterface);
-			
-			$relation->injector()->injectWhere($this->query->getQuery(), $this->restrictionGroup, $value);
-			return $this;
-		}
-		
-		$table = $this->query->getQuery()->getFrom()->output();
-		$this->restrictionGroup->where($table->getOutput($field), $operator, $value);
+		$this->restrictionGroup->where($this->table->getOutput($field), $operator, $value);
 		return $this;
 	}
 	
-	public function whereHas($relation, $value) : RestrictionGroupBuilder
+	public function getDBRestrictions()
 	{
-		
-		$relation = $this->query->getModel()->{$relation}();
-		assert($relation instanceof RelationshipInterface);
-		
-		$relation->injector()->injectWhereHas($this->restrictionGroup, $value);
-		return $this;
+		return $this->restrictionGroup;
 	}
 }

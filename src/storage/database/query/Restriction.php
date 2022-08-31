@@ -20,6 +20,18 @@ class Restriction
 	 * The field that this restriction is searching on. This lets the application
 	 * know which table, field and alias to use to refer to when assembling a query.
 	 *
+	 * @todo fixme: Technically this can be something else than a field, it could also
+	 * contain a subquery that generates an output like `(SELECT ...) > 3` which would,
+	 * for example, allow the query to be used to fetch elements with children.
+	 * Currently we have no use for the scenario and it increases complexity beyond
+	 * what is tolerable for us. But in future revisions we need to check moving the
+	 * stuff around. This would need to account for
+	 * * WHERE `a` = 'b' (field, operator, value)
+	 * * WHERE `a` = `b` (field, operator, field)
+	 * * WHERE EXISTS(SELECT...) (query, '!=', null)
+	 * * WHERE NOT EXISTS(SELECT...) (query, '=', null)
+	 * * WHERE (SELECT COUNT(*) FROM ...) = b (query, '=', value)
+	 *
 	 * @var IdentifierInterface|null
 	 */
 	private $field;
@@ -42,6 +54,7 @@ class Restriction
 	
 	const LIKE_OPERATOR  = 'LIKE';
 	const EQUAL_OPERATOR = '=';
+	const NOT_EQUAL_OPERATOR = '!=';
 	
 	/**
 	 * Instances a new restriction.

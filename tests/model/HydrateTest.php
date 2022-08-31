@@ -1,6 +1,7 @@
 <?php namespace tests\spitfire\model;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\model\ActiveRecord;
 use spitfire\storage\database\ConnectionGlobal;
 use spitfire\storage\database\Record;
 use tests\spitfire\model\fixtures\TestModel;
@@ -16,7 +17,7 @@ class HydrateTest extends TestCase
 		]);
 		
 		$model = new TestModel(new ConnectionGlobal());
-		$instance = $model->withHydrate($record);
+		$instance = $model->withSelfHydrate($record);
 		
 		$this->assertEquals('a', $instance->getTest());
 	}

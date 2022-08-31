@@ -139,6 +139,8 @@ class Record
 		$_data = [];
 		
 		foreach ($keys as $key) {
+			assert(array_key_exists($key, $this->original), 'Record is missing key ' . $key);
+			assert(array_key_exists($key, $this->data));
 			$_original[$key] = $this->original[$key];
 			$_data[$key] = $this->data[$key];
 		}
@@ -147,6 +149,16 @@ class Record
 		$_record->data = $_data;
 		
 		return $_record;
+	}
+	
+	/**
+	 *
+	 * @return string[]
+	 */
+	public function keys() : array
+	{
+		assert(array_keys($this->data) === array_keys($this->original));
+		return array_keys($this->data);
 	}
 	
 	/**

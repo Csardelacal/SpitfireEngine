@@ -1,24 +1,24 @@
 <?php namespace spitfire\model;
 
 use spitfire\collection\Collection;
-use spitfire\model\query\Queriable;
+use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
 use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\identifiers\FieldIdentifier;
 use spitfire\storage\database\Query as DatabaseQuery;
-use spitfire\storage\database\query\SelectExpression;
-use spitfire\storage\database\Record;
+use spitfire\utils\Mixin;
 
 /**
  *
+ * @method RestrictionGroupBuilder where(...$args)
+ * @mixin RestrictionGroupBuilder
  */
-class QueryBuilder
+class QueryBuilder implements QueryBuilderInterface
 {
 	
-	use Queriable;
+	use Mixin;
 	
 	/**
 	 *
@@ -56,6 +56,7 @@ class QueryBuilder
 	{
 		$this->model = $model;
 		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
+		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
 	}
 	
 	public function withDefaultMapping() : QueryBuilder
@@ -110,13 +111,24 @@ class QueryBuilder
 	/**
 	 *
 	 * @param string $type
-	 * @param callable(RestrictionGroupBuilder):void $do
+	 * @param callable(ExtendedRestrictionGroupBuilder):void $do
 	 * @return QueryBuilder
 	 */
 	public function group(string $type, callable $do) : QueryBuilder
 	{
 		$group = $this->query->getRestrictions()->group($type);
-		$do(new RestrictionGroupBuilder($this, $group));
+		$do(new ExtendedRestrictionGroupBuilder($this, $group));
+		return $this;
+	}
+	
+	public function getRestrictions(): RestrictionGroupBuilder
+	{
+		return new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions());
+	}
+	
+	public function restrictions(callable $do): QueryBuilder
+	{
+		$do($this->getRestrictions());
 		return $this;
 	}
 	
@@ -222,7 +234,7 @@ class QueryBuilder
 	
 	/**
 	 *
-	 * @param Collection<Model> $records
+	 * @param Collection<ActiveRecord> $records
 	 */
 	protected function eagerLoad(Collection $records) : Collection
 	{
@@ -230,13 +242,14 @@ class QueryBuilder
 			$meta = $this->model->$relation();
 			assert($meta instanceof RelationshipInterface);
 			
-			$children = $meta->eagerLoad($records);
+			$children = $meta->resolveAll($records);
 			
 			/**
 			 * @todo This needs to make use of reflection so it can be used properly.
 			 */
 			foreach ($records as $record) {
-				$record->{$relation} = $children[$record->getPrimary()];
+				/**@var $record Record */
+				$record->set($relation, $children[$record->getPrimary()]);
 			}
 		}
 		

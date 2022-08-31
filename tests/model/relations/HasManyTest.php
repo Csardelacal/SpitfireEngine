@@ -5,7 +5,7 @@ use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
 use spitfire\model\Field;
 use spitfire\model\Model;
-use spitfire\model\relations\BelongsToOne;
+use spitfire\model\relations\HasMany;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\test\AbstractDriver;
@@ -19,7 +19,7 @@ use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema;
 use tests\spitfire\model\fixtures\TestModel;
 
-class BelongsToOneTest extends TestCase
+class HasManyTest extends TestCase
 {
 	private static $connection;
 	
@@ -45,11 +45,11 @@ class BelongsToOneTest extends TestCase
 			private $_id;
 			private $test;
 			
-			public function remote() : BelongsToOne
+			public function remote() : HasMany
 			{
-				return new BelongsToOne(
-					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
+				return new HasMany(
+					new Field($this, '_id'), # gets referenced by
+					new Field(new TestModel(HasManyTest::connection()), 'test')
 				);
 			}
 			
@@ -80,17 +80,18 @@ class BelongsToOneTest extends TestCase
 	public function testResolveAll()
 	{
 		
+		
 		$model = new class(self::connection()) extends Model
 		{
 			
 			private $_id;
 			private $test;
 			
-			public function remote() : BelongsToOne
+			public function remote() : HasMany
 			{
-				return new BelongsToOne(
-					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
+				return new HasMany(
+					new Field($this, '_id'), # gets referenced by
+					new Field(new TestModel(HasManyTest::connection()), 'test')
 				);
 			}
 			
@@ -107,10 +108,10 @@ class BelongsToOneTest extends TestCase
 		
 		$records = new Collection([
 			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 2])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 3])),
+			new ActiveRecord($model, new Record(['_id' => 2, 'test' => 2])),
+			new ActiveRecord($model, new Record(['_id' => 3, 'test' => 3])),
 			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 5])),
+			new ActiveRecord($model, new Record(['_id' => 5, 'test' => 5])),
 		]);
 		
 		$model->remote()->resolveAll($records);
