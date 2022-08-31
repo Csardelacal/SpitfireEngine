@@ -61,11 +61,11 @@ class Parameters
 	 * because the data was not set or empty.
 	 * 
 	 * @param string $name
-	 * @return string
+	 * @return string|false
 	 */
-	public function getParameter($name)
+	public function getParameter(string $name) : string|false
 	{
-		return (isset($this->parameters[$name]))? $this->parameters[$name] : false;
+		return (array_key_exists($name, $this->parameters))? $this->parameters[$name] : false;
 	}
 	
 	/**
@@ -74,7 +74,7 @@ class Parameters
 	 * 
 	 * @return string[]
 	 */
-	public function getParameters()
+	public function getParameters() : array
 	{
 		return $this->parameters;
 	}
