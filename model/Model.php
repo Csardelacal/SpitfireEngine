@@ -146,8 +146,8 @@ abstract class Model implements JsonSerializable
 	 */
 	public function rehydrate() : void
 	{
-		assert($this->record !== null);
 		assert($this->hydrated);
+		assert($this->record !== null);
 		
 		$raw = $this->record->raw();
 		$reflection = new ReflectionClass($this);
@@ -219,8 +219,8 @@ abstract class Model implements JsonSerializable
 	{
 		$this->sync();
 		
-		assert($this->record !== null);
 		assert($this->hydrated);
+		assert($this->record !== null);
 		
 		$primary = $this->getTable()->getPrimaryKey()->getFields()->first();
 		assert($primary instanceof DatabaseField);
@@ -370,6 +370,7 @@ abstract class Model implements JsonSerializable
 	protected function lazy(string $field)
 	{
 		assert($this->hydrated);
+		assert($this->record);
 		assert($this->record->has($field));
 		return $this->record->get($field);
 	}
@@ -377,6 +378,7 @@ abstract class Model implements JsonSerializable
 	public function __isset($name)
 	{
 		assert($this->hydrated);
+		assert($this->record);
 		return $this->record->has($name);
 	}
 	
@@ -416,6 +418,7 @@ abstract class Model implements JsonSerializable
 	public function setPivot(Model $pivot) : Model
 	{
 		assert($this->hydrated);
+		assert($this->record);
 		
 		$this->pivot = $pivot;
 		return $this;
@@ -428,6 +431,7 @@ abstract class Model implements JsonSerializable
 	public function pivot() :? Model
 	{
 		assert($this->hydrated);
+		assert($this->record);
 		return $this->pivot;
 	}
 	
