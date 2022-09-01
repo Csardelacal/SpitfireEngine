@@ -148,6 +148,8 @@ trait hasURI
 		
 		# Sanity check: The resulting object must not be of a different class than the one we started with.
 		assert($copy instanceof $this);
+		assert($copy instanceof ServerRequestInterface);
+		
 		$copy->uri = $uri;
 		
 		return $copy;
