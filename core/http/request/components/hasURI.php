@@ -158,6 +158,7 @@ trait hasURI
 	 * spec of the PSR
 	 *
 	 * @see ServerRequestInterface
+	 * @return bool
 	 */
 	abstract public function hasHeader($name): bool;
 	
@@ -166,6 +167,7 @@ trait hasURI
 	 * spec of the PSR
 	 *
 	 * @see ServerRequestInterface
+	 * @return ServerRequestInterface
 	 */
 	abstract public function withHeader($name, $value): ServerRequestInterface;
 }

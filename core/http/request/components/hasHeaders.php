@@ -86,9 +86,9 @@ trait hasHeaders
 	 *
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return ServerRequestInterface
+	 * @return self
 	 */
-	public function withHeader($name, $value): ServerRequestInterface
+	public function withHeader($name, $value): self
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
@@ -108,9 +108,9 @@ trait hasHeaders
 	 *
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return ServerRequestInterface
+	 * @return self
 	 */
-	public function withAddedHeader($name, $value): ServerRequestInterface
+	public function withAddedHeader($name, $value): self
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
@@ -128,9 +128,9 @@ trait hasHeaders
 	 * Returns a copy of the response, without the given header.
 	 *
 	 * @param string $name
-	 * @return ServerRequestInterface
+	 * @return self
 	 */
-	public function withoutHeader($name): ServerRequestInterface
+	public function withoutHeader($name): self
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
