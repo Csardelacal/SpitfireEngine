@@ -1,12 +1,15 @@
 <?php namespace spitfire\core;
 
 use magic3w\http\url\reflection\URLReflection;
-use spitfire\exceptions\ApplicationException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use spitfire\core\http\request\components as components;
+use spitfire\core\http\request\components\hasAttributes;
 use spitfire\core\http\request\components\hasBody;
+use spitfire\core\http\request\components\hasCookies;
+use spitfire\core\http\request\components\hasHeaders;
 use spitfire\core\http\request\components\hasHTTPMethod;
 use spitfire\core\http\request\components\hasParsedBody;
 use spitfire\core\http\request\components\hasProtocolVersion;
@@ -14,7 +17,6 @@ use spitfire\core\http\request\components\hasServerParams;
 use spitfire\core\http\request\components\hasUploads;
 use spitfire\core\http\request\components\hasURI;
 use spitfire\io\stream\Stream;
-use spitfire\io\UploadFile;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -43,37 +45,16 @@ use spitfire\io\UploadFile;
 class Request implements ServerRequestInterface
 {
 	use
-	hasProtocolVersion,
-	hasHTTPMethod,
-	hasURI,
-	hasServerParams,
-	hasUploads,
-	hasParsedBody,
-	hasBody;
-	
-	/**
-	 *
-	 * @var mixed
-	 */
-	private $attributes;
-	
-	/**
-	 * Allows your app to maintain a copy of the COOKIE variable. This is especially
-	 * useful when writing tests considering different requests as you will easily
-	 * be able to swap the values.
-	 *
-	 * @var mixed
-	 */
-	private $cookie;
-	
-	/**
-	 * This object allows your app to conveniently access the HTTP headers. These
-	 * will contain information like DNT or User agent that can be relevant to your
-	 * application and alter the experience the user receives.
-	 *
-	 * @var Headers
-	 */
-	private Headers $headers;
+	components\hasProtocolVersion,
+	components\hasHTTPMethod,
+	components\hasURI,
+	components\hasServerParams,
+	components\hasUploads,
+	components\hasBody,
+	components\hasParsedBody,
+	components\hasAttributes,
+	components\hasCookies,
+	components\hasHeaders;
 	
 	/**
 	 * Creates a new Request. This object 'simulates' a link between the user and
@@ -109,208 +90,6 @@ class Request implements ServerRequestInterface
 		$this->headers  = $headers;
 		$this->method   = $method;
 		$this->uploads  = $uploads;
-	}
-	
-	/**
-	 *
-	 * @return mixed[]
-	 */
-	public function getAttributes()
-	{
-		return $this->attributes;
-	}
-	
-	public function getAttribute($name, $default = null)
-	{
-		return array_key_exists($name, $this->attributes)? $this->attributes[$name] : $default;
-	}
-	
-	/**
-	 *
-	 * @return string[]
-	 */
-	public function getCookieParams()
-	{
-		return $this->cookie;
-	}
-	
-	public function getHeaders()
-	{
-		return $this->headers->all();
-	}
-	
-	public function withProtocolVersion($version)
-	{
-		$copy = clone $this;
-		$copy->version = $version;
-		
-		return $copy;
-	}
-	
-	/**
-	 * Override a single attribute that the server received. Please note that
-	 * this method does not support nested access, so you cannot override a
-	 * key in a nested attribute.
-	 *
-	 * @return ServerRequestInterface
-	 */
-	public function withAttribute($name, $value)
-	{
-		$copy = clone $this;
-		$copy->attributes[$name] = $value;
-		return $copy;
-	}
-	
-	
-	/**
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
-	public function hasHeader($name): bool
-	{
-		return !empty($this->headers->get($name));
-	}
-	
-	/**
-	 *
-	 * @param string $name
-	 * @return string[]
-	 */
-	public function getHeader($name)
-	{
-		return $this->headers->get($name);
-	}
-	
-	/**
-	 * The header line represents the data that is being sent to the browser, some headers
-	 * allow sending multiple values, separated by commas, which the client cannot receive
-	 * unless we convert our arrays in comma separated strings.
-	 *
-	 * @param string $name
-	 * @return string
-	 */
-	public function getHeaderLine($name): string
-	{
-		$header = $this->headers->get($name);
-		
-		if (empty($header)) {
-			return implode(',', $header);
-		}
-		else {
-			return '';
-		}
-	}
-	
-	/**
-	 * Returns a copy of the response, with the header that the user has added.
-	 *
-	 * @param string $name
-	 * @param string|string[] $value
-	 * @return Request
-	 */
-	public function withHeader($name, $value): Request
-	{
-		$headers = clone $this->headers;
-		$headers->set($name, (array)$value);
-		
-		$copy = clone $this;
-		$copy->headers = $headers;
-		return $copy;
-	}
-	
-	/**
-	 * Returns a copy of the response, but with additional information on a header,
-	 * which allows the user to push data onto the header.
-	 *
-	 * @param string $name
-	 * @param string|string[] $value
-	 * @return Request
-	 */
-	public function withAddedHeader($name, $value): Request
-	{
-		$headers = clone $this->headers;
-		$headers->addTo($name, (array)$value);
-		
-		$copy = clone $this;
-		$copy->headers = $headers;
-		return $copy;
-	}
-	
-	/**
-	 * Returns a copy of the response, without the given header.
-	 *
-	 * @param string $name
-	 * @return Request
-	 */
-	public function withoutHeader($name): Request
-	{
-		$headers = clone $this->headers;
-		$headers->unset($name);
-		
-		$copy = clone $this;
-		$copy->headers = $headers;
-		return $copy;
-	}
-	
-	/**
-	 * Removes the attribute from the request.
-	 *
-	 * @return Request
-	 */
-	public function withoutAttribute($name)
-	{
-		$copy = clone $this;
-		unset($copy->attributes[$name]);
-		return $copy;
-	}
-	
-	/**
-	 *
-	 * @param string[] $cookies
-	 */
-	public function withCookieParams(array $cookies)
-	{
-		$copy = clone $this;
-		$copy->cookie = $cookies;
-		return $copy;
-	}
-	
-	/**
-	 * If the request contains range information (the client only wishes to retrieve a subset of the
-	 * resource), this endpoint will return true.
-	 *
-	 * @return bool
-	 */
-	public function isRange() : bool
-	{
-		return !empty($this->headers->get('Range'));
-	}
-	
-	/**
-	 * For ranged requests, this function provides a convenience access to the range data.
-	 * This method only supports ranges in Bytes
-	 *
-	 * @return array{int,int|null}
-	 */
-	public function getRange() : array
-	{
-		$sent = $this->headers->get('Range')[0];
-		
-		if (!\spitfire\utils\Strings::startsWith($sent, 'bytes=')) {
-			throw new ApplicationException('Malformed range sent', 416);
-		}
-		
-		if (strstr($sent, ',')) {
-			throw new ApplicationException('Spitfire does not accept multiple ranges', 416);
-		}
-		
-		$pieces = explode('-', substr($_SERVER['HTTP_RANGE'], 6));
-		
-		return [
-			(int)array_shift($pieces),
-			(int)array_shift($pieces)?: null
-		];
 	}
 	
 	/**

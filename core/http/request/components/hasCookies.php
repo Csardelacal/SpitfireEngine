@@ -18,28 +18,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait hasServerParams
+trait hasCookies
 {
 	
 	/**
-	 * The server parameter array contains all the runtime information the server
-	 * has about itself and the current request. Usually this data is directly
-	 * originated from $_SERVER
+	 * Allows your app to maintain a copy of the COOKIE variable. This is especially
+	 * useful when writing tests considering different requests as you will easily
+	 * be able to swap the values.
 	 *
-	 * @var string[]
+	 * @var mixed
 	 */
-	private $serverParams;
+	private $cookie;
+	
 	
 	/**
-	 * The server params function returns the equivalent of the _SERVER
-	 * superglobal. We generally set the content of the variable to _SERVER
-	 * but you may come across implementations that override it completely
-	 * or partially.
 	 *
 	 * @return string[]
 	 */
-	public function getServerParams()
+	public function getCookieParams()
 	{
-		return $this->serverParams;
+		return $this->cookie;
+	}
+	
+	/**
+	 *
+	 * @param string[] $cookies
+	 */
+	public function withCookieParams(array $cookies)
+	{
+		$copy = clone $this;
+		$copy->cookie = $cookies;
+		return $copy;
 	}
 }

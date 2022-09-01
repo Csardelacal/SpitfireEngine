@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\http\request\components;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
@@ -18,33 +20,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait hasProtocolVersion
+trait hasAttributes
 {
+	/**
+	 *
+	 * @var mixed
+	 */
+	private $attributes;
 	
 	/**
-	 * The version of the HTTP protocol being used for this request.
 	 *
-	 * @var string
+	 * @return mixed[]
 	 */
-	private $version = '1.1';
+	public function getAttributes()
+	{
+		return $this->attributes;
+	}
 	
-	public function withProtocolVersion($version)
+	public function getAttribute($name, $default = null)
+	{
+		return array_key_exists($name, $this->attributes)? $this->attributes[$name] : $default;
+	}
+	
+	/**
+	 * Override a single attribute that the server received. Please note that
+	 * this method does not support nested access, so you cannot override a
+	 * key in a nested attribute.
+	 *
+	 * @return ServerRequestInterface
+	 */
+	public function withAttribute($name, $value) : ServerRequestInterface
 	{
 		$copy = clone $this;
-		$copy->version = $version;
-		
+		$copy->attributes[$name] = $value;
 		return $copy;
 	}
 	
 	/**
-	 * Returns the version of the HTTP protocol used to send this request. For PHP most of this
-	 * is transparent when handling a request, so it's possible that this data is actually not
-	 * properly poulated.
+	 * Removes the attribute from the request.
 	 *
-	 * @return string
+	 * @return ServerRequestInterface
 	 */
-	public function getProtocolVersion() : string
+	public function withoutAttribute($name) : ServerRequestInterface
 	{
-		return $this->version;
+		$copy = clone $this;
+		unset($copy->attributes[$name]);
+		return $copy;
 	}
 }

@@ -5,6 +5,24 @@ use Psr\Http\Message\UriInterface;
 use spitfire\core\Request;
 use spitfire\io\Get;
 
+/*
+ * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301  USA
+ */
 trait hasURI
 {
 	/**
@@ -41,7 +59,7 @@ trait hasURI
 	 * to be some kind of fallback that I am not certain how it works (apparently you can request
 	 * wildcard data from some servers).
 	 *
-     * @see https://www.rfc-editor.org/rfc/rfc7230.txt (section 5.3.1)
+	 * @see https://www.rfc-editor.org/rfc/rfc7230.txt (section 5.3.1)
 	 * @return string
 	 */
 	public function getRequestTarget() : string
@@ -60,7 +78,7 @@ trait hasURI
 	public function withRequestTarget($requestTarget) : Request
 	{
 		trigger_error(
-			sprintf('Attempted to use Request::withRequestTarget with %s. This has no effect.', $requestTarget), 
+			sprintf('Attempted to use Request::withRequestTarget with %s. This has no effect.', $requestTarget),
 			E_USER_NOTICE
 		);
 		
