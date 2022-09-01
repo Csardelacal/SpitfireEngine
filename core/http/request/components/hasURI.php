@@ -152,4 +152,20 @@ trait hasURI
 		
 		return $copy;
 	}
+	
+	/**
+	 * This trait depends on the hasHeader function being implemented according to the
+	 * spec of the PSR
+	 *
+	 * @see ServerRequestInterface
+	 */
+	abstract public function hasHeader($name): bool;
+	
+	/**
+	 * This trait depends on the withHeader function being implemented according to the
+	 * spec of the PSR
+	 *
+	 * @see ServerRequestInterface
+	 */
+	abstract public function withHeader($name, $value): ServerRequestInterface;
 }
