@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\http\request\components;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
@@ -41,8 +43,12 @@ trait hasHTTPMethod
 		return $this->method;
 	}
 	
-	public function withMethod($method)
+	public function withMethod($method) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->method = $method;
 		

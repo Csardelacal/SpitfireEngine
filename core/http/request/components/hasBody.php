@@ -46,6 +46,10 @@ trait hasBody
 	
 	public function withBody(StreamInterface $body) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->body = $body;
 		return $copy;

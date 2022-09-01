@@ -31,7 +31,7 @@ use spitfire\io\stream\Stream;
  * about data that usually is delivered by the webserver. For example, get and
  * post data are usually stored by this object in order to allow your app to
  * use it.
- * 
+ *
  * Please note that the request is an amalgamation of different components.
  */
 class Request implements ServerRequestInterface

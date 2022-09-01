@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\http\request\components;
 
+use Psr\Http\Message\ServerRequestInterface;
 use spitfire\core\Headers;
 use spitfire\core\Request;
 use spitfire\exceptions\ApplicationException;
@@ -85,10 +86,14 @@ trait hasHeaders
 	 *
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return Request
+	 * @return ServerRequestInterface
 	 */
-	public function withHeader($name, $value): Request
+	public function withHeader($name, $value): ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$headers = clone $this->headers;
 		$headers->set($name, (array)$value);
 		
@@ -103,10 +108,14 @@ trait hasHeaders
 	 *
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return Request
+	 * @return ServerRequestInterface
 	 */
-	public function withAddedHeader($name, $value): Request
+	public function withAddedHeader($name, $value): ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$headers = clone $this->headers;
 		$headers->addTo($name, (array)$value);
 		
@@ -119,10 +128,14 @@ trait hasHeaders
 	 * Returns a copy of the response, without the given header.
 	 *
 	 * @param string $name
-	 * @return Request
+	 * @return ServerRequestInterface
 	 */
-	public function withoutHeader($name): Request
+	public function withoutHeader($name): ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$headers = clone $this->headers;
 		$headers->unset($name);
 		

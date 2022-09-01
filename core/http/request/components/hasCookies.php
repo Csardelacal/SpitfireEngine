@@ -1,5 +1,7 @@
 <?php namespace spitfire\core\http\request\components;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
@@ -43,9 +45,14 @@ trait hasCookies
 	/**
 	 *
 	 * @param string[] $cookies
+	 * @return ServerRequestInterface
 	 */
-	public function withCookieParams(array $cookies)
+	public function withCookieParams(array $cookies) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->cookie = $cookies;
 		return $copy;

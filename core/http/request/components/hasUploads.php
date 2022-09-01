@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\http\request\components;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use spitfire\io\UploadFile;
 
@@ -48,8 +49,12 @@ trait hasUploads
 	 *
 	 * @param (array|UploadedFileInterface)[] $uploadedFiles
 	 */
-	public function withUploadedFiles(array $uploadedFiles)
+	public function withUploadedFiles(array $uploadedFiles) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->uploads = $uploadedFiles;
 		return $copy;
@@ -58,8 +63,9 @@ trait hasUploads
 	/**
 	 *
 	 * @todo Support nested file arrays.
+	 * @return UploadedFileInterface[]
 	 */
-	public static function filesFromGlobals()
+	public static function filesFromGlobals() : array
 	{
 		$_return = [];
 		

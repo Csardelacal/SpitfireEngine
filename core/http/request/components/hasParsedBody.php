@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\http\request\components;
 
+use Psr\Http\Message\ServerRequestInterface;
 use spitfire\core\Request;
 
 /*
@@ -33,8 +34,12 @@ trait hasParsedBody
 	 *
 	 * @param null|mixed[] $data
 	 */
-	public function withParsedBody($data) : Request
+	public function withParsedBody($data) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->parsedBody = $data;
 		return $copy;

@@ -51,6 +51,10 @@ trait hasAttributes
 	 */
 	public function withAttribute($name, $value) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->attributes[$name] = $value;
 		return $copy;
@@ -63,6 +67,10 @@ trait hasAttributes
 	 */
 	public function withoutAttribute($name) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		unset($copy->attributes[$name]);
 		return $copy;

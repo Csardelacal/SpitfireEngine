@@ -75,8 +75,12 @@ trait hasURI
 	/**
 	 * In our service this is not implemented. Calling it has no effect
 	 */
-	public function withRequestTarget($requestTarget) : Request
+	public function withRequestTarget($requestTarget) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		trigger_error(
 			sprintf('Attempted to use Request::withRequestTarget with %s. This has no effect.', $requestTarget),
 			E_USER_NOTICE
@@ -88,10 +92,14 @@ trait hasURI
 	/**
 	 *
 	 * @param mixed[] $query
-	 * @return Request
+	 * @return ServerRequestInterface
 	 */
-	public function withQueryParams(array $query) : Request
+	public function withQueryParams(array $query) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		$copy = clone $this;
 		$copy->get = new Get($query);
 		$copy->uri = $this->uri->withQuery(http_build_query($query));
@@ -105,7 +113,7 @@ trait hasURI
 	 *
 	 * @return mixed[]
 	 */
-	public function getQueryParams()
+	public function getQueryParams() : array
 	{
 		if ($this->get === null) {
 			parse_str($this->uri->getQuery(), $get);
@@ -122,6 +130,10 @@ trait hasURI
 	 */
 	public function withUri(UriInterface $uri, $preserveHost = false) : ServerRequestInterface
 	{
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
 		if ($preserveHost) {
 			if (!$this->hasHeader('Host') && $uri->getHost()) {
 				$copy = $this->withHeader('Host', $uri->getHost());
@@ -134,7 +146,8 @@ trait hasURI
 			$copy = $this->withHeader('Host', $uri->getHost());
 		}
 		
-		
+		# Sanity check: The resulting object must not be of a different class than the one we started with.
+		assert($copy instanceof $this);
 		$copy->uri = $uri;
 		
 		return $copy;
