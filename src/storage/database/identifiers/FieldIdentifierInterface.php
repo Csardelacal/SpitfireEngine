@@ -26,14 +26,23 @@ interface FieldIdentifierInterface extends IdentifierInterface
 {
 	
 	/**
-	 * Removes the scope attached (table and database) so that the field can be 
+	 * Removes the scope attached (table and database) so that the field can be
 	 * identified within the scope. This is important for stuff like operations
 	 * where the sql requires us to generate an unqualified list of arguments like
 	 * foreign keys:
-	 * 
+	 *
 	 * REFERENCES `tablename` (`field1`)
 	 *
 	 * @return FieldIdentifierInterface
 	 */
 	public function removeScope(): FieldIdentifierInterface;
+	
+	/**
+	 * Returns the name of the field, as string. This is similar to removeScope, except
+	 * this function will just return the string representation and not wrap it in a new
+	 * field identifier.
+	 *
+	 * @return string
+	 */
+	public function getFieldName() : string;
 }

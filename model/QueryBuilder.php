@@ -163,9 +163,9 @@ class QueryBuilder implements QueryBuilderInterface
 		 */
 		$result = new ResultSet(
 			$this->model->getConnection()->query($this->getQuery()),
-			$this->mapping,
-			$this->pivot
+			$this->mapping->with($this->with)->withPivot($this->pivot)
 		);
+		
 		$row    = $result->fetch();
 		
 		/**
@@ -182,7 +182,7 @@ class QueryBuilder implements QueryBuilderInterface
 		 * differentiate properly.
 		 */
 		
-		return $this->eagerLoad(new Collection([$row]))->first();
+		return $row;
 	}
 	
 	/**
@@ -196,13 +196,10 @@ class QueryBuilder implements QueryBuilderInterface
 		 */
 		$result = new ResultSet(
 			$this->model->getConnection()->query($this->getQuery()),
-			$this->mapping,
-			$this->pivot
+			$this->mapping->with($this->with)->withPivot($this->pivot)
 		);
 		
-		$rows   = $result->fetchAll();
-		
-		return $this->eagerLoad($rows);
+		return $result->fetchAll();
 	}
 	
 	public function range(int $offset, int $size) : Collection
@@ -216,12 +213,10 @@ class QueryBuilder implements QueryBuilderInterface
 		
 		$result = new ResultSet(
 			$this->model->getConnection()->query($query),
-			$this->mapping,
-			$this->pivot
+			$this->mapping->with($this->with)->withPivot($this->pivot)
 		);
 		
-		$rows   = $result->fetchAll();
-		return $this->eagerLoad($rows);
+		return $result->fetchAll();
 	}
 	
 	public function count() : int
@@ -235,29 +230,5 @@ class QueryBuilder implements QueryBuilderInterface
 		);
 		
 		return $this->model->getConnection()->query($query)->fetchOne();
-	}
-	
-	/**
-	 *
-	 * @param Collection<ActiveRecord> $records
-	 */
-	protected function eagerLoad(Collection $records) : Collection
-	{
-		foreach ($this->with as $relation) {
-			$meta = $this->model->$relation();
-			assert($meta instanceof RelationshipInterface);
-			
-			$children = $meta->resolveAll($records);
-			
-			/**
-			 * @todo This needs to make use of reflection so it can be used properly.
-			 */
-			foreach ($records as $record) {
-				/**@var $record Record */
-				$record->set($relation, $children[$record->getPrimary()]);
-			}
-		}
-		
-		return $records;
 	}
 }

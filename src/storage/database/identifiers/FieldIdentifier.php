@@ -46,4 +46,9 @@ class FieldIdentifier implements FieldIdentifierInterface
 	{
 		return new FieldIdentifier([end($this->raw)]);
 	}
+	
+	public function getFieldName(): string
+	{
+		return end($this->raw);
+	}
 }
