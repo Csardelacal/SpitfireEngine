@@ -6,16 +6,6 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use spitfire\core\http\request\components as components;
-use spitfire\core\http\request\components\hasAttributes;
-use spitfire\core\http\request\components\hasBody;
-use spitfire\core\http\request\components\hasCookies;
-use spitfire\core\http\request\components\hasHeaders;
-use spitfire\core\http\request\components\hasHTTPMethod;
-use spitfire\core\http\request\components\hasParsedBody;
-use spitfire\core\http\request\components\hasProtocolVersion;
-use spitfire\core\http\request\components\hasServerParams;
-use spitfire\core\http\request\components\hasUploads;
-use spitfire\core\http\request\components\hasURI;
 use spitfire\io\stream\Stream;
 
 /*
@@ -41,6 +31,8 @@ use spitfire\io\stream\Stream;
  * about data that usually is delivered by the webserver. For example, get and
  * post data are usually stored by this object in order to allow your app to
  * use it.
+ * 
+ * Please note that the request is an amalgamation of different components.
  */
 class Request implements ServerRequestInterface
 {
