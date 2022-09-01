@@ -146,11 +146,14 @@ trait hasURI
 			$copy = $this->withHeader('Host', $uri->getHost());
 		}
 		
-		# Sanity check: The resulting object must not be of a different class than the one we started with.
-		assert($copy instanceof $this);
-		assert($copy instanceof ServerRequestInterface);
-		
+		# Sanity check: The resulting object must not be of a different class 
+		# than the one we started with.
+		assert($copy instanceof self);
 		$copy->uri = $uri;
+		
+		# Sanity check: When returning the object, we wish to make absolutely
+		# sure that the object still is a request interface implementation
+		assert($copy instanceof ServerRequestInterface);
 		
 		return $copy;
 	}
@@ -169,7 +172,7 @@ trait hasURI
 	 * spec of the PSR
 	 *
 	 * @see ServerRequestInterface
-	 * @return ServerRequestInterface
+	 * @return self
 	 */
-	abstract public function withHeader($name, $value): ServerRequestInterface;
+	abstract public function withHeader($name, $value): self;
 }
