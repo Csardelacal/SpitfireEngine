@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use spitfire\core\http\request\components\hasHTTPMethod;
+use spitfire\core\http\request\components\hasProtocolVersion;
 use spitfire\io\stream\Stream;
 use spitfire\io\UploadFile;
 
@@ -36,13 +38,7 @@ use spitfire\io\UploadFile;
  */
 class Request implements ServerRequestInterface
 {
-	
-	/**
-	 * The version of the HTTP protocol being used for this request.
-	 *
-	 * @var string
-	 */
-	private $version = '1.1';
+	use hasProtocolVersion, hasHTTPMethod;
 	
 	/**
 	 * Contains data that can be retrieved out of the Path string of the URL. For
@@ -120,15 +116,6 @@ class Request implements ServerRequestInterface
 	private Headers $headers;
 	
 	/**
-	 * The HTTP verb that is used to indicate what the server should do with the data
-	 * it receives from the client application. This allows us to specifically route
-	 * some things in the application.
-	 *
-	 * @var string
-	 */
-	private $method;
-	
-	/**
 	 * Creates a new Request. This object 'simulates' a link between the user and
 	 * the Application. It allows you to retrieve the data the user has sent with
 	 * the Request and therefore adapt the behavior of your application accordingly.
@@ -162,29 +149,6 @@ class Request implements ServerRequestInterface
 		$this->headers  = $headers;
 		$this->method   = $method;
 		$this->uploads  = $uploads;
-	}
-	
-	/**
-	 * Returns the version of the HTTP protocol used to send this request. For PHP most of this
-	 * is transparent when handling a request, so it's possible that this data is actually not
-	 * properly poulated.
-	 *
-	 * @return string
-	 */
-	public function getProtocolVersion() : string
-	{
-		return $this->version;
-	}
-	
-	/**
-	 * Returns the name of the method used to request from this server. Currently we focus
-	 * on supporting GET, POST, PUT, DELETE and OPTIONS
-	 *
-	 * @return string
-	 */
-	public function getMethod()
-	{
-		return $this->method;
 	}
 	
 	/**
@@ -582,24 +546,12 @@ class Request implements ServerRequestInterface
 	 */
 	public static function fromGlobals() : Request
 	{
-		/**
-		 * Extract the request method from the server. Please note that we allow
-		 * applications to override the request method by sending a payload to the
-		 * webserver. This fixes a few behavioral issues that we run into when working
-		 * with PHP and REST APIs
-		 *
-		 * For example, PUT in HTTP and PHP is not intended to parse the request body
-		 * like POST would. But in REST, PUT is basically a POST that overwrites data
-		 * if it already existed.
-		 *
-		 * For consistency, this method emulates the behavior of Laravel's mechanism
-		 * really closely.
-		 */
-		$method = $_method = strtoupper($_SERVER['REQUEST_METHOD']?? 'GET');
 		
-		if (isset($_POST['_method']) && in_array(strtoupper($_POST['method']), ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])) {
-			$method = $_POST['_method'];
-		}
+		/**
+		 * Extract the method from Globals. Allowing our application to respond in different manners
+		 * if we so desire.
+		 */
+		$method = self::methodFromGlobals();
 		
 		/**
 		 * The headers have their own little helper function that calls the apache_get_all_headers
@@ -648,17 +600,15 @@ class Request implements ServerRequestInterface
 		}
 		
 		/**
-		 * Pay close attention to the _ in the method variable name here. This implies that the request
+		 * If the sender is transmitting content that we understand, use it. This implies that the request
 		 * gets parsed if the CLIENT sent a POST request, regardless of how the request was overridden,
 		 * it also does this when the method is set to something manually that expects a parsed body.
 		 */
-		if ($_method === 'POST' || $method === 'PUT') {
-			if (in_array($contentType, ['multipart/formdata', 'application/x-www-form-urlencoded'])) {
-				$request->withParsedBody($_POST);
-			}
-			elseif ($contentType === 'application/json') {
-				$request->withParsedBody(json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR));
-			}
+		if (in_array($contentType, ['multipart/formdata', 'application/x-www-form-urlencoded'])) {
+			$request->withParsedBody($_POST);
+		}
+		elseif ($contentType === 'application/json') {
+			$request->withParsedBody(json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR));
 		}
 		
 		return $request;
