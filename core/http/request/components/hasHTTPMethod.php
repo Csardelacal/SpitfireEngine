@@ -23,10 +23,28 @@ trait hasHTTPMethod
 		return $this->method;
 	}
 	
+	public function withMethod($method)
+	{
+		$copy = clone $this;
+		$copy->method = $method;
+		
+		return $copy;
+	}
+	
+	/**
+	 * Whether this request was posted.
+	 *
+	 * @return bool
+	 */
+	public function isPost() : bool
+	{
+		return $this->method === 'POST';
+	}
+	
 	/**
 	 * Returns the request method (and the real method). This allows the user to spoof a request
 	 * to overcome certain poor PHP implementations.
-	 * 
+	 *
 	 * @return string
 	 */
 	public static function methodFromGlobals() : string
@@ -44,7 +62,7 @@ trait hasHTTPMethod
 		 * For consistency, this method emulates the behavior of Laravel's mechanism
 		 * really closely.
 		 */
-		$method = $_method = strtoupper($_SERVER['REQUEST_METHOD']?? 'GET');
+		$method = strtoupper($_SERVER['REQUEST_METHOD']?? 'GET');
 		
 		if (isset($_POST['_method']) && in_array(strtoupper($_POST['method']), ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])) {
 			$method = $_POST['_method'];
