@@ -20,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait hasHTTPMethod
+trait HasHTTPMethod
 {
 	
 	/**
@@ -88,10 +88,18 @@ trait hasHTTPMethod
 		 */
 		$method = strtoupper($_SERVER['REQUEST_METHOD']?? 'GET');
 		
-		if (isset($_POST['_method']) && in_array(strtoupper($_POST['method']), ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])) {
+		if (self::isMethodOverridden()) {
 			$method = $_POST['_method'];
 		}
 		
 		return $method;
+	}
+	
+	private static function isMethodOverridden()
+	{
+		if (!isset($_POST['_method'])) {
+			return false;
+		}
+		return in_array(strtoupper($_POST['method']), ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']);
 	}
 }

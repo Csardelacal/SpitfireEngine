@@ -23,7 +23,7 @@ use spitfire\io\Get;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait hasURI
+trait HasURI
 {
 	/**
 	 * Contains data that can be retrieved out of the Path string of the URL. For
@@ -146,7 +146,7 @@ trait hasURI
 			$copy = $this->withHeader('Host', $uri->getHost());
 		}
 		
-		# Sanity check: The resulting object must not be of a different class 
+		# Sanity check: The resulting object must not be of a different class
 		# than the one we started with.
 		assert($copy instanceof self);
 		$copy->uri = $uri;

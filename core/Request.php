@@ -37,16 +37,16 @@ use spitfire\io\stream\Stream;
 class Request implements ServerRequestInterface
 {
 	use
-	components\hasProtocolVersion,
-	components\hasHTTPMethod,
-	components\hasURI,
-	components\hasServerParams,
-	components\hasUploads,
-	components\hasBody,
-	components\hasParsedBody,
-	components\hasAttributes,
-	components\hasCookies,
-	components\hasHeaders;
+	components\HasProtocolVersion,
+	components\HasHTTPMethod,
+	components\HasURI,
+	components\HasServerParams,
+	components\HasUploads,
+	components\HasBody,
+	components\HasParsedBody,
+	components\HasAttributes,
+	components\HasCookies,
+	components\HasHeaders;
 	
 	/**
 	 * Creates a new Request. This object 'simulates' a link between the user and

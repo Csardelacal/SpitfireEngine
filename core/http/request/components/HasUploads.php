@@ -22,7 +22,7 @@ use spitfire\io\UploadFile;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait hasUploads
+trait HasUploads
 {
 	/**
 	 * The array tree of uploads, this is a mix of UploadInterfaces and arrays. The

@@ -20,41 +20,37 @@ use Psr\Http\Message\ServerRequestInterface;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait hasCookies
+trait HasProtocolVersion
 {
 	
 	/**
-	 * Allows your app to maintain a copy of the COOKIE variable. This is especially
-	 * useful when writing tests considering different requests as you will easily
-	 * be able to swap the values.
+	 * The version of the HTTP protocol being used for this request.
 	 *
-	 * @var mixed
+	 * @var string
 	 */
-	private $cookie;
+	private $version = '1.1';
 	
-	
-	/**
-	 *
-	 * @return string[]
-	 */
-	public function getCookieParams()
-	{
-		return $this->cookie;
-	}
-	
-	/**
-	 *
-	 * @param string[] $cookies
-	 * @return ServerRequestInterface
-	 */
-	public function withCookieParams(array $cookies) : ServerRequestInterface
+	public function withProtocolVersion($version) : ServerRequestInterface
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
 		assert($this instanceof ServerRequestInterface);
 		
 		$copy = clone $this;
-		$copy->cookie = $cookies;
+		$copy->version = $version;
+		
 		return $copy;
+	}
+	
+	/**
+	 * Returns the version of the HTTP protocol used to send this request. For PHP most of this
+	 * is transparent when handling a request, so it's possible that this data is actually not
+	 * properly poulated.
+	 *
+	 * @return string
+	 */
+	public function getProtocolVersion() : string
+	{
+		return $this->version;
 	}
 }
