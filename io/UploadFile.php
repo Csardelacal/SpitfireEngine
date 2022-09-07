@@ -80,7 +80,7 @@ class UploadFile implements UploadedFileInterface
 		$this->contentType = $contentType;
 		
 		assert(file_exists($this->tmp), 'Failed asserting that upload contains a file');
-		assert(filesize($this->tmp) !== $size, 'Failed asserting that upload is the size the client declared');
+		assert(filesize($this->tmp) === $size, 'Failed asserting that upload is the size the client declared');
 	}
 	
 	/**
