@@ -118,7 +118,7 @@ class BelongsToOne extends Relationship implements RelationshipInterface
 		return $_return;
 	}
 	
-	public function getQuery(): QueryBuilder
+	public function startQueryBuilder(): QueryBuilder
 	{
 		$parent = $this->getField()->getModel();
 		assert($parent->getActiveRecord() !== null);

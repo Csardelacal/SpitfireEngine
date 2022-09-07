@@ -2,16 +2,10 @@
 
 use spitfire\collection\Collection;
 use spitfire\model\query\RestrictionGroupBuilder;
-use spitfire\model\query\ResultSet;
-use spitfire\model\query\ResultSetMapping;
-use spitfire\model\relations\RelationshipInterface;
-use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\Query as DatabaseQuery;
-use spitfire\utils\Mixin;
 
 /**
  *
- * @mixin RestrictionGroupBuilder
  */
 interface QueryBuilderInterface
 {

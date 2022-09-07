@@ -66,7 +66,7 @@ class HasManyTest extends TestCase
 		
 		$record = new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1]));
 		$instance = $model->withHydrate($record);
-		$query = $instance->remote()->getQuery();
+		$query = $instance->remote()->startQueryBuilder();
 		
 		$query->first();
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
