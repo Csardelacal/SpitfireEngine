@@ -15,6 +15,16 @@ class URLServiceProvider extends Provider
 	
 	public function register(ContainerInterface $container)
 	{
+		
+	}
+	
+	/**
+	 * @todo fixme: The fact that we do not create the URL Builder as a singleton, does
+	 * lead to potential overhead building the object over and over whenever we need a 
+	 * URL.
+	 */
+	public function init(ContainerInterface $container)
+	{
 		$config = $container->get(Configuration::class);
 		
 		/**
@@ -23,17 +33,10 @@ class URLServiceProvider extends Provider
 		 */
 		$container = $container->get(Container::class);
 		
-		$container->set(
-			URLBuilder::class,
-			$container->assemble(URLBuilder::class, [
-				'routes' => $container->get(Router::class)->getRoutes(),
-				'root'   => SpitFire::baseUrl(),
-				'assets' => $config->get('app.assets.location', SpitFire::baseUrl() . '/assets')
-			])
-		);
-	}
-	
-	public function init(ContainerInterface $container)
-	{
+		$container
+			->service(URLBuilder::class)
+			->with('root', SpitFire::baseUrl())
+			->with('routes', $container->get(Router::class)->getRoutes())
+			->with('assets', $config->get('app.assets.location', SpitFire::baseUrl() . '/assets'));
 	}
 }
