@@ -237,7 +237,7 @@ class QueryBuilder implements QueryBuilderInterface
 	/**
 	 * The advantage of counting records like this is that mysql will stop counting
 	 * as soon as it found the n records it's supposed to look for.
-	 * 
+	 *
 	 * @see https://sql-bits.com/check-if-more-than-n-rows-are-returned/
 	 */
 	public function quickCount(int $upto = 101) : int

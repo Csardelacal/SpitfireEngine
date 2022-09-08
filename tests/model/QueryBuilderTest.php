@@ -440,6 +440,5 @@ class QueryBuilderTest extends TestCase
 			'FROM `test` AS `test_%d` WHERE `test_%d`.`_id` = \'1\' LIMIT 0, 101) AS `t_%d` WHERE 1',
 			$driver->queries[0]
 		);
-		
 	}
 }
