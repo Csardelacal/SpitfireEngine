@@ -79,31 +79,13 @@ class MySQLColumnGrammar
 	protected function translateDatatype(string $type) : string
 	{
 		$pieces = explode(':', strtolower($type));
+		$type = array_shift($pieces);
 		
-		switch ($pieces[0]) {
-			case 'int':
-				return ($pieces[1]??null) === 'unsigned'? 'INT UNSIGNED' : 'INT';
-			case 'long':
-				return ($pieces[1]??null) === 'unsigned'? 'BIGINT UNSIGNED' : 'BIGINT';
-			case 'bool':
-				return ($pieces[1]??null) === 'unsigned'? 'TINYINT UNSIGNED' : 'TINYINT';
-			case 'float':
-				return ($pieces[1]??null) === 'unsigned'? 'FLOAT UNSIGNED' : 'FLOAT';
-			case 'double':
-				return ($pieces[1]??null) === 'unsigned'? 'DOUBLE UNSIGNED' : 'DOUBLE';
-			case 'string':
-				$size = $pieces[1]?? 255;
-				return sprintf('VARCHAR(%d)', $size);
-			case 'text':
-				return 'TEXT';
-			case 'blob':
-				return 'BLOB';
-			case 'enum':
-				assert(isset($pieces[1]));
-				return sprintf('ENUM(%d)', $pieces[1]);
-			default:
-				throw new ApplicationException('Invalid type: ' . $pieces[0]);
+		if (!method_exists(MySQLTypeGrammar::class, $type)) {
+			throw new ApplicationException('Invalid type: ' . $type);
 		}
+		
+		return MySQLTypeGrammar::$type(...$pieces);
 	}
 	
 	/**
