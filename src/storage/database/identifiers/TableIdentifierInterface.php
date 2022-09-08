@@ -42,7 +42,7 @@ interface TableIdentifierInterface extends IdentifierInterface
 	 * Returns the components of the identifier. This can be any combination of
 	 * strings that identifies a field or table inside the DBMS or a query.
 	 *
-	 * @return Collection<IdentifierInterface>
+	 * @return Collection<FieldIdentifierInterface>
 	 */
 	public function getOutputs(): Collection;
 	

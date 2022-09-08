@@ -6,6 +6,8 @@ use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\FieldReference;
 use spitfire\storage\database\grammar\mysql\MySQLObjectGrammar;
+use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
+use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Layout;
@@ -39,7 +41,7 @@ class MySQLObjectGrammarTest extends TestCase
 	
 	public function setUp() : void
 	{
-		$this->grammar = new MySQLObjectGrammar();
+		$this->grammar = new MySQLObjectGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$layout = new Layout('testtable');
 		$field  = new Field('testfield', 'int', true, false);
 		

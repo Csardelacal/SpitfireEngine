@@ -4,7 +4,9 @@ use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKey;
+use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLSchemaGrammar;
+use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\Layout;
 
 class MySQLSchemaGrammarTest extends TestCase
@@ -24,7 +26,7 @@ class MySQLSchemaGrammarTest extends TestCase
 		$layout->primary($field);
 		$layout->index('testidx', $field2);
 		
-		$grammar = new MySQLSchemaGrammar();
+		$grammar = new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$sql = $grammar->createTable($layout);
 		
 		$this->assertStringContainsString('CREATE TABLE', $sql);
@@ -34,7 +36,7 @@ class MySQLSchemaGrammarTest extends TestCase
 	
 	public function testRenameTable()
 	{
-		$grammar = new MySQLSchemaGrammar();
+		$grammar = new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$sql = $grammar->renameTable('hello-world', 'goodbye-world');
 		
 		$this->assertEquals('RENAME TABLE `hello-world` TO `goodbye-world`', $sql);
@@ -42,7 +44,7 @@ class MySQLSchemaGrammarTest extends TestCase
 	
 	public function testDropTable()
 	{
-		$grammar = new MySQLSchemaGrammar();
+		$grammar = new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$sql = $grammar->dropTable('hello-world');
 		
 		$this->assertEquals('DROP TABLE `hello-world`', $sql);
@@ -63,7 +65,7 @@ class MySQLSchemaGrammarTest extends TestCase
 		$layout->primary($field);
 		$layout->putIndex(new ForeignKey('foreignidx', $field, $foreign->getTableReference()->getOutput('id')));
 		
-		$grammar = new MySQLSchemaGrammar();
+		$grammar = new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$sql = $grammar->createTable($layout);
 		
 		$this->assertStringContainsString('CREATE TABLE', $sql);

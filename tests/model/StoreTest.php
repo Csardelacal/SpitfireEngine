@@ -71,7 +71,7 @@ class StoreTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -166,7 +166,7 @@ class StoreTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		

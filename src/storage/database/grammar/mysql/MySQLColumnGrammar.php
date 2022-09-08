@@ -3,10 +3,12 @@
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKeyInterface;
+use spitfire\storage\database\grammar\QueryGrammarInterface;
 use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Index;
 use spitfire\storage\database\IndexInterface;
+use spitfire\storage\database\QuoterInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -44,9 +46,9 @@ class MySQLColumnGrammar
 	 */
 	private $object;
 	
-	public function __construct()
+	public function __construct(QueryGrammarInterface $query)
 	{
-		$this->object = new MySQLObjectGrammar();
+		$this->object = new MySQLObjectGrammar($query);
 	}
 	
 	/**

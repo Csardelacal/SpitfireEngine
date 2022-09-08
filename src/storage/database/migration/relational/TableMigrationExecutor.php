@@ -11,6 +11,7 @@ use spitfire\storage\database\Index;
 use spitfire\storage\database\IndexInterface;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
+use spitfire\storage\database\QuoterInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -70,7 +71,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function increments(string $name): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		
 		/**
 		 * An autoincrement field must always be paired with a primary index.
@@ -97,7 +98,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$field = new Field($name, $unsigned? 'int' : 'int:unsigned', true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
@@ -124,7 +125,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 */
 		assert($length > 0);
 		
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$field = new Field($name, 'string:' . $length, true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
@@ -145,7 +146,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function text(string $name): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$field = new Field($name, 'text', true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
@@ -177,7 +178,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		/**
 		 * Set up the grammar and add the field to the DBMS.
 		 */
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$field = new Field($name, 'enum:' . implode(',', $options), true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
@@ -198,7 +199,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function index(string $name, array $fields): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$_fields = (new Collection($fields))->each(function (string $name) {
 			return $this->table->getField($name);
 		});
@@ -230,12 +231,12 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 */
 		assert($layout->layout()->getPrimaryKey() !== null);
 		
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		
 		/**
 		 * Create a field to host the data for the referenced field. Rename the field
 		 * to prefix it with the name we want to assign to this field.
-		 * 
+		 *
 		 * We swap the field to being nullable, because the remote will always be the primary
 		 * key, which is not nullable, but this makes no sense in the reference.
 		 */
@@ -271,7 +272,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function unique(string $name, array $fields): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$index = new Index($name, (new Collection($fields))->each(function ($e) {
 			return $this->table->getField($e);
 		}), true, false);
@@ -294,7 +295,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function primary(string $name, string $field): TableMigrationExecutorInterface
 	{
 		
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		
 		/**
 		 * An autoincrement field must always be paired with a primary index.
@@ -331,7 +332,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function timestamps(): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		
 		/**
 		 * The created and updated fields contain information to indicate
@@ -361,7 +362,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function softDelete(): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		$removed = new Field('removed', 'int:unsigned', false, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
@@ -383,7 +384,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function drop(string $name): TableMigrationExecutorInterface
 	{
 		$field = $this->table->getField($name);
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -395,7 +396,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	
 	public function dropIndex(string $name): TableMigrationExecutorInterface
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
 		
 		/**
 		 * Find the index that we

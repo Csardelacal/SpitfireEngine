@@ -8,6 +8,7 @@ use spitfire\storage\database\Layout;
 use spitfire\storage\database\migration\schemaState\TableMigrationExecutor as SchemaStateTableMigrationExecutor;
 use spitfire\storage\database\migration\TagManagerInterface;
 use spitfire\storage\database\Query;
+use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\Record;
 
 class TagManager implements TagManagerInterface
@@ -76,7 +77,7 @@ class TagManager implements TagManagerInterface
 		}
 		
 		try {
-			$query = new Query($layout->getTableReference());
+			$query = new Query(new QueryOrTableIdentifier($layout->getTableReference()));
 			$query->selectAll();
 			$result = $this->connection->query($query);
 			

@@ -127,7 +127,7 @@ class TableMigrationExecutorTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -174,7 +174,7 @@ class TableMigrationExecutorTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		

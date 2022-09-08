@@ -29,7 +29,7 @@ class Alias
 	
 	/**
 	 *
-	 * @var TableIdentifierInterface
+	 * @var QueryOrTableIdentifier
 	 */
 	private $input;
 	
@@ -39,13 +39,13 @@ class Alias
 	 */
 	private $output;
 	
-	public function __construct(TableIdentifierInterface $input, TableIdentifierInterface $output)
+	public function __construct(QueryOrTableIdentifier $input, TableIdentifierInterface $output)
 	{
 		$this->input = $input;
 		$this->output = $output;
 	}
 	
-	public function input() : TableIdentifierInterface
+	public function input() : QueryOrTableIdentifier
 	{
 		return $this->input;
 	}

@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\Query;
+use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\Table;
 
 class QueryTest extends TestCase
@@ -24,7 +25,7 @@ class QueryTest extends TestCase
 	public function testAssembly()
 	{
 		$layout = new Layout('test');
-		$query  = new Query($layout->getTableReference());
+		$query  = new Query(new QueryOrTableIdentifier($layout->getTableReference()));
 		
 		$this->assertInstanceOf(TableIdentifierInterface::class, $query->getTable());
 	}
@@ -32,8 +33,8 @@ class QueryTest extends TestCase
 	public function testAssemblyDisambiguation()
 	{
 		$layout = new Layout('test');
-		$querya = new Query($layout->getTableReference());
-		$queryb = new Query($layout->getTableReference());
+		$querya = new Query(new QueryOrTableIdentifier($layout->getTableReference()));
+		$queryb = new Query(new QueryOrTableIdentifier($layout->getTableReference()));
 		
 		$this->assertInstanceOf(TableIdentifierInterface::class, $querya->getTable());
 		$this->assertInstanceOf(TableIdentifierInterface::class, $queryb->getTable());
@@ -42,7 +43,11 @@ class QueryTest extends TestCase
 		 * Our queries reference the same layout, but both use different querytables,
 		 * this allows us to uniquely reference each query when working with them.
 		 */
-		$this->assertEquals($querya->getFrom()->input()->raw(), $queryb->getFrom()->input()->raw());
+		$this->assertFalse($querya->getFrom()->input()->isQuery());
+		$this->assertEquals(
+			$querya->getFrom()->input()->getTableIdentifier()->raw(),
+			$queryb->getFrom()->input()->getTableIdentifier()->raw()
+		);
 		
 		$this->assertNotEquals($querya->getFrom()->output(), $queryb->getFrom()->output());
 		$this->assertNotEquals($querya->getFrom()->output()->raw(), $queryb->getFrom()->output()->raw());

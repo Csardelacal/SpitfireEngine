@@ -55,7 +55,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 	public function __construct(QuoterInterface $quoter)
 	{
 		$this->quoter = $quoter;
-		$this->object = new MySQLObjectGrammar();
+		$this->object = new MySQLObjectGrammar(clone $this);
 	}
 	
 	/**

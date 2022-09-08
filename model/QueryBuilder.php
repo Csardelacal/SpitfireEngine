@@ -8,6 +8,8 @@ use spitfire\model\query\ResultSetMapping;
 use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\Query as DatabaseQuery;
+use spitfire\storage\database\query\QueryOrTableIdentifier;
+use spitfire\storage\database\query\SelectExpression;
 use spitfire\utils\Mixin;
 
 /**
@@ -54,7 +56,7 @@ class QueryBuilder implements QueryBuilderInterface
 	public function __construct(Model $model)
 	{
 		$this->model = $model;
-		$this->query = new DatabaseQuery($this->model->getTable()->getTableReference());
+		$this->query = new DatabaseQuery(new QueryOrTableIdentifier($this->model->getTable()->getTableReference()));
 		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
 	}
 	
@@ -222,6 +224,25 @@ class QueryBuilder implements QueryBuilderInterface
 	public function count() : int
 	{
 		$query = $this->query->withoutSelect();
+		
+		$query->aggregate(
+			$this->getQuery()->getFrom()->output()->getOutput('_id'),
+			new Aggregate(Aggregate::AGGREGATE_COUNT),
+			'c'
+		);
+		
+		return $this->model->getConnection()->query($query)->fetchOne();
+	}
+	
+	public function quickCount(int $upto = 100) : int
+	{
+		$query = $this->query->withoutSelect();
+		$primary = $this->getModel()->getTable()->getPrimaryKey()->getFields()->first();
+		
+		$query->select($primary->getName());
+		$query->range(0, $upto);
+		
+		$outer = new DatabaseQuery(new QueryOrTableIdentifier($query));
 		
 		$query->aggregate(
 			$this->getQuery()->getFrom()->output()->getOutput('_id'),
