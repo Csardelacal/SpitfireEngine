@@ -234,7 +234,13 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this->model->getConnection()->query($query)->fetchOne();
 	}
 	
-	public function quickCount(int $upto = 100) : int
+	/**
+	 * The advantage of counting records like this is that mysql will stop counting
+	 * as soon as it found the n records it's supposed to look for.
+	 * 
+	 * @see https://sql-bits.com/check-if-more-than-n-rows-are-returned/
+	 */
+	public function quickCount(int $upto = 101) : int
 	{
 		$query = $this->query->withoutSelect();
 		$primary = $this->getModel()->getTable()->getPrimaryKey()->getFields()->first();
@@ -243,13 +249,11 @@ class QueryBuilder implements QueryBuilderInterface
 		$query->range(0, $upto);
 		
 		$outer = new DatabaseQuery(new QueryOrTableIdentifier($query));
-		
-		$query->aggregate(
-			$this->getQuery()->getFrom()->output()->getOutput('_id'),
+		$outer->aggregate(
+			$this->getQuery()->getFrom()->output()->getOutput('_id')->removeScope(),
 			new Aggregate(Aggregate::AGGREGATE_COUNT),
 			'c'
 		);
-		
-		return $this->model->getConnection()->query($query)->fetchOne();
+		return $this->model->getConnection()->query($outer)->fetchOne();
 	}
 }

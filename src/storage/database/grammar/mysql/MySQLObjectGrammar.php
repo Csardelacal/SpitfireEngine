@@ -55,7 +55,7 @@ class MySQLObjectGrammar
 	public function queryOrTableIdentifier(QueryOrTableIdentifier $item) : string
 	{
 		if ($item->isQuery()) {
-			return $this->query->query($item->getQuery());
+			return sprintf('(%s)', $this->query->query($item->getQuery()));
 		}
 		else {
 			return $this->identifier($item->getTableIdentifier());

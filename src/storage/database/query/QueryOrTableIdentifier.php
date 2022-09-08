@@ -33,10 +33,10 @@ class QueryOrTableIdentifier
 	
 	public function withAlias() : TableIdentifierInterface
 	{
-		if ($this->isQuery()) {
+		if ($this->query instanceof Query) {
 			return new TableIdentifier(
 				['t_' . rand()],
-				$this->query->getOutputs()->each(fn(FieldIdentifierInterface $e) => $e->getFieldName())
+				$this->query->getOutputs()->each(fn(SelectExpression $e) => $e->getName())
 			);
 		}
 		else {
