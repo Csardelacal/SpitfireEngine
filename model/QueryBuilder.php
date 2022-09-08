@@ -225,13 +225,25 @@ class QueryBuilder implements QueryBuilderInterface
 	{
 		$query = $this->query->withoutSelect();
 		
+		/**
+		 * Get the primary index, and make sure that it actually exists.
+		 */
+		$_primary = $this->getModel()->getTable()->getPrimaryKey();
+		assert($_primary !== null);
+		assert($_primary->getFields()->count() === 1);
+		$primary = $_primary->getFields()->first();
+		
 		$query->aggregate(
-			$this->getQuery()->getFrom()->output()->getOutput('_id'),
+			$this->getQuery()->getFrom()->output()->getOutput($primary->getName()),
 			new Aggregate(Aggregate::AGGREGATE_COUNT),
 			'c'
 		);
 		
-		return $this->model->getConnection()->query($query)->fetchOne();
+		
+		$result = $this->model->getConnection()->query($query)->fetchOne();
+		assert($result !== false);
+		
+		return $result;
 	}
 	
 	/**
@@ -243,17 +255,37 @@ class QueryBuilder implements QueryBuilderInterface
 	public function quickCount(int $upto = 101) : int
 	{
 		$query = $this->query->withoutSelect();
-		$primary = $this->getModel()->getTable()->getPrimaryKey()->getFields()->first();
 		
+		/**
+		 * Get the primary index, and make sure that it actually exists. The primary key also must
+		 * have exactly one field.
+		 */
+		$_primary = $this->getModel()->getTable()->getPrimaryKey();
+		assert($_primary !== null);
+		assert($_primary->getFields()->count() === 1);
+		$primary = $_primary->getFields()->first();
+		
+		/**
+		 * Use the primary key for counting.
+		 */
 		$query->select($primary->getName());
 		$query->range(0, $upto);
 		
+		/**
+		 * Once the inner query is constructed, we wrap it into another query that actually performs
+		 * the count. This means that the database server counts and returns only the calculated
+		 * result, reducing the traffic between the machines.
+		 */
 		$outer = new DatabaseQuery(new QueryOrTableIdentifier($query));
 		$outer->aggregate(
-			$this->getQuery()->getFrom()->output()->getOutput('_id')->removeScope(),
+			$this->getQuery()->getFrom()->output()->getOutput($primary->getName())->removeScope(),
 			new Aggregate(Aggregate::AGGREGATE_COUNT),
 			'c'
 		);
-		return $this->model->getConnection()->query($outer)->fetchOne();
+		
+		$result = $this->model->getConnection()->query($outer)->fetchOne();
+		assert($result !== false);
+		
+		return $result;
 	}
 }
