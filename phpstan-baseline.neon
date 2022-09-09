@@ -2,16 +2,6 @@ parameters:
 	ignoreErrors:
 
 		-
-			message: "#^Instanceof between \\*NEVER\\* and Throwable will always evaluate to false\\.$#"
-			count: 1
-			path: io/stp/StackTracePrinter.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: io/stp/StackTracePrinter.php
-
-		-
 			message: "#^Result of \\|\\| is always true\\.$#"
 			count: 1
 			path: io/stream/Stream.php

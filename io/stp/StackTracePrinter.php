@@ -1,7 +1,6 @@
 <?php namespace spitfire\io\stp;
 
-use Exception;
-use InvalidArgumentException;
+use Throwable;
 
 /**
  * This class provides Spitfire with tools to print a pretty and informative
@@ -11,20 +10,20 @@ abstract class StackTracePrinter
 {
 	
 	/**
-	 * The exception being printed. It provides the necessary information for the 
+	 * The exception being printed. It provides the necessary information for the
 	 * Printer to display it to a user in a way that becomes useful to them.
 	 *
-	 * @var \Exception
+	 * @var Throwable
 	 */
 	private $exception;
 	
 	/*
 	 * The system distinguishes three types of lines: error, warn and normal lines.
-	 * 
-	 * The error line will be the one that caused the exception to be thrown, the 
+	 *
+	 * The error line will be the one that caused the exception to be thrown, the
 	 * warnings will be the lines that did not directly invoke the function throwing
 	 * the exception but that are part of the stack trace.
-	 * 
+	 *
 	 * All other lines are normal. Obviously.
 	 */
 	const LINE_TYPE_ERROR  = 'error';
@@ -32,18 +31,14 @@ abstract class StackTracePrinter
 	const LINE_TYPE_NORMAL = 'normal';
 	
 	/**
-	 * Creates the printer. This allows the application to return a "nice" and 
+	 * Creates the printer. This allows the application to return a "nice" and
 	 * helpful error to the developer to avoid him needing to revisit the entire
 	 * application code and having an excerpt on screen the moment it fails.
-	 * 
-	 * @param Exception $e
+	 *
+	 * @param Throwable $e
 	 */
-	public function __construct($e)
+	public function __construct(Throwable $e)
 	{
-		if (!$e instanceof \Exception && !$e instanceof \Throwable) {
-			throw new InvalidArgumentException('Stack Trace Printer requires throwable to be passed, received ' . get_class($e), 1806031136);
-		}
-		
 		$this->exception = $e;
 	}
 	
@@ -51,7 +46,7 @@ abstract class StackTracePrinter
 	 * Walks over the components of the stack trace being printed and stringifies
 	 * them. Please note that, in order to do so, it relies on the overriden and
 	 * implemented methods from the child class.
-	 * 
+	 *
 	 * @todo Handle the behavior when the stack trace is unpopulated.
 	 * @return string
 	 */
@@ -90,19 +85,19 @@ abstract class StackTracePrinter
 		
 		foreach ($args as $arg) {
 			if (is_object($arg)) {
-				$_ret[]= get_class($arg); 
+				$_ret[]= get_class($arg);
 			}
 			elseif (is_array($arg)) {
-				$_ret[]= sprintf('Array(%s)', count($arg)); 
+				$_ret[]= sprintf('Array(%s)', count($arg));
 			}
 			elseif (is_int($arg)) {
-				$_ret[]= sprintf('Integer(%s)', $arg); 
+				$_ret[]= sprintf('Integer(%s)', $arg);
 			}
 			elseif (is_double($arg)) {
-				$_ret[]= sprintf('Double(%s)', $arg); 
+				$_ret[]= sprintf('Double(%s)', $arg);
 			}
 			elseif (is_string($arg)) {
-				$_ret[]= sprintf('String(%s)', strlen($arg) > 30? strlen($arg) : $arg); 
+				$_ret[]= sprintf('String(%s)', strlen($arg) > 30? strlen($arg) : $arg);
 			}
 		}
 		
@@ -117,7 +112,7 @@ abstract class StackTracePrinter
 		
 		for ($i = $line - 7; $i < $line; $i++) {
 			if ($i > 0) {
-				$_ret[] = $this->printLine($content[$i]); 
+				$_ret[] = $this->printLine($content[$i]);
 			}
 		}
 		
@@ -126,7 +121,7 @@ abstract class StackTracePrinter
 		
 		for ($i = $line + 1; $i < $line + 4; $i++) {
 			if (isset($content[$i])) {
-				$_ret[] = $this->printLine($content[$i]); 
+				$_ret[] = $this->printLine($content[$i]);
 			}
 		}
 		
@@ -139,7 +134,7 @@ abstract class StackTracePrinter
 		$count = count($trace) + 1;
 		
 		array_unshift($trace, [
-			'line' => $this->exception->getLine(), 
+			'line' => $this->exception->getLine(),
 			'file' => $this->exception->getFile()
 			]);
 		
@@ -159,7 +154,7 @@ abstract class StackTracePrinter
 	public function __toString()
 	{
 		if (php_sapi_name() === 'cli') {
-			return $this->exception->getTraceAsString(); 
+			return $this->exception->getTraceAsString();
 		}
 		
 		return $this->wrapStackTrace($this->iterateTrace(), sprintf('Stack trace for "%s"', $this->exception->getMessage()));
