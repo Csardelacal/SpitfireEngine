@@ -12,11 +12,16 @@ use Attribute;
 class Table
 {
 	
-	private string $name;
+	private ?string $name;
 	
-	public function __construct(string $name)
+	public function __construct(string $name = null)
 	{
 		$this->name = $name;
+	}
+	
+	public function hasName()
+	{
+		return $this->name === null;
 	}
 	
 	
@@ -25,6 +30,7 @@ class Table
 	 */
 	public function getName() : string
 	{
+		assert($this->name !== null);
 		return $this->name;
 	}
 }

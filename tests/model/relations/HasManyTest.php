@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
+use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\relations\HasMany;
@@ -39,7 +40,7 @@ class HasManyTest extends TestCase
 	public function testCreateQuery()
 	{
 		
-		$model = new class(self::connection()) extends Model
+		$model = new #[Table('test')] class(self::connection()) extends Model
 		{
 			
 			private $_id;
@@ -56,11 +57,6 @@ class HasManyTest extends TestCase
 			public function setTest(TestModel $t)
 			{
 				$this->test = $t;
-			}
-			
-			public function getTableName()
-			{
-				return 'test';
 			}
 		};
 		
@@ -81,7 +77,7 @@ class HasManyTest extends TestCase
 	{
 		
 		
-		$model = new class(self::connection()) extends Model
+		$model = new #[Table('test2')] class(self::connection()) extends Model
 		{
 			
 			private $_id;
@@ -98,11 +94,6 @@ class HasManyTest extends TestCase
 			public function setTest(TestModel $t)
 			{
 				$this->test = $t;
-			}
-			
-			public function getTableName()
-			{
-				return 'test';
 			}
 		};
 		
@@ -148,12 +139,12 @@ class HasManyTest extends TestCase
 			$schema = new Schema('test');
 			$migrator = new SchemaMigrationExecutor($schema);
 			
-			$migrator->add('test', function (TableMigrationExecutor $t) {
+			$migrator->add('test2', function (TableMigrationExecutor $t) {
 				$t->id();
 				$t->int('test', true);
 			});
 			
-			$migrator->add('test_models', function (TableMigrationExecutor $t) {
+			$migrator->add('test', function (TableMigrationExecutor $t) {
 				$t->int('test', true);
 			});
 			

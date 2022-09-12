@@ -1,6 +1,7 @@
 <?php namespace tests\spitfire\model;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\model\attribute\Table;
 use spitfire\storage\database\ConnectionManager;
 use spitfire\model\Field;
 use spitfire\model\Model;
@@ -97,21 +98,16 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$this->model = new class ($connection) extends Model {
+		$this->model = new #[Table('test')] class ($connection) extends Model {
 			private int $_id = 0;
 			
 			public function getId()
 			{
 				return $this->_id;
 			}
-			
-			public function getTableName()
-			{
-				return 'test';
-			}
 		};
 		
-		$this->model2 = new class ($connection, $this->model) extends Model {
+		$this->model2 = new #[Table('test2')] class ($connection, $this->model) extends Model {
 			private $parent;
 			
 			public function __construct(Connection $connection, Model $parent)
@@ -125,10 +121,6 @@ class QueryBuilderTest extends TestCase
 				return new BelongsToOne(new Field($this, 'test_id'), new Field($this->parent, '_id'));
 			}
 			
-			public function getTableName()
-			{
-				return 'test2';
-			}
 		};
 		
 		$schema = new Schema('test');
@@ -176,13 +168,8 @@ class QueryBuilderTest extends TestCase
 			$this->model2
 		);
 		
-		$model = new class ($connection) extends Model {
+		$model = new #[Table('test2')] class ($connection) extends Model {
 			private int $_id;
-			
-			public function getTableName()
-			{
-				return 'test2';
-			}
 		};
 		
 		$instance = $model->withSelfHydrate(new Record(['_id' => 1]));
@@ -282,7 +269,7 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$model = new class ($connection) extends Model {
+		$model = new  #[Table('test')]class ($connection) extends Model {
 			private int $_id = 0;
 			private string $my_stick;
 			private string $my_test;
@@ -290,11 +277,6 @@ class QueryBuilderTest extends TestCase
 			public function getId()
 			{
 				return $this->_id;
-			}
-			
-			public function getTableName()
-			{
-				return 'test';
 			}
 		};
 		
@@ -348,7 +330,7 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		$model = new class ($connection) extends Model {
+		$model = new #[Table('test')] class ($connection) extends Model {
 			private int $_id = 0;
 			private string $my_stick;
 			private string $my_test;
@@ -358,10 +340,6 @@ class QueryBuilderTest extends TestCase
 				return $this->_id;
 			}
 			
-			public function getTableName()
-			{
-				return 'test';
-			}
 		};
 		
 		$builder = (new QueryBuilder(

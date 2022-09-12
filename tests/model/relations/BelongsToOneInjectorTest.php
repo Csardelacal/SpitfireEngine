@@ -1,6 +1,7 @@
 <?php namespace tests\spitfire\model\relations;
 
 use PHPUnit\Framework\TestCase;
+use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
@@ -38,7 +39,7 @@ class BelongsToOneInjectorTest extends TestCase
 	public function testCreateQuery()
 	{
 		
-		$model = new class(self::connection()) extends Model
+		$model = new #[Table('test2')] class(self::connection()) extends Model
 		{
 			
 			private $_id;
@@ -55,11 +56,6 @@ class BelongsToOneInjectorTest extends TestCase
 			public function setTest(TestModel $t)
 			{
 				$this->test = $t;
-			}
-			
-			public function getTableName()
-			{
-				return 'test';
 			}
 		};
 		
@@ -76,12 +72,12 @@ class BelongsToOneInjectorTest extends TestCase
 		$this->assertStringContainsString("WHERE EXISTS (SELECT", $queries[0]);
 		
 		$this->assertStringMatchesFormat(
-			"SELECT `test_%d`.`_id`, `test_%d`.`test` " .
-			"FROM `test` AS `test_%d` " .
-			"WHERE EXISTS (SELECT `test_models_%d`.`example2` " .
-			"FROM `test_models` AS `test_models_%d` WHERE " .
-			"`test_models_%d`.`example` = '1' AND ".
-			"`test_models_%d`.`example2` = `test_%d`.`test`)",
+			"SELECT `test2_%d`.`_id`, `test2_%d`.`test` " .
+			"FROM `test2` AS `test2_%d` " .
+			"WHERE EXISTS (SELECT `test_%d`.`example2` " .
+			"FROM `test` AS `test_%d` WHERE " .
+			"`test_%d`.`example` = '1' AND ".
+			"`test_%d`.`example2` = `test2_%d`.`test`)",
 			$queries[0]
 		);
 	}
@@ -91,7 +87,7 @@ class BelongsToOneInjectorTest extends TestCase
 	public function testCreateQueryWithNotExists()
 	{
 		
-		$model = new class(self::connection()) extends Model
+		$model = new #[Table('test2')] class(self::connection()) extends Model
 		{
 			
 			private $_id;
@@ -109,11 +105,6 @@ class BelongsToOneInjectorTest extends TestCase
 			{
 				$this->test = $t;
 			}
-			
-			public function getTableName()
-			{
-				return 'test';
-			}
 		};
 		
 		$query = $model->query();
@@ -128,12 +119,12 @@ class BelongsToOneInjectorTest extends TestCase
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
 		
 		$this->assertStringMatchesFormat(
-			"SELECT `test_%d`.`_id`, `test_%d`.`test` " .
-			"FROM `test` AS `test_%d` " .
-			"WHERE NOT EXISTS (SELECT `test_models_%d`.`example2` " .
-			"FROM `test_models` AS `test_models_%d` WHERE " .
-			"`test_models_%d`.`example` = '1' AND ".
-			"`test_models_%d`.`example2` = `test_%d`.`test`)",
+			"SELECT `test2_%d`.`_id`, `test2_%d`.`test` " .
+			"FROM `test2` AS `test2_%d` " .
+			"WHERE NOT EXISTS (SELECT `test_%d`.`example2` " .
+			"FROM `test` AS `test_%d` WHERE " .
+			"`test_%d`.`example` = '1' AND ".
+			"`test_%d`.`example2` = `test2_%d`.`test`)",
 			$queries[0]
 		);
 	}
@@ -169,12 +160,12 @@ class BelongsToOneInjectorTest extends TestCase
 			$schema = new Schema('test');
 			$migrator = new SchemaMigrationExecutor($schema);
 			
-			$migrator->add('test', function (TableMigrationExecutor $t) {
+			$migrator->add('test2', function (TableMigrationExecutor $t) {
 				$t->id();
 				$t->int('test', true);
 			});
 			
-			$migrator->add('test_models', function (TableMigrationExecutor $t) {
+			$migrator->add('test', function (TableMigrationExecutor $t) {
 				$t->int('test', true);
 				$t->int('example', true);
 				$t->int('example2', true);

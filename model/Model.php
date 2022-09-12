@@ -5,6 +5,7 @@ use ReflectionClass;
 use ReflectionException;
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
+use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\relations\RelationshipContent;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
@@ -47,6 +48,10 @@ abstract class Model implements JsonSerializable
 	 */
 	private ConnectionInterface $connection;
 	
+	/**
+	 *
+	 * @deprecated
+	 */
 	private $prefix = '';
 	
 	/**
@@ -377,12 +382,6 @@ abstract class Model implements JsonSerializable
 		$this->prefix = $prefix;
 	}
 	
-	public function getTableName()
-	{
-		$reflection = new ReflectionClass($this);
-		return $this->prefix . Strings::plural(Strings::snake($reflection->getShortName()));
-	}
-	
 	protected function lazy(string $field)
 	{
 		assert($this->hydrated);
@@ -484,5 +483,19 @@ abstract class Model implements JsonSerializable
 	public function getConnection() : ConnectionInterface
 	{
 		return $this->connection;
+	}
+	
+	final public static function getTableName()
+	{
+		$reflection = new ReflectionClass(static::class);
+		$tableAttribute = $reflection->getAttributes(TableAttribute::class);
+		assert(count($tableAttribute) <= 1);
+		
+		if (!empty($tableAttribute)) {
+			return $tableAttribute[0]->newInstance()->getName();
+		}
+		else {
+			return Strings::plural(Strings::snake(Strings::rTrimString($reflection->getShortName(), 'Model')));
+		}
 	}
 }

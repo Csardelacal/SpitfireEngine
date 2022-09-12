@@ -33,9 +33,9 @@ class AttributeLayoutGenerator
 		assert($reflection->isSubclassOf(Model::class));
 		
 		$tableAttribute = $reflection->getAttributes(TableAttribute::class);
-		assert(count($tableAttribute) === 1);
+		assert(count($tableAttribute) <= 1);
 		
-		$layout = new Layout($tableAttribute[0]->newInstance()->getName());
+		$layout = new Layout($reflection->getName()::getTableName());
 		$migrator = new TableMigrationExecutor($layout);
 		
 		$this->addColumns($migrator, $reflection);

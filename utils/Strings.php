@@ -80,6 +80,15 @@ class Strings
 		return strcmp(substr($haystack, 0 - strlen($needle)), $needle) === 0;
 	}
 	
+	public static function rTrimString(string $haystack, string $needle)
+	{
+		if (self::endsWith($haystack, $needle)) {
+			return substr($haystack, 0, 0 - strlen($needle));
+		}
+		
+		return $haystack;
+	}
+	
 	public static function startsWith($haystack, $needle)
 	{
 		if (empty($needle)) {

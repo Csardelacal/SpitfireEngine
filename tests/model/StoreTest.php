@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
+use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\relations\BelongsToOne;
@@ -75,7 +76,7 @@ class StoreTest extends TestCase
 			)
 		);
 		
-		$model = new class ($connection) extends Model {
+		$model = new #[Table('test')] class ($connection) extends Model {
 			use WithId, WithTimestamps;
 			
 			private string $my_stick;
@@ -84,11 +85,6 @@ class StoreTest extends TestCase
 			public function getId()
 			{
 				return $this->_id;
-			}
-			
-			public function getTableName()
-			{
-				return 'test';
 			}
 			
 			public function setStick(string $string)
@@ -170,7 +166,7 @@ class StoreTest extends TestCase
 			)
 		);
 		
-		$model = new class ($connection, new TestModel($connection)) extends Model {
+		$model = new #[Table('test')] class ($connection, new TestModel($connection)) extends Model {
 			use WithId, WithTimestamps;
 			
 			private string $my_stick;
@@ -188,11 +184,6 @@ class StoreTest extends TestCase
 			public function getId()
 			{
 				return $this->_id;
-			}
-			
-			public function getTableName()
-			{
-				return 'test';
 			}
 			
 			public function setStick(string $string)
