@@ -3,9 +3,11 @@
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKeyInterface;
+use spitfire\storage\database\grammar\QueryGrammarInterface;
 use spitfire\storage\database\IndexInterface;
+use spitfire\storage\database\QuoterInterface;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -28,7 +30,7 @@ use spitfire\storage\database\IndexInterface;
  * A grammar class allows Spitfire to generate the SQL without executing it. This makes
  * it really simple to prepare scripts to be run in batch, outsourced to another app and
  * for unit testing.
- * 
+ *
  * This grammar allows Spitfire to perform common operations on tables. This is usually
  * consumed by migration operations.
  */
@@ -37,20 +39,20 @@ class MySQLTableGrammar
 	
 	/**
 	 * Grammar used for column operations.
-	 * 
+	 *
 	 * @var MySQLColumnGrammar
 	 */
 	private $columns;
 	
-	public function __construct()
+	public function __construct(QueryGrammarInterface $query)
 	{
-		$this->columns = new MySQLColumnGrammar();
+		$this->columns = new MySQLColumnGrammar($query);
 	}
 	
 	/**
-	 * Generates the SQL necessary for performing a set of operations on a 
+	 * Generates the SQL necessary for performing a set of operations on a
 	 * table.
-	 * 
+	 *
 	 * @param string $tablename
 	 * @param string[] $operations
 	 * @return string
@@ -67,7 +69,7 @@ class MySQLTableGrammar
 	/**
 	 * Generates the necessary SQL to add a column to the table. This uses the
 	 * column definition grammar.
-	 * 
+	 *
 	 * @param Field $field
 	 * @return string
 	 */
@@ -80,7 +82,7 @@ class MySQLTableGrammar
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param IndexInterface $index
 	 * @return string
 	 */
@@ -94,7 +96,7 @@ class MySQLTableGrammar
 	
 	/**
 	 * Generates the necessary syntax to remove a column from the DBMS.
-	 * 
+	 *
 	 * @param Field $field
 	 * @return string
 	 */
@@ -108,7 +110,7 @@ class MySQLTableGrammar
 	
 	/**
 	 * Removes an index from the database.
-	 * 
+	 *
 	 * @param IndexInterface $index
 	 * @return string
 	 */

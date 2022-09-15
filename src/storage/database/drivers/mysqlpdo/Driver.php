@@ -70,7 +70,7 @@ class Driver implements DriverInterface
 	
 	public function getDefaultSchemaGrammar(): SchemaGrammarInterface
 	{
-		return new MySQLSchemaGrammar();
+		return new MySQLSchemaGrammar($this->getDefaultQueryGrammar());
 	}
 	
 	public function connect() : void

@@ -1,7 +1,9 @@
 <?php namespace spitfire\storage\database\grammar\mysql;
 
+use spitfire\storage\database\grammar\QueryGrammarInterface;
 use spitfire\storage\database\grammar\SchemaGrammarInterface;
 use spitfire\storage\database\LayoutInterface;
+use spitfire\storage\database\QuoterInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -39,9 +41,9 @@ class MySQLSchemaGrammar implements SchemaGrammarInterface
 	 */
 	private $column;
 	
-	public function __construct()
+	public function __construct(QueryGrammarInterface $query)
 	{
-		$this->column = new MySQLColumnGrammar();
+		$this->column = new MySQLColumnGrammar($query);
 	}
 	
 	/**

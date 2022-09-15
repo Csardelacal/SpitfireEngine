@@ -5,7 +5,9 @@ use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\storage\database\drivers\mysqlpdo\TableMigrationExecutor;
 use spitfire\storage\database\Field;
+use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLTableGrammar;
+use spitfire\storage\database\grammar\SlashQuoter;
 use spitfire\storage\database\Index;
 
 class MySQLTableGrammarTest extends TestCase
@@ -15,13 +17,13 @@ class MySQLTableGrammarTest extends TestCase
 	 * This test simulates the behavior of TableMigrationExecutor::increments,
 	 * making sure that the system can add a column and an index at the same time
 	 * and according to the mysql spec.
-	 * 
+	 *
 	 * @see https://dev.mysql.com/doc/refman/8.0/en/alter-table-examples.html
 	 */
 	public function testAddIncrements()
 	{
 		
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$field = new Field('c', 'long:unsigned', false, true);
 		$index = new Index('_primary', new Collection([$field]), true, true);
 		
@@ -36,7 +38,7 @@ class MySQLTableGrammarTest extends TestCase
 	
 	public function testDropColumn()
 	{
-		$grammar = new MySQLTableGrammar();
+		$grammar = new MySQLTableGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$field = new Field('c', 'long:unsigned', false, true);
 		
 		$sql = $grammar->alterTable(

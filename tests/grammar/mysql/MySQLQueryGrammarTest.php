@@ -9,6 +9,7 @@ use spitfire\storage\database\Layout;
 use spitfire\storage\database\OrderBy;
 use spitfire\storage\database\Query;
 use spitfire\storage\database\query\JoinTable;
+use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\query\Restriction;
 
 class MySQLQueryGrammarTest extends TestCase
@@ -23,7 +24,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$grammar = new MySQLQueryGrammar(new SlashQuoter());
 		$table = $layout->getTableReference();
 		
-		$query = new Query($table);
+		$query = new Query(new QueryOrTableIdentifier($table));
 		$query->selectAll();
 		
 		$result = $grammar->selectExpression($query);
@@ -41,7 +42,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$grammar = new MySQLQueryGrammar(new SlashQuoter());
 		$table = $layout->getTableReference();
 		
-		$query = new Query($table);
+		$query = new Query(new QueryOrTableIdentifier($table));
 		$query->aggregate(
 			$query->getFrom()->output()->getOutput('testfield'),
 			new Aggregate(Aggregate::AGGREGATE_COUNT),
@@ -68,7 +69,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$grammar = new MySQLQueryGrammar(new SlashQuoter());
 		$table = $layout->getTableReference();
 		
-		$query = new Query($table);
+		$query = new Query(new QueryOrTableIdentifier($table));
 		$query->selectAll();
 		$query->joinTable($layout2->getTableReference(), function (JoinTable $join, Query $parent) {
 			$join->on($join->getOutput('testfield'), $parent->getTable()->getOutput('testfield'));
@@ -94,10 +95,10 @@ class MySQLQueryGrammarTest extends TestCase
 		$grammar = new MySQLQueryGrammar(new SlashQuoter());
 		$table = $layout->getTableReference();
 		
-		$query = new Query($table);
+		$query = new Query(new QueryOrTableIdentifier($table));
 		$query->selectAll();
 		$query->whereExists(function (TableIdentifier $parent) use ($layout2) {
-			$sq = new Query($layout2->getTableReference());
+			$sq = new Query(new QueryOrTableIdentifier($layout2->getTableReference()));
 			$sq->select('testfield');
 			$sq->where($sq->table()->getOutput('teststring'), $parent->getOutput('teststring'));
 			return $sq;
@@ -120,7 +121,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$grammar = new MySQLQueryGrammar(new SlashQuoter());
 		$table = $layout->getTableReference();
 		
-		$query = new Query($table);
+		$query = new Query(new QueryOrTableIdentifier($table));
 		$query->selectAll();
 		$query->putOrder(new OrderBy($query->getFrom()->output()->getOutput('testfield')));
 		
@@ -139,7 +140,7 @@ class MySQLQueryGrammarTest extends TestCase
 		$grammar = new MySQLQueryGrammar(new SlashQuoter());
 		$table = $layout->getTableReference();
 		
-		$query = new Query($table);
+		$query = new Query(new QueryOrTableIdentifier($table));
 		$query->selectAll();
 		
 		$query->aggregate(

@@ -94,7 +94,7 @@ class QueryBuilderTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -160,7 +160,7 @@ class QueryBuilderTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -211,7 +211,7 @@ class QueryBuilderTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -265,7 +265,7 @@ class QueryBuilderTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -326,7 +326,7 @@ class QueryBuilderTest extends TestCase
 				$driver,
 				new MySQLQueryGrammar(new SlashQuoter()),
 				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
 			)
 		);
 		
@@ -351,5 +351,67 @@ class QueryBuilderTest extends TestCase
 		
 		$this->assertInstanceOf(QueryBuilder::class, $where);
 		$this->assertEquals(1, $restrictions->restrictions()->count());
+	}
+	
+	/**
+	 * Test whether the query builder can properly perform quick counts.
+	 */
+	public function testQuickCount()
+	{
+		
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([
+					['_id' => 1, 'my_stick' => '', 'my_test' => '']
+				]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$this->schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter()),
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
+			)
+		);
+		
+		$model = new #[Table('test')] class ($connection) extends Model {
+			private int $_id = 0;
+			private string $my_stick;
+			private string $my_test;
+			
+			public function getId()
+			{
+				return $this->_id;
+			}
+		};
+		
+		$builder = (new QueryBuilder(
+			$model
+		))->withDefaultMapping();
+		
+		$builder->where('_id', 1)->quickCount();
+		$this->assertStringMatchesFormat(
+			'SELECT count(`_id`) AS `c` FROM (SELECT `test_%d`.`_id` '.
+			'FROM `test` AS `test_%d` WHERE `test_%d`.`_id` = \'1\' LIMIT 0, 101) AS `t_%d` WHERE 1',
+			$driver->queries[0]
+		);
 	}
 }

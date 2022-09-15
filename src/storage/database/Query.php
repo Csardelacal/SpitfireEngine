@@ -9,6 +9,7 @@ use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\query\Alias;
 use spitfire\storage\database\query\Join;
 use spitfire\storage\database\query\JoinTable;
+use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\query\Restriction;
 use spitfire\storage\database\query\RestrictionGroup;
 use spitfire\storage\database\query\SelectExpression;
@@ -92,9 +93,9 @@ class Query
 	
 	/**
 	 *
-	 * @param TableIdentifierInterface $table
+	 * @param QueryOrTableIdentifier $table
 	 */
-	public function __construct(TableIdentifierInterface $table)
+	public function __construct(QueryOrTableIdentifier $table)
 	{
 		$this->from = new Alias($table, $table->withAlias());
 		$this->joins = new Collection();
@@ -118,7 +119,7 @@ class Query
 	 */
 	public function joinTable(TableIdentifierInterface $table, Closure $fn = null) : JoinTable
 	{
-		$join = new JoinTable(new Alias($table, $table->withAlias()));
+		$join = new JoinTable(new Alias(new QueryOrTableIdentifier($table), $table->withAlias()));
 		$this->joins->push($join);
 		
 		$fn !== null && $fn($join, $this);
@@ -349,7 +350,7 @@ class Query
 	{
 		return sprintf(
 			'%s(%s) {%s}',
-			implode('.', $this->from->input()->raw()),
+			$this->from->input()->isQuery()? 'Query' : 'Table',
 			implode('.', $this->from->output()->raw()),
 			$this->where->restrictions()->count()
 		);

@@ -55,7 +55,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 	public function __construct(QuoterInterface $quoter)
 	{
 		$this->quoter = $quoter;
-		$this->object = new MySQLObjectGrammar();
+		$this->object = new MySQLObjectGrammar($this);
 	}
 	
 	/**
@@ -269,7 +269,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 		$limit  = $query->getLimit();
 		
 		if ($limit !== null && $offset !== null) {
-			return sprintf('LIMIT %s, %s', $limit, $offset);
+			return sprintf('LIMIT %s, %s', $offset, $limit);
 		}
 		
 		elseif ($limit !== null) {

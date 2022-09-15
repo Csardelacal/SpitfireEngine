@@ -2,9 +2,12 @@
 
 use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\FieldReference;
+use spitfire\storage\database\grammar\QueryGrammarInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\query\Alias;
+use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\query\SelectExpression;
+use spitfire\storage\database\QuoterInterface;
 use spitfire\storage\database\TableReference;
 
 /*
@@ -37,12 +40,26 @@ use spitfire\storage\database\TableReference;
 class MySQLObjectGrammar
 {
 	
+	public function __construct(
+		private QueryGrammarInterface $query
+	) {
+	}
 	
 	public function identifier(IdentifierInterface $id) : string
 	{
 		return implode('.', array_map(function ($e) : string {
 			return sprintf('`%s`', $e);
 		}, $id->raw()));
+	}
+	
+	public function queryOrTableIdentifier(QueryOrTableIdentifier $item) : string
+	{
+		if ($item->isQuery()) {
+			return sprintf('(%s)', $this->query->query($item->getQuery()));
+		}
+		else {
+			return $this->identifier($item->getTableIdentifier());
+		}
 	}
 	
 	public function selectExpression(SelectExpression $s): string
@@ -67,6 +84,6 @@ class MySQLObjectGrammar
 	
 	public function alias(Alias $alias) : string
 	{
-		return sprintf('%s AS %s', $this->identifier($alias->input()), $this->identifier($alias->output()));
+		return sprintf('%s AS %s', $this->queryOrTableIdentifier($alias->input()), $this->identifier($alias->output()));
 	}
 }
