@@ -110,6 +110,25 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	}
 	
 	/**
+	 * This method adds an long integer column to the database
+	 *
+	 * @param string $name
+	 * @return TableMigrationExecutorInterface
+	 */
+	public function long(string $name, bool $unsigned): TableMigrationExecutorInterface
+	{
+		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
+		$field = new Field($name, $unsigned? 'long' : 'long:unsigned', true, false);
+		
+		$this->adapter->getDriver()->write($grammar->alterTable(
+			$this->table->getTableName(),
+			[$grammar->addColumn($field)]
+		));
+		
+		return $this;
+	}
+	
+	/**
 	 * Adds a string field to the database. Please note that string fields require the length
 	 * parameter. For unlimited length please refer to the text() method.
 	 *

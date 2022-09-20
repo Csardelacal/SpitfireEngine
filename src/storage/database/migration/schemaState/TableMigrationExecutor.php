@@ -84,6 +84,19 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	}
 	
 	/**
+	 * Adds an integer field to the schema.
+	 *
+	 * @param string $name
+	 * @param bool $unsigned
+	 * @return TableMigrationExecutorInterface
+	 */
+	public function long(string $name, bool $unsigned): TableMigrationExecutorInterface
+	{
+		$this->table->putField($name, $unsigned? 'long:unsigned' : 'long', true, false);
+		return $this;
+	}
+	
+	/**
 	 * Adds a string field to the schema.
 	 *
 	 * @param string $name

@@ -37,6 +37,8 @@ interface TableMigrationExecutorInterface
 	
 	function int(string $name, bool $unsigned) : TableMigrationExecutorInterface;
 	
+	function long(string $name, bool $unsigned) : TableMigrationExecutorInterface;
+	
 	function string(string $name, int $length) : TableMigrationExecutorInterface;
 	
 	function text(string $name) : TableMigrationExecutorInterface;

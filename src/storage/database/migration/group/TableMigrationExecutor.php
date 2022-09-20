@@ -90,6 +90,21 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	}
 	
 	/**
+	 * This method adds an long integer field to the database.
+	 *
+	 * @param string $name
+	 * @return TableMigrationExecutorInterface
+	 */
+	public function long(string $name, bool $unsigned): TableMigrationExecutorInterface
+	{
+		foreach ($this->migrators as $migrator) {
+			$migrator->long($name, $unsigned);
+		}
+		
+		return $this;
+	}
+	
+	/**
 	 * Adds a string field to the database. Please note that string fields require the length
 	 * parameter. For unlimited length please refer to the text() method.
 	 *

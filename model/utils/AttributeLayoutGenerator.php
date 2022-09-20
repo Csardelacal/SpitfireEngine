@@ -10,6 +10,7 @@ use spitfire\model\attribute\EnumType;
 use spitfire\model\attribute\Id;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
 use spitfire\model\attribute\Integer as IntegerAttribute;
+use spitfire\model\attribute\LongInteger as LongIntegerAttribute;
 use spitfire\model\attribute\Primary;
 use spitfire\model\attribute\References as ReferencesAttribute;
 use spitfire\model\attribute\SoftDelete;
@@ -63,6 +64,9 @@ class AttributeLayoutGenerator
 		$available = [
 			IntegerAttribute::class => function (string $name, MigratorInterface $migrator, IntegerAttribute $integer) {
 				$migrator->int($name, $integer->isUnsigned());
+			},
+			LongIntegerAttribute::class => function (string $name, MigratorInterface $migrator, LongIntegerAttribute $integer) {
+				$migrator->long($name, $integer->isUnsigned());
 			},
 			CharacterString::class => function (string $name, MigratorInterface $migrator, CharacterString $string) {
 				$migrator->string($name, $string->getLength());

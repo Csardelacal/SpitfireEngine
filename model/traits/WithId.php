@@ -1,12 +1,12 @@
 <?php namespace spitfire\model\traits;
 
-use spitfire\model\attribute\Integer;
+use spitfire\model\attribute\LongInteger;
 use spitfire\model\attribute\Primary;
 
 trait WithId
 {
 	
-	#[Integer(true)]
+	#[LongInteger(true)]
 	#[Primary]
 	private ?int $_id;
 	
