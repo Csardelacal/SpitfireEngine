@@ -18,7 +18,7 @@ class TestModel extends Model
 	 * @var string
 	 */
 	#[Integer()]
-	private string $test;
+	private ?string $test;
 	
 	
 	/**

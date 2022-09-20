@@ -75,11 +75,12 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param bool $unsigned
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
+	public function int(string $name, bool $unsigned, bool $nullable = true): TableMigrationExecutorInterface
 	{
-		$this->table->putField($name, $unsigned? 'int:unsigned' : 'int', true, false);
+		$this->table->putField($name, $unsigned? 'int:unsigned' : 'int', $nullable, false);
 		return $this;
 	}
 	
@@ -88,11 +89,12 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param bool $unsigned
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function long(string $name, bool $unsigned): TableMigrationExecutorInterface
+	public function long(string $name, bool $unsigned, bool $nullable = true): TableMigrationExecutorInterface
 	{
-		$this->table->putField($name, $unsigned? 'long:unsigned' : 'long', true, false);
+		$this->table->putField($name, $unsigned? 'long:unsigned' : 'long', $nullable, false);
 		return $this;
 	}
 	
@@ -101,11 +103,12 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param int $length
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function string(string $name, int $length) : TableMigrationExecutorInterface
+	public function string(string $name, int $length, bool $nullable = true) : TableMigrationExecutorInterface
 	{
-		$this->table->putField($name, 'string:' . $length, true, false);
+		$this->table->putField($name, 'string:' . $length, $nullable, false);
 		return $this;
 	}
 	
@@ -114,11 +117,12 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * since large text items can destabilize a server.
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function text(string $name): TableMigrationExecutorInterface
+	public function text(string $name, bool $nullable = true): TableMigrationExecutorInterface
 	{
-		$this->table->putField($name, 'text', true, false);
+		$this->table->putField($name, 'text', $nullable, false);
 		return $this;
 	}
 	
@@ -127,9 +131,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param string[] $options
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function enum(string $name, array $options): TableMigrationExecutorInterface
+	public function enum(string $name, array $options, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		/**
 		 * Verify that none of the options contains a comma. This ensures that the developer
@@ -140,7 +145,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 			return strstr($e, ',') !== false;
 		})->isEmpty());
 		
-		$this->table->putField($name, 'enum:' . implode(',', $options), true, false);
+		$this->table->putField($name, 'enum:' . implode(',', $options), $nullable, false);
 		return $this;
 	}
 	

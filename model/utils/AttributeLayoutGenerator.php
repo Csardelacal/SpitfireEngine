@@ -3,14 +3,15 @@
 use Closure;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionProperty as Property;
 use spitfire\collection\Collection;
 use spitfire\model\attribute\CharacterString;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\attribute\EnumType;
 use spitfire\model\attribute\Id;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
-use spitfire\model\attribute\Integer as IntegerAttribute;
-use spitfire\model\attribute\LongInteger as LongIntegerAttribute;
+use spitfire\model\attribute\Integer as IntAttribute;
+use spitfire\model\attribute\LongInteger as LongAttribute;
 use spitfire\model\attribute\Primary;
 use spitfire\model\attribute\References as ReferencesAttribute;
 use spitfire\model\attribute\SoftDelete;
@@ -62,20 +63,25 @@ class AttributeLayoutGenerator
 		$props = $source->getProperties();
 		
 		$available = [
-			IntegerAttribute::class => function (string $name, MigratorInterface $migrator, IntegerAttribute $integer) {
-				$migrator->int($name, $integer->isUnsigned());
+			IntAttribute::class => function (Property $prop, MigratorInterface $migrator, IntAttribute $integer) {
+				$nullable = $integer->isNullable()?? $prop->getType()->allowsNull();
+				$migrator->int($prop->getName(), $integer->isUnsigned(), $nullable);
 			},
-			LongIntegerAttribute::class => function (string $name, MigratorInterface $migrator, LongIntegerAttribute $integer) {
-				$migrator->long($name, $integer->isUnsigned());
+			LongAttribute::class => function (Property $prop, MigratorInterface $migrator, LongAttribute $integer) {
+				$nullable = $integer->isNullable()?? $prop->getType()->allowsNull();
+				$migrator->long($prop->getName(), $integer->isUnsigned(), $nullable);
 			},
-			CharacterString::class => function (string $name, MigratorInterface $migrator, CharacterString $string) {
-				$migrator->string($name, $string->getLength());
+			CharacterString::class => function (Property $prop, MigratorInterface $migrator, CharacterString $string) {
+				$nullable = $string->isNullable()?? $prop->getType()->allowsNull();
+				$migrator->string($prop->getName(), $string->getLength(), $nullable);
 			},
-			Text::class => function (string $name, MigratorInterface $migrator, Text $string) {
-				$migrator->text($name);
+			Text::class => function (Property $prop, MigratorInterface $migrator, Text $string) {
+				$nullable = $string->isNullable()?? $prop->getType()->allowsNull();
+				$migrator->text($prop->getName(), $nullable);
 			},
-			EnumType::class => function (string $name, MigratorInterface $migrator, EnumType $string) {
-				$migrator->enum($name, $string->getOptions());
+			EnumType::class => function (Property $prop, MigratorInterface $migrator, EnumType $string) {
+				$nullable = $string->isNullable()?? $prop->getType()->allowsNull();
+				$migrator->enum($prop->getName(), $string->getOptions(), $nullable);
 			}
 		];
 		
@@ -116,7 +122,7 @@ class AttributeLayoutGenerator
 				$column = $columnAttribute[0]->newInstance();
 				assert($column instanceof $type);
 				
-				$transformer($type)($prop->getName(), $target, $column);
+				$transformer($type)($prop, $target, $column);
 				
 				$found = true;
 			}

@@ -35,13 +35,13 @@ interface TableMigrationExecutorInterface
 	
 	function increments(string $name) : TableMigrationExecutorInterface;
 	
-	function int(string $name, bool $unsigned) : TableMigrationExecutorInterface;
+	function int(string $name, bool $unsigned, bool $nullable = true) : TableMigrationExecutorInterface;
 	
-	function long(string $name, bool $unsigned) : TableMigrationExecutorInterface;
+	function long(string $name, bool $unsigned, bool $nullable = true) : TableMigrationExecutorInterface;
 	
-	function string(string $name, int $length) : TableMigrationExecutorInterface;
+	function string(string $name, int $length, bool $nullable = true) : TableMigrationExecutorInterface;
 	
-	function text(string $name) : TableMigrationExecutorInterface;
+	function text(string $name, bool $nullable = true) : TableMigrationExecutorInterface;
 	
 	/**
 	 * Adds an enum field to the table.
@@ -50,7 +50,7 @@ interface TableMigrationExecutorInterface
 	 * @param string[] $options
 	 * @throws ApplicationException
 	 */
-	function enum(string $name, array $options) : TableMigrationExecutorInterface;
+	function enum(string $name, array $options, bool $nullable = true) : TableMigrationExecutorInterface;
 	
 	/**
 	 * Adds an index to the fields.

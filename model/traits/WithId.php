@@ -6,7 +6,7 @@ use spitfire\model\attribute\Primary;
 trait WithId
 {
 	
-	#[LongInteger(true)]
+	#[LongInteger(true, false)]
 	#[Primary]
 	private ?int $_id;
 	

@@ -14,11 +14,11 @@ class EnumType
 	 *
 	 * @var bool
 	 */
-	private bool $nullable;
+	private ?bool $nullable;
 	
 	private array $options;
 	
-	public function __construct(array $options, bool $nullable = true)
+	public function __construct(array $options, bool $nullable = null)
 	{
 		$this->nullable = $nullable;
 		$this->options = $options;
@@ -31,7 +31,7 @@ class EnumType
 	/**
 	 * Get the value of nullable
 	 */
-	public function isNullable() : bool
+	public function isNullable() :? bool
 	{
 		return $this->nullable;
 	}

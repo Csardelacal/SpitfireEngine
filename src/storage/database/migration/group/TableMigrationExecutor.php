@@ -78,12 +78,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * the datatype
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
+	public function int(string $name, bool $unsigned, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		foreach ($this->migrators as $migrator) {
-			$migrator->int($name, $unsigned);
+			$migrator->int($name, $unsigned, $nullable);
 		}
 		
 		return $this;
@@ -93,12 +94,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * This method adds an long integer field to the database.
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function long(string $name, bool $unsigned): TableMigrationExecutorInterface
+	public function long(string $name, bool $unsigned, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		foreach ($this->migrators as $migrator) {
-			$migrator->long($name, $unsigned);
+			$migrator->long($name, $unsigned, $nullable);
 		}
 		
 		return $this;
@@ -110,12 +112,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param int $length
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function string(string $name, int $length): TableMigrationExecutorInterface
+	public function string(string $name, int $length, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		foreach ($this->migrators as $migrator) {
-			$migrator->string($name, $length);
+			$migrator->string($name, $length, $nullable);
 		}
 		
 		return $this;
@@ -127,12 +130,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * add unlimited length data to the database.
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function text(string $name): TableMigrationExecutorInterface
+	public function text(string $name, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		foreach ($this->migrators as $migrator) {
-			$migrator->text($name);
+			$migrator->text($name, $nullable);
 		}
 		
 		return $this;
@@ -143,9 +147,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * hold state or similar applications.
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @param string[] $options
 	 */
-	public function enum(string $name, array $options): TableMigrationExecutorInterface
+	public function enum(string $name, array $options, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		
 		foreach ($this->migrators as $migrator) {

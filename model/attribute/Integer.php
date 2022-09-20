@@ -16,9 +16,12 @@ class Integer
 	 */
 	private bool $unsigned;
 	
-	public function __construct(bool $unsigned = false)
+	private ?bool $nullable;
+	
+	public function __construct(bool $unsigned = false, bool $nullable = null)
 	{
 		$this->unsigned = $unsigned;
+		$this->nullable = $nullable;
 	}
 	
 	/**
@@ -27,5 +30,13 @@ class Integer
 	public function isUnsigned() : bool
 	{
 		return $this->unsigned;
+	}
+	
+	/**
+	 * Get the value of nullable
+	 */
+	public function isNullable() :? bool
+	{
+		return $this->nullable;
 	}
 }

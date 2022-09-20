@@ -94,12 +94,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * the datatype
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function int(string $name, bool $unsigned): TableMigrationExecutorInterface
+	public function int(string $name, bool $unsigned, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$field = new Field($name, $unsigned? 'int' : 'int:unsigned', true, false);
+		$field = new Field($name, $unsigned? 'int' : 'int:unsigned', $nullable, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -113,12 +114,14 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * This method adds an long integer column to the database
 	 *
 	 * @param string $name
+	 * @param bool $unsigned
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function long(string $name, bool $unsigned): TableMigrationExecutorInterface
+	public function long(string $name, bool $unsigned, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$field = new Field($name, $unsigned? 'long' : 'long:unsigned', true, false);
+		$field = new Field($name, $unsigned? 'long' : 'long:unsigned', $nullable, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -134,9 +137,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param int $length
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function string(string $name, int $length): TableMigrationExecutorInterface
+	public function string(string $name, int $length, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		/**
 		 * Obviously, the length needs to be a positive number. Otherwise
@@ -145,7 +149,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		assert($length > 0);
 		
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$field = new Field($name, 'string:' . $length, true, false);
+		$field = new Field($name, 'string:' . $length, $nullable, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -161,12 +165,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * add unlimited length data to the database.
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function text(string $name): TableMigrationExecutorInterface
+	public function text(string $name, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$field = new Field($name, 'text', true, false);
+		$field = new Field($name, 'text', $nullable, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -181,9 +186,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * hold state or similar applications.
 	 *
 	 * @param string $name
+	 * @param bool $nullable
 	 * @param string[] $options
 	 */
-	public function enum(string $name, array $options): TableMigrationExecutorInterface
+	public function enum(string $name, array $options, bool $nullable = true): TableMigrationExecutorInterface
 	{
 		/**
 		 * Verify that none of the options contains a comma. This ensures that the developer
@@ -198,7 +204,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * Set up the grammar and add the field to the DBMS.
 		 */
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$field = new Field($name, 'enum:' . implode(',', $options), true, false);
+		$field = new Field($name, 'enum:' . implode(',', $options), $nullable, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),

@@ -9,4 +9,19 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Text
 {
+	
+	private ?bool $nullable;
+	
+	public function __construct(bool $nullable = null)
+	{
+		$this->nullable = $nullable;
+	}
+	
+	/**
+	 * Get the value of nullable
+	 */
+	public function isNullable() : ?bool
+	{
+		return $this->nullable;
+	}
 }
