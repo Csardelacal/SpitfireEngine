@@ -23,7 +23,7 @@ coding_style:
                 linefeed_character: newline
             before_parentheses:
                 function_declaration: false
-                closure_definition: false
+                closure_definition: true
                 function_call: false
                 if: true
                 for: true
