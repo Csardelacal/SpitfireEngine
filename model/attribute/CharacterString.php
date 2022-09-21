@@ -18,7 +18,7 @@ class CharacterString
 	
 	private int $length;
 	
-	public function __construct(bool $nullable = null, int $length = 255)
+	public function __construct(int $length = 255, bool $nullable = null)
 	{
 		$this->nullable = $nullable;
 		$this->length = $length;

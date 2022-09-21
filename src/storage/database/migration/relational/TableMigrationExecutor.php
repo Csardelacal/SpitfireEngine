@@ -365,7 +365,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * housekeeping operations on the system.
 		 */
 		$created = new Field('created', 'int:unsigned', false, false);
-		$updated = new Field('updated', 'int:unsigned', false, false);
+		$updated = new Field('updated', 'int:unsigned', true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -388,7 +388,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function softDelete(): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$removed = new Field('removed', 'int:unsigned', false, false);
+		$removed = new Field('removed', 'int:unsigned', true, false);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
