@@ -179,7 +179,7 @@ class AttributeLayoutGenerator
 			}
 			
 			assert(count($columnAttributes) === 1);
-			$target->primary('PRIMARY', $prop->getName());
+			$target->primary($prop->getName());
 		}
 	}
 	

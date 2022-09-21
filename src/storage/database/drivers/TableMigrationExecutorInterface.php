@@ -72,7 +72,7 @@ interface TableMigrationExecutorInterface
 	 */
 	function unique(string $name, array $fields) : TableMigrationExecutorInterface;
 	
-	function primary(string $name, string $field) : TableMigrationExecutorInterface;
+	function primary(string $field) : TableMigrationExecutorInterface;
 	
 	function id() : TableMigrationExecutorInterface;
 	

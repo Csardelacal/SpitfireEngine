@@ -229,11 +229,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * being either unnamed or having some naming convention.  In these cases spitfire will ignore
 	 * the name and use the convention.
 	 *
-	 * @param string $name
 	 * @param string $field
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function primary(string $name, string $field): TableMigrationExecutorInterface
+	public function primary(string $field): TableMigrationExecutorInterface
 	{
 		$_fields = new Collection([$this->table->getField($field)]);
 		
@@ -242,7 +241,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 */
 		assert($this->table->getPrimaryKey() === null);
 		
-		$this->table->putIndex(new Index($name, $_fields, true, true));
+		$this->table->putIndex(new Index(Layout::PRIMARY_KEY, $_fields, true, true));
 		return $this;
 	}
 	

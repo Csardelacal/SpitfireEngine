@@ -313,11 +313,10 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	/**
 	 * Adds a primary index to the table, using the provided field as
 	 *
-	 * @param string $name
 	 * @param string $field
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function primary(string $name, string $field): TableMigrationExecutorInterface
+	public function primary(string $field): TableMigrationExecutorInterface
 	{
 		
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
@@ -327,8 +326,8 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 *
 		 * @see https://dev.mysql.com/doc/refman/8.0/en/alter-table-examples.html
 		 */
-		$_field = $this->table->getField($name);
-		$index = new Index('_primary', new Collection([$_field]), true, true);
+		$_field = $this->table->getField($field);
+		$index = new Index(Layout::PRIMARY_KEY, new Collection([$_field]), true, true);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),

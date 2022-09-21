@@ -36,6 +36,8 @@ use spitfire\storage\database\identifiers\TableIdentifierInterface;
 class Layout implements LayoutInterface
 {
 	
+	const PRIMARY_KEY = '_PRIMARY';
+	
 	/**
 	 * The name of the table this layout represents in the DBMS. This table name
 	 * must be valid in your DBMS, if this is not the case, the application will

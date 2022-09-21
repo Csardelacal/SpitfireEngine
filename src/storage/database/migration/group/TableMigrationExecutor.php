@@ -218,15 +218,14 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	/**
 	 * Adds a primary index to the table, using the provided field as
 	 *
-	 * @param string $name
 	 * @param string $field
 	 * @return TableMigrationExecutorInterface
 	 */
-	public function primary(string $name, string $field): TableMigrationExecutorInterface
+	public function primary(string $field): TableMigrationExecutorInterface
 	{
 		
 		foreach ($this->migrators as $migrator) {
-			$migrator->primary($name, $field);
+			$migrator->primary($field);
 		}
 		
 		return $this;
