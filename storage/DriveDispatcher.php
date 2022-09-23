@@ -45,6 +45,13 @@ class DriveDispatcher
 	private $fallback;
 	private $drives = [];
 	
+	public function __construct()
+	{
+		$this->fallback = new StorageFileSystem(new Filesystem(new LocalFilesystemAdapter(
+			spitfire()->locations()->storage()
+		)));
+	}
+	
 	/**
 	 * Registers a drive with the dispatcher. Once your drive is registered, you
 	 * can use it normally.
@@ -54,7 +61,6 @@ class DriveDispatcher
 	public function register($scheme, $drive)
 	{
 		$this->drives[$scheme] = $drive;
-		$this->fallback = new StorageFileSystem(new Filesystem(new LocalFilesystemAdapter(getcwd())));
 	}
 	
 	/**
@@ -96,17 +102,20 @@ class DriveDispatcher
 		$pieces = explode('://', $uri, 2);
 		
 		if (isset($pieces[1])) {
-			return [
+			$_return = [
 				$this->drive($pieces[0]),
 				$pieces[1]
 			];
 		}
 		else {
-			return [
+			$_return = [
 				$this->fallback,
 				$pieces[0]
 			];
 		}
+		
+		assert($_return[0] instanceof StorageFileSystem);
+		return $_return;
 	}
 	
 	public function write(string $location, string $contents, array $config = []): void
@@ -115,10 +124,10 @@ class DriveDispatcher
 		$drive->write($path, $contents, $config);
 	}
 	
-	public function writeStream(string $location, StreamInterface $contents, array $config = []): void
+	public function writeStream(string $location, StreamInterface $contents, array $config = []): StreamInterface
 	{
 		list($drive, $path) = $this->pathInfo($location);
-		$drive->writeStream($path, $contents, $config);
+		return $drive->writeStream($path, $contents, $config);
 	}
 	
 	public function read(string $location): string

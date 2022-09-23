@@ -26,7 +26,7 @@ class FileSystem
 	{
 		$handle = $contents->detach();
 		$this->fs->writeStream($location, $handle, $config);
-		return new Stream($handle, $contents->isSeekable(), $contents->isReadable(), $contents->isWritable());
+		return Stream::fromHandle($handle);
 	}
 	
 	public function readStream(string $location): StreamInterface

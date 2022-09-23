@@ -8,7 +8,7 @@ use spitfire\storage\drive\File;
 use spitfire\storage\DriveDispatcher;
 use spitfire\storage\FileSystem;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2018 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -60,7 +60,7 @@ class DriveTest extends TestCase
 	}
 	
 	/**
-	 * 
+	 *
 	 * @depends testOpenDrive
 	 */
 	public function testCreateFile()
@@ -73,7 +73,7 @@ class DriveTest extends TestCase
 	}
 	
 	/**
-	 * 
+	 *
 	 * @depends testCreateFile
 	 * @param File $file
 	 */
@@ -88,7 +88,20 @@ class DriveTest extends TestCase
 	}
 	
 	/**
-	 * 
+	 * When a stream gets written to a file, the resulting stream should mimic the file's
+	 * permissions.
+	 */
+	public function testReadFileWithRecycledHandle()
+	{
+		$stream = $this->storage->writeStream('tests://test.txt', Stream::fromString($this->string));
+		$stream->rewind();
+		
+		$this->assertEquals($this->string, $stream->getContents());
+	}
+	
+	
+	/**
+	 *
 	 * @depends testReadFile
 	 * @param File $file
 	 */

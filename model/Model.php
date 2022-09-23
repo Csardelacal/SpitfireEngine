@@ -168,7 +168,7 @@ abstract class Model implements JsonSerializable
 					$value = $value->isSingle()? $value->getPayload()->first() : $value->getPayload();
 				}
 				
-				if (!$prop->getType()->allowsNull() && $value === null) {
+				if ($prop->getType() && !$prop->getType()->allowsNull() && $value === null) {
 					continue;
 				}
 				

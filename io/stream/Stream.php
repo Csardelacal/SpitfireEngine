@@ -418,6 +418,11 @@ class Stream implements StreamInterface
 			throw new RuntimeException('Could not allocate stream', 2108041130);
 		}
 		
+		return self::fromHandle($handle);
+	}
+	
+	public static function fromHandle($handle) : StreamInterface
+	{
 		$meta = stream_get_meta_data($handle);
 		$mode = trim($meta['mode'], 'bt');
 		
