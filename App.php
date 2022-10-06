@@ -65,16 +65,4 @@ abstract class App
 	 */
 	abstract public function namespace();
 	
-	/**
-	 *
-	 */
-	public function model(string $model) : Model
-	{
-		$reflection = new ReflectionClass($model);
-		assert($reflection->isSubclassOf(Model::class));
-		
-		$instance = $reflection->newInstance();
-		$instance->setPrefix(Strings::snake(str_replace('/', '-', trim($this->url(), '/')) . '-'));
-		return $instance;
-	}
 }
