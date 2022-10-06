@@ -49,12 +49,6 @@ abstract class Model implements JsonSerializable
 	private ConnectionInterface $connection;
 	
 	/**
-	 *
-	 * @deprecated
-	 */
-	private $prefix = '';
-	
-	/**
 	 * If the model was retrieved as part of a relationship, it's possible that it
 	 * is enriched by the pivot data.
 	 *
@@ -374,16 +368,6 @@ abstract class Model implements JsonSerializable
 	public function getSchema() : DatabaseSchema
 	{
 		return $this->getConnection()->getSchema();
-	}
-	
-	public function getPrefix() : string
-	{
-		return $this->prefix;
-	}
-	
-	public function setPrefix(string $prefix)
-	{
-		$this->prefix = $prefix;
 	}
 	
 	protected function lazy(string $field)
