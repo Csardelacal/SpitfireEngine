@@ -2,6 +2,7 @@
 
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use spitfire\model\Model;
 use spitfire\model\relations\RelationshipContent;
 
@@ -16,23 +17,11 @@ class ModelHydrator
 		
 		foreach ($keys as $k) {
 			try {
-				$prop = $reflection->getProperty($k);
-				
-				$value = $model->getActiveRecord()->get($k);
-				
-				if ($value instanceof RelationshipContent) {
-					$value = $value->isSingle()? $value->getPayload()->first() : $value->getPayload();
-				}
-				
-				if ($prop->getType() && !$prop->getType()->allowsNull() && $value === null) {
-					continue;
-				}
-				
-				/**
-				 * @todo Remove the set accessible call, this is deprecated since PHP8.1
-				 */
-				$prop->setAccessible(true);
-				$prop->setValue($model, $value);
+				self::writeToProperty(
+					$model,
+					$reflection->getProperty($k),
+					$model->getActiveRecord()->get($k)
+				);
 			}
 			/**
 			 * We actually don't care if the reflection couldn't load the property, if
@@ -48,4 +37,27 @@ class ModelHydrator
 		}
 	}
 	
+	/**
+	 *
+	 * @param Model $model
+	 * @param ReflectionProperty $prop
+	 * @param mixed $value
+	 */
+	private static function writeToProperty(Model $model, ReflectionProperty $prop, $value) : void
+	{
+		
+		if ($value instanceof RelationshipContent) {
+			$value = $value->isSingle()? $value->getPayload()->first() : $value->getPayload();
+		}
+		
+		if ($prop->getType() && !$prop->getType()->allowsNull() && $value === null) {
+			return;
+		}
+		
+		/**
+		 * @todo Remove the set accessible call, this is deprecated since PHP8.1
+		 */
+		$prop->setAccessible(true);
+		$prop->setValue($model, $value);
+	}
 }
