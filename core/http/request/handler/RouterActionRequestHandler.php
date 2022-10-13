@@ -69,7 +69,7 @@ class RouterActionRequestHandler implements RequestHandlerInterface
 	{
 		$parameters = $this->route->test($request->getUri()->getPath());
 		
-		$controller = new $this->controller;
+		$controller = spitfire()->provider()->get($this->controller);
 		$action     = $this->action;
 		
 		/**

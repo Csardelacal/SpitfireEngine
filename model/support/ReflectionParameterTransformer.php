@@ -41,7 +41,7 @@ class ReflectionParameterTransformer
 			 * transformer since it does not expect the parameters to be complete. That's for
 			 * the service provider to fill.
 			 */
-			if (array_key_exists($_n, $parameters) && array_key_exists($idx, $parameters)) {
+			if (!array_key_exists($_n, $parameters) && !array_key_exists($idx, $parameters)) {
 				continue;
 			}
 			
