@@ -2,7 +2,6 @@
 
 use spitfire\collection\Collection;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\PrivateException;
 use spitfire\utils\Strings;
 
 /*
@@ -44,11 +43,16 @@ class URIPattern
 	private $pattern;
 	
 	/**
-	 * The patterns used by this class to test the URL it receives.
-	 *
-	 * @var string
+	 * The subpatterns array allows the application to override the standard search
+	 * pattern to allow for more intricate expressions. For example, the application
+	 * could determine that it will only accept alphanumeric characters, a single
+	 * character, or similar.
+	 * 
+	 * By default, routes will capture anything but slashes.
+	 * 
+	 * @var string[]
 	 */
-	private $expression;
+	private array $subpatterns = [];
 	
 	/**
 	 * These are the variables that the user defined in their URL pattern. These are
@@ -92,6 +96,25 @@ class URIPattern
 		$this->pattern = $pattern;
 		
 		/**
+		 * A second, very similar expression, is used to extract the variables that we need.
+		 */
+		preg_match_all('/\{([^\}]+)\}/', $pattern, $matches);
+		
+		$this->variables = (new Collection($matches[1]))->each(function (string $match) : array {
+			return explode(':', $match, 2);
+		});
+	}
+	
+	public function where(string $var, string $matches) : void
+	{
+		$this->subpatterns[$var] = $matches;
+	}
+	
+	public function compile() : string
+	{
+		
+		
+		/**
 		 * Depending on whether our pattern is terminated (meaning it ends in a forward slash),
 		 * we will enforce that our route only matches urls that match completely, or whether we
 		 * allow routes to have extra payload.
@@ -108,21 +131,36 @@ class URIPattern
 		 *
 		 * To do so, we generate a regular expression from the pattern we received, that we
 		 * can now use to test the routes and see whether they match.
+		 * 
+		 * Note: The `(?:/|$)` expression is a non capturing group (not a lookaround). For
+		 * some reason I forgot this fact and it's taken me a while to relearn
+		 * 
+		 * @see https://www.php.net/manual/en/regexp.reference.subpatterns.php
+		 * 
+		 * > The fact that plain parentheses fulfill two functions is not always helpful. 
+		 * > There are often times when a grouping subpattern is required without a capturing
+		 * > requirement. If an opening parenthesis is followed by "?:", the subpattern does 
+		 * > not do any capturing, and is not counted when computing the number of any subsequent
+		 * > capturing subpatterns. 
 		 */
-		$this->expression  = sprintf($template, preg_replace(
-			['/\//', '/\{([^\}]+)\}/'],   # In this case, expressions containing a colon, will get replaced by
-			['(?:/|$)', '([a-zA-Z0-9-_]*)'], # a capturing group that accepts an empty string
-			$pattern
+		return sprintf($template, preg_replace_callback(
+			['/\//', '/\{([^\}]+)\}/'],
+			function (array $match) : string {
+				switch(count($match)) {
+					case 1: 
+						# When a slash is matched in the expression, it's either a slash
+						# or the end of the matches.
+						return '(?:/|$)';
+					case 2:
+						# When a variable is passed, we check if the user provided an override
+						# for it
+						list($var) = explode(':', $match[1]);
+						return sprintf('(%s)', $this->subpatterns[$var]?? '[^\/]*');
+				}
+				throw new ApplicationException('Bad pattern');
+			},
+			$this->pattern
 		));
-		
-		/**
-		 * A second, very similar expression, is used to extract the variables that we need.
-		 */
-		preg_match_all('/\{([^\}]+)\}/', $pattern, $matches);
-		
-		$this->variables = (new Collection($matches[1]))->each(function (string $match) : array {
-			return explode(':', $match, 2);
-		});
 	}
 	
 	/**
@@ -136,7 +174,7 @@ class URIPattern
 	public function test(string $uri) :? Parameters
 	{
 		
-		if (!preg_match_all($this->expression, $uri, $raw)) {
+		if (!preg_match_all($this->compile(), $uri, $raw)) {
 			return null;
 		}
 		

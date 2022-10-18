@@ -158,5 +158,11 @@ abstract class RewriteRule
 		return $this->pattern;
 	}
 	
+	public function where(string $var, string $pattern) : self
+	{
+		$this->pattern->where($var, $pattern);
+		return $this;
+	}
+	
 	abstract public function rewrite(ServerRequestInterface $request) :? Parameters;
 }

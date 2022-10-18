@@ -11,6 +11,7 @@ use spitfire\core\Headers;
 use spitfire\core\Request;
 use spitfire\core\router\Router;
 use spitfire\core\router\RouterResult;
+use spitfire\core\router\URIPattern;
 use spitfire\io\stream\Stream;
 use tests\router\_support\TestController;
 
@@ -127,6 +128,28 @@ class RouterTest extends TestCase
 		$this->assertInstanceOf(RouterResult::class, $p1);
 		$this->assertInstanceOf(RouterResult::class, $p2);
 		$this->assertEquals(false, $p3->success());
+	}
+	
+	public function testColonsInRoutes()
+	{
+		$pattern = URIPattern::make('/test/{param1}/more');
+		
+		$p = $pattern->test('/test/this:is:a:test/more');
+		$this->assertNotNull($p->getParameter('param1'));
+		$this->assertEquals('this:is:a:test', $p->getParameter('param1'));
+	}
+	
+	public function testSpecializedPatterns()
+	{
+		$pattern = URIPattern::make('/test/{param1}more');
+		$pattern->where('param1', '\d+');
+		
+		$p = $pattern->test('/test/11more');
+		$this->assertNotNull($p);
+		$this->assertEquals('11', $p->getParameter('param1'));
+		
+		$p = $pattern->test('/test/more');
+		$this->assertNull($p);
 	}
 	
 	public function testMixedURLS()
