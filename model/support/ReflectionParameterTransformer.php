@@ -45,7 +45,7 @@ class ReflectionParameterTransformer
 				continue;
 			}
 			
-			$param = $parameters[$_n]?? $parameters[$idx];
+			$param = array_key_exists($_n, $parameters)? $parameters[$_n] : $parameters[$idx];
 			
 			/**
 			 * If the parameter is already a model, it doesn't make any sense to repeat
