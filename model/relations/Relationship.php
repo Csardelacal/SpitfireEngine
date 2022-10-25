@@ -36,6 +36,11 @@ abstract class Relationship implements RelationshipInterface, QueryBuilderInterf
 		return $this->field;
 	}
 	
+	public function localField() : Field
+	{
+		return $this->field;
+	}
+	
 	public function getReferenced() : Field
 	{
 		return $this->referenced;

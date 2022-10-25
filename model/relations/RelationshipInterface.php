@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
+use spitfire\model\Field;
 
 /**
  * A relationship describes how two models connect with each other. This is useful
@@ -9,6 +10,8 @@ use spitfire\model\ActiveRecord;
  */
 interface RelationshipInterface
 {
+	
+	public function localField() : Field;
 	
 	public function resolve(ActiveRecord $record) : RelationshipContent;
 	

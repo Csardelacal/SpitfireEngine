@@ -155,7 +155,7 @@ class Get implements Iterator, ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	public function current()
+	public function current(): mixed
 	{
 		return current($this->data);
 	}
@@ -166,7 +166,7 @@ class Get implements Iterator, ArrayAccess
 	 *
 	 * @return int|string
 	 */
-	public function key()
+	public function key(): mixed
 	{
 		return key($this->data);
 	}
@@ -202,7 +202,7 @@ class Get implements Iterator, ArrayAccess
 	 * @param string $offset
 	 * @return mixed
 	 */
-	public function offsetGet($offset)
+	public function offsetGet($offset) : mixed
 	{
 		#If the key is found include into the array of used data.
 		#This allows Spitfire to generate canonicals for you adequately.

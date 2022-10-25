@@ -174,12 +174,26 @@ class ResultSetMapping
 			
 			$children = $meta->resolveAll($records);
 			
-			/**
-			 * @todo This needs to make use of reflection so it can be used properly.
-			 */
 			foreach ($records as $record) {
-				/**@var $record Record */
-				$record->set($relation, $children[$record->getPrimary()]);
+				
+				/**
+				 * Our relationship is determined by the contents of the local field. This is also
+				 * the one the system uses to organize the records by.
+				 */
+				$lookfor  = $record->getUnderlyingRecord()->get($relation->localField()->getName());
+				
+				/**
+				 * If the relationship is not defined (and it's value is null) we tell the
+				 * underlying application that it is indeed, null.
+				 */
+				if (!$children->has($lookfor)) {
+					$record->set($relation, null);
+				}
+				else {
+					/**@var $record Record */
+					$record->set($relation, $children[$lookfor]);
+				}
+				
 			}
 		}
 		
