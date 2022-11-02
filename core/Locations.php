@@ -106,6 +106,7 @@ class Locations implements LocationsInterface
 	 * Returns a path to the public folder (or a selected path within it). Files
 	 * in this location can be served by the web-server.
 	 *
+	 * @todo Rename to webroot?
 	 * @param string $path
 	 * @return string
 	 */
@@ -136,10 +137,7 @@ class Locations implements LocationsInterface
 	 */
 	public function storage(string $path = '') : string
 	{
-		#Right now, for compatibility, I'm using this out-of-character location within
-		#bin to locate uploads. Moving it to another location is a potentially breaking
-		#change for many apps that needs careful planning.
-		return $this->root('bin/usr/uploads/' . ltrim($path, '\/'));
+		return $this->root('storage/private/' . ltrim($path, '\/'));
 	}
 	
 	/**
@@ -152,6 +150,6 @@ class Locations implements LocationsInterface
 	 */
 	public function publicStorage(string $path = '') : string
 	{
-		return $this->public('storage/' . ltrim($path, '\/'));
+		return $this->root('storage/public/' . ltrim($path, '\/'));
 	}
 }

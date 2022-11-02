@@ -27,11 +27,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  *
  */
-class CheckStoragePermissionsDirector extends Command
+class CreateWebrootSymlinkDirector extends Command
 {
 	
-	protected static $defaultName = 'filesystem:check';
-	protected static $defaultDescription = 'Checks whether the storage has the necessary permissions.';
+	protected static $defaultName = 'filesystem:symlink';
+	protected static $defaultDescription = 'Creates a symlink from webroot/storage to storage/public.';
 	
 	private $locations;
 	
@@ -49,42 +49,31 @@ class CheckStoragePermissionsDirector extends Command
 		/**
 		 * Check if the local storage is writable, if this is the case, we continue
 		 */
-		if (is_writable($this->locations->storage())) {
-			$output->writeln('Storage (private) is writable');
-		}
-		else {
-			$output->writeln(sprintf('<error>Failure</> Storage (%s) is not writable', $this->locations->storage()));
-			$success = false;
-		}
-		
-		/**
-		 * Check if the public storage directory is writable. If this is not the
-		 * case, the application cannot create files that can be served by the
-		 * web-server directly.
-		 */
-		if (is_writable($this->locations->publicStorage())) {
-			$output->writeln('Storage (public) is writable');
+		if (is_writable($this->locations->public())) {
+			$output->writeln('Public directory (private) is writable');
 		}
 		else {
 			$output->writeln(sprintf(
-				'<error>Failure</> Storage (%s) is not writable',
-				$this->locations->publicStorage()
+				'<error>Failure</> Public directory (%s) is not writable',
+				$this->locations->storage()
 			));
 			$success = false;
 		}
 		
 		/**
-		 * Check if the webserver has a symlink in the webroot folder where the application
-		 * can link to direct downloads.
+		 * Create a symlink from the webroot pointing to the public storage directory. This way
+		 * only /storage needs to get backed up when working with it.
 		 */
-		if (readlink($this->locations->public('/storage')) !== false) {
-			$output->writeln('Public file serving directory is a symlink');
+		$result = symlink(
+			$this->locations->publicStorage(),
+			$this->locations->public('/storage')
+		);
+		
+		if ($result !== false) {
+			$output->writeln('Created symlink.');
 		}
 		else {
-			$output->writeln(sprintf(
-				'<error>Failure</> Public file serving directory (%s) is not a symlink',
-				$this->locations->public('/storage')
-			));
+			$output->writeln('<error>Failure</> Symlink could not be created');
 			$success = false;
 		}
 		
