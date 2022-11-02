@@ -539,15 +539,14 @@ function config($key, $fallback = null)
  * @param string $param Set the environment, or look up the current env
  * @return string|null
  */
-function env(string $param) :? string
+function env(string $param, string $fallback = null) :? string
 {	
 	/**
 	 * If no parameter was given, the application would be unable to work with it.
 	 */
 	assert($param !== '');
-	assert(array_key_exists($param, $_ENV));
 	
-	return $_ENV[$param];
+	return array_key_exists($param, $_ENV)? $_ENV[$param] : $fallback;
 }
 
 /**

@@ -77,6 +77,11 @@
 			"./vendor/bin/phpstan analyse --level 5 .",
 			"./vendor/bin/phpunit tests/"
 		],
+		"test-strict" : [
+			"cp ./vendor/magic3w/php-coding-standard/.phpcs.xml .phpcs.xml",
+			"./vendor/bin/phpstan analyse --level 6 .",
+			"./vendor/bin/phpunit tests/"
+		],
 		"coverage" : [
 			"XDEBUG_MODE=coverage ./vendor/bin/phpunit tests/ --coverage-clover cov.xml"
 		],
