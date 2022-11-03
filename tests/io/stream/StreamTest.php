@@ -9,10 +9,18 @@ class StreamTest extends TestCase
 	
 	private $string = 'Hello world';
 	
-	public function testDetach() {
+	public function testDetach()
+	{
 		$stream = Stream::fromString($this->string);
 		$handle = $stream->detach();
 		
 		$this->assertEquals($this->string, fread($handle, 8000));
+	}
+	
+	public function testStringiFyNonSeekable()
+	{
+		$handle = fopen('php://memory', 'r+');
+		$stream = new Stream($handle, false, true, true);
+		$this->assertEquals('', (string)$stream);
 	}
 }

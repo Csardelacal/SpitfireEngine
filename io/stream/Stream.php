@@ -198,6 +198,11 @@ class Stream implements StreamInterface
 	 */
 	public function seek($offset, $whence = SEEK_SET): void
 	{
+		/**
+		 * If the stream is not seekable, we should now allow the user to do so.
+		 */
+		assert($this->seekable);
+		
 		if (!$this->handle) {
 			throw new RuntimeException('Could not seek a detached stream', 2108041108);
 		}
@@ -360,10 +365,16 @@ class Stream implements StreamInterface
 	public function __toString(): string
 	{
 		/**
+		 * The stream must be readable for us to work with it. Otherwise it's not
+		 * able to be converted to string.
+		 */
+		assert($this->readable);
+		
+		/**
 		 * Rewind the stream to the beginning, so we can print the data from the
 		 * start and not begin somewhere in the middle of the stream.
 		 */
-		$this->seek(0);
+		$this->seekable && $this->seek(0);
 		$result = stream_get_contents($this->handle);
 		
 		/**
