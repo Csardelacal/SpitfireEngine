@@ -17,7 +17,13 @@ trait Mixin
 		$this->mixin = $mixin;
 	}
 	
-	public function __call($name, $args)
+	/**
+	 * 
+	 * @param string $name
+	 * @param mixed[] $args
+	 * @return mixed
+	 */
+	public function __call(string $name, array $args)
 	{
 		$mixin = $this->mixin instanceof Closure? ($this->mixin)() : $this->mixin;
 		if (method_exists($mixin, $name)) {
