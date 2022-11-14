@@ -3,6 +3,7 @@
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 use ReflectionNamedType;
+use ReflectionParameter;
 use ReflectionType;
 use spitfire\exceptions\user\ApplicationException;
 use spitfire\model\Model;
@@ -27,34 +28,38 @@ use spitfire\model\Model;
 class ReflectionParameterTransformer
 {
 	
-	public static function transformParameters(ReflectionFunctionAbstract $reflection, array $parameters)
+	/**
+	 * 
+	 * 
+	 * NOTE: This only accepts strings as parameters now. If you plan on using this with an array that
+	 * already had parameters coming from the router replaced, you will need to filter it first and 
+	 * merge the resulting array back in.
+	 * 
+	 * @todo The router should never produce unnamed parameters
+	 * 
+	 * @param ReflectionFunctionAbstract $reflection
+	 * @param string[] $parameters The data coming from the router
+	 * @return (string|Model)[]
+	 */
+	public static function transformParameters(ReflectionFunctionAbstract $reflection, array $parameters) : array
 	{
-		$expected = $reflection->getParameters();
+		/**
+		 * The parameters may be missing an entry, this is perfectly acceptable for this
+		 * transformer since it does not expect the parameters to be complete. That's for
+		 * the service provider to fill.
+		 */
+		$expected = array_filter(
+			$reflection->getParameters(), 
+			fn(ReflectionParameter $e) => array_key_exists($e->getName(), $parameters)
+		);
+		
 		$_return = [];
 		
-		foreach ($expected as $idx => $_t) {
+		foreach ($expected as $_t) {
 			$_e = $_t->getType();
 			$_n = $_t->getName();
 			
-			/**
-			 * The parameters may be missing an entry, this is perfectly acceptable for this
-			 * transformer since it does not expect the parameters to be complete. That's for
-			 * the service provider to fill.
-			 */
-			if (!array_key_exists($_n, $parameters) && !array_key_exists($idx, $parameters)) {
-				continue;
-			}
-			
-			$param = array_key_exists($_n, $parameters)? $parameters[$_n] : $parameters[$idx];
-			
-			/**
-			 * If the parameter is already a model, it doesn't make any sense to repeat
-			 * the operation.
-			 */
-			if ($param instanceof Model) {
-				$_return[$_n] = $param;
-				continue;
-			}
+			$param = $parameters[$_n];
 			
 			/**
 			 * Make sure the type we're trying to work with is a subtype of model. Otherwise, the application
@@ -118,13 +123,19 @@ class ReflectionParameterTransformer
 		return true;
 	}
 	
-	private static function accepts(ReflectionNamedType $_e, $model) : bool
+	/**
+	 * 
+	 * @param ReflectionNamedType $_e
+	 * @param object $model
+	 * @return bool
+	 */
+	private static function accepts(ReflectionNamedType $_e, object $model) : bool
 	{
 		$_type = $_e->getName();
 		return $model instanceof $_type;
 	}
 	
-	private static function make(ReflectionNamedType $_e, $param) : Model
+	private static function make(ReflectionNamedType $_e, string $param) : Model
 	{
 		/**
 		 * Fetch the database record that we expected from the database.
