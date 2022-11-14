@@ -14,6 +14,10 @@ use spitfire\storage\FileSystem;
 class StorageServiceProvider implements ProviderInterface
 {
 	
+	/**
+	 * 
+	 * @var Configuration
+	 */
 	private $config;
 	
 	public function __construct(Configuration $config)
@@ -21,7 +25,7 @@ class StorageServiceProvider implements ProviderInterface
 		$this->config = $config;
 	}
 	
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 		
 		/**
@@ -49,11 +53,15 @@ class StorageServiceProvider implements ProviderInterface
 		$container->set(DriveDispatcher::class, $dispatcher);
 	}
 	
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 	}
 	
-	public function initLocal(array $config)
+	/**
+	 * 
+	 * @param array{root:string} $config
+	 */
+	public function initLocal(array $config) : FileSystem
 	{
 		return new FileSystem(
 			new FlysystemFilesystem(
@@ -64,7 +72,12 @@ class StorageServiceProvider implements ProviderInterface
 		);
 	}
 	
-	public function initS3(array $config)
+	/**
+	 * 
+	 * 
+	 * @param array{endpoint:string,use_path_style_endpoint:bool,key:string,secret:string,region:string,bucket:string} $config
+	 */
+	public function initS3(array $config) : FileSystem
 	{
 		return new FileSystem(
 			new FlysystemFilesystem(
