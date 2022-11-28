@@ -72,7 +72,17 @@ class Session
 		
 		$namespace = '*';
 		
-		if (!isset($_COOKIE[session_name()])) {
+		/**
+		 * While it may seem counterintuitive to check twice whether the session id exists, the
+		 * caveat here is that the session cookie is set at the start of a request. This would
+		 * lead to the application being unable to work with the session in the initial request.
+		 * 
+		 * An example herefor was the XSRF token that we generate. We write a secret to the session
+		 * so we know the user is actually the one who is sending the response. Our implementation
+		 * would then attempt to read the token from the session and receive a null value, which
+		 * caused it to generate it multiple times per request on the first request.
+		 */
+		if (!self::sessionId() && !isset($_COOKIE[session_name()])) {
 			return null;
 		}
 		if (!self::sessionId()) {
