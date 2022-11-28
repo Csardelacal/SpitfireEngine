@@ -2,8 +2,6 @@
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\SpitFire;
@@ -35,6 +33,10 @@ use spitfire\SpitFire;
 class SynchronizedMiddleware implements MiddlewareInterface
 {
 	
+	/**
+	 * 
+	 * @var resource
+	 */
 	private $fh;
 	
 	public function __construct(SpitFire $sf, string $id)

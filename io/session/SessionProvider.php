@@ -9,11 +9,11 @@ use spitfire\provider\Container;
 class SessionProvider extends Provider
 {
 	
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 	}
 	
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 		
 		/**

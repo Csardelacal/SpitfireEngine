@@ -43,11 +43,11 @@ interface ProviderInterface
 	 * other operations may lead to unexpected behavior.
 	 *
 	 */
-	public function register(ContainerInterface $container);
+	public function register(ContainerInterface $container) : void;
 	
 	/**
 	 * Use this to initialize your services, register published resources etc.
 	 *
 	 */
-	public function init(ContainerInterface $container);
+	public function init(ContainerInterface $container) : void;
 }

@@ -30,6 +30,11 @@ class AttributeLayoutGenerator
 	{
 	}
 	
+	/**
+	 * 
+	 * @param ReflectionClass<Model> $reflection
+	 * @return LayoutInterface
+	 */
 	public function make(ReflectionClass $reflection) : LayoutInterface
 	{
 		assert($reflection->isSubclassOf(Model::class));
@@ -57,6 +62,10 @@ class AttributeLayoutGenerator
 	 *
 	 * @todo This function is way longer than it should be and way more complicated than it
 	 * should.
+	 * 
+	 * @param MigratorInterface $target
+	 * @param ReflectionClass<Model> $source
+	 * @return void
 	 */
 	private function addColumns(MigratorInterface $target, ReflectionClass $source) : void
 	{
@@ -131,6 +140,10 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
+	 * 
+	 * @param MigratorInterface $target
+	 * @param ReflectionClass<Model> $source
+	 * @return void
 	 */
 	private function addIndexes(MigratorInterface $target, ReflectionClass $source) : void
 	{
@@ -144,7 +157,7 @@ class AttributeLayoutGenerator
 		
 		foreach ($props as $prop) {
 			$columnAttributes = (new Collection($prop->getAttributes(InIndexAttribute::class)))
-				->each(fn(ReflectionAttribute $ref) => $ref->newInstance()->withContext($prop->getName()));
+				->each(fn(ReflectionAttribute $ref) : InIndexAttribute => $ref->newInstance()->withContext($prop->getName()));
 			
 			$attributes->add($columnAttributes);
 		}
@@ -166,6 +179,10 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
+	 * 
+	 * @param MigratorInterface $target
+	 * @param ReflectionClass<Model> $source
+	 * @return void
 	 */
 	private function addPrimary(MigratorInterface $target, ReflectionClass $source) : void
 	{
@@ -185,6 +202,10 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
+	 * 
+	 * @param MigratorInterface $target
+	 * @param ReflectionClass<Model> $source
+	 * @return void
 	 */
 	private function addReferences(MigratorInterface $target, ReflectionClass $source) : void
 	{
@@ -221,6 +242,12 @@ class AttributeLayoutGenerator
 		}
 	}
 	
+	/**
+	 * 
+	 * @param MigratorInterface $migrator
+	 * @param ReflectionClass<Model> $reflection
+	 * @return void
+	 */
 	private function addSoftDeletes(MigratorInterface $migrator, ReflectionClass $reflection)
 	{
 		$tableAttribute = $reflection->getAttributes(SoftDelete::class);
@@ -233,6 +260,12 @@ class AttributeLayoutGenerator
 		$migrator->softDelete();
 	}
 	
+	/**
+	 * 
+	 * @param MigratorInterface $migrator
+	 * @param ReflectionClass<Model> $reflection
+	 * @return void
+	 */
 	private function addTimestamps(MigratorInterface $migrator, ReflectionClass $reflection)
 	{
 		$tableAttribute = $reflection->getAttributes(Timestamps::class);
@@ -246,6 +279,12 @@ class AttributeLayoutGenerator
 		$migrator->timestamps();
 	}
 	
+	/**
+	 * 
+	 * @param MigratorInterface $migrator
+	 * @param ReflectionClass<Model> $reflection
+	 * @return void
+	 */
 	private function addId(MigratorInterface $migrator, ReflectionClass $reflection)
 	{
 		$tableAttribute = $reflection->getAttributes(Id::class);

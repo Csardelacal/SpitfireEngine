@@ -13,7 +13,7 @@ use spitfire\SpitFire;
 class URLServiceProvider extends Provider
 {
 	
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 		
 	}
@@ -23,7 +23,7 @@ class URLServiceProvider extends Provider
 	 * lead to potential overhead building the object over and over whenever we need a 
 	 * URL.
 	 */
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 		$config = $container->get(Configuration::class);
 		

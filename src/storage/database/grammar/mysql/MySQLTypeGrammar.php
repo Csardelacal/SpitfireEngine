@@ -28,22 +28,22 @@ class MySQLTypeGrammar
 	
 	const KEYWORD_UNSIGNED = 'unsigned';
 	
-	public static function int($unsigned = false) : string
+	public static function int(?string $unsigned = null) : string
 	{
 		return $unsigned === self::KEYWORD_UNSIGNED? 'INT UNSIGNED' : 'INT';
 	}
 	
-	public static function long($unsigned = false) : string
+	public static function long(?string $unsigned = null) : string
 	{
 		return $unsigned === self::KEYWORD_UNSIGNED? 'BIGINT UNSIGNED' : 'BIGINT';
 	}
 	
-	public static function float($unsigned = false) : string
+	public static function float(?string $unsigned = null) : string
 	{
 		return $unsigned === self::KEYWORD_UNSIGNED? 'FLOAT UNSIGNED' : 'FLOAT';
 	}
 	
-	public static function double($unsigned = false) : string
+	public static function double(?string $unsigned = null) : string
 	{
 		return $unsigned === self::KEYWORD_UNSIGNED? 'DOUBLE UNSIGNED' : 'DOUBLE';
 	}
@@ -53,8 +53,13 @@ class MySQLTypeGrammar
 		return 'TINYINT UNSIGNED';
 	}
 	
-	public static function string($size = 255) : string
+	/**
+	 * 
+	 * @param numeric-string $size
+	 */
+	public static function string(string $size = '255') : string
 	{
+		assert(intval($size) > 0);
 		return sprintf('VARCHAR(%d)', $size);
 	}
 	
@@ -63,7 +68,7 @@ class MySQLTypeGrammar
 		return 'TEXT';
 	}
 	
-	public static function enum($types) : string
+	public static function enum(string $types) : string
 	{
 		return sprintf('ENUM(%d)', $types);
 	}

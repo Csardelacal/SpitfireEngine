@@ -25,11 +25,25 @@ interface ConfigurationInterface
 {
 	
 	/**
-	 * Retrieve a configuration from the repository. You may not retrieve a config
+	 * Retrieve a configuration from the repository. You may retrieve a config
 	 * as an array.
 	 *
 	 * @param string $key
-	 * @param mixed $fallback
+	 * @param string|null $fallback
+	 * @return string|null
 	 */
-	public function get(string $key, $fallback = null);
+	public function get(string $key, ?string $fallback = null):? string;
+	
+	/**
+	 * Get a configuration object for the given subtree. This means that the 
+	 */
+	public function splice(string $key) : ConfigurationInterface;
+	
+	/**
+	 * Returns the top level keys of the configuration. So a config with the keys 'a.b',
+	 * 'a.c' and 'b.a' would return ['a', 'b']
+	 * 
+	 * @return string[]
+	 */
+	public function keys() : array;
 }

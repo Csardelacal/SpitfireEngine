@@ -41,13 +41,16 @@ class StorageServiceProvider implements ProviderInterface
 		 * @var DriveDispatcher
 		 */
 		$dispatcher = $container->get(DriveDispatcher::class);
-		$settings   = $this->config->get('storage.engines', []);
+		$settings   = $this->config->splice('storage.engines');
 		
-		foreach ($settings as $key => $value) {
-			assert(!empty($value['driver']));
-			assert(method_exists($this, "init${value['driver']}"));
+		foreach ($settings->keys() as $key) {
+			$scope = $settings->splice($key);
+			$driver = $scope->get('driver');
 			
-			$dispatcher->register($key, $this->{"init${value['driver']}"}($value));
+			assert($driver);
+			assert(method_exists($this, "init${driver}"));
+			
+			$dispatcher->register($key, $this->{"init${driver}"}($scope));
 		}
 		
 		$container->set(DriveDispatcher::class, $dispatcher);
@@ -59,14 +62,14 @@ class StorageServiceProvider implements ProviderInterface
 	
 	/**
 	 * 
-	 * @param array{root:string} $config
+	 * @param Configuration $config
 	 */
-	public function initLocal(array $config) : FileSystem
+	public function initLocal(Configuration $config) : FileSystem
 	{
 		return new FileSystem(
 			new FlysystemFilesystem(
 				new LocalFilesystemAdapter(
-					$config['root']
+					$config->get('root')
 				)
 			)
 		);
@@ -75,24 +78,24 @@ class StorageServiceProvider implements ProviderInterface
 	/**
 	 * 
 	 * 
-	 * @param array{endpoint:string,use_path_style_endpoint:bool,key:string,secret:string,region:string,bucket:string} $config
+	 * @param Configuration $config
 	 */
-	public function initS3(array $config) : FileSystem
+	public function initS3(Configuration $config) : FileSystem
 	{
 		return new FileSystem(
 			new FlysystemFilesystem(
 				new AwsS3V3Adapter(
 					new S3Client([
-						'endpoint' => $config['endpoint'],
-						'use_path_style_endpoint' => $config['use_path_style_endpoint'],
+						'endpoint' => $config->get('endpoint'),
+						'use_path_style_endpoint' => $config->get('use_path_style_endpoint'),
 						'credentials' => [
-							'key'    => $config['key'],
-							'secret' => $config['secret']
+							'key'    => $config->get('key'),
+							'secret' => $config->get('secret')
 						],
-						'region' => $config['region'],
+						'region' => $config->get('region'),
 						'version' => 'latest'
 					]),
-					$config['bucket']
+					$config->get('bucket')
 				)
 			)
 		);

@@ -11,6 +11,8 @@ use spitfire\App;
  * amount of single instance objects inside of spitfire, but this class is somewhat
  * special. It represents a single and global resource inside of PHP and therefore
  * will only make the system unstable by allowing several instances.
+ * 
+ * @todo Make the namespacing feature more sensible
  */
 class Session
 {
@@ -67,7 +69,7 @@ class Session
 		$_SESSION[$namespace][$key] = $value;
 	}
 	
-	public function get($key, $app = null)
+	public function get($key)
 	{
 		
 		$namespace = '*';
@@ -105,7 +107,7 @@ class Session
 	public function isSafe(App$app = null)
 	{
 		
-		$user = $this->get('_SF_Auth', $app);
+		$user = $this->get('_SF_Auth');
 		if ($user) {
 			$user['secure'] = $user['secure'] && ($user['ip'] == $_SERVER['REMOTE_ADDR']);
 			
@@ -120,7 +122,7 @@ class Session
 	public function getUser(App$app = null)
 	{
 		
-		$user = $this->get('_SF_Auth', $app);
+		$user = $this->get('_SF_Auth');
 		return $user? $user['userdata'] : null;
 	}
 	

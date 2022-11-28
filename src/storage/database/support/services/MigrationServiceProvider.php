@@ -34,7 +34,7 @@ class MigrationServiceProvider implements ProviderInterface
 	 *
 	 * @return void
 	 */
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 	}
 	
@@ -42,7 +42,7 @@ class MigrationServiceProvider implements ProviderInterface
 	 *
 	 * @return void
 	 */
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 		/**
 		 * Please note that the order in which the migrations appear in the

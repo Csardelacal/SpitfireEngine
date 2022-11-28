@@ -41,7 +41,7 @@ class DirectorProvider extends ServiceProvider
 	/**
 	 *
 	 */
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 		/*
 		 * The director provider is only loaded in order to register the known
@@ -50,7 +50,7 @@ class DirectorProvider extends ServiceProvider
 	}
 	
 	
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 		
 		$kernel = $container->get(ConsoleKernel::class);

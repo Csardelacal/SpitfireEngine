@@ -9,11 +9,11 @@ use spitfire\provider\Container;
 class RouterServiceProvider implements ProviderInterface
 {
 	
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 	}
 	
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 		/**
 		 *

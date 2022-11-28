@@ -9,7 +9,7 @@ use spitfire\model\relations\RelationshipContent;
 class ModelHydrator
 {
 	
-	public static function hydrate(Model $model)
+	public static function hydrate(Model $model) : void
 	{
 		
 		$keys = $model->getActiveRecord()->keys();

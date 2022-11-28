@@ -3,6 +3,7 @@
 use League\Flysystem\DirectoryListing;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\StorageAttributes;
 use Psr\Http\Message\StreamInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\FileSystem as StorageFileSystem;
@@ -43,6 +44,11 @@ class DriveDispatcher
 	 * @var StorageFileSystem
 	 */
 	private $fallback;
+	
+	/**
+	 * 
+	 * @var array<string,StorageFileSystem>
+	 */
 	private $drives = [];
 	
 	public function __construct()
@@ -56,9 +62,11 @@ class DriveDispatcher
 	 * Registers a drive with the dispatcher. Once your drive is registered, you
 	 * can use it normally.
 	 *
+	 * @param string $scheme
 	 * @param FileSystem $drive
+	 * @return void
 	 */
-	public function register($scheme, $drive)
+	public function register($scheme, $drive) : void
 	{
 		$this->drives[$scheme] = $drive;
 	}
@@ -68,8 +76,9 @@ class DriveDispatcher
 	 * can use it normally.
 	 *
 	 * @param string $drive
+	 * @return void
 	 */
-	public function unregister(string $drive)
+	public function unregister(string $drive) : void
 	{
 		unset($this->drives[trim($drive, ':/')]);
 	}
@@ -92,7 +101,11 @@ class DriveDispatcher
 		return $this->drives[$scheme];
 	}
 	
-	public function pathInfo(string $uri)
+	/**
+	 * 
+	 * @return array{0:StorageFileSystem,1:string}
+	 */
+	public function pathInfo(string $uri) : array
 	{
 		/**
 		 * Never accept empty strings.
@@ -118,12 +131,26 @@ class DriveDispatcher
 		return $_return;
 	}
 	
+	/**
+	 * 
+	 * @param string $location
+	 * @param string $contents
+	 * @param array{} $config
+	 * @return void
+	 */
 	public function write(string $location, string $contents, array $config = []): void
 	{
 		list($drive, $path) = $this->pathInfo($location);
 		$drive->write($path, $contents, $config);
 	}
 	
+	/**
+	 * 
+	 * @param string $location
+	 * @param StreamInterface $contents
+	 * @param array{} $config
+	 * @return StreamInterface
+	 */
 	public function writeStream(string $location, StreamInterface $contents, array $config = []): StreamInterface
 	{
 		list($drive, $path) = $this->pathInfo($location);
@@ -154,6 +181,10 @@ class DriveDispatcher
 		$drive->deleteDirectory($path);
 	}
 	
+	/**
+	 * 
+	 * @return DirectoryListing<StorageAttributes>
+	 */
 	public function listContents(string $location, bool $deep = Filesystem::LIST_SHALLOW): DirectoryListing
 	{
 		list($drive, $path) = $this->pathInfo($location);
@@ -172,7 +203,13 @@ class DriveDispatcher
 		return $drive->directoryExists($path);
 	}
 	
-	public function __call($name, $arguments)
+	/**
+	 * 
+	 * @param string $name
+	 * @param mixed[] $arguments
+	 * @return mixed
+	 */
+	public function __call(string $name, array $arguments)
 	{
 		list($drive, $path) = $this->pathInfo($arguments[0]);
 		$arguments[0] = $path;

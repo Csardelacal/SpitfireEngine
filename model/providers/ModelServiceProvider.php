@@ -14,7 +14,7 @@ use spitfire\storage\database\Schema;
 class ModelServiceProvider implements ProviderInterface
 {
 	
-	public function register(ContainerInterface $container)
+	public function register(ContainerInterface $container) : void
 	{
 		/**
 		 * The model factory should make it easy for us to access the database
@@ -27,7 +27,7 @@ class ModelServiceProvider implements ProviderInterface
 		);
 	}
 	
-	public function init(ContainerInterface $container)
+	public function init(ContainerInterface $container) : void
 	{
 		
 		$kernel = $container->get(ConsoleKernel::class);

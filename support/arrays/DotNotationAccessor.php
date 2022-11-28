@@ -58,7 +58,7 @@ class DotNotationAccessor
 	 * array will be broadcast to the original array.
 	 * 
 	 * Since the accessor expects the array to be passed by reference, you cannot pass the 
-	 * result of a function call directly wihtout getting a PHP warning.
+	 * result of a function call directly without getting a PHP warning.
 	 * 
 	 * @param mixed[] $data
 	 */

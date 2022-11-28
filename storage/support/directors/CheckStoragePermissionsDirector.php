@@ -33,7 +33,10 @@ class CheckStoragePermissionsDirector extends Command
 	protected static $defaultName = 'filesystem:check';
 	protected static $defaultDescription = 'Checks whether the storage has the necessary permissions.';
 	
-	private $locations;
+	/**
+	 * @var Locations
+	 */
+	private Locations $locations;
 	
 	public function __construct(Locations $locations)
 	{

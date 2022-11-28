@@ -1,11 +1,7 @@
 <?php namespace spitfire\mvc\middleware\standard;
 
-use JsonException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use spitfire\core\ContextInterface;
-use spitfire\core\Response;
-use spitfire\mvc\middleware\exceptions\MaintenanceModeException;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -57,7 +53,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class MaintenanceMiddleware implements MiddlewareInterface
 {
 	
-	private $response;
+	private ResponseInterface $response;
 	
 	public function __construct(ResponseInterface $response)
 	{

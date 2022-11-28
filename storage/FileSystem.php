@@ -3,6 +3,7 @@
 use League\Flysystem\Filesystem as Flysystem;
 use Psr\Http\Message\StreamInterface;
 use spitfire\io\stream\Stream;
+use spitfire\utils\Mixin;
 
 /**
  *
@@ -10,6 +11,8 @@ use spitfire\io\stream\Stream;
  */
 class FileSystem
 {
+	
+	use Mixin;
 	
 	/**
 	 *
@@ -20,8 +23,15 @@ class FileSystem
 	public function __construct(Flysystem $fs)
 	{
 		$this->fs = $fs;
+		$this->mixin($fs);
 	}
 	
+	/**
+	 * 
+	 * @param string $location
+	 * @param StreamInterface $contents
+	 * @param array{} $config
+	 */
 	public function writeStream(string $location, StreamInterface $contents, array $config = []): StreamInterface
 	{
 		$handle = $contents->detach();
@@ -42,10 +52,5 @@ class FileSystem
 			in_array($mode, Stream::READABLE) !== false,
 			in_array($mode, Stream::WRITABLE) !== false
 		);
-	}
-	
-	public function __call($name, $arguments)
-	{
-		return $this->fs->$name(...$arguments);
 	}
 }

@@ -33,7 +33,11 @@ class CreateWebrootSymlinkDirector extends Command
 	protected static $defaultName = 'filesystem:symlink';
 	protected static $defaultDescription = 'Creates a symlink from webroot/storage to storage/public.';
 	
-	private $locations;
+	/**
+	 * 
+	 * @var Locations
+	 */
+	private Locations $locations;
 	
 	public function __construct(Locations $locations)
 	{
