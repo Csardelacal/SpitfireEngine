@@ -1,5 +1,6 @@
 <?php namespace spitfire\_init;
 
+use spitfire\contracts\ConfigurationInterface;
 use spitfire\core\service\Provider;
 
 /*
@@ -48,14 +49,15 @@ class ProvidersInit implements InitScriptInterface
 		 * to register resources and further services (after all the  service providers
 		 * had a chance to register the services they provide).
 		 */
-		$providers = config('app.providers');
+		$config = spitfire()->provider()->get(ConfigurationInterface::class);
+		$providers = $config->getAll('app.providers');
 		
-		array_walk_recursive($providers, function ($name) {
+		foreach ($providers as $name) {
 			/**
 			 * @var Provider $provider
 			 */
 			$provider = spitfire()->provider()->get($name);
 			$provider->init(spitfire()->provider());
-		});
+		};
 	}
 }

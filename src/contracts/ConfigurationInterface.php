@@ -35,6 +35,15 @@ interface ConfigurationInterface
 	public function get(string $key, ?string $fallback = null):? string;
 	
 	/**
+	 * Retrieve a configuration from the repository. You may retrieve a config
+	 * as an array.
+	 *
+	 * @param string $key
+	 * @return string[]
+	 */
+	public function getAll(string $key): array;
+	
+	/**
 	 * Get a configuration object for the given subtree. This means that the 
 	 */
 	public function splice(string $key) : ConfigurationInterface;

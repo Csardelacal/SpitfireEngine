@@ -80,6 +80,18 @@ class Configuration implements ConfigurationInterface
 		return $this->interface->has($key)? $this->interface->get($key) : $fallback;
 	}
 	
+	public function getAll(string $key): array
+	{
+		$raw = $this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN)?: [];
+		$_ret = [];
+		
+		array_walk_recursive($raw, function (string $element) use(&$_ret) : void {
+			$_ret[] = $element;
+		});
+		
+		return $_ret;
+	}
+	
 	/**
 	 * Get a configuration object for the given subtree. This means that the 
 	 */

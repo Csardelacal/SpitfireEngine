@@ -1,5 +1,6 @@
 <?php namespace spitfire\_init;
 
+use spitfire\contracts\ConfigurationInterface;
 use spitfire\core\service\Provider;
 
 /*
@@ -35,18 +36,21 @@ class ProvidersRegister implements InitScriptInterface
 	public function exec(): void
 	{
 		
-		/*
+		/**
 		 * Instance all the service providers and call the register method, this
 		 * allows them to bind all the services they provide.
+		 * 
+		 * @var Configuration
 		 */
-		$providers = config('app.providers');
+		$config = spitfire()->provider()->get(ConfigurationInterface::class);
+		$providers = $config->getAll('app.providers');
 		
-		array_walk_recursive($providers, function ($name) {
+		foreach ($providers as $name) {
 			/**
 			 * @var Provider $provider
 			 */
 			$provider = spitfire()->provider()->get($name);
 			$provider->register(spitfire()->provider());
-		});
+		};
 	}
 }
