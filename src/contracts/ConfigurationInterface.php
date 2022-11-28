@@ -20,6 +20,8 @@
  * to get tripped up by this concept myself a lot, and this is why I'm adding this
  * note. If you need to configure something in an array style fashion you're probably
  * better off using service providers.
+ * 
+ * @todo Introduce functions to explicitly retrieve a int, bool or string
  */
 interface ConfigurationInterface
 {
@@ -30,9 +32,9 @@ interface ConfigurationInterface
 	 *
 	 * @param string $key
 	 * @param string|null $fallback
-	 * @return string|null
+	 * @return string|int|bool|float|null
 	 */
-	public function get(string $key, ?string $fallback = null):? string;
+	public function get(string $key, ?string $fallback = null): string|int|bool|float|null;
 	
 	/**
 	 * Retrieve a configuration from the repository. You may retrieve a config

@@ -16,6 +16,14 @@ class ModelServiceProvider implements ProviderInterface
 	
 	public function register(ContainerInterface $container) : void
 	{
+		
+		/**
+		 * Without a databsae connection available, this system is useless.
+		 */
+		if (!$container->has(ConnectionInterface::class)) {
+			return;
+		}
+		
 		/**
 		 * The model factory should make it easy for us to access the database
 		 * without initializing it, since we rely on the application having all
@@ -29,6 +37,10 @@ class ModelServiceProvider implements ProviderInterface
 	
 	public function init(ContainerInterface $container) : void
 	{
+		
+		if (!$container->has(ConnectionInterface::class)) {
+			return;
+		}
 		
 		$kernel = $container->get(ConsoleKernel::class);
 		

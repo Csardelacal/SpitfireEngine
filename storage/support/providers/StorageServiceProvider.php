@@ -87,7 +87,7 @@ class StorageServiceProvider implements ProviderInterface
 				new AwsS3V3Adapter(
 					new S3Client([
 						'endpoint' => $config->get('endpoint'),
-						'use_path_style_endpoint' => $config->get('use_path_style_endpoint'),
+						'use_path_style_endpoint' => $config->get('use_path_style_endpoint', true),
 						'credentials' => [
 							'key'    => $config->get('key'),
 							'secret' => $config->get('secret')

@@ -7,6 +7,7 @@ use spitfire\contracts\core\kernel\KernelInterface;
 use spitfire\contracts\core\LocationsInterface;
 use spitfire\contracts\services\ProviderInterface;
 use spitfire\storage\database\Connection;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\support\commands\MigrateCommand;
 
 class MigrationServiceProvider implements ProviderInterface
@@ -44,6 +45,11 @@ class MigrationServiceProvider implements ProviderInterface
 	 */
 	public function init(ContainerInterface $container) : void
 	{
+		
+		if (!$container->has(ConnectionInterface::class)) {
+			return;
+		}
+		
 		/**
 		 * Please note that the order in which the migrations appear in the
 		 * manifest file is relevant to the order in which they are applied

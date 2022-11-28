@@ -23,16 +23,16 @@ class SessionProvider extends Provider
 		$container = $container->get(Container::class);
 		
 		$config = $container->get(Configuration::class);
-		$settings = $config->get('spitfire.io.session');
+		$settings = $config->splice('spitfire.io.session');
 		
-		switch ($settings['handler']?? null) {
+		switch ($settings->get('handler', null)) {
 			/**
 			 * If the file session handler is used, the system will write the
 			 * sessions to the folder the user indicated for this. Please note that
 			 * if this folder is not writable, the system will fail.
 			 */
 			case 'file':
-				$_session = new Session(new FileSessionHandler($settings['directory']?? session_save_path()));
+				$_session = new Session(new FileSessionHandler($settings->get('directory', session_save_path())));
 				$container->set(Session::class, $_session);
 				break;
 			/**

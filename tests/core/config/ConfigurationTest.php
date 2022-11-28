@@ -35,7 +35,7 @@ class ConfigurationTest extends TestCase
 		$config->set('test.that', false);
 		$config->set('test.everything', null);
 		
-		$this->assertArrayHasKey('this', $config->get('test'));
+		$this->assertEquals('hello world', $config->splice('test')->get('this'));
 		
 		$this->assertEquals('hello world', $config->get('test.this'));
 		$this->assertEquals(null, $config->get('test.everything'));
@@ -56,7 +56,7 @@ class ConfigurationTest extends TestCase
 		]);
 		
 		
-		$this->assertArrayHasKey('world', $config->get('hello'));
+		$this->assertContains('world', $config->splice('hello')->keys());
 		$this->assertEquals('hello world', $config->get('hello.world'));
 	}
 }

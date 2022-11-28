@@ -40,7 +40,7 @@ class ProvidersRegister implements InitScriptInterface
 		 * Instance all the service providers and call the register method, this
 		 * allows them to bind all the services they provide.
 		 * 
-		 * @var Configuration
+		 * @var ConfigurationInterface
 		 */
 		$config = spitfire()->provider()->get(ConfigurationInterface::class);
 		$providers = $config->getAll('app.providers');

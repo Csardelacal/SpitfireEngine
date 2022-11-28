@@ -1,9 +1,11 @@
 <?php namespace spitfire\storage\database\support\services;
 
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use spitfire\contracts\ConfigurationInterface;
 use spitfire\contracts\core\LocationsInterface;
 use spitfire\contracts\services\ProviderInterface;
+use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\ConnectionGlobal;
@@ -23,7 +25,7 @@ class DatabaseServiceProvider implements ProviderInterface
 		$config  = $container->get(ConfigurationInterface::class);
 		$default = $config->get('database.default');
 		$schema  = $drive->root($config->get('app.database.schema', 'bin/schema.php'));
-		$manager = new ConnectionManager($container, $config->get('database.connections'), $schema);
+		$manager = new ConnectionManager($container, $config->splice('database.connections'), $schema);
 		
 		/**
 		 *
@@ -31,9 +33,15 @@ class DatabaseServiceProvider implements ProviderInterface
 		 */
 		$container = $container->get(Container::class);
 		
-		$container->set(ConnectionManager::class, $manager);
-		$container->set(Connection::class, $manager->get($default));
-		$container->set(ConnectionInterface::class, new ConnectionGlobal());
+		try {
+			
+			$container->set(ConnectionManager::class, $manager);
+			$container->set(Connection::class, $manager->get($default));
+			$container->set(ConnectionInterface::class, new ConnectionGlobal());
+		}
+		catch (ApplicationException $e) {
+			$container->get(LoggerInterface::class)->debug($e->getMessage());
+		}
 	}
 	
 	/**

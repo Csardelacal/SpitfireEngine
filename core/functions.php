@@ -558,6 +558,19 @@ function cli() : bool
 	return php_sapi_name() === 'cli';
 }
 
+/**
+ * 
+ * @template IN of object
+ * @template OUT of object
+ * @param IN $ctx
+ * @param callable(IN):OUT $do
+ * @return OUT
+ */
+function scope(object $ctx, callable $do)
+{
+	return $do($ctx);
+}
+
 function redirectOutput(StreamInterface $stream, $fn)
 {
 	/**

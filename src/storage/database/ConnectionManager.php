@@ -2,6 +2,7 @@
 
 use Psr\Container\ContainerInterface;
 use spitfire\collection\Collection;
+use spitfire\contracts\ConfigurationInterface;
 use spitfire\provider\Container;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\mysqlpdo\Driver;
@@ -29,15 +30,15 @@ class ConnectionManager
 	
 	/**
 	 *
-	 * @var mixed[]
+	 * @var ConfigurationInterface
 	 */
-	private $definitions;
+	private ConfigurationInterface $definitions;
 	
 	/**
 	 *
-	 * @param mixed[] $definitions
+	 * @param ConfigurationInterface $definitions
 	 */
-	public function __construct(ContainerInterface $container, array $definitions, string $schemaFile)
+	public function __construct(ContainerInterface $container, ConfigurationInterface $definitions, string $schemaFile)
 	{
 		$this->container = $container;
 		$this->definitions = $definitions;
@@ -63,24 +64,40 @@ class ConnectionManager
 	
 	public function make(string $name) : Connection
 	{
+		
+		
+		assert($this->definitions !== null);
+		assert(array_search($name, $this->definitions->keys()) !== false);
+		
 		/**
 		 * Load the definition from the configuration excerpt we received from
 		 * the framework.
 		 */
-		$definition = $this->definitions[$name];
+		$definition = $this->definitions->splice($name);
 		
 		/**
 		 * We assemble a settings object tat can be used to initialize the driver. The
 		 * data will depend on the database driver.
 		 */
-		$settings = is_string($definition['settings'])? Settings::fromURL($definition['settings']) :Settings::fromArray($definition['settings']);
+		$settings = $definition->get('settings')? 
+			Settings::fromURL($definition->get('settings')) :
+			scope($definition->splice('settings'), fn($c) => Settings::fromArray(array_filter([
+				'driver' => $c->get('driver'),
+				'server' => $c->get('server'),
+				'port' => intval($c->get('port')),
+				'user' => $c->get('user'),
+				'password' => $c->get('password'),
+				'schema' => $c->get('schema'),
+				'prefix' => $c->get('prefix'),
+				'encoding' => $c->get('encoding')
+			])));
 		
 		/**
 		 * Find the schema cache file. This contains information about the state of the schema,
 		 * allowing the application to verify that no data is being accessed that should not be
 		 * read.
 		 */
-		$schemaFile = $definition['schema']?? $this->schemaFile;
+		$schemaFile = $definition->get('schema', $this->schemaFile);
 		$schema = file_exists($schemaFile)? include($schemaFile) : new Schema($settings->getSchema());
 		
 		/**
@@ -89,7 +106,7 @@ class ConnectionManager
 		 *
 		 * To ensure proper state, we verify the object we received is actually an instance of a Driver.
 		 */
-		$type   = $definition['driver'];
+		$type   = $definition->get('driver');
 		
 		$driver = $this->container->get(Container::class)->assemble($type, [
 			'settings' => $settings

@@ -74,8 +74,9 @@ class Configuration implements ConfigurationInterface
 	 *
 	 * @param string $key
 	 * @param mixed $fallback
+	 * @return string|int|bool|float|null
 	 */
-	public function get(string $key, $fallback = null) :? string
+	public function get(string $key, $fallback = null) : string|int|bool|float|null
 	{
 		return $this->interface->has($key)? $this->interface->get($key) : $fallback;
 	}
