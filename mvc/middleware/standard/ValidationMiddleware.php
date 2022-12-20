@@ -7,6 +7,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
+use spitfire\core\ResponseFactory;
 use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
 
@@ -106,7 +107,7 @@ class ValidationMiddleware implements MiddlewareInterface
 		 */
 		elseif ($request->hasHeader('accept') && $request->getHeader('accept')[0] === 'application/json') {
 			return response(
-				view(null, ['status' => 'failed', 'errors' => $errors]), 
+				spitfire()->provider()->get(ResponseFactory::class)->json(['status' => 'failed', 'errors' => $errors]), 
 				200, 
 				['Content-Type' => ['application/json']]
 			);
@@ -118,7 +119,7 @@ class ValidationMiddleware implements MiddlewareInterface
 		 */
 		elseif ($request->hasHeader('referrer')) {
 			return response(
-				view('_error/validation.html', ['errors' => $errors, 'submitted' => $request->getParsedBody(), 'location' => $request->getHeader('referrer')[0]])
+				spitfire()->provider()->get(ResponseFactory::class)->pug('_error/validation.html', ['errors' => $errors, 'submitted' => $request->getParsedBody(), 'location' => $request->getHeader('referrer')[0]])
 			);
 		}
 		

@@ -2,6 +2,7 @@
 
 use Phug\Phug;
 use Psr\Http\Message\StreamInterface;
+use spitfire\io\stream\Stream;
 
 /* 
  * The MIT License
@@ -30,11 +31,6 @@ use Psr\Http\Message\StreamInterface;
  /**
   * The view class allows to pass a filename and a set of data for the system to
   * generate a string containing the generated html for the view.
-  * 
-  * @todo Allow to configure the flags for caching and debugging
-  * @todo Implement other engines than pug so we can also generate proper JSON templates
-  * @todo Template should inherit from StreamInterface in the future so response
-  * can be sent directly from the 
   */
 class View
 {

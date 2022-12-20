@@ -2,8 +2,6 @@
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use spitfire\io\stream\StreamSourceInterface;
-use spitfire\storage\objectStorage\FileInterface;
 
 /**
  * Any HTTP response is built off a set of headers and a body that contains the

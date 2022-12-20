@@ -199,33 +199,6 @@ function db()
 }
 
 /**
- * Creates a view. This function will automatically locate the appropriate file
- * containing the template for the view, generate a template and render it to
- * generate a response.
- *
- * Right now it does a very simplistic job, intializing a pug engine that will allow
- * us to generate an output.
- *
- * @todo Future iterations should accept a templating engine other than pug
- * @todo Future revisions should return the template so changes can be made
- *
- * @param string|null $identifier
- * @param array $data
- * @return StreamInterface
- */
-function view(?string $identifier, array $data) : StreamInterface
-{
-	$file = spitfire()->locations()->resources('views/' . $identifier . '.pug');
-	
-	if ($identifier === null) {
-		return Stream::fromString(json_encode($data));
-	}
-	else {
-		return Stream::fromString((new View($file, $data))->render());
-	}
-}
-
-/**
  * This function provides a shorthand way of creating a response to a request, this
  * is very useful in combination with the view() function, allowing you to respond
  * from a controller with something like this:
