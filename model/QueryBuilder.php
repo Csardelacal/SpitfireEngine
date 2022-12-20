@@ -14,6 +14,7 @@ use spitfire\utils\Mixin;
 
 /**
  *
+ * @template T of Model
  * @mixin RestrictionGroupBuilder
  */
 class QueryBuilder implements QueryBuilderInterface
@@ -23,7 +24,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @var Model
+	 * @var T
 	 */
 	private $model;
 	
@@ -53,6 +54,10 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	private $query;
 	
+	/**
+	 * 
+	 * @param T $model
+	 */
 	public function __construct(Model $model)
 	{
 		$this->model = $model;

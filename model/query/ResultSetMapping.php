@@ -8,11 +8,22 @@ use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Record;
 
+/**
+ * @template T of Model
+ * @template P of ?ResultSetMapping
+ */
 class ResultSetMapping
 {
 	
-	private $model;
+	/**
+	 * 
+	 * @var T
+	 */
+	private Model $model;
 	
+	/**
+	 * @var P
+	 */
 	private ?ResultSetMapping $pivot = null;
 	
 	/**
@@ -21,14 +32,26 @@ class ResultSetMapping
 	 */
 	private $map;
 	
+	/**
+	 * 
+	 * @var string[]
+	 */
 	private $with = [];
 	
+	/**
+	 * 
+	 * @param T $model
+	 */
 	public function __construct(Model $model)
 	{
 		$this->model = $model;
 		$this->map = [];
 	}
 	
+	/**
+	 * 
+	 * @return T
+	 */
 	public function getModel()
 	{
 		return $this->model;
@@ -40,12 +63,23 @@ class ResultSetMapping
 		return $this->map[$field];
 	}
 	
-	public function set(string $name, IdentifierInterface $field)
+	/**
+	 * 
+	 * @param string $name
+	 * @param IdentifierInterface $field
+	 * @return static
+	 */
+	public function set(string $name, IdentifierInterface $field) : static
 	{
 		$this->map[$name] = $field;
 		return $this;
 	}
 	
+	/**
+	 * 
+	 * @param string[] $with
+	 * @return static
+	 */
 	public function with(array $with) : ResultSetMapping
 	{
 		$copy = clone $this;
@@ -53,6 +87,12 @@ class ResultSetMapping
 		return $copy;
 	}
 	
+	/**
+	 * 
+ 	 * @template PM of Model
+	 * @param ResultSetMapping<PM,null> $pivot
+	 * @return ResultSetMapping<T,ResultSetMapping<PM,null>>
+	 */
 	public function withPivot(ResultSetMapping $pivot = null) : ResultSetMapping
 	{
 		/**
@@ -73,6 +113,11 @@ class ResultSetMapping
 		return $copy;
 	}
 	
+	/**
+	 * 
+	 * @param Collection<mixed[]> $data
+	 * @return Collection<T>
+	 */
 	public function make(Collection $data) : Collection
 	{
 		
@@ -103,6 +148,8 @@ class ResultSetMapping
 		
 		/**
 		 * Once the records have been eagerly loaded, we can proceed to hydrate the models using them.
+		 * 
+		 * @var Collection<T>
 		 */
 		$models = $activeRecords->each(function (ActiveRecord $record) {
 			return $this->model->withHydrate($record);
@@ -163,6 +210,7 @@ class ResultSetMapping
 	/**
 	 *
 	 * @param Collection<ActiveRecord> $records
+	 * @return Collection<ActiveRecord>
 	 */
 	protected function eagerLoad(Collection $records) : Collection
 	{
@@ -180,7 +228,7 @@ class ResultSetMapping
 				 * Our relationship is determined by the contents of the local field. This is also
 				 * the one the system uses to organize the records by.
 				 */
-				$lookfor  = $record->getUnderlyingRecord()->get($relation->localField()->getName());
+				$lookfor  = $record->getUnderlyingRecord()->get($meta->localField()->getName());
 				
 				/**
 				 * If the relationship is not defined (and it's value is null) we tell the

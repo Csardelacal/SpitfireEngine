@@ -7,23 +7,48 @@ use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\model\QueryBuilderInterface;
 use spitfire\storage\database\Query;
+use spitfire\utils\Mixin;
 
 /**
  *
- * @mixin QueryBuilder
+ * @template LOCAL of Model
+ * @template REMOTE of Model
+ * @implements RelationshipInterface<LOCAL,REMOTE>
+ * @mixin QueryBuilder<REMOTE>
  */
 abstract class Relationship implements RelationshipInterface, QueryBuilderInterface
 {
 	
-	private $field;
+	use Mixin;
 	
-	private $referenced;
+	/**
+	 * 
+	 * @var Field<LOCAL>
+	 */
+	private Field $field;
 	
+	/**
+	 * 
+	 * @var Field<REMOTE>
+	 */
+	private Field $referenced;
 	
+	/**
+	 * 
+	 * @param Field<LOCAL> $field
+	 * @param Field<REMOTE> $referenced
+	 * 
+	 */
 	public function __construct(Field $field, Field $referenced)
 	{
 		$this->field = $field;
 		$this->referenced = $referenced;
+		
+		/**
+		 * If this object receives a function call that it cannot handle, forward
+		 * it to the querybuilder.
+		 */
+		$this->mixin(fn() => $this->startQueryBuilder());
 	}
 	
 	public function getModel(): Model
@@ -31,21 +56,37 @@ abstract class Relationship implements RelationshipInterface, QueryBuilderInterf
 		return $this->referenced->getModel();
 	}
 	
+	/**
+	 * 
+	 * @return Field<LOCAL>
+	 */
 	public function getField() : Field
 	{
 		return $this->field;
 	}
 	
+	/**
+	 * 
+	 * @return Field<LOCAL>
+	 */
 	public function localField() : Field
 	{
 		return $this->field;
 	}
 	
+	/**
+	 * 
+	 * @return Field<REMOTE>
+	 */
 	public function getReferenced() : Field
 	{
 		return $this->referenced;
 	}
 	
+	/**
+	 * 
+	 * @return QueryBuilder<REMOTE>
+	 */
 	abstract public function startQueryBuilder(): QueryBuilder;
 	
 	abstract public function injector() : RelationshipInjectorInterface;
@@ -79,24 +120,30 @@ abstract class Relationship implements RelationshipInterface, QueryBuilderInterf
 		return $this->startQueryBuilder()->getRestrictions();
 	}
 	
+	/**
+	 * 
+	 * @return QueryBuilder<REMOTE>
+	 */
 	public function group(string $type, callable $do): QueryBuilder
 	{
 		return $this->startQueryBuilder()->group($type, $do);
 	}
 	
+	/**
+	 * 
+	 * @return Collection<REMOTE>
+	 */
 	public function range(int $offset, int $size): Collection
 	{
 		return $this->startQueryBuilder()->range($offset, $size);
 	}
 	
+	/**
+	 * 
+	 * @return QueryBuilder<REMOTE>
+	 */
 	public function restrictions(callable $do): QueryBuilder
 	{
 		return $this->startQueryBuilder()->restrictions($do);
-	}
-	
-	public function __call($name, $arguments)
-	{
-		assert(method_exists($this->startQueryBuilder(), $name));
-		return $this->startQueryBuilder()->{$name}(...$arguments);
 	}
 }

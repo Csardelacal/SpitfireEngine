@@ -2,12 +2,15 @@
 
 use spitfire\model\query\ExtendedRestrictionGroupBuilder as RestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilderInterface;
+use spitfire\model\Model;
 
 /**
  * A relationship describes how two models connect with each other. This is useful
  * for navigating models and building queries. The injector provides a mechanism for
  * performing the necessary operations on the query to test whether related records
  * exist on it.
+ * 
+ * @template REMOTE of Model
  */
 interface RelationshipInjectorInterface
 {

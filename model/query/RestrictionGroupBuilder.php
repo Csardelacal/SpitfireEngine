@@ -7,7 +7,7 @@ use spitfire\storage\database\query\RestrictionGroup;
 class RestrictionGroupBuilder implements RestrictionGroupBuilderInterface
 {
 	
-	private $table;
+	private TableIdentifierInterface $table;
 	
 	/**
 	 *
@@ -43,7 +43,11 @@ class RestrictionGroupBuilder implements RestrictionGroupBuilderInterface
 		return $this;
 	}
 	
-	public function getDBRestrictions()
+	/**
+	 * 
+	 * @return RestrictionGroup
+	 */
+	public function getDBRestrictions() : RestrictionGroup
 	{
 		return $this->restrictionGroup;
 	}

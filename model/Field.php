@@ -7,15 +7,25 @@ use spitfire\model\Model;
  * table the field belongs to, the name of the field and if it is (or not) a
  * primary key or auto-increment field.
  *
+ * @template T of Model
  * @author César de la Cal <cesar@magic3w.com>
  */
 class Field
 {
 	
-	private $model;
-	private $name;
+	/**
+	 * 
+	 * @var T
+	 */
+	private Model $model;
+	private string $name;
 	
-	public function __construct(Model $model, $field)
+	/**
+	 * 
+	 * @param T $model
+	 * @param string $field
+	 */
+	public function __construct(Model $model, string $field)
 	{
 		$this->model = $model;
 		$this->name = $field;
@@ -23,7 +33,7 @@ class Field
 	
 	/**
 	 *
-	 * @return Model
+	 * @return T
 	 */
 	public function getModel() : Model
 	{

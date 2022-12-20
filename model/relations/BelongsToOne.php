@@ -14,8 +14,12 @@ use spitfire\storage\database\query\RestrictionGroup;
  * In this case, the model using this relationship is the n part or the
  * child. This makes it a single relationship, since models using this
  * relationship will have a single parent.
+ * 
+ * @template LOCAL of Model
+ * @template REMOTE of Model
+ * @extends Relationship<LOCAL,REMOTE>
  */
-class BelongsToOne extends Relationship implements RelationshipInterface
+class BelongsToOne extends Relationship
 {
 	
 	

@@ -3,5 +3,9 @@
 interface RestrictionGroupBuilderInterface
 {
 	
+	/**
+	 * 
+	 * @param mixed $args
+	 */
 	public function where(...$args) : self;
 }

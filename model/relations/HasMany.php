@@ -3,7 +3,6 @@
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
-use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\storage\database\query\RestrictionGroup;
@@ -15,8 +14,12 @@ use spitfire\storage\database\query\RestrictionGroup;
  * In this case, the model using this relationship is the n part or the
  * child. This makes it a single relationship, since models using this
  * relationship will have a single parent.
+ * 
+ * @template LOCAL of Model
+ * @template REMOTE of Model
+ * @extends Relationship<LOCAL,REMOTE>
  */
-class HasMany extends Relationship implements RelationshipInterface
+class HasMany extends Relationship
 {
 	
 	public function resolve(ActiveRecord $record): RelationshipContent
@@ -117,6 +120,9 @@ class HasMany extends Relationship implements RelationshipInterface
 		return $query;
 	}
 	
+	/**
+	 * @return DirectRelationshipInjector<LOCAL,REMOTE>
+	 */
 	public function injector(): RelationshipInjectorInterface
 	{
 		return new DirectRelationshipInjector($this->getField(), $this->getReferenced());

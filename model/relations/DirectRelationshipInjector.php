@@ -13,15 +13,32 @@ use spitfire\storage\database\query\RestrictionGroup;
  * Direct relationships are usually the BelongsToOne or HasMany kind of. Querying for
  * existence or absence, simply means looking up whether the remote (referenced) table
  * contains a record that matches what we established.
+ * 
+ * @template LOCAL of Model
+ * @template REMOTE of Model
+ * @implements RelationshipInjectorInterface<REMOTE>
  */
 class DirectRelationshipInjector implements RelationshipInjectorInterface
 {
 	
-	private $field;
+	/**
+	 * 
+	 * @var Field<LOCAL>
+	 */
+	private Field $field;
 	
-	private $referenced;
+	/**
+	 * 
+	 * @var Field<REMOTE>
+	 */
+	private Field $referenced;
 	
 	
+	/**
+	 * 
+	 * @param Field<LOCAL> $field
+	 * @param Field<REMOTE> $referenced
+	 */
 	public function __construct(Field $field, Field $referenced)
 	{
 		$this->field = $field;
