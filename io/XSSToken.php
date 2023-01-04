@@ -15,7 +15,7 @@ class XSSToken
 	
 	public function getValue()
 	{
-		$session = Session::getInstance();
+		$session = spitfire()->provider()->get(Session::class);
 		
 		if (false == $xss_token = $session->get('_XSS_')) {
 			$xss_token = str_replace(['/', '='], [''], base64_encode(function_exists('random_bytes')? random_bytes(50) : rand()));
@@ -31,7 +31,7 @@ class XSSToken
 	
 	public function verify($token)
 	{
-		$session = Session::getInstance();
+		$session = spitfire()->provider()->get(Session::class); 
 		
 		if (false == $xss_token = $session->get('_XSS_')) {
 			$xss_token = base64_encode(function_exists('random_bytes')? random_bytes(50) : rand());

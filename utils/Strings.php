@@ -184,4 +184,23 @@ class Strings
 		$offset = str_repeat($character, $times);
 		return $offset . str_replace(PHP_EOL, PHP_EOL . $offset, $str);
 	}
+	
+	/**
+	 * Generates a random base64 URL encoded string that can be used as a unique identifier for
+	 * sessions or similar.
+	 * 
+	 * @param int $length
+	 * @return string
+	 */
+	public static function random(int $length)
+	{
+		return substr(
+			str_replace(
+				['+', '/', '='], 
+				['-', '_', ''], 
+				base64_encode(random_bytes($length))),
+			0, 
+			$length
+		);
+	}
 }

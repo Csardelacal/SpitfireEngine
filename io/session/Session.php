@@ -1,6 +1,9 @@
 <?php namespace spitfire\io\session;
 
+use SessionHandlerInterface;
 use spitfire\App;
+use spitfire\support\arrays\DotNotationAccessor;
+use spitfire\utils\Strings;
 
 /**
  * The Session class allows your application to write data to a persistent space
@@ -18,12 +21,36 @@ class Session
 {
 	
 	/**
+	 * 
+	 * @var bool
+	 */
+	private bool $started = false;
+	
+	/**
+	 * 
+	 * @var bool
+	 */
+	private bool $destroy = false;
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	private string $id;
+	
+	/**
 	 * The session handler is in charge of storing the data to disk once the system
 	 * is done reading it.
 	 *
-	 * @var SessionHandler
+	 * @var SessionHandlerInterface
 	 */
 	private $handler;
+	
+	/**
+	 * 
+	 * @var DotNotationAccessor
+	 */
+	private $content;
 	
 	/**
 	 * The Session allows the application to maintain a persistence across HTTP
@@ -34,66 +61,81 @@ class Session
 	 * You need to question the fact that the data actually belongs to the same
 	 * user, since this may not be guaranteed all the time.
 	 *
-	 * @param SessionHandler $handler
+	 * @param SessionHandlerInterface $handler
+	 * @param string $id
 	 */
-	public function __construct(SessionHandler$handler = null)
+	public function __construct(SessionHandlerInterface $handler, string $id)
 	{
-		$lifetime = 2592000;
-		
-		if (!$handler) {
-			$handler = new FileSessionHandler(realpath(session_save_path()), $lifetime);
-		}
-		
+		$this->id      = $id;
 		$this->handler = $handler;
-	}
-	
-	public function getHandler()
-	{
-		return $this->handler;
-	}
-	
-	public function setHandler($handler)
-	{
-		$this->handler = $handler;
-		$this->handler->attach();
-		return $this;
-	}
-	
-	public function set($key, $value, $app = null)
-	{
-		$namespace = '*';
 		
-		if (!self::sessionId()) {
-			$this->start();
-		}
-		$_SESSION[$namespace][$key] = $value;
+		$arr = [];
+		$this->content = new DotNotationAccessor($arr);
 	}
 	
-	public function get($key)
+	/**
+	 * Load the session using the provided handler.
+	 * 
+	 * @return void
+	 */
+	public function load() : void
 	{
-		
-		$namespace = '*';
-		
 		/**
-		 * While it may seem counterintuitive to check twice whether the session id exists, the
-		 * caveat here is that the session cookie is set at the start of a request. This would
-		 * lead to the application being unable to work with the session in the initial request.
 		 * 
-		 * An example herefor was the XSRF token that we generate. We write a secret to the session
-		 * so we know the user is actually the one who is sending the response. Our implementation
-		 * would then attempt to read the token from the session and receive a null value, which
-		 * caused it to generate it multiple times per request on the first request.
+		 * @var string|false
 		 */
-		if (!self::sessionId() && !isset($_COOKIE[session_name()])) {
-			return null;
+		$read = $this->handler->read($this->id);
+		
+		if ($read === false) {
+			$this->id = Strings::random(40);
+			return;
 		}
-		if (!self::sessionId()) {
-			$this->start();
-		}
-		return isset($_SESSION[$namespace][$key])? $_SESSION[$namespace][$key] : null;
+		
+		$arr = unserialize($read);
+		
+		$this->content = new DotNotationAccessor($arr);
+		$this->started = true;
 	}
 	
-	public function lock($userdata, App$app = null)
+	/**
+	 * 
+	 * @param string $key
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function set(string $key, $value) : void
+	{
+		/**
+		 * Whenever a session was written to, it is marked as started. This allows the
+		 * application to determine that it needs to send the appropiate cookie to the
+		 * user.
+		 */
+		$this->started = true;
+		$this->content->set($key, $value);
+	}
+	
+	/**
+	 * 
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function get(string $key)
+	{
+		return $this->content->get($key);
+	}
+	
+	public function getId() : string
+	{
+		return $this->id;
+	}
+	
+	/**
+	 * 
+	 * @param mixed $userdata
+	 * @deprecated 
+	 * @todo Move to user authentication middleware or something
+	 */
+	public function lock($userdata) : void
 	{
 		
 		$user = array();
@@ -101,17 +143,23 @@ class Session
 		$user['userdata'] = $userdata;
 		$user['secure']   = true;
 		
-		$this->set('_SF_Auth', $user, $app);
+		$this->set('_SF_Auth', $user);
 	}
 	
-	public function isSafe(App$app = null)
+	
+	/**
+	 * 
+	 * @deprecated 
+	 * @todo Move to user authentication middleware or something
+	 */
+	public function isSafe() : bool
 	{
 		
 		$user = $this->get('_SF_Auth');
 		if ($user) {
 			$user['secure'] = $user['secure'] && ($user['ip'] == $_SERVER['REMOTE_ADDR']);
 			
-			$this->set('_SF_Auth', $user, $app);
+			$this->set('_SF_Auth', $user);
 			return $user['secure'];
 		}
 		else {
@@ -119,106 +167,36 @@ class Session
 		}
 	}
 	
-	public function getUser(App$app = null)
+	
+	/**
+	 * 
+	 * @return mixed
+	 * @deprecated 
+	 * @todo Move to user authentication middleware or something
+	 */
+	public function getUser()
 	{
 		
 		$user = $this->get('_SF_Auth');
 		return $user? $user['userdata'] : null;
 	}
 	
-	public function start()
+	public function isStarted() : bool
 	{
-		if (self::sessionId()) {
-			return;
-		}
-		$this->handler->attach();
-		session_start();
-		
-		/*
-		 * This is a fallback mechanism that allows dynamic extension of sessions,
-		 * otherwise a twenty minute session would end after 20 minutes even
-		 * if the user was actively using it.
-		 *
-		 * Sessions are httponly, this means that they are not available to the client
-		 * application running within the user-agent. This should mititgate potential
-		 * XSS attacks that would use JS to extract the cookie to impersonate the user.
-		 *
-		 * Read on: http://php.net/manual/en/function.session-set-cookie-params.php
-		 */
-		$lifetime = 2592000;
-		
-		setcookie(
-			session_name(),
-			self::sessionId(),
-			['expires' => time() + $lifetime, 'path' => '/', 'samesite' => 'lax', 'secure' => true, 'httponly' => true]
-		);
+		return $this->started;
 	}
 	
 	/**
 	 * Destroys the session. This code will automatically unset the session cookie,
 	 * and delete the file (or whichever mechanism is used).
 	 */
-	public function destroy() : bool
+	public function destroy() : void
 	{
-		$this->start();
-		
-		setcookie(
-			session_name(),
-			'',
-			['expires' => time() -1, 'path' => '/', 'samesite' => 'lax', 'secure' => true, 'httponly' => true]
-		);
-		
-		return session_destroy();
+		$this->destroy = true;
 	}
 	
-	/**
-	 * This class requires to be managed in "singleton" mode, since there can only
-	 * be one session handler for the system.
-	 *
-	 * @staticvar Session $instance
-	 * @return Session
-	 */
-	public static function getInstance()
+	public function isDestroyed() : bool
 	{
-		static $instance = null;
-		
-		if ($instance !== null) {
-			return $instance;
-		}
-		return $instance = spitfire()->provider()->get(self::class);
-	}
-	
-	/**
-	 * Returns the session ID being used.
-	 *
-	 * Since March 2017 the Spitfire session will validate that the session
-	 * identifier returned is valid. A valid session ID is up to 128 characters
-	 * long and contains only alphanumeric characters, dashes and commas.
-	 *
-	 * @todo Move to instance
-	 *
-	 * @param boolean $allowRegen Allows the function to provide a new SID in case
-	 *                            of the session ID not being valid.
-	 *
-	 * @return string
-	 * @throws \Exception
-	 */
-	public static function sessionId($allowRegen = true)
-	{
-		
-		#Get the session_id the system is using.
-		$sid = session_id();
-		
-		#If the session is valid, we return the ID and we're done.
-		if (!$sid || preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $sid)) {
-			return $sid;
-		}
-		
-		#Otherwise we'll attempt to repair the broken
-		if (!$allowRegen || !session_regenerate_id()) {
-			throw new \Exception('Session ID ' . ($allowRegen? 'generation' : 'validation') . ' failed');
-		}
-		
-		return $sid;
+		return $this->destroy;
 	}
 }

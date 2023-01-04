@@ -1,6 +1,7 @@
 <?php namespace spitfire\io\session;
 
 use Psr\Container\ContainerInterface;
+use SessionHandler;
 use spitfire\core\config\Configuration;
 use spitfire\core\service\Provider;
 use spitfire\exceptions\ApplicationException;
@@ -23,25 +24,18 @@ class SessionProvider extends Provider
 		$container = $container->get(Container::class);
 		
 		$config = $container->get(Configuration::class);
-		$settings = $config->splice('spitfire.io.session');
+		$settings = $config->splice('session.driver');
 		
 		switch ($settings->get('handler', null)) {
-			/**
-			 * If the file session handler is used, the system will write the
-			 * sessions to the folder the user indicated for this. Please note that
-			 * if this folder is not writable, the system will fail.
-			 */
-			case 'file':
-				$_session = new Session(new FileSessionHandler($settings->get('directory', session_save_path())));
-				$container->set(Session::class, $_session);
-				break;
 			/**
 			 * Assuming the developer selected no session handling mechanism
 			 * at all, we will default to using file based sessions
 			 */
+			case 'php':
 			case '':
 			case null:
-				$container->set(Session::class, new Session(new FileSessionHandler(session_save_path())));
+				$handler = new SessionHandler();
+				$container->set(SessionHandler::class, $handler);
 				break;
 			/**
 			 * The user provided a configuration that we cannot associate with any
