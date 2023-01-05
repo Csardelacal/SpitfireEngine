@@ -1,6 +1,7 @@
 <?php namespace spitfire\core\config;
 
 use spitfire\contracts\ConfigurationInterface;
+use spitfire\exceptions\ApplicationException;
 use spitfire\support\arrays\DotNotationAccessor;
 
 /*
@@ -81,6 +82,14 @@ class Configuration implements ConfigurationInterface
 		return $this->interface->has($key)? $this->interface->get($key) : $fallback;
 	}
 	
+	/**
+	 * Returns true if the key exists within the configuration.
+	 */
+	public function has(string $key) : bool
+	{
+		return $this->interface->has($key);
+	}
+	
 	public function getAll(string $key): array
 	{
 		$raw = $this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN)?: [];
@@ -95,9 +104,22 @@ class Configuration implements ConfigurationInterface
 	
 	/**
 	 * Get a configuration object for the given subtree. This means that the 
+	 * 
+	 * @throws ApplicationException
+	 * @param string $key
+	 * @return ConfigurationInterface
 	 */
 	public function splice(string $key) : ConfigurationInterface
 	{
+		/**
+		 * If the underlying array does not hold the configuration we're looking for,
+		 * the application should not continue.
+		 */
+		assume($this->interface->has($key), sprintf('Configuration does not contain key %s', $key));
+		
+		/**
+		 * Otherwise just return the data the application was actually requesting.
+		 */
 		return new self($this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN));
 	}
 	

@@ -115,10 +115,11 @@ class DotNotationAccessor
 			
 			/*
 			 * If the step does not exist, we cannot continue further down into the 
-			 * array. We need to stop here.
+			 * array. We need to stop here. Leet the user know in a warning that this
+			 * is technically not okay.
 			 */
 			if (!array_key_exists($step, $current)) {
-				echo $step, ' does not exist';
+				trigger_error(sprintf('%s does not exist', $step), E_USER_WARNING);
 				return null;
 			}
 			
