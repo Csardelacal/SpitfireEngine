@@ -183,9 +183,10 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 		}
 		
 		if ($value === null) {
-			return $this->object->identifier(
-				$field
-			) . ($operator === '='? ' IS NULL' : ' IS NOT NULL'
+			return sprintf(
+				'%s%s',
+				$this->object->identifier($field),
+				$operator === '='? ' IS NULL' : ' IS NOT NULL'
 			);
 		}
 		
