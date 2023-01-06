@@ -73,9 +73,6 @@ class Router extends Routable
 	 * one that can be used to respond to the request it will stop looking for
 	 * another possible rewrite.
 	 *
-	 * @todo The extension should be passed down to the servers (and therefore
-	 * the routes) to allow the routes to respond to different requests properly.
-	 *
 	 * @param ServerRequestInterface $request
 	 * @return RouterResult
 	 */
