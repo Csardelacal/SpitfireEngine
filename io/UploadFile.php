@@ -181,28 +181,4 @@ class UploadFile implements UploadedFileInterface
 		return $copy;
 	}
 	
-	/**
-	 * Returns the maximum uploadable file size
-	 *
-	 * @todo Move to the request method
-	 * @param Filesize[] $sizes An array of Filesize instances, for use with tests
-	 *
-	 * @return Filesize
-	 */
-	public static function getMaxUploadSize($sizes = null)
-	{
-		if (!isset($sizes)) {
-			$sizes = [
-				Filesize::parse(ini_get('post_max_size')),
-				Filesize::parse(ini_get('upload_max_filesize')),
-			];
-		}
-		
-		// Sort ascending based on bytes
-		uasort($sizes, function (Filesize$a, Filesize$b) {
-			return $a->getSize() <=> $b->getSize();
-		});
-		
-		return $sizes[0];
-	}
 }
