@@ -9,22 +9,17 @@ use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Record;
 
 /**
- * @template T of Model
- * @template P of ?ResultSetMapping
+ * 
+ * @todo Add documentation
  */
 class ResultSetMapping
 {
 	
 	/**
 	 * 
-	 * @var T
+	 * @var Model
 	 */
 	private Model $model;
-	
-	/**
-	 * @var P
-	 */
-	private ?ResultSetMapping $pivot = null;
 	
 	/**
 	 *
@@ -40,7 +35,7 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @param T $model
+	 * @param Model $model
 	 */
 	public function __construct(Model $model)
 	{
@@ -50,7 +45,7 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @return T
+	 * @return Model
 	 */
 	public function getModel()
 	{
@@ -89,34 +84,8 @@ class ResultSetMapping
 	
 	/**
 	 * 
- 	 * @template PM of Model
-	 * @param ResultSetMapping<PM,null> $pivot
-	 * @return ResultSetMapping<T,ResultSetMapping<PM,null>>
-	 */
-	public function withPivot(ResultSetMapping $pivot = null) : ResultSetMapping
-	{
-		/**
-		 * If both are null, there's no point in doing anything.
-		 */
-		if ($this->pivot === null && $pivot === null) {
-			return $this;
-		}
-		
-		/**
-		 * Having pivots that can pivot would cause infinite recursion. We do want
-		 * to avoid that.
-		 */
-		assert($pivot->pivot === null);
-		
-		$copy = clone $this;
-		$copy->pivot = $pivot;
-		return $copy;
-	}
-	
-	/**
-	 * 
 	 * @param Collection<mixed[]> $data
-	 * @return Collection<T>
+	 * @return Collection<Model>
 	 */
 	public function make(Collection $data) : Collection
 	{
@@ -149,20 +118,11 @@ class ResultSetMapping
 		/**
 		 * Once the records have been eagerly loaded, we can proceed to hydrate the models using them.
 		 * 
-		 * @var Collection<T>
+		 * @var Collection<Model>
 		 */
 		$models = $activeRecords->each(function (ActiveRecord $record) {
 			return $this->model->withHydrate($record);
 		});
-		
-		/**
-		 * In case the mapper has a pivot, now is the time to create it and attach it to the model.
-		 */
-		if (!empty($this->pivot)) {
-			foreach ($records as $idx => $record) {
-				$models[$idx]->setPivot($this->pivot->makeOne($record));
-			}
-		}
 		
 		return $models;
 	}
@@ -181,16 +141,8 @@ class ResultSetMapping
 		/**
 		 * Once the records have been eagerly loaded, we can proceed to hydrate the models using them.
 		 */
-		$model = $this->model->withHydrate($activeRecord);
+		return $this->model->withHydrate($activeRecord);
 		
-		/**
-		 * In case the mapper has a pivot, now is the time to create it and attach it to the model.
-		 */
-		if (!empty($this->pivot)) {
-			$model->setPivot($this->pivot->makeOne($record));
-		}
-		
-		return $model;
 	}
 	
 	/**

@@ -12,16 +12,15 @@ use spitfire\storage\database\Record;
  * @todo If we're going to have pivots, it may be better to have them here than
  * in the ResultSetMapping (making the mapping recusrive)
  * 
- * @template T of Model
  */
 class ResultSet
 {
 	
 	/**
 	 * 
-	 * @var ResultSetMapping<T,null>
+	 * @var Collection<ResultSetMapping>
 	 */
-	private ResultSetMapping $map;
+	private Collection $maps;
 	
 	/**
 	 * The underlying resultset
@@ -33,31 +32,36 @@ class ResultSet
 	/**
 	 * 
 	 * @param ResultInterface $result
-	 * @param ResultSetMapping<T,null> $map
+	 * @param Collection<ResultSetMapping> $map
 	 */
-	public function __construct(ResultInterface $result, ResultSetMapping $map)
+	public function __construct(ResultInterface $result, Collection $map)
 	{
 		$this->resultset = $result;
-		$this->map = $map;
+		$this->maps = $map;
 	}
 	
 	/**
 	 * 
-	 * @return T|false
+	 * @return Collection<Model>|false
 	 */
-	public function fetch() : Model|false
+	public function fetch() : Collection|false
 	{
 		$assoc = $this->resultset->fetchAssociative();
-		return $assoc === false? false : $this->map->makeOne(new Record($assoc));
+		
+		if ($assoc === false) {
+			return false;
+		}
+		
+		return $this->maps->each(fn(ResultSetMapping $e) => $e->makeOne(new Record($assoc)));
 	}
 	
 	/**
 	 * 
-	 * @return Collection<T>
+	 * @return Collection<Collection<Model>>
 	 */
 	public function fetchAll() : Collection
 	{
 		$all = new Collection($this->resultset->fetchAllAssociative());
-		return $this->map->make($all);
+		return $this->maps->each(fn($e) => $e->make($all));
 	}
 }

@@ -165,15 +165,25 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function first(callable $or = null):? Model
 	{
-		/*
-		 * Fetch a single row from the database.
+		
+		/**
+		 * Generate a collection of mappings for this query. If there's a pivot, there
+		 * will be several mappings, otherwise it will be just one.
 		 */
+		$mapping = collect([
+			$this->mapping->with($this->with),
+			$this->pivot
+		])->filter();
+			
+		/*
+		* Fetch a single row from the database.
+		*/
 		$result = new ResultSet(
 			$this->model->getConnection()->query($this->getQuery()),
-			$this->mapping->with($this->with)->withPivot($this->pivot)
+			$mapping
 		);
 		
-		$row    = $result->fetch();
+		$row = $result->fetch();
 		
 		/**
 		 * If there is no more rows in the result (alas, there have never been any), the application
@@ -185,11 +195,16 @@ class QueryBuilder implements QueryBuilderInterface
 		}
 		
 		/**
-		 * @todo Add the mapping logic here. We probably need to split the maps into main and pivots so we can
-		 * differentiate properly.
+		 * 
+		 * @var Model
 		 */
+		$model = $row[0];
 		
-		return $row;
+		if ($this->pivot !== null) {
+			$model->setPivot($row[0]);
+		}
+		
+		return $model;
 	}
 	
 	/**
@@ -198,15 +213,36 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function all() : Collection
 	{
-		/*
-		 * Fetch a single row from the database.
+		/**
+		 * Generate a collection of mappings for this query. If there's a pivot, there
+		 * will be several mappings, otherwise it will be just one.
 		 */
+		$mapping = collect([
+			$this->mapping->with($this->with),
+			$this->pivot
+		])->filter();
+			
+		/*
+		* Fetch the records from the database
+		*/
 		$result = new ResultSet(
 			$this->model->getConnection()->query($this->getQuery()),
-			$this->mapping->with($this->with)->withPivot($this->pivot)
+			$mapping
 		);
 		
-		return $result->fetchAll();
+		return $result->fetchAll()->each(function ($row) {
+			/**
+			 * 
+			 * @var Model
+			 */
+			$model = $row[0];
+			
+			if ($this->pivot !== null) {
+				$model->setPivot($row[0]);
+			}
+			
+			return $model;
+		});
 	}
 	
 	public function range(int $offset, int $size) : Collection
@@ -217,13 +253,36 @@ class QueryBuilder implements QueryBuilderInterface
 		$query  = clone $this->getQuery();
 		$query->range($offset, $size);
 		
-		
+		/**
+		 * Generate a collection of mappings for this query. If there's a pivot, there
+		 * will be several mappings, otherwise it will be just one.
+		 */
+		$mapping = collect([
+			$this->mapping->with($this->with),
+			$this->pivot
+		])->filter();
+			
+		/*
+		* Fetch the records from the database
+		*/
 		$result = new ResultSet(
 			$this->model->getConnection()->query($query),
-			$this->mapping->with($this->with)->withPivot($this->pivot)
+			$mapping
 		);
 		
-		return $result->fetchAll();
+		return $result->fetchAll()->each(function ($row) {
+			/**
+			 * 
+			 * @var Model
+			 */
+			$model = $row[0];
+			
+			if ($this->pivot !== null) {
+				$model->setPivot($row[0]);
+			}
+			
+			return $model;
+		});
 	}
 	
 	public function count() : int
