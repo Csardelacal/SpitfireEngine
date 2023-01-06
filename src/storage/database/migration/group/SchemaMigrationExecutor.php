@@ -150,6 +150,18 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 		return $this;
 	}
 	
+	/**
+	 * Since this migrator is a group migrator, the application should just pass the call to all
+	 * of it's underlying children.
+	 * 
+	 * @param callable(SchemaMigrationExecutorInterface):void $do
+	 * @return void
+	 */
+	public function each(callable $do) : void
+	{
+		$this->migrators->each($do);
+	}
+	
 	public function tags(): TagManagerInterface
 	{
 		$first = $this->migrators->first();

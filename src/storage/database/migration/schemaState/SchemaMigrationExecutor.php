@@ -122,6 +122,18 @@ class SchemaMigrationExecutor implements SchemaMigrationExecutorInterface
 	}
 	
 	/**
+	 * Since this does apply migrations directly to a schema, we can stop here and
+	 * apply migrations to the schema individually.
+	 * 
+	 * @param callable(SchemaMigrationExecutorInterface):void $do
+	 * @return void
+	 */
+	public function each(callable $do) : void
+	{
+		$do($this);
+	}
+	
+	/**
 	 */
 	public function tags(): TagManagerInterface
 	{

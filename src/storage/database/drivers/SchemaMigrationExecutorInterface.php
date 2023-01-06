@@ -89,6 +89,15 @@ interface SchemaMigrationExecutorInterface
 	public function execute(string $sql) : SchemaMigrationExecutorInterface;
 	
 	/**
+	 * If the migrator is a group migrator, execute the given function on all it's children. If the
+	 * migrator does not have any children, execute on itself.
+	 * 
+	 * @param callable(SchemaMigrationExecutorInterface):void $do
+	 * @return void
+	 */
+	public function each(callable $do) : void;
+	
+	/**
 	 * Allows the schema to be tagged. This allows the application to maintain an in-channel
 	 * record of the state of the database, the migrations applied, etc.
 	 *
