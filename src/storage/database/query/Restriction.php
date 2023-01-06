@@ -1,6 +1,8 @@
 <?php namespace spitfire\storage\database\query;
 
 use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Query;
 
@@ -20,7 +22,7 @@ class Restriction
 	 * The field that this restriction is searching on. This lets the application
 	 * know which table, field and alias to use to refer to when assembling a query.
 	 *
-	 * @todo fixme: Technically this can be something else than a field, it could also
+	 * This can be something else than a field, it could also
 	 * contain a subquery that generates an output like `(SELECT ...) > 3` which would,
 	 * for example, allow the query to be used to fetch elements with children.
 	 * Currently we have no use for the scenario and it increases complexity beyond
@@ -30,17 +32,17 @@ class Restriction
 	 * * WHERE `a` = `b` (field, operator, field)
 	 * * WHERE EXISTS(SELECT...) (query, '!=', null)
 	 * * WHERE NOT EXISTS(SELECT...) (query, '=', null)
-	 * * WHERE (SELECT COUNT(*) FROM ...) = b (query, '=', value)
+	 * * WHERE (SELECT COUNT(*) FROM ...) = b (query, operator, value)
 	 *
-	 * @var IdentifierInterface|null
+	 * @var FieldIdentifierInterface|Query
 	 */
-	private $field;
+	private FieldIdentifierInterface|Query $field;
 	
 	/**
 	 * The value can be any value that our database can accept within the field. Please note
 	 * that during runtime the system does not check whether this data is clean.
 	 *
-	 * @var mixed
+	 * @var FieldIdentifierInterface|scalar|scalar[]|null
 	 */
 	private $value;
 	
@@ -59,11 +61,11 @@ class Restriction
 	/**
 	 * Instances a new restriction.
 	 *
-	 * @param IdentifierInterface|null $field
+	 * @param IdentifierInterface|Query $field
 	 * @param string $operator
 	 * @param mixed $value
 	 */
-	public function __construct(IdentifierInterface $field = null, string $operator, $value)
+	public function __construct(IdentifierInterface|Query $field, string $operator, $value)
 	{
 		$this->field    = $field;
 		$this->value    = $value;
@@ -73,9 +75,9 @@ class Restriction
 	/**
 	 * Returns the field we're querying for the value of the restriction.
 	 *
-	 * @return IdentifierInterface
+	 * @return IdentifierInterface|Query
 	 */
-	public function getField() :? IdentifierInterface
+	public function getField() : IdentifierInterface|Query
 	{
 		return $this->field;
 	}

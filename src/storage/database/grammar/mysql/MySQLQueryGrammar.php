@@ -163,23 +163,28 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 	
 	public function restriction(Restriction $restriction) : string
 	{
+		$field = $restriction->getField();
 		$operator = $restriction->getOperator();
 		$value = $restriction->getValue();
 		
-		if ($restriction->getField() === null) {
-			assert($value instanceof Query);
-			assert($value->getOutputs()->count() === 1);
+		if ($field instanceof Query) {
+			assert($field->getOutputs()->count() === 1);
 			
-			return sprintf(
-				'%s (%s)',
-				$restriction->getOperator() == Restriction::EQUAL_OPERATOR? 'EXISTS' : 'NOT EXISTS',
-				$this->query($value)
-			);
+			if ($value === null) {
+				return sprintf(
+					'%s (%s)',
+					$restriction->getOperator() == Restriction::EQUAL_OPERATOR? 'EXISTS' : 'NOT EXISTS',
+					$this->query($field)
+				);
+			}
+			else {
+				#TODO: Implement
+			}
 		}
 		
 		if ($value === null) {
 			return $this->object->identifier(
-				$restriction->getField()
+				$field
 			) . ($operator === '='? ' IS NULL' : ' IS NOT NULL'
 			);
 		}
@@ -189,7 +194,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 			
 			return sprintf(
 				'%s %s %s',
-				$this->object->identifier($restriction->getField()),
+				$this->object->identifier($field),
 				$restriction->getOperator(),
 				$this->query($value)
 			);
@@ -198,7 +203,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 		if ($value instanceof IdentifierInterface) {
 			return sprintf(
 				'%s %s %s',
-				$this->object->identifier($restriction->getField()),
+				$this->object->identifier($field),
 				$restriction->getOperator(),
 				$this->object->identifier($value)
 			);
@@ -206,7 +211,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 		
 		return sprintf(
 			'%s %s %s',
-			$this->object->identifier($restriction->getField()),
+			$this->object->identifier($field),
 			$restriction->getOperator(),
 			$this->quoter->quote(strval($value))
 		);

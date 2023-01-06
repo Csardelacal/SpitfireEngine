@@ -100,7 +100,7 @@ class RestrictionGroup
 		$value = $generator($this->table);
 		assert($value instanceof Query);
 		
-		$this->restrictions->push(new Restriction(null, Restriction::EQUAL_OPERATOR, $value));
+		$this->restrictions->push(new Restriction($value, Restriction::EQUAL_OPERATOR, null));
 		return $this;
 	}
 	
@@ -118,7 +118,7 @@ class RestrictionGroup
 		$value = $generator($this->table);
 		assert($value instanceof Query);
 		
-		$this->restrictions->push(new Restriction(null, Restriction::NOT_EQUAL_OPERATOR, $value));
+		$this->restrictions->push(new Restriction($value, Restriction::NOT_EQUAL_OPERATOR, null));
 		return $this;
 	}
 	
