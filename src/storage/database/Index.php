@@ -24,7 +24,12 @@ use spitfire\collection\Collection;
 /**
  * The index class represents an index on a DBMS, it contains the necessary
  * information for the application to know which data it has to index.
- * Allowing your application to retrieve data quicker and easier.
+ * 
+ * An Index allows your application to define a series of fields that the DBMS 
+ * should index in order to improve performance of data retrieval.
+ * 
+ * Please note that indexes on the logical level are "suggestions" that allow
+ * the DBMS to improve performance, but these are not required to be followed.
  */
 class Index implements IndexInterface
 {

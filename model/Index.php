@@ -32,6 +32,8 @@ use spitfire\collection\Collection;
  * 
  * Please note that indexes on the logical level are "suggestions" that allow
  * the DBMS to improve performance, but these are not required to be followed.
+ * 
+ * @template T of Model
  */
 class Index
 {
@@ -42,7 +44,7 @@ class Index
 	 * to the index and they will therefore perform better (or worse) when used 
 	 * properly.
 	 *
-	 * @var Collection
+	 * @var Collection<Field<T>>
 	 */
 	private $fields;
 	
@@ -74,9 +76,9 @@ class Index
 	/**
 	 * Creates a new index for the schema.
 	 * 
-	 * @param Collection<Field> $fields
+	 * @param Collection<Field<T>> $fields
 	 */
-	public function __construct($fields = null)
+	public function __construct(Collection $fields = null)
 	{
 		$this->fields = new Collection($fields);
 	}
@@ -84,9 +86,9 @@ class Index
 	/**
 	 * Return the field collection
 	 * 
-	 * @return Collection containing the <code>Field</code>s in this index
+	 * @return Collection<Field<T>> containing the <code>Field</code>s in this index
 	 */
-	public function getFields()
+	public function getFields() : Collection
 	{
 		return $this->fields;
 	}
@@ -95,10 +97,10 @@ class Index
 	 * Indicates whether a field is contained in this index. This allows an app
 	 * to check whether it needs to remove an index when a field is removed.
 	 * 
-	 * @param \spitfire\model\Field $f
+	 * @param \spitfire\model\Field<T> $f
 	 * @return bool
 	 */
-	public function contains(Field$f)
+	public function contains(Field $f) : bool
 	{
 		return $this->fields->contains($f);
 	}
@@ -124,7 +126,7 @@ class Index
 		 * Get the table name, this way we can generate a meaningful index name
 		 * when it's written to the database.
 		 */
-		$tablename  = $this->fields->rewind()->getSchema()->getTableName();
+		$tablename  = $this->fields->first()->getModel()->getTableName();
 		
 		/*
 		 * Implode the names of the fields being passed to the index. This way the 
@@ -143,40 +145,85 @@ class Index
 		return $this->name = 'idx_' . $tablename . '_' . $imploded;
 	}
 	
-	public function isUnique()
+	/**
+	 * Returns whether the field can contain repeated data. Please note that this
+	 * can be due to the field being unique or primary.
+	 * 
+	 * @return bool
+	 */
+	public function isUnique() : bool
 	{
 		return $this->unique || $this->primary;
 	}
 	
-	public function isPrimary()
+	/**
+	 * Is this field a primary key? This method will tell you the truth.
+	 * 
+	 * @return bool
+	 */
+	public function isPrimary() : bool
 	{
 		return $this->primary;
 	}
 	
-	public function setFields($fields)
+	/**
+	 * Set the fields that this index spans.
+	 * 
+	 * @param Collection<Field<T>> $fields
+	 * @return self<T>
+	 */
+	public function setFields(Collection $fields) : self
 	{
 		$this->fields = $fields;
 		return $this;
 	}
 	
-	public function putField(Field$field)
+	/**
+	 * Adds a field to the collection of fields.
+	 * 
+	 * @param Field<T> $field
+	 * @return self<T>
+	 */
+	public function putField(Field $field) : self
 	{
 		$this->fields->push($field);
+		return $this;
 	}
 	
-	public function setName($name)
+	/**
+	 * Sets the name of the index. The name must be a valid identifier for the 
+	 * DBMS. Please note that Spitfire will not validate this.
+	 * 
+	 * @param string $name
+	 * @return self<T>
+	 */
+	public function setName(string $name) : self
 	{
 		$this->name = $name;
 		return $this;
 	}
 	
-	public function unique($unique = true)
+	/**
+	 * Set the index to be unique.
+	 * 
+	 * @param bool $unique
+	 * @return self<T>
+	 */
+	public function unique(bool $unique = true) : self
 	{
 		$this->unique = $unique;
 		return $this;
 	}
 	
-	public function setPrimary($isPrimary)
+	
+	/**
+	 * Set the index to be the table's primary key. Please note that Spitfire
+	 * will not check if this is a duplicate.
+	 * 
+	 * @param bool $isPrimary
+	 * @return self<T>
+	 */
+	public function setPrimary(bool $isPrimary) : self
 	{
 		$this->primary = $isPrimary;
 		return $this;
