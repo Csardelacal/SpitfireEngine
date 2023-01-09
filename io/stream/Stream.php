@@ -249,6 +249,10 @@ class Stream implements StreamInterface
 	 */
 	public function write($string): int
 	{
+		if ($this->handle === null) {
+			throw new RuntimeException('Stream is detached', 2201091516);
+		}
+		
 		$result = fwrite($this->handle, $string);
 		
 		if ($result === false) {
@@ -284,6 +288,10 @@ class Stream implements StreamInterface
 	{
 		if (!$this->handle) {
 			throw new RuntimeException('Could not read a detached stream', 2108041120);
+		}
+		
+		if ($length < 0) {
+			throw new RuntimeException('Cannot read negative amount of bytes', 2201091518);
 		}
 		
 		if ($length === 0) {
@@ -331,6 +339,7 @@ class Stream implements StreamInterface
 	 *
 	 * @see http://php.net/manual/en/function.stream-get-meta-data.php
 	 * @param string $key Specific metadata to retrieve.
+	 * @throws RuntimeException
 	 * @return array|mixed|null Returns an associative array if no key is
 	 *     provided. Returns a specific key value if a key is provided and the
 	 *     value is found, or null if the key is not found.
@@ -374,7 +383,14 @@ class Stream implements StreamInterface
 		 * Rewind the stream to the beginning, so we can print the data from the
 		 * start and not begin somewhere in the middle of the stream.
 		 */
-		$this->seekable && $this->seek(0);
+		try {
+			$this->seekable && $this->seek(0);
+		}
+		catch (RuntimeException $e) {
+			throw new ApplicationException('Stream was marked as ssekable but could not be seeked', 2201091548);
+		}
+		
+		assert($this->handle !== null);
 		$result = stream_get_contents($this->handle);
 		
 		/**
@@ -391,24 +407,12 @@ class Stream implements StreamInterface
 	
 	/**
 	 *
-	 * @param string|StreamInterface $str
+	 * @param string $str
+	 * @throws RuntimeException
 	 * @return StreamInterface
 	 */
-	public static function fromString($str): StreamInterface
+	public static function fromString(string $str): StreamInterface
 	{
-		/**
-		 * We require the input to this to either be a string, or a Stream already.
-		 */
-		assert($str instanceof StreamInterface || is_string($str));
-		
-		/**
-		 * We already have a stream implementing the stream interface, why convert it to
-		 * another stream? Please note here that this may or may not be an instance of
-		 * this specific Stream class
-		 */
-		if ($str instanceof StreamInterface) {
-			return $str;
-		}
 		
 		/**
 		 * We create a handle to a temporary stream. Please note that we have a small modification
@@ -422,16 +426,20 @@ class Stream implements StreamInterface
 		 */
 		$handle = fopen('php://temp/maxmemory:16777216', 'w+');
 		
-		fwrite($handle, $str);
-		fseek($handle, 0);
-		
-		if (!$handle) {
+		if ($handle === false) {
 			throw new RuntimeException('Could not allocate stream', 2108041130);
 		}
+		
+		fwrite($handle, $str);
+		fseek($handle, 0);
 		
 		return self::fromHandle($handle);
 	}
 	
+	/**
+	 *
+	 * @param resource $handle
+	 */
 	public static function fromHandle($handle) : StreamInterface
 	{
 		$meta = stream_get_meta_data($handle);
