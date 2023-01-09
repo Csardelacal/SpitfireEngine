@@ -7,6 +7,7 @@ use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\model\QueryBuilderInterface;
 use spitfire\storage\database\Query;
+use spitfire\storage\database\query\RestrictionGroup;
 use spitfire\utils\Mixin;
 
 /**
@@ -122,6 +123,8 @@ abstract class Relationship implements RelationshipInterface, QueryBuilderInterf
 	
 	/**
 	 * 
+	 * @param RestrictionGroup::TYPE_* $type
+	 * @param callable $do
 	 * @return QueryBuilder<REMOTE>
 	 */
 	public function group(string $type, callable $do): QueryBuilder

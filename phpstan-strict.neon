@@ -4,6 +4,7 @@ includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 	
 parameters: 
+	treatPhpDocTypesAsCertain: false
 	exceptions:
 		check:
 			missingCheckedExceptionInThrows: true

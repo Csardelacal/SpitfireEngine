@@ -3,6 +3,7 @@ includes:
 	- phpstan-baseline.neon
 	
 parameters: 
+	treatPhpDocTypesAsCertain: false
 	excludePaths:
 		- vendor/
 		- tests/

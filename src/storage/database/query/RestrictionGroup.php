@@ -7,6 +7,7 @@ use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\identifiers\FieldIdentifier;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query;
+use spitfire\utils\Mixin;
 
 /**
  * A restriction group contains a set of restrictions (or restriction groups)
@@ -20,6 +21,9 @@ use spitfire\storage\database\Query;
  */
 class RestrictionGroup
 {
+	
+	use Mixin;
+	
 	const TYPE_OR  = 'OR';
 	const TYPE_AND = 'AND';
 	
@@ -51,7 +55,13 @@ class RestrictionGroup
 	public function __construct(TableIdentifierInterface $table)
 	{
 		$this->table = $table;
-		$this->restrictions = new Collection();
+		
+		/**
+		 * @var Collection<Restriction|RestrictionGroup>
+		 */
+		$c = new Collection();
+		$this->restrictions = $c;
+		$this->mixin($this->restrictions);
 	}
 	
 	/**
@@ -64,7 +74,6 @@ class RestrictionGroup
 	 * @param mixed $value
 	 * @param mixed $_
 	 * @return RestrictionGroup
-	 * @throws ApplicationException
 	 */
 	public function where(FieldIdentifier $field, $value, $_ = null) : RestrictionGroup
 	{
@@ -76,6 +85,7 @@ class RestrictionGroup
 		 */
 		if ($params === 3) {
 			list($operator, $value) = [$value, $_];
+			assert(is_string($operator));
 		}
 		else {
 			$operator = Restriction::EQUAL_OPERATOR;
@@ -123,7 +133,9 @@ class RestrictionGroup
 	}
 	
 	/**
-	 * @param string $type
+	 * 
+	 * @throws InvalidArgumentException
+	 * @param self::TYPE_* $type
 	 * @return RestrictionGroup
 	 */
 	public function group($type = self::TYPE_OR) : RestrictionGroup
@@ -139,7 +151,8 @@ class RestrictionGroup
 	
 	/**
 	 *
-	 * @param string $type
+	 * @throws InvalidArgumentException
+	 * @param self::TYPE_* $type
 	 * @return RestrictionGroup
 	 */
 	public function setType(string $type) : RestrictionGroup
@@ -170,20 +183,5 @@ class RestrictionGroup
 	public function restrictions() : Collection
 	{
 		return $this->restrictions;
-	}
-	
-	/**
-	 *
-	 * @param string $name
-	 * @param mixed $arguments
-	 * @return mixed
-	 */
-	public function __call($name, $arguments)
-	{
-		if (method_exists($this->restrictions, $name)) {
-			return $this->restrictions->$name(...$arguments);
-		}
-		
-		throw new BadMethodCallException(sprintf('Undefined method RestrictionGroup::%s', $name));
 	}
 }

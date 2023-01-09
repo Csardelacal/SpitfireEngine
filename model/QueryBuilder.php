@@ -9,6 +9,7 @@ use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\QueryOrTableIdentifier;
+use spitfire\storage\database\query\RestrictionGroup;
 use spitfire\storage\database\query\SelectExpression;
 use spitfire\utils\Mixin;
 
@@ -116,7 +117,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @param string $type
+	 * @param RestrictionGroup::TYPE_* $type
 	 * @param callable(ExtendedRestrictionGroupBuilder):void $do
 	 * @return QueryBuilder
 	 */
