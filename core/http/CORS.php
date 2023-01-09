@@ -135,7 +135,7 @@ class CORS
 	 * 
 	 * @param bool $allow
 	 */
-	public function credentials($allow = true)
+	public function credentials(bool $allow = true) : void
 	{
 		if ($allow) {
 			$this->headers->set('Access-Control-Allow-Credentials', 'true'); 
@@ -150,10 +150,10 @@ class CORS
 	 * when sending a CORS request. This is only relevant during OPTIONS requests,
 	 * otherwise the user-agent will ignore them.
 	 * 
-	 * @param array|boolean $headers
+	 * @param string[]|boolean $headers
 	 * @return $this
 	 */
-	public function expose($headers)
+	public function expose(array|bool $headers) : self
 	{
 		if ($headers === true) {
 			$this->headers->set('Access-Control-Expose-Headers', '*'); 
