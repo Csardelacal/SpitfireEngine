@@ -1,0 +1,14 @@
+
+includes:
+	- phpstan-baseline.neon
+	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	
+parameters: 
+	exceptions:
+		check:
+			missingCheckedExceptionInThrows: true
+			tooWideThrowType: true
+	excludePaths:
+		- vendor/
+		- tests/
+		- bin/

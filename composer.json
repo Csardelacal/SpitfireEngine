@@ -75,11 +75,13 @@
 		"test" : [
 			"cp ./vendor/magic3w/php-coding-standard/.phpcs.xml .phpcs.xml",
 			"./vendor/bin/phpstan analyse --level 5 .",
+			"echo 'Analyzing changed files with strict rules'",
+			"./vendor/bin/phpstan analyse -c phpstan-strict.neon --level 9 $(git --no-pager diff --name-only --diff-filter=MARC | grep '.php') || true",
 			"./vendor/bin/phpunit tests/"
 		],
 		"test-strict" : [
 			"cp ./vendor/magic3w/php-coding-standard/.phpcs.xml .phpcs.xml",
-			"./vendor/bin/phpstan analyse --level 6 .",
+			"./vendor/bin/phpstan analyse -c phpstan-strict.neon --level 9 .",
 			"./vendor/bin/phpunit tests/"
 		],
 		"coverage" : [
@@ -89,9 +91,9 @@
 			"./vendor/bin/phpstan analyse --generate-baseline --level 5 ."
 		],
 		"sniff":
-			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff master --diff-filter=d --cached --name-only | grep -E '\\.php$')",
+			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')",
 		"style":
-			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff master --diff-filter=d --cached --name-only | grep -E '\\.php$')"
+			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')"
 	},
 	
 	"config": {
