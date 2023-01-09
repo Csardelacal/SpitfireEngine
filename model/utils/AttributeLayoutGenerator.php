@@ -156,7 +156,7 @@ class AttributeLayoutGenerator
 		$attributes = new Collection();
 		
 		foreach ($props as $prop) {
-			$columnAttributes = (new Collection($prop->getAttributes(InIndexAttribute::class)))
+			$columnAttributes = (Collection::fromArray($prop->getAttributes(InIndexAttribute::class)))
 				->each(fn(ReflectionAttribute $ref) : InIndexAttribute => $ref->newInstance()->withContext($prop->getName()));
 			
 			$attributes->add($columnAttributes);

@@ -29,7 +29,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout = new Layout('testtable');
 		$field  = new Field('testfield', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => 1]);
@@ -49,7 +49,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$field  = new Field('testfield', 'int', true, false);
 		$field2  = new Field('testfield2', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => 1, 'testfield2' => 2]);
@@ -70,7 +70,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$layout = new Layout('testtable');
 		$field  = new Field('testfield', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => null]);
@@ -90,7 +90,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$field  = new Field('testfield', 'int', true, false);
 		$field2  = new Field('testfield2', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => null, 'testfield2' => null]);
@@ -111,7 +111,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$field  = new Field('testfield', 'int', true, false);
 		$field2  = new Field('testfield2', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => null, 'testfield2' => null]);
@@ -131,7 +131,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$field  = new Field('testfield', 'int', true, false);
 		$field2  = new Field('testfield2', 'string:255', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => null, 'testfield2' => null]);
@@ -152,7 +152,7 @@ class MySQLRecordGrammarTest extends TestCase
 		$field  = new Field('testfield', 'int', true, false);
 		$field2  = new Field('testfield2', 'string:255', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field, 'testfield2' => $field2]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field, 'testfield2' => $field2]));
 		$layout->primary($field);
 		
 		$record = new Record(['testfield' => 3, 'testfield2' => 'hello']);

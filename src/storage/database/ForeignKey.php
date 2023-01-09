@@ -57,7 +57,7 @@ class ForeignKey implements ForeignKeyInterface
 	 * index does not allow, but the index will not allow it's own field to contain
 	 * data that is not in the referenced field.
 	 *
-	 * @var IdentifierInterface
+	 * @var FieldIdentifierInterface
 	 */
 	private $referenced;
 	
@@ -65,7 +65,7 @@ class ForeignKey implements ForeignKeyInterface
 	 *
 	 * @param string $name
 	 * @param Field $field
-	 * @param IdentifierInterface $referenced
+	 * @param FieldIdentifierInterface $referenced
 	 */
 	public function __construct(string $name, Field $field, IdentifierInterface $referenced)
 	{
@@ -94,7 +94,7 @@ class ForeignKey implements ForeignKeyInterface
 	 */
 	public function getFields() : Collection
 	{
-		return new Collection([$this->field]);
+		return new Collection($this->field);
 	}
 	
 	/**
@@ -109,7 +109,7 @@ class ForeignKey implements ForeignKeyInterface
 	 */
 	public function getReferencedField(): Collection
 	{
-		return new Collection([$this->referenced]);
+		return new Collection($this->referenced);
 	}
 	
 	/**
@@ -122,7 +122,11 @@ class ForeignKey implements ForeignKeyInterface
 		$raw = $this->referenced->raw();
 		array_pop($raw);
 		
-		$table = new TableIdentifier($raw, new Collection());
+		/**
+		 * @var Collection<string>
+		 */
+		$fields = new Collection();
+		$table = new TableIdentifier($raw, $fields);
 		
 		return $table;
 	}

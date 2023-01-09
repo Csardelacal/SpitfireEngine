@@ -25,7 +25,7 @@ class MySQLTableGrammarTest extends TestCase
 		
 		$grammar = new MySQLTableGrammar(new MySQLQueryGrammar(new SlashQuoter));
 		$field = new Field('c', 'long:unsigned', false, true);
-		$index = new Index('_primary', new Collection([$field]), true, true);
+		$index = new Index('_primary', Collection::fromArray([$field]), true, true);
 		
 		$sql = $grammar->alterTable(
 			't2',

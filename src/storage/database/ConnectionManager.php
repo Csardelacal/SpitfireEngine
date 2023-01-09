@@ -2,6 +2,7 @@
 
 use Psr\Container\ContainerInterface;
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\contracts\ConfigurationInterface;
 use spitfire\provider\Container;
 use spitfire\storage\database\drivers\Adapter;
@@ -43,7 +44,7 @@ class ConnectionManager
 		$this->container = $container;
 		$this->definitions = $definitions;
 		$this->schemaFile = $schemaFile;
-		$this->connections = new Collection();
+		$this->connections = new TypedCollection(Connection::class);
 	}
 	
 	public function get(string $name) : Connection

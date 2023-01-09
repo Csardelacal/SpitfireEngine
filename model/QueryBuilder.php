@@ -170,8 +170,10 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Generate a collection of mappings for this query. If there's a pivot, there
 		 * will be several mappings, otherwise it will be just one.
+		 * 
+		 * @var Collection<ResultSetMapping>
 		 */
-		$mapping = collect([
+		$mapping = Collection::fromArray([
 			$this->mapping->with($this->with),
 			$this->pivot
 		])->filter();
@@ -217,8 +219,10 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Generate a collection of mappings for this query. If there's a pivot, there
 		 * will be several mappings, otherwise it will be just one.
+		 * 
+		 * @var Collection<ResultSetMapping>
 		 */
-		$mapping = collect([
+		$mapping = Collection::fromArray([
 			$this->mapping->with($this->with),
 			$this->pivot
 		])->filter();

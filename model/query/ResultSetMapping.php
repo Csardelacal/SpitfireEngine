@@ -1,6 +1,7 @@
 <?php namespace spitfire\model\query;
 
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
 use spitfire\model\relations\RelationshipInterface;
@@ -23,7 +24,7 @@ class ResultSetMapping
 	
 	/**
 	 *
-	 * @var IdentifierInterface[]
+	 * @var Collection<FieldIdentifierInterface>
 	 */
 	private $map;
 	
@@ -40,7 +41,7 @@ class ResultSetMapping
 	public function __construct(Model $model)
 	{
 		$this->model = $model;
-		$this->map = [];
+		$this->map = new TypedCollection(FieldIdentifierInterface::class);
 	}
 	
 	/**
@@ -54,17 +55,17 @@ class ResultSetMapping
 	
 	public function map(string $field) : IdentifierInterface
 	{
-		assert(array_key_exists($field, $this->map));
+		assert($this->map->has($field));
 		return $this->map[$field];
 	}
 	
 	/**
 	 * 
 	 * @param string $name
-	 * @param IdentifierInterface $field
+	 * @param FieldIdentifierInterface $field
 	 * @return static
 	 */
-	public function set(string $name, IdentifierInterface $field) : static
+	public function set(string $name, FieldIdentifierInterface $field) : static
 	{
 		$this->map[$name] = $field;
 		return $this;
@@ -84,7 +85,7 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @param Collection<mixed[]> $data
+	 * @param Collection<array<string,mixed>> $data
 	 * @return Collection<Model>
 	 */
 	public function make(Collection $data) : Collection
@@ -136,7 +137,7 @@ class ResultSetMapping
 		 * Eagerly load the relationships needed. Eager loading reduces overhead when multiple records
 		 * are fetched from the database and they all need relationships resolved.
 		 */
-		!empty($this->with) && $this->eagerLoad(new Collection([$activeRecord]));
+		!empty($this->with) && $this->eagerLoad(new Collection($activeRecord));
 		
 		/**
 		 * Once the records have been eagerly loaded, we can proceed to hydrate the models using them.
@@ -154,7 +155,7 @@ class ResultSetMapping
 	 */
 	protected function makeFieldList() : array
 	{
-		return (new Collection($this->map))
+		return (($this->map))
 			->each(fn (FieldIdentifierInterface $e) : string  => $e->getFieldName())
 			->toArray();
 	}

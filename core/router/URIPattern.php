@@ -100,7 +100,7 @@ class URIPattern
 		 */
 		preg_match_all('/\{([^\}]+)\}/', $pattern, $matches);
 		
-		$this->variables = (new Collection($matches[1]))->each(function (string $match) : array {
+		$this->variables = (Collection::fromArray($matches[1]))->each(function (string $match) : array {
 			return explode(':', $match, 2);
 		});
 	}

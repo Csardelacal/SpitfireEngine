@@ -12,7 +12,7 @@ class LayoutTest extends TestCase
 	public function testputIndex()
 	{
 		$layout = new Layout('testtable');
-		$fields = new Collection([
+		$fields = Collection::fromArray([
 			new Field('testfield1', 'int', false, true),
 			new Field('testfield2', 'string:255', true)
 		]);

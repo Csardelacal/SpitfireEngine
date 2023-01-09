@@ -22,7 +22,7 @@ class MySQLSchemaGrammarTest extends TestCase
 		$field  = new Field('testfield', 'int', false, false);
 		$field2 = new Field('testfiel2', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field, 'testfiel2' => $field2]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field, 'testfiel2' => $field2]));
 		$layout->primary($field);
 		$layout->index('testidx', $field2);
 		
@@ -61,7 +61,7 @@ class MySQLSchemaGrammarTest extends TestCase
 		$layout->primary($layout->getField('id'));
 		$field  = new Field('testfield', 'int:unsigned', false, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field]));
 		$layout->primary($field);
 		$layout->putIndex(new ForeignKey('foreignidx', $field, $foreign->getTableReference()->getOutput('id')));
 		

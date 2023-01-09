@@ -175,7 +175,7 @@ abstract class Model implements JsonSerializable
 				$value = $property->getValue($this);
 				
 				if ($value instanceof Model) {
-					$value = new RelationshipContent(true, new Collection([$value]));
+					$value = new RelationshipContent(true, new Collection($value));
 				}
 				elseif ($value instanceof Collection) {
 					$value = new RelationshipContent(false, $value);

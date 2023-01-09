@@ -5,6 +5,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
 
 /**
@@ -53,8 +54,8 @@ class Router extends Routable
 	 */
 	public function __construct(string $prefix = '/')
 	{
-		$this->middleware = new Collection();
-		$this->children = new Collection();
+		$this->middleware = new TypedCollection(MiddlewareInterface::class);
+		$this->children = new TypedCollection(Router::class);
 		parent::__construct($prefix);
 	}
 	

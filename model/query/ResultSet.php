@@ -61,7 +61,7 @@ class ResultSet
 	 */
 	public function fetchAll() : Collection
 	{
-		$all = new Collection($this->resultset->fetchAllAssociative());
-		return $this->maps->each(fn($e) => $e->make($all));
+		$all = Collection::fromArray($this->resultset->fetchAllAssociative());
+		return $this->maps->each(fn(ResultSetMapping $e) => $e->make($all));
 	}
 }

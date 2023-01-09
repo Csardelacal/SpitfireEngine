@@ -107,7 +107,7 @@ interface LayoutInterface
 	 * a random name to ensure it's unique.
 	 *
 	 * @param string $name
-	 * @param Field[] $fields
+	 * @param Field $fields
 	 * @return Index
 	 */
 	public function index($name, ...$fields) : Index;

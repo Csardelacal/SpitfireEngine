@@ -2,6 +2,7 @@
 
 use PDOStatement;
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
@@ -70,10 +71,16 @@ class Connection implements ConnectionInterface
 	public function getMigrationExecutor() : SchemaMigrationExecutorInterface
 	{
 		if ($this->migrator === null) {
-			$this->migrator = new GroupSchemaMigrationExecutor(new Collection([
+			/**
+			 * 
+			 * @var Collection<SchemaMigrationExecutorInterface>
+			 */
+			$executors = Collection::fromArray([
 				new RelationalSchemaMigrationExecutor($this),
 				new SchemaStateSchemaMigrationExecutor($this->schema)
-			]));
+			]);
+				
+			$this->migrator = new GroupSchemaMigrationExecutor($executors);
 		}
 		
 		return $this->migrator;

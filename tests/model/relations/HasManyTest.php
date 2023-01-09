@@ -97,7 +97,7 @@ class HasManyTest extends TestCase
 			}
 		};
 		
-		$records = new Collection([
+		$records = Collection::fromArray([
 			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
 			new ActiveRecord($model, new Record(['_id' => 2, 'test' => 2])),
 			new ActiveRecord($model, new Record(['_id' => 3, 'test' => 3])),

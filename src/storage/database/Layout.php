@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\event\EventDispatch;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\identifiers\TableIdentifier;
@@ -80,8 +81,8 @@ class Layout implements LayoutInterface
 	public function __construct(string $tablename)
 	{
 		$this->tablename = $tablename;
-		$this->fields = new Collection();
-		$this->indexes = new Collection();
+		$this->fields = new TypedCollection(Field::class);
+		$this->indexes = new TypedCollection(IndexInterface::class);
 		$this->events = new EventDispatch();
 	}
 	
@@ -221,12 +222,12 @@ class Layout implements LayoutInterface
 	 * a random name to ensure it's unique.
 	 *
 	 * @param string $name
-	 * @param Field[] $fields
+	 * @param Field $fields
 	 * @return Index
 	 */
 	public function index($name, ...$fields) : Index
 	{
-		$index = new Index($name, new Collection($fields));
+		$index = new Index($name, Collection::fromArray($fields));
 		$this->indexes->push($index);
 		
 		return $index;
@@ -237,12 +238,12 @@ class Layout implements LayoutInterface
 	 * a random name to ensure it's unique.
 	 *
 	 * @param string $name
-	 * @param Field[] $fields
+	 * @param Field $fields
 	 * @return Index
 	 */
 	public function unique(string $name, ...$fields) : Index
 	{
-		$index = new Index($name, new Collection($fields), true);
+		$index = new Index($name, Collection::fromArray($fields), true);
 		$this->indexes->push($index);
 		
 		return $index;
@@ -256,7 +257,7 @@ class Layout implements LayoutInterface
 	 */
 	public function primary(Field $field) : Index
 	{
-		$index = new Index('_PRIMARY', new Collection([$field]), true, true);
+		$index = new Index('_PRIMARY', new Collection($field), true, true);
 		$this->indexes->push($index);
 		
 		return $index;

@@ -2,6 +2,7 @@
 
 use ReflectionClass;
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\model\Model;
 use spitfire\model\utils\AttributeLayoutGenerator;
 use spitfire\storage\database\diff\Generator;
@@ -41,7 +42,7 @@ class SchemaDiffDirector extends Command
 	protected function execute(InputInterface $input, OutputInterface $output) : int
 	{
 		$files = glob($input->getArgument('dir') . '/*.php');
-		$models = new Collection();
+		$models = new TypedCollection(ReflectionClass::class);
 		
 		foreach ($files as $file) {
 			$output->writeln($file);

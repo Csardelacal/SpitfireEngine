@@ -3,7 +3,9 @@
 use BadMethodCallException;
 use Closure;
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\storage\database\identifiers\FieldIdentifier;
+use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\query\Alias;
@@ -98,11 +100,11 @@ class Query
 	public function __construct(QueryOrTableIdentifier $table)
 	{
 		$this->from = new Alias($table, $table->withAlias());
-		$this->joins = new Collection();
+		$this->joins = new TypedCollection(Join::class);
 		$this->where = new RestrictionGroup($this->from->output());
-		$this->select = new Collection();
-		$this->groupBy = new Collection();
-		$this->order = new Collection();
+		$this->select = new TypedCollection(SelectExpression::class);
+		$this->groupBy = new TypedCollection(IdentifierInterface::class);
+		$this->order = new TypedCollection(OrderBy::class);
 	}
 	
 	/**
@@ -205,7 +207,7 @@ class Query
 	 */
 	public function groupBy(array $columns = [])
 	{
-		$this->groupBy = new Collection($columns);
+		$this->groupBy = Collection::fromArray($columns);
 		return $this;
 	}
 	
@@ -268,12 +270,12 @@ class Query
 	public function withoutSelect() : Query
 	{
 		$copy = clone $this;
-		$copy->select = new Collection();
-		$copy->order = new Collection();
+		$copy->select = new TypedCollection(SelectExpression::class);
+		$copy->order = new TypedCollection(OrderBy::class);
 		return $copy;
 	}
 	
-	public function aggregate(IdentifierInterface $field, Aggregate $fn, string $alias) : Query
+	public function aggregate(FieldIdentifierInterface $field, Aggregate $fn, string $alias) : Query
 	{
 		$this->select->push(new SelectExpression($field, $alias, $fn));
 		return $this;

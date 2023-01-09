@@ -79,7 +79,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * @see https://dev.mysql.com/doc/refman/8.0/en/alter-table-examples.html
 		 */
 		$field = new Field($name, 'long:unsigned', false, true);
-		$index = new Index('_primary', new Collection([$field]), true, true);
+		$index = new Index('_primary', new Collection($field), true, true);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),
@@ -196,7 +196,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * is not causing any inconsistent behavior. This code is only executed during testing
 		 * and is generally not expected to run in production.
 		 */
-		assert((new Collection($options))->filter(function (string $e) : bool {
+		assert((Collection::fromArray($options))->filter(function (string $e) : bool {
 			return strstr($e, ',') !== false;
 		})->isEmpty());
 		
@@ -225,7 +225,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function index(string $name, array $fields): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$_fields = (new Collection($fields))->each(function (string $name) {
+		$_fields = (Collection::fromArray($fields))->each(function (string $name) {
 			return $this->table->getField($name);
 		});
 		$index = new Index($name, $_fields, false, false);
@@ -298,7 +298,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	public function unique(string $name, array $fields): TableMigrationExecutorInterface
 	{
 		$grammar = new MySQLTableGrammar($this->adapter->getQueryGrammar());
-		$index = new Index($name, (new Collection($fields))->each(function ($e) {
+		$index = new Index($name, (Collection::fromArray($fields))->each(function ($e) {
 			return $this->table->getField($e);
 		}), true, false);
 		
@@ -327,7 +327,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * @see https://dev.mysql.com/doc/refman/8.0/en/alter-table-examples.html
 		 */
 		$_field = $this->table->getField($field);
-		$index = new Index(Layout::PRIMARY_KEY, new Collection([$_field]), true, true);
+		$index = new Index(Layout::PRIMARY_KEY, new Collection($_field), true, true);
 		
 		$this->adapter->getDriver()->write($grammar->alterTable(
 			$this->table->getTableName(),

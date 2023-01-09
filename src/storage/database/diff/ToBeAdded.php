@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database\diff;
 
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\IndexInterface;
 
@@ -14,20 +15,20 @@ class ToBeAdded
 	
 	/**
 	 *
-	 * @var Collection<Field>
+	 * @var TypedCollection<Field>
 	 */
-	private Collection $fields;
+	private TypedCollection $fields;
 	
 	/**
 	 *
-	 * @var Collection<IndexInterface>
+	 * @var TypedCollection<IndexInterface>
 	 */
-	private Collection $indexes;
+	private TypedCollection $indexes;
 	
 	public function __construct()
 	{
-		$this->fields = new Collection();
-		$this->indexes = new Collection();
+		$this->fields = new TypedCollection(Field::class);
+		$this->indexes = new TypedCollection(IndexInterface::class);
 	}
 	
 	public function addField(Field $field) : ToBeAdded
@@ -44,18 +45,18 @@ class ToBeAdded
 	
 	/**
 	 *
-	 * @return Collection<Field>
+	 * @return TypedCollection<Field>
 	 */
-	public function getFields() : Collection
+	public function getFields() : TypedCollection
 	{
 		return $this->fields;
 	}
 	
 	/**
 	 *
-	 * @return Collection<IndexInterface>
+	 * @return TypedCollection<IndexInterface>
 	 */
-	public function getIndexes() : Collection
+	public function getIndexes() : TypedCollection
 	{
 		return $this->indexes;
 	}

@@ -62,7 +62,7 @@ class MySQLRecordGrammar implements RecordGrammarInterface
 			return sprintf('`%s` = %s', $e->getName(), $this->quote($diff[$e->getName()]));
 		})->filter();
 		
-		$stmt = (new Collection([
+		$stmt = (Collection::fromArray([
 			'UPDATE',
 			$layout->getTableName(),
 			'SET',
@@ -89,7 +89,7 @@ class MySQLRecordGrammar implements RecordGrammarInterface
 			return sprintf('`%s`', $e->getName());
 		})->join(', ');
 		
-		$stmt = (new Collection([
+		$stmt = (Collection::fromArray([
 			'INSERT INTO',
 			$layout->getTableName(),
 			'(', $_fields, ')',
@@ -116,7 +116,7 @@ class MySQLRecordGrammar implements RecordGrammarInterface
 		
 		assert($primary !== null);
 		
-		$stmt = (new Collection([
+		$stmt = (Collection::fromArray([
 			'DELETE FROM',
 			$layout->getTableName(),
 			'WHERE',

@@ -1,7 +1,7 @@
 <?php namespace spitfire\storage\database\query;
 
 use spitfire\storage\database\Aggregate;
-use spitfire\storage\database\identifiers\IdentifierInterface;
+use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -37,7 +37,7 @@ class SelectExpression
 	
 	/**
 	 *
-	 * @var IdentifierInterface
+	 * @var FieldIdentifierInterface
 	 */
 	private $input;
 	
@@ -50,11 +50,11 @@ class SelectExpression
 	
 	/**
 	 *
-	 * @param IdentifierInterface $input
+	 * @param FieldIdentifierInterface $input
 	 * @param string|null $alias
 	 * @param Aggregate|null $aggregate
 	 */
-	public function __construct(IdentifierInterface $input, string $alias = null, Aggregate $aggregate = null)
+	public function __construct(FieldIdentifierInterface $input, string $alias = null, Aggregate $aggregate = null)
 	{
 		assert($aggregate === null || $alias !== null);
 		$this->input = $input;
@@ -123,9 +123,9 @@ class SelectExpression
 	
 	/**
 	 *
-	 * @return IdentifierInterface
+	 * @return FieldIdentifierInterface
 	 */
-	public function getInput(): IdentifierInterface
+	public function getInput(): FieldIdentifierInterface
 	{
 		return $this->input;
 	}

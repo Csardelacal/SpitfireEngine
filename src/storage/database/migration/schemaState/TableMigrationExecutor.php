@@ -12,7 +12,6 @@ use spitfire\storage\database\ForeignKey;
 use spitfire\storage\database\Index;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
-use spitfire\storage\database\QueryTable;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -141,7 +140,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * is not causing any inconsistent behavior. This code is only executed during testing
 		 * and is generally not expected to run in production.
 		 */
-		assert((new Collection($options))->filter(function (string $e) : bool {
+		assert((Collection::fromArray($options))->filter(function (string $e) : bool {
 			return strstr($e, ',') !== false;
 		})->isEmpty());
 		
@@ -158,7 +157,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function index(string $name, array $fields): TableMigrationExecutorInterface
 	{
-		$_fields = (new Collection($fields))->each(function (string $name) : Field {
+		$_fields = (Collection::fromArray($fields))->each(function (string $name) : Field {
 			return $this->table->getField($name);
 		});
 		
@@ -214,7 +213,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function unique(string $name, array $fields): TableMigrationExecutorInterface
 	{
-		$_fields = (new Collection($fields))->each(function (string $name) {
+		$_fields = (Collection::fromArray($fields))->each(function (string $name) {
 			return $this->table->getField($name);
 		});
 		
@@ -234,7 +233,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 */
 	public function primary(string $field): TableMigrationExecutorInterface
 	{
-		$_fields = new Collection([$this->table->getField($field)]);
+		$_fields = Collection::fromArray([$this->table->getField($field)]);
 		
 		/**
 		 * If the table already has a primary key. This should fail.

@@ -1,5 +1,7 @@
 <?php namespace spitfire\utils;
 
+use spitfire\collection\Collection;
+
 class Strings
 {
 	
@@ -135,7 +137,7 @@ class Strings
 		$urlRegex = '#(https?://[a-zA-z0-9%&?/.\-_=+;@\#]+)#';
 		$flip = false;
 		
-		return collect(preg_split($urlRegex, $str, 0, PREG_SPLIT_DELIM_CAPTURE))->each(function ($e) use (&$flip, $cb) {
+		return Collection::fromArray(preg_split($urlRegex, $str, 0, PREG_SPLIT_DELIM_CAPTURE))->each(function ($e) use (&$flip, $cb) {
 			$flip = !$flip;
 			if ($flip) {
 				#HTML

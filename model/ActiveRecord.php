@@ -1,6 +1,7 @@
 <?php namespace spitfire\model;
 
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\model\relations\RelationshipContent;
@@ -50,7 +51,7 @@ class ActiveRecord
 	{
 		$this->model = $model;
 		$this->record = $record;
-		$this->cache  = new Collection();
+		$this->cache  = new TypedCollection(RelationshipContent::class);
 		$this->mixin($record);
 	}
 	
@@ -146,7 +147,7 @@ class ActiveRecord
 		 * @todo Move this to the appropriate relationship
 		 */
 		if ($relationship instanceof BelongsToOne && $this->record->get($field) === null) {
-			return new RelationshipContent(true, new Collection());
+			return new RelationshipContent(true, new TypedCollection(Model::class));
 		}
 		
 		/**

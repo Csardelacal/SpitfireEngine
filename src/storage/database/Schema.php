@@ -2,6 +2,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\collection\OutOfBoundsException;
+use spitfire\collection\TypedCollection;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -57,7 +58,7 @@ class Schema
 	public function __construct(string $name)
 	{
 		$this->name = $name;
-		$this->layouts = new Collection();
+		$this->layouts = new TypedCollection(Layout::class);
 	}
 	
 	/**

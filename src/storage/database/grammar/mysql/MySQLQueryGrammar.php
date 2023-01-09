@@ -66,7 +66,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 	 */
 	public function query(Query $query) : string
 	{
-		$sentence = new Collection([
+		$sentence = Collection::fromArray([
 			'SELECT',
 			$this->selectExpression($query),
 			'FROM',
@@ -227,7 +227,7 @@ class MySQLQueryGrammar implements QueryGrammarInterface
 	public function groupBy(Query $query) : string
 	{
 		
-		$grouped = (new Collection($query->getGroupBy()))->each(function (IdentifierInterface $e) {
+		$grouped = $query->getGroupBy()->each(function (IdentifierInterface $e) {
 			return $this->object->identifier($e);
 		});
 		

@@ -1,6 +1,7 @@
 <?php namespace spitfire\model\relations;
 
 use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
 use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
 use spitfire\model\query\RestrictionGroupBuilder;
@@ -33,7 +34,7 @@ class BelongsToOne extends Relationship
 		 * implies, by convention that there is nothing on the other side.
 		 */
 		if ($value === null) {
-			return new RelationshipContent(true, new Collection());
+			return new RelationshipContent(true, new TypedCollection(Model::class));
 		}
 		
 		/**

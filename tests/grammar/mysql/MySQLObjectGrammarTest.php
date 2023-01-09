@@ -45,7 +45,7 @@ class MySQLObjectGrammarTest extends TestCase
 		$layout = new Layout('testtable');
 		$field  = new Field('testfield', 'int', true, false);
 		
-		$layout->addFields(new Collection(['testfield' => $field]));
+		$layout->addFields(Collection::fromArray(['testfield' => $field]));
 		$layout->primary($field);
 		
 		$this->queryTable = $layout->getTableReference();

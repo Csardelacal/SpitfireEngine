@@ -224,7 +224,7 @@ class StoreTest extends TestCase
 			'test' => 'Hello world'
 		]));
 		
-		$activeRecord->set('foreign', new RelationshipContent(true, new Collection([$foreign])));
+		$activeRecord->set('foreign', new RelationshipContent(true, Collection::fromArray([$foreign])));
 		$instance = $model->withHydrate($activeRecord);
 		
 		$instance->store();
