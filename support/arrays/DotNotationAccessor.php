@@ -1,6 +1,6 @@
 <?php namespace spitfire\support\arrays;
 
-/* 
+/*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
@@ -20,21 +20,21 @@
  */
 
 /**
- * The dot notation accessor allows applications to access nested arrays by using a 
+ * The dot notation accessor allows applications to access nested arrays by using a
  * simple string with dots for separators. It also provides the ability to access
  * the data without having to check intermediate steps
- * 
+ *
  * In Spitfire this is mostly used in the configuration. This provides us with a
  * good mechanism to access configuration like this:
- * 
+ *
  * config('vendor.com.magic3w.example', 'example);
- * 
+ *
  * While using a pure array would lead to something like this:
- * 
+ *
  * config()['vendor']['com']['magic3w']['example']?? 'example';
- * 
+ *
  * If we wanted to make sure that all the arrays in the path are defined, we would
- * have to check whether each of them isset before accessing the data, which would 
+ * have to check whether each of them isset before accessing the data, which would
  * lead to several lines of code just to read the variable.
  */
 class DotNotationAccessor
@@ -48,7 +48,7 @@ class DotNotationAccessor
 	
 	/**
 	 * Contains the raw data for the accessor. This must be an array.
-	 * 
+	 *
 	 * @var mixed[]
 	 */
 	private $data;
@@ -56,20 +56,20 @@ class DotNotationAccessor
 	/**
 	 * Instances a new dot notation accessor for an array. Please note that changes to the
 	 * array will be broadcast to the original array.
-	 * 
-	 * Since the accessor expects the array to be passed by reference, you cannot pass the 
+	 *
+	 * Since the accessor expects the array to be passed by reference, you cannot pass the
 	 * result of a function call directly without getting a PHP warning.
-	 * 
+	 *
 	 * @param mixed[] $data
 	 */
-	public function __construct(array &$data) 
+	public function __construct(array &$data)
 	{
 		$this->data = &$data;
 	}
 	
 	/**
 	 * Returns whether the original array contains the key that is being requested.
-	 * 
+	 *
 	 * @param string $key
 	 * @return bool
 	 */
@@ -82,7 +82,7 @@ class DotNotationAccessor
 			$key = array_shift($steps);
 			
 			/*
-			 * If the key does not exist, we cannot continue further down into the 
+			 * If the key does not exist, we cannot continue further down into the
 			 * array. We need to stop here.
 			 */
 			if (!array_key_exists($key, $current)) {
@@ -99,8 +99,8 @@ class DotNotationAccessor
 	}
 	
 	/**
-	 * Returns the requested key from the array. 
-	 * 
+	 * Returns the requested key from the array.
+	 *
 	 * @param string $key
 	 * @param int $flags Currently only the ALLOW_ARRAY_RETURN flag is supported
 	 * @return mixed
@@ -114,7 +114,7 @@ class DotNotationAccessor
 			$step = array_shift($steps);
 			
 			/*
-			 * If the step does not exist, we cannot continue further down into the 
+			 * If the step does not exist, we cannot continue further down into the
 			 * array. We need to stop here. Leet the user know in a warning that this
 			 * is technically not okay.
 			 */
@@ -139,7 +139,7 @@ class DotNotationAccessor
 	
 	/**
 	 * Writes a key to the array. This will override the data, arrays will not be merged.
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $data
 	 * @return DotNotationAccessor
@@ -153,7 +153,7 @@ class DotNotationAccessor
 			$key = array_shift($steps);
 			
 			/*
-			 * If the key does not exist, we cannot continue further down into the 
+			 * If the key does not exist, we cannot continue further down into the
 			 * array. We need to stop here.
 			 */
 			if (!array_key_exists($key, $current) || !is_array($current[$key])) {

@@ -31,7 +31,8 @@
 		"pug-php/pug": "^3.4",
 		"magic3w/php-coding-standard": "^1.0",
 		"league/flysystem-aws-s3-v3": "^3.0",
-		"scrutinizer/ocular": "^1.9"
+		"scrutinizer/ocular": "^1.9",
+		"sirbrillig/phpcs-changed": "^2.10"
 	},
 
 	"suggest": {
@@ -72,14 +73,12 @@
 	
 	"scripts" : {
 		"test" : [
-			"cp ./vendor/magic3w/php-coding-standard/.phpcs.xml .phpcs.xml",
 			"./vendor/bin/phpstan analyse --level 5 .",
 			"echo 'Analyzing changed files with strict rules'",
 			"./vendor/bin/phpstan analyse -c phpstan-strict.neon --level 9 $(git --no-pager diff --name-only --diff-filter=MARC | grep '.php') || true",
 			"./vendor/bin/phpunit tests/"
 		],
 		"test-strict" : [
-			"cp ./vendor/magic3w/php-coding-standard/.phpcs.xml .phpcs.xml",
 			"./vendor/bin/phpstan analyse -c phpstan-strict.neon --level 9 .",
 			"./vendor/bin/phpunit tests/"
 		],
@@ -89,10 +88,12 @@
 		"baseline" : [
 			"./vendor/bin/phpstan analyse --generate-baseline --level 5 ."
 		],
-		"sniff":
-			"./vendor/bin/phpcs --encoding=utf-8 -n -p $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')",
-		"style":
-			"./vendor/bin/phpcbf --encoding=utf-8 -n -p $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')"
+		"sniff-lines":
+			"./vendor/bin/phpcs-changed -n -p --git --git-unstaged --ignore=vendor,app,bin --cache --standard=./vendor/magic3w/php-coding-standard/.phpcs.xml $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')",
+		"sniff-all":
+			"./vendor/bin/phpcs -n -p --ignore=vendor,app,bin --standard=./vendor/magic3w/php-coding-standard/.phpcs.xml $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')",
+		"style-all":
+			"./vendor/bin/phpcbf --encoding=utf-8 --standard=./vendor/magic3w/php-coding-standard/.phpcs.xml -n -p $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')"
 	},
 	
 	"config": {
