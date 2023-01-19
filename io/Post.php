@@ -21,15 +21,17 @@ class Post
 	 * The init method reads the current post / the data it is receiving. We will
 	 * read several different formats and parse them to make the integration across
 	 * apps seamless.
+	 *
+	 * @return mixed[]
 	 */
-	public static function init()
+	public static function init() : array
 	{
 		
 		/*
 		 * Switch the content type between the possible admitted options that
 		 * Spitfire admits and properly parses.
 		 */
-		switch (_def($_SERVER['CONTENT_TYPE'], null)) {
+		switch ($_SERVER['CONTENT_TYPE']?? null) {
 			/*
 			 * To parse JSON we check whether the proper type was set and parse it.
 			 * In the event of a JSON parse failure it will return null, which would

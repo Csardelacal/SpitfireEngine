@@ -1,5 +1,7 @@
 <?php namespace spitfire\model;
 
+use InvalidArgumentException;
+use PDOException;
 use spitfire\collection\Collection;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
@@ -56,7 +58,7 @@ class QueryBuilder implements QueryBuilderInterface
 	private $query;
 	
 	/**
-	 * 
+	 *
 	 * @param T $model
 	 */
 	public function __construct(Model $model)
@@ -66,6 +68,10 @@ class QueryBuilder implements QueryBuilderInterface
 		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
 	}
 	
+	/**
+	 *
+	 * @return self<T>
+	 */
 	public function withDefaultMapping() : QueryBuilder
 	{
 		$copy = clone $this;
@@ -86,11 +92,19 @@ class QueryBuilder implements QueryBuilderInterface
 		return $copy;
 	}
 	
+	/**
+	 *
+	 * @return ResultSetMapping
+	 */
 	public function getMapping() : ResultSetMapping
 	{
 		return $this->mapping;
 	}
 	
+	/**
+	 *
+	 * @return self<T>
+	 */
 	public function withMapping(ResultSetMapping $mapping) : QueryBuilder
 	{
 		$copy = clone $this;
@@ -98,6 +112,10 @@ class QueryBuilder implements QueryBuilderInterface
 		return $copy;
 	}
 	
+	/**
+	 *
+	 * @return self<T>
+	 */
 	public function withPivot(ResultSetMapping $mapping) : QueryBuilder
 	{
 		$copy = clone $this;
@@ -117,9 +135,10 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
+	 * @throws InvalidArgumentException
 	 * @param RestrictionGroup::TYPE_* $type
 	 * @param callable(ExtendedRestrictionGroupBuilder):void $do
-	 * @return QueryBuilder
+	 * @return self<T>
 	 */
 	public function group(string $type, callable $do) : QueryBuilder
 	{
@@ -133,6 +152,10 @@ class QueryBuilder implements QueryBuilderInterface
 		return new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions());
 	}
 	
+	/**
+	 *
+	 * @return self<T>
+	 */
 	public function restrictions(callable $do): QueryBuilder
 	{
 		$do($this->getRestrictions());
@@ -144,7 +167,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 * loaded when retrieving data.
 	 *
 	 * @param string[] $with
-	 * @return self
+	 * @return self<T>
 	 */
 	public function with(array $with)
 	{
@@ -152,6 +175,11 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this;
 	}
 	
+	/**
+	 *
+	 * @param mixed $args
+	 * @return self<T>
+	 */
 	public function where(...$args) : QueryBuilder
 	{
 		(new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()))->where(...$args);
@@ -170,14 +198,14 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Generate a collection of mappings for this query. If there's a pivot, there
 		 * will be several mappings, otherwise it will be just one.
-		 * 
+		 *
 		 * @var Collection<ResultSetMapping>
 		 */
 		$mapping = Collection::fromArray([
 			$this->mapping->with($this->with),
 			$this->pivot
 		])->filter();
-			
+		
 		/*
 		* Fetch a single row from the database.
 		*/
@@ -198,7 +226,7 @@ class QueryBuilder implements QueryBuilderInterface
 		}
 		
 		/**
-		 * 
+		 *
 		 * @var Model
 		 */
 		$model = $row[0];
@@ -219,14 +247,14 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Generate a collection of mappings for this query. If there's a pivot, there
 		 * will be several mappings, otherwise it will be just one.
-		 * 
+		 *
 		 * @var Collection<ResultSetMapping>
 		 */
 		$mapping = Collection::fromArray([
 			$this->mapping->with($this->with),
 			$this->pivot
 		])->filter();
-			
+		
 		/*
 		* Fetch the records from the database
 		*/
@@ -237,7 +265,7 @@ class QueryBuilder implements QueryBuilderInterface
 		
 		return $result->fetchAll()->each(function ($row) {
 			/**
-			 * 
+			 *
 			 * @var Model
 			 */
 			$model = $row[0];
@@ -250,6 +278,10 @@ class QueryBuilder implements QueryBuilderInterface
 		});
 	}
 	
+	/**
+	 *
+	 * @return Collection<T>
+	 */
 	public function range(int $offset, int $size) : Collection
 	{
 		/*
@@ -261,12 +293,14 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Generate a collection of mappings for this query. If there's a pivot, there
 		 * will be several mappings, otherwise it will be just one.
+		 *
+		 * @var Collection<ResultSetMapping>
 		 */
 		$mapping = collect([
 			$this->mapping->with($this->with),
 			$this->pivot
 		])->filter();
-			
+		
 		/*
 		* Fetch the records from the database
 		*/
@@ -277,8 +311,8 @@ class QueryBuilder implements QueryBuilderInterface
 		
 		return $result->fetchAll()->each(function ($row) {
 			/**
-			 * 
-			 * @var Model
+			 *
+			 * @var T
 			 */
 			$model = $row[0];
 			
@@ -290,6 +324,10 @@ class QueryBuilder implements QueryBuilderInterface
 		});
 	}
 	
+	/**
+	 *
+	 * @throws PDOException
+	 */
 	public function count() : int
 	{
 		$query = $this->query->withoutSelect();
@@ -300,7 +338,9 @@ class QueryBuilder implements QueryBuilderInterface
 		$_primary = $this->getModel()->getTable()->getPrimaryKey();
 		assert($_primary !== null);
 		assert($_primary->getFields()->count() === 1);
+		
 		$primary = $_primary->getFields()->first();
+		assert($primary !== null);
 		
 		$query->aggregate(
 			$this->getQuery()->getFrom()->output()->getOutput($primary->getName()),
@@ -311,14 +351,16 @@ class QueryBuilder implements QueryBuilderInterface
 		
 		$result = $this->model->getConnection()->query($query)->fetchOne();
 		assert($result !== false);
+		assert(is_scalar(($result)));
 		
-		return $result;
+		return (int)$result;
 	}
 	
 	/**
 	 * The advantage of counting records like this is that mysql will stop counting
 	 * as soon as it found the n records it's supposed to look for.
 	 *
+	 * @throws PDOException
 	 * @see https://sql-bits.com/check-if-more-than-n-rows-are-returned/
 	 */
 	public function quickCount(int $upto = 101) : int
@@ -332,7 +374,9 @@ class QueryBuilder implements QueryBuilderInterface
 		$_primary = $this->getModel()->getTable()->getPrimaryKey();
 		assert($_primary !== null);
 		assert($_primary->getFields()->count() === 1);
+		
 		$primary = $_primary->getFields()->first();
+		assert($primary !== null);
 		
 		/**
 		 * Use the primary key for counting.
@@ -354,7 +398,8 @@ class QueryBuilder implements QueryBuilderInterface
 		
 		$result = $this->model->getConnection()->query($outer)->fetchOne();
 		assert($result !== false);
+		assert(is_scalar($result));
 		
-		return $result;
+		return (int)$result;
 	}
 }

@@ -291,12 +291,13 @@ function getPathInfo()
  * usage of the collection in certain environments where the PHP version still
  * limits that behavior.
  *
- * @param mixed $elements
- * @return Collection
+ * @template T
+ * @param T[] $elements
+ * @return Collection<T>
  */
 function collect($elements = [])
 {
-	return new Collection($elements);
+	return Collection::fromArray($elements);
 }
 
 
@@ -482,7 +483,7 @@ function config($key, $fallback = null)
  * @return string|null
  */
 function env(string $param, string $fallback = null) :? string
-{	
+{
 	/**
 	 * If no parameter was given, the application would be unable to work with it.
 	 */
@@ -501,7 +502,7 @@ function cli() : bool
 }
 
 /**
- * 
+ *
  * @template IN of object
  * @template OUT of object
  * @param IN $ctx
