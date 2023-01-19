@@ -141,16 +141,6 @@ class ActiveRecord
 		}
 		
 		/**
-		 * If the relationship does not contain any data, and it's a belongstoone relation
-		 * we skip loading the data since we know there is none.
-		 *
-		 * @todo Move this to the appropriate relationship
-		 */
-		if ($relationship instanceof BelongsToOne && $this->record->get($field) === null) {
-			return new RelationshipContent(true, new TypedCollection(Model::class));
-		}
-		
-		/**
 		 * Request the method to find the data we need for the relationship to be resolved
 		 *
 		 */
