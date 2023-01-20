@@ -9,6 +9,11 @@
             "name": "database",
             "directory": "src/storage/database/",
             "target": "git@github.com:spitfire-php/database.git"
+        },
+        {
+            "name": "defer",
+            "directory": "src/defer/",
+            "target": "git@github.com:spitfire-php/defer.git"
         }
     ]
 }

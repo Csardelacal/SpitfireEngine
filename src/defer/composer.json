@@ -1,0 +1,20 @@
+{
+	"name": "spitfire/engine",
+	"license": "MIT",
+	"homepage": "https://spitfirephp.com",
+	
+	"description": "Deferal package for spitfire",
+
+	"require": {
+		"php" : "^7||^8",
+		"andrewbreksa/rsmq": "^2.0",
+		"symfony/console": "^6.2",
+		"spitfire/dependency-provider": "^0.2.8"
+	},
+
+	"autoload": {
+		"psr-4": {
+			"spitfire\\defer\\": "./"
+		}
+	}
+}

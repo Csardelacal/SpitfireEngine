@@ -32,22 +32,26 @@
 		"magic3w/php-coding-standard": "^1.0",
 		"league/flysystem-aws-s3-v3": "^3.0",
 		"scrutinizer/ocular": "^1.9",
-		"sirbrillig/phpcs-changed": "^2.10"
+		"sirbrillig/phpcs-changed": "^2.10",
+		"andrewbreksa/rsmq": "^2.0"
 	},
 
 	"suggest": {
 		"monolog/monolog": "Provides logging capabilities for applications",
 		"guzzlehttp/guzzle": "PSR7 compatible HTTP messaging library",
-		"league/flysystem-aws-s3-v3": "Storage driver for S3 compatible servers"
+		"league/flysystem-aws-s3-v3": "Storage driver for S3 compatible servers",
+		"andrewbreksa/rsmq": "For use with spitfire/defer mechanisms"
 	},
 	
 	"replace": {
 		"spitfire/contracts" : "self.version",
+		"spitfire/defer" : "self.version",
 		"spitfire/database" : "self.version"
 	},
 	
 	"provide": {
 		"spitfire/contracts" : "self.version",
+		"spitfire/defer" : "self.version",
 		"spitfire/database" : "self.version"
 	},
 
@@ -57,6 +61,7 @@
 		],
 		"psr-4": {
 			"spitfire\\": "./",
+			"spitfire\\defer\\": "./src/defer/",
 			"spitfire\\storage\\": "./src/storage/",
 			"spitfire\\contracts\\": "./src/contracts/"
 		}
