@@ -1,11 +1,9 @@
 Documentation/*
 *.*~
 *.DS_STORE
-*.sublime-project
-
-*.sublime-workspace
 cov.xml
 /nbproject/private/
+/.env
 /.phpunit.result.cache
 /.phpcs-changed-cache
 /vendor

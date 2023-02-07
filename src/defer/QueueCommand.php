@@ -5,15 +5,10 @@ use AndrewBreksa\RSMQ\RSMQClient;
 use spitfire\defer\WorkerFactory;
 use Predis\Client;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(
-	name: 'defer:process',
-	description: 'Processes the defer queue'
-)]
 
 class QueueCommand extends Command
 {
@@ -23,6 +18,12 @@ class QueueCommand extends Command
 	public function __construct(ContainerInterface $container)
 	{
 		$this->container = $container;
+		
+		/**
+		 * Provide metadata so the application knows when to invoke the command.
+		 */
+		$this->setName('defer:process');
+		$this->setDescription('Processes the defer queue');
 		parent::__construct();
 	}
 	
