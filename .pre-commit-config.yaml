@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.4.2
+    hooks:    
+    - id: insert-license
+      files: \.php$
+      args:
+        - --license-filepath
+        - src/.license-header.txt        # defaults to: LICENSE.txt
+        - --comment-style
+        - /*| *| */                     # defaults to:  #
+        - --fuzzy-match-generates-todo
+        - --use-current-year
+        - --insert-license-after-regex
+        - ^<\?php
