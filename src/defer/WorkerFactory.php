@@ -1,5 +1,26 @@
 <?php namespace spitfire\defer;
 
+/*
+ *
+ * Copyright (C) 2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-2023  USA
+ *
+ */
+
 use AndrewBreksa\RSMQ\ExecutorInterface;
 use AndrewBreksa\RSMQ\Message;
 use AndrewBreksa\RSMQ\QueueWorker;
@@ -63,7 +84,7 @@ class WorkerFactory
 			}
 			
 			/**
-			 * 
+			 *
 			 * @throws NotFoundExceptionInterface
 			 * @throws ContainerExceptionInterface
 			 */
@@ -84,13 +105,12 @@ class WorkerFactory
 				assert(is_string($payload->task) && class_exists($payload->task));
 				
 				/**
-				 * 
+				 *
 				 * @var LoggerInterface
 				 */
 				$logger = $this->container->get(LoggerInterface::class);
 				
 				try {
-					
 					if (!$this->container->has($payload->task)) {
 						throw new \Exception(sprintf('Bad task %s', $payload->task));
 					}
@@ -113,8 +133,8 @@ class WorkerFactory
 					 */
 					$task->body($payload->settings);
 					$logger->info(sprintf(
-						'Task processed successfully - %s (%s) {%.2f sec}', 
-						$payload->task, 
+						'Task processed successfully - %s (%s) {%.2f sec}',
+						$payload->task,
 						is_scalar($payload->settings)? $payload->settings : 'object',
 						microtime(true) - $started
 					));
@@ -128,8 +148,8 @@ class WorkerFactory
 				}
 				catch (Throwable $e) {
 					$logger->error(sprintf(
-						'Task failed - %s (%s) {%.2f sec}', 
-						$payload->task, 
+						'Task failed - %s (%s) {%.2f sec}',
+						$payload->task,
 						is_scalar($payload->settings)? $payload->settings : 'object',
 						microtime(true) - $started
 					));
@@ -140,7 +160,7 @@ class WorkerFactory
 					$logger->error($e->getTraceAsString());
 					$logger->error('JSON: ' . json_encode((array)$e));
 					
-					$logger->error($payload->expires > time()? 'Task will be retried' : 'Task abandoned');
+					$logger->error($payload->expires < time()? 'Task will be retried' : 'Task abandoned');
 					return $payload->expires > time();
 				}
 				

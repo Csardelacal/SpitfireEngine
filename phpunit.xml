@@ -16,6 +16,7 @@
     </include>
     <exclude>
       <directory suffix=".php">tests</directory>
+      <directory suffix=".php">vendor</directory>
     </exclude>
     <report>
       <clover outputFile="/tmp/coverage.xml"/>
