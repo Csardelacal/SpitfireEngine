@@ -1,4 +1,4 @@
-<?php namespace spitfire\model\attribute;
+<?php namespace spitfire\model\reflection;
 
 /*
  *
@@ -22,48 +22,55 @@
  */
 
 
-use Attribute;
+use spitfire\model\attribute\Type;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 
-/**
- * The column attribute can be attached to a property of a model, allowing the
- * application to automatically generate fields or columns for the given element.
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-class CharacterString extends Type
+class ReflectionField
 {
 	
-	/**
-	 *
-	 * @var bool
-	 */
-	private ?bool $nullable;
+	private string $name;
+	private bool $nullable;
+	private Type $type;
 	
-	private int $length;
-	
-	public function __construct(int $length = 255, bool $nullable = null)
+	public function __construct(string $name, bool $nullable, Type $type)
 	{
+		$this->name = $name;
+		$this->type = $type;
 		$this->nullable = $nullable;
-		$this->length = $length;
-		
-		assert($length > 0);
+	}
+	
+	/**
+	 * Get the value of type
+	 *
+	 * @return Type
+	 */
+	public function getType(): Type
+	{
+		return $this->type;
+	}
+	
+	/**
+	 * Get the value of name
+	 *
+	 * @return string
+	 */
+	public function getName(): string
+	{
+		return $this->name;
 	}
 	
 	/**
 	 * Get the value of nullable
+	 *
+	 * @return bool
 	 */
-	public function isNullable() : ?bool
+	public function getNullable(): bool
 	{
 		return $this->nullable;
 	}
 	
-	public function getLength() : int
+	public function migrate(TableMigrationExecutorInterface $migrator)
 	{
-		return $this->length;
-	}
-	
-	public function migrate(TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
-	{
-		$migrator->string($name, $this->length, $nullable);
+		$this->type->migrate($migrator, $this->name, $this->nullable);
 	}
 }

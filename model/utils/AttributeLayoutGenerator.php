@@ -1,23 +1,39 @@
 <?php namespace spitfire\model\utils;
 
-use Closure;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
 use ReflectionAttribute;
 use ReflectionClass;
-use ReflectionProperty as Property;
 use spitfire\collection\Collection;
-use spitfire\model\attribute\CharacterString;
 use spitfire\model\attribute\Table as TableAttribute;
-use spitfire\model\attribute\EnumType;
 use spitfire\model\attribute\Id;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
-use spitfire\model\attribute\Integer as IntAttribute;
-use spitfire\model\attribute\LongInteger as LongAttribute;
 use spitfire\model\attribute\Primary;
 use spitfire\model\attribute\References as ReferencesAttribute;
 use spitfire\model\attribute\SoftDelete;
-use spitfire\model\attribute\Text;
 use spitfire\model\attribute\Timestamps;
 use spitfire\model\Model;
+use spitfire\model\ReflectionModel;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface as MigratorInterface;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
@@ -31,7 +47,7 @@ class AttributeLayoutGenerator
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param ReflectionClass<Model> $reflection
 	 * @return LayoutInterface
 	 */
@@ -62,85 +78,24 @@ class AttributeLayoutGenerator
 	 *
 	 * @todo This function is way longer than it should be and way more complicated than it
 	 * should.
-	 * 
+	 *
 	 * @param MigratorInterface $target
 	 * @param ReflectionClass<Model> $source
 	 * @return void
 	 */
 	private function addColumns(MigratorInterface $target, ReflectionClass $source) : void
 	{
-		$props = $source->getProperties();
 		
-		$available = [
-			IntAttribute::class => function (Property $prop, MigratorInterface $migrator, IntAttribute $integer) {
-				$nullable = $integer->isNullable()?? $prop->getType()->allowsNull();
-				$migrator->int($prop->getName(), $integer->isUnsigned(), $nullable);
-			},
-			LongAttribute::class => function (Property $prop, MigratorInterface $migrator, LongAttribute $integer) {
-				$nullable = $integer->isNullable()?? $prop->getType()->allowsNull();
-				$migrator->long($prop->getName(), $integer->isUnsigned(), $nullable);
-			},
-			CharacterString::class => function (Property $prop, MigratorInterface $migrator, CharacterString $string) {
-				$nullable = $string->isNullable()?? $prop->getType()->allowsNull();
-				$migrator->string($prop->getName(), $string->getLength(), $nullable);
-			},
-			Text::class => function (Property $prop, MigratorInterface $migrator, Text $string) {
-				$nullable = $string->isNullable()?? $prop->getType()->allowsNull();
-				$migrator->text($prop->getName(), $nullable);
-			},
-			EnumType::class => function (Property $prop, MigratorInterface $migrator, EnumType $string) {
-				$nullable = $string->isNullable()?? $prop->getType()->allowsNull();
-				$migrator->enum($prop->getName(), $string->getOptions(), $nullable);
-			}
-		];
-		
-		
-		/**
-		 *
-		 * @template T
-		 * @param class-string<T> $classname
-		 * @return callable(string,MigratorInterface,T):void $action
-		 */
-		$transformer = function (string $classname) use ($available) : Closure {
-			return $available[$classname];
-		};
+		$props = (new ReflectionModel($source->getName()))->getFields();
 		
 		foreach ($props as $prop) {
-			/**
-			 * This prevents an application from registering two types to a single
-			 * column, which would lead to disaster.
-			 */
-			$found = false;
-			
-			foreach (array_keys($available) as /** @var class-string */ $type) {
-				/**
-				 * Check if the column is of type
-				 */
-				$columnAttribute = $prop->getAttributes($type);
-				
-				/**
-				 * If the property is not part of a field, we just continue.
-				 */
-				if (empty($columnAttribute)) {
-					continue;
-				}
-				
-				assert(count($columnAttribute) === 1);
-				assert($found === false);
-				
-				$column = $columnAttribute[0]->newInstance();
-				assert($column instanceof $type);
-				
-				$transformer($type)($prop, $target, $column);
-				
-				$found = true;
-			}
+			$prop->migrate($target);
 		}
 	}
 	
 	/**
 	 * This method allows our application to add columns to our schema.
-	 * 
+	 *
 	 * @param MigratorInterface $target
 	 * @param ReflectionClass<Model> $source
 	 * @return void
@@ -169,6 +124,9 @@ class AttributeLayoutGenerator
 				->sort(fn(InIndexAttribute $a, InIndexAttribute $b) => $a->getPriority() <=> $b->getPriority())
 				->each(fn(InIndexAttribute $e) => $e->getContext());
 			
+			assert(is_string($name));
+			assert(!is_numeric($name));
+			
 			$target->index(
 				$name,
 				$columns->toArray()
@@ -179,7 +137,7 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
-	 * 
+	 *
 	 * @param MigratorInterface $target
 	 * @param ReflectionClass<Model> $source
 	 * @return void
@@ -202,7 +160,7 @@ class AttributeLayoutGenerator
 	
 	/**
 	 * This method allows our application to add columns to our schema.
-	 * 
+	 *
 	 * @param MigratorInterface $target
 	 * @param ReflectionClass<Model> $source
 	 * @return void
@@ -243,7 +201,7 @@ class AttributeLayoutGenerator
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param MigratorInterface $migrator
 	 * @param ReflectionClass<Model> $reflection
 	 * @return void
@@ -261,7 +219,7 @@ class AttributeLayoutGenerator
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param MigratorInterface $migrator
 	 * @param ReflectionClass<Model> $reflection
 	 * @return void
@@ -274,13 +232,13 @@ class AttributeLayoutGenerator
 			return;
 		}
 		
-		assert($reflection->getProperty('created'));
-		assert($reflection->getProperty('updated'));
+		assert($reflection->hasProperty('created'));
+		assert($reflection->hasProperty('updated'));
 		$migrator->timestamps();
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param MigratorInterface $migrator
 	 * @param ReflectionClass<Model> $reflection
 	 * @return void

@@ -1,4 +1,4 @@
-<?php namespace spitfire\model\attribute;
+<?php  namespace tests\spitfire\model;
 
 /*
  *
@@ -22,34 +22,24 @@
  */
 
 
-use Attribute;
-use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use PHPUnit\Framework\TestCase;
+use spitfire\model\attribute\Integer;
+use spitfire\model\ReflectionModel;
+use tests\spitfire\model\fixtures\TestModel;
 
-/**
- * The column attribute can be attached to a property of a model, allowing the
- * application to automatically generate fields or columns for the given element.
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-class Text extends Type
+class ReflectionTest extends TestCase
 {
 	
-	private ?bool $nullable;
-	
-	public function __construct(bool $nullable = null)
+	public function testFields()
 	{
-		$this->nullable = $nullable;
-	}
-	
-	/**
-	 * Get the value of nullable
-	 */
-	public function isNullable() : ?bool
-	{
-		return $this->nullable;
-	}
-	
-	public function migrate(TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
-	{
-		$migrator->text($name, $nullable);
+		$reflection = new ReflectionModel(TestModel::class);
+		$fields = $reflection->getFields();
+		
+		$this->assertEquals(5, $fields->count());
+		
+		$test = $fields['test'];
+		$this->assertEquals(true, $test->getNullable());
+		$this->assertEquals('test', $test->getName());
+		$this->assertInstanceOf(Integer::class, $test->getType());
 	}
 }
