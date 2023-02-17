@@ -14,6 +14,11 @@
             "name": "defer",
             "directory": "src/defer/",
             "target": "git@github.com:spitfire-php/defer.git"
+        },
+        {
+            "name": "exceptions",
+            "directory": "src/exceptions/",
+            "target": "git@github.com:spitfire-php/exceptions.git"
         }
     ]
 }
