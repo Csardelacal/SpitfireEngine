@@ -1,13 +1,8 @@
-<?php
-
-namespace spitfire\io\stream;
-
-use Psr\Http\Message\StreamInterface;
-use RuntimeException;
-use spitfire\exceptions\ApplicationException;
+<?php namespace spitfire\io\stream;
 
 /*
- * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +17,15 @@ use spitfire\exceptions\ApplicationException;
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * MA 02110-13 01  USA
+ *
  */
+
+
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
+use spitfire\exceptions\ApplicationException;
+
 
 /**
  *
@@ -60,8 +62,9 @@ class Stream implements StreamInterface
 	/**
 	 * List of modes that are either readable or writable, or both.
 	 */
-	public const WRITABLE = ['w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
-	public const READABLE = ['w', 'w+', 'a', 'a+', 'r', 'r+'];
+	public const MODES    = ['w', 'w+', 'a', 'a+', 'r', 'r+', 'x', 'x+', 'c', 'c+'];
+	public const WRITABLE = ['w', 'w+', 'a', 'a+', 'r+', 'x', 'x+', 'c', 'c+'];
+	public const READABLE = ['w+', 'a+', 'r', 'r+', 'x+', 'c+'];
 	
 	/**
 	 *
@@ -409,9 +412,9 @@ class Stream implements StreamInterface
 	 *
 	 * @param string $str
 	 * @throws RuntimeException
-	 * @return StreamInterface
+	 * @return Stream
 	 */
-	public static function fromString(string $str): StreamInterface
+	public static function fromString(string $str): Stream
 	{
 		
 		/**
@@ -440,7 +443,7 @@ class Stream implements StreamInterface
 	 *
 	 * @param resource $handle
 	 */
-	public static function fromHandle($handle) : StreamInterface
+	public static function fromHandle($handle) : Stream
 	{
 		$meta = stream_get_meta_data($handle);
 		$mode = trim($meta['mode'], 'bt');
