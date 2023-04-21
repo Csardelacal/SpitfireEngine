@@ -1,4 +1,25 @@
 <?php
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -11,12 +32,7 @@ use spitfire\core\http\URLBuilder;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\user\ApplicationException as UserApplicationException;
 use spitfire\exceptions\user\NotFoundException;
-use spitfire\io\media\FFMPEGManipulator;
-use spitfire\io\media\GDManipulator;
-use spitfire\io\media\ImagickManipulator;
-use spitfire\io\media\MediaDispatcher;
 use spitfire\io\stream\Stream;
-use spitfire\io\template\View;
 use spitfire\model\ModelFactory;
 use spitfire\SpitFire;
 use spitfire\storage\DriveDispatcher as StorageDriveDispatcher;
@@ -348,26 +364,6 @@ function within($min, $val, $max)
 {
 	trigger_error('Function within() is deprecated, rename it to clamp()', E_USER_DEPRECATED);
 	return clamp($min, $val, $max);
-}
-
-function media()
-{
-	static $dispatcher = null;
-	
-	if (!$dispatcher) {
-		$dispatcher = new MediaDispatcher();
-		$dispatcher->register('image/png', new GDManipulator());
-		$dispatcher->register('image/jpg', new GDManipulator());
-		$dispatcher->register('image/webp', new GDManipulator());
-		$dispatcher->register('image/psd', new ImagickManipulator());
-		$dispatcher->register('image/gif', new FFMPEGManipulator());
-		$dispatcher->register('video/mp4', new FFMPEGManipulator());
-		$dispatcher->register('video/quicktime', new FFMPEGManipulator());
-		$dispatcher->register('image/jpeg', new GDManipulator());
-		$dispatcher->register('image/vnd.adobe.photoshop', new ImagickManipulator());
-	}
-	
-	return $dispatcher;
 }
 
 /**
