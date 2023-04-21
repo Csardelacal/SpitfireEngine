@@ -1,5 +1,26 @@
 <?php namespace spitfire\core\http;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 use spitfire\core\Headers;
 
 /* 
@@ -72,13 +93,13 @@ class CORS
 	public function origin($origin)
 	{
 		if ($origin === true) {
-			$this->headers->set('Access-Control-Allow-Origin', '*'); 
+			$this->headers->replace('Access-Control-Allow-Origin', '*'); 
 		}
 		elseif ($origin === false) {
-			$this->headers->set('Access-Control-Allow-Origin', 'null'); 
+			$this->headers->replace('Access-Control-Allow-Origin', 'null'); 
 		}
 		else {
-			$this->headers->set('Access-Control-Allow-Origin', $origin); 
+			$this->headers->replace('Access-Control-Allow-Origin', $origin); 
 		}
 		
 		return $this;
@@ -96,10 +117,10 @@ class CORS
 	{
 		
 		if ($headers === true) {
-			$this->headers->set('Access-Control-Allow-Headers', '*'); 
+			$this->headers->replace('Access-Control-Allow-Headers', '*'); 
 		} 
 		else {
-			$this->headers->set('Access-Control-Allow-Headers', collect($headers)->join(', ')); 
+			$this->headers->replace('Access-Control-Allow-Headers', collect($headers)->join(', ')); 
 		}
 		
 		return $this;
@@ -119,10 +140,10 @@ class CORS
 	{
 		
 		if ($methods === true) {
-			$this->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS, CONNECT, TRACE, PATCH'); 
+			$this->headers->replace('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS, CONNECT, TRACE, PATCH'); 
 		} 
 		else {
-			$this->headers->set('Access-Control-Allow-Methods', collect($methods)->join(', ')); 
+			$this->headers->replace('Access-Control-Allow-Methods', collect($methods)->join(', ')); 
 		}
 		
 		return $this;
@@ -138,7 +159,7 @@ class CORS
 	public function credentials(bool $allow = true) : void
 	{
 		if ($allow) {
-			$this->headers->set('Access-Control-Allow-Credentials', 'true'); 
+			$this->headers->replace('Access-Control-Allow-Credentials', 'true'); 
 		}
 		else {
 			$this->headers->unset('Access-Control-Allow-Credentials'); 
@@ -156,13 +177,13 @@ class CORS
 	public function expose(array|bool $headers) : self
 	{
 		if ($headers === true) {
-			$this->headers->set('Access-Control-Expose-Headers', '*'); 
+			$this->headers->replace('Access-Control-Expose-Headers', '*'); 
 		} 
 		elseif ($headers === false) {
 			$this->headers->unset('Access-Control-Expose-Headers'); 
 		}
 		else {
-			$this->headers->set('Access-Control-Expose-Headers', collect($headers)->join(', ')); 
+			$this->headers->replace('Access-Control-Expose-Headers', collect($headers)->join(', ')); 
 		}
 		
 		return $this;
@@ -180,10 +201,10 @@ class CORS
 	public function cache($seconds)
 	{
 		if ($seconds === false) {
-			$this->headers->set('Access-Control-Max-Age', '-1'); 
+			$this->headers->replace('Access-Control-Max-Age', '-1'); 
 		}
 		else {
-			$this->headers->set('Access-Control-Max-Age', $seconds); 
+			$this->headers->replace('Access-Control-Max-Age', (string)$seconds); 
 		}
 		
 		return $this;

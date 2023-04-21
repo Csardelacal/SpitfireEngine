@@ -1,5 +1,27 @@
 <?php namespace spitfire\core;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
 
+
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -50,13 +72,15 @@ class Response implements ResponseInterface
 	 * 
 	 * @param StreamInterface $body
 	 * @param int             $status
-	 * @param mixed           $headers
+	 * @param string          $reasonPhrase
+	 * @param array<string,string[]> $headers
+	 * @throws InvalidArgumentException
 	 */
-	public function __construct(StreamInterface $body, $status = 200, $headers = null)
+	public function __construct(StreamInterface $body, $status = 200, string $reasonPhrase = '', array $headers = [])
 	{
 		$this->body = $body;
 		$this->headers = new Headers();
-		$this->headers->status($status);
+		$this->headers->status($status, $reasonPhrase);
 		
 		if ($headers) {
 			foreach ($headers as $header => $content) {
@@ -90,15 +114,16 @@ class Response implements ResponseInterface
 	 */
 	public function getProtocolVersion(): string 
 	{
+		assert(is_string($_SERVER['SERVER_PROTOCOL']));
 		return $_SERVER['SERVER_PROTOCOL'];
 	}
 	
 	/**
 	 * 
 	 */
-	public function withStatus($code, $reasonPhrase = ''): Response 
+	public function withStatus(int $code, string $reasonPhrase = ''): Response 
 	{
-		return new Response($this->body, $code, $this->headers->all());
+		return new Response($this->body, $code, $reasonPhrase, $this->headers->all());
 	}
 	
 	/**
@@ -220,7 +245,7 @@ class Response implements ResponseInterface
 		$headers = $this->headers->all();
 		$headers[$name] = (array)$value;
 		
-		return new Response($this->body, $this->headers->getStatus(), $headers);
+		return new Response($this->body, $this->headers->getStatus(), $this->headers()->getReasonPhrase(), $headers);
 	}
 	
 	/**
@@ -236,7 +261,7 @@ class Response implements ResponseInterface
 		$headers = $this->headers->all();
 		$headers[$name] = array_merge($headers[$name], (array)$value);
 		
-		return new Response($this->body, $this->headers->getStatus(), $headers);
+		return new Response($this->body, $this->headers->getStatus(), $this->headers()->getReasonPhrase(), $headers);
 	}
 	
 	/**
@@ -244,13 +269,14 @@ class Response implements ResponseInterface
 	 * 
 	 * @param string $name
 	 * @return Response
+	 * @throws InvalidArgumentException
 	 */
 	public function withoutHeader($name): Response 
 	{
 		$headers = $this->headers->all();
 		unset($headers[$name]);
 		
-		return new Response($this->body, $this->headers->getStatus(), $headers);
+		return new Response($this->body, $this->headers->getStatus(), $this->headers->getReasonPhrase(), $headers);
 	}
 	
 	/**
@@ -267,6 +293,6 @@ class Response implements ResponseInterface
 	 */
 	public function withBody(StreamInterface $body): Response
 	{
-		return new Response($body, $this->getStatusCode(), $this->getHeaders());
+		return new Response($body, $this->getStatusCode(), $this->headers->getReasonPhrase(), $this->getHeaders());
 	}
 }

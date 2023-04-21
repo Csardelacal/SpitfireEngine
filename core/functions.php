@@ -23,9 +23,11 @@
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use spitfire\_init\InitScriptInterface;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
 use spitfire\contracts\core\kernel;
+use spitfire\contracts\core\kernel\KernelInterface;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
 use spitfire\core\http\URLBuilder;
@@ -34,6 +36,7 @@ use spitfire\exceptions\user\ApplicationException as UserApplicationException;
 use spitfire\exceptions\user\NotFoundException;
 use spitfire\io\stream\Stream;
 use spitfire\model\ModelFactory;
+use spitfire\provider\NotFoundException as ProviderNotFoundException;
 use spitfire\SpitFire;
 use spitfire\storage\DriveDispatcher as StorageDriveDispatcher;
 
@@ -85,16 +88,16 @@ function emit(ResponseInterface $message) : void
  * @template T of kernel\KernelInterface
  * @param T $kernel
  * @return T
- * @throws ApplicationException
  */
 function boot(kernel\KernelInterface $kernel) : kernel\KernelInterface
 {
 	$provider = spitfire()->provider();
 	$interfaces = [
-		kernel\KernelInterface::class,
 		kernel\ConsoleKernelInterface::class,
 		kernel\WebKernelInterface::class
 	];
+	
+	$provider->set(KernelInterface::class, $kernel);
 	
 	/**
 	 * Spitfire provides three interfaces that an application can depend on. The generic
@@ -111,7 +114,9 @@ function boot(kernel\KernelInterface $kernel) : kernel\KernelInterface
 	 * Loop over the kernel's init script and execute them, making the kernel function.
 	 */
 	foreach ($kernel->initScripts() as $script) {
-		(new $script($kernel))->exec();
+		$_init = new $script($kernel);
+		assert($_init instanceof InitScriptInterface);
+		$_init->exec();
 	}
 	
 	/**
@@ -137,8 +142,9 @@ function boot(kernel\KernelInterface $kernel) : kernel\KernelInterface
  *
  * Overall reducing the strain of visually analyzing the code.
  *
+ * @throws AssertionError
  * @param bool $condition If the condition is true, the code will continue being executed
- * @param string|Closure|Exception $failure
+ * @param string|callable():string $failure
  * @return void
  */
 function assume(bool $condition, $failure) : void
@@ -155,16 +161,8 @@ function assume(bool $condition, $failure) : void
 	 * Otherwise, we need to stop the execution. This should be done in the closure, but if the
 	 * user does not raise any exception in the closure, our code will do.
 	 */
-	if ($failure instanceof Closure) {
-		$failure();
-		throw new Exception('Failed to meet assumption');
-	}
-	
-	/**
-	 * If the user provided an exception instance, we throw the provided exception.
-	 */
-	if ($failure instanceof Exception) {
-		throw $failure;
+	if (is_callable($failure)) {
+		$failure = $failure();
 	}
 	
 	/**
@@ -175,12 +173,7 @@ function assume(bool $condition, $failure) : void
 	 * If the exception class does not exist, or is not a subclass of exception, we just throw an application
 	 * exception to let the user know that something went wrong.
 	 */
-	if (class_exists($failure) && (new ReflectionClass($failure))->isSubclassOf(Exception::class)) {
-		throw new $failure();
-	}
-	else {
-		throw new UserApplicationException($failure);
-	}
+	throw new AssertionError($failure);
 }
 
 /**
@@ -211,7 +204,12 @@ function fail(int $status, string $message = '') : void
  */
 function db()
 {
-	return spitfire()->provider()->get(ModelFactory::class);
+	try {
+		return spitfire()->provider()->get(ModelFactory::class);
+	}
+	catch (ProviderNotFoundException) {
+		trigger_error('db() invoked before Provider was ready', E_USER_ERROR);
+	}
 }
 
 /**
@@ -228,12 +226,12 @@ function db()
  * @param StreamInterface $stream
  * @param int $code
  * @param string[][] $headers
- *
+ * @throws InvalidArgumentException
  * @return Response
  */
 function response(StreamInterface $stream, int $code = 200, array $headers = []) : Response
 {
-	return new Response($stream, $code, $headers);
+	return new Response($stream, $code, '', $headers);
 }
 
 /**
@@ -252,6 +250,8 @@ function response(StreamInterface $stream, int $code = 200, array $headers = [])
  *
  * @param string $location
  * @param int $code
+ * @throws InvalidArgumentException
+ * @throws RuntimeException
  * @return Response
  */
 function redirect(string $location, int $code = 302) : Response
@@ -276,8 +276,9 @@ function redirect(string $location, int $code = 302) : Response
 	return new Response(
 		Stream::fromString('Redirecting...'),
 		$code,
+		'',
 		[
-			'location' => $location
+			'location' => [ $location ]
 		]
 	);
 }
@@ -287,10 +288,13 @@ function redirect(string $location, int $code = 302) : Response
  * without query string or document root.
  *
  * @see http://www.spitfirephp.com/wiki/index.php/NgiNX_Configuration For NGiNX setup
+ * @throws ApplicationException
  * @return string
  */
 function getPathInfo()
 {
+	assert(is_string($_SERVER['REQUEST_URI']));
+	
 	$base_url = spitfire()->baseUrl();
 	list($path) = explode('?', substr($_SERVER['REQUEST_URI'], strlen($base_url)));
 	
@@ -323,9 +327,14 @@ function collect($elements = [])
  *
  * @return URLBuilder
  */
-function url()
+function url() : URLBuilder
 {
-	return spitfire()->provider()->get(URLBuilder::class);
+	try {
+		return spitfire()->provider()->get(URLBuilder::class);
+	}
+	catch (ProviderNotFoundException $e) {
+		trigger_error($e->getMessage(), E_USER_ERROR);
+	}
 }
 
 /**
@@ -372,16 +381,29 @@ function within($min, $val, $max)
  */
 function storage()
 {
-	return spitfire()->provider()->get(StorageDriveDispatcher::class);
+	try {
+		return spitfire()->provider()->get(StorageDriveDispatcher::class);
+	}
+	catch (ProviderNotFoundException $e) {
+		trigger_error($e->getMessage(), E_USER_ERROR);
+	}
 }
 
-function mime($file)
+function mime(string $file) : string|false
 {
+	assert(file_exists($file), sprintf('File %s is not a file', $file));
+	
 	if (function_exists('mime_content_type')) {
 		return mime_content_type($file);
 	}
 	else {
-		return explode(';', system(sprintf('file -bi %s', escapeshellarg(realpath($file)))))[0];
+		$realpath = realpath($file);
+		assert($realpath !== false);
+		
+		$result = system(sprintf('file -bi %s', escapeshellarg($realpath)));
+		assert($result !== false);
+		
+		return explode(';', $result)[0];
 	}
 }
 
@@ -402,6 +424,8 @@ function mime($file)
  *                      assets/vendor/myapp older within public folder, this is exactly
  *                      the string it should pass
  * @return string
+ * @throws ApplicationException
+ * @throws AssertionError
  */
 function asset(string $name, string $scope = 'assets/') : string
 {
@@ -418,10 +442,12 @@ function asset(string $name, string $scope = 'assets/') : string
 			throw new \spitfire\exceptions\ApplicationException(sprintf('No asset manifest for %s', $scope));
 		}
 		
+		$content = file_get_contents($manifest);
+		assert($content !== false);
 		/*
 		 * If the key exists, we generate a manifest object.
 		 */
-		$scopes[$scope] = json_decode(file_get_contents($manifest));
+		$scopes[$scope] = json_decode($content);
 	}
 	
 	/**
@@ -436,11 +462,13 @@ function asset(string $name, string $scope = 'assets/') : string
 	 */
 	$base = config('app.assets.location', SpitFire::baseUrl());
 	
+	assert(is_string($base));
+	
 	/*
 	 * Look for the asset inside the memory cache. This allows us to make use of
 	 * the versioned files without having to look them up every single time.
 	 */
-	assume(isset($scopes[$scope][$name]), NotFoundException::class);
+	assume(isset($scopes[$scope][$name]), fn() => throw new NotFoundException);
 	
 	$asset = $scopes[$scope][$name];
 	
@@ -459,14 +487,18 @@ function asset(string $name, string $scope = 'assets/') : string
  * your application work as expected, and should expose the environment to the person
  * deploying the application so they can customize the behavior.
  *
- *
  * @param string $key The key in the configuration
  * @param mixed  $fallback The value to return if the configuration does not contain the key
- * @return mixed The data for this configuration entry
+ * @return string|int|bool|float|null The data for this configuration entry
  */
 function config($key, $fallback = null)
 {
-	return spitfire()->provider()->get(Configuration::class)->get($key, $fallback);
+	try {
+		return spitfire()->provider()->get(Configuration::class)->get($key, $fallback);
+	}
+	catch (ProviderNotFoundException) {
+		trigger_error('config() invoked before Provider was ready', E_USER_ERROR);
+	}
 }
 
 /**
@@ -485,7 +517,13 @@ function env(string $param, string $fallback = null) :? string
 	 */
 	assert($param !== '');
 	
-	return array_key_exists($param, $_ENV)? $_ENV[$param] : $fallback;
+	if (!array_key_exists($param, $_ENV)) {
+		return $fallback;
+	}
+	
+	assert(is_string($_ENV[$param]));
+	
+	return $_ENV[$param];
 }
 
 /**
@@ -510,7 +548,15 @@ function scope(object $ctx, callable $do)
 	return $do($ctx);
 }
 
-function redirectOutput(StreamInterface $stream, $fn)
+/**
+ * Redirects the output of a function to a given stream, and then returns the
+ * return value of given function
+ * 
+ * @template RETURN
+ * @param callable():RETURN $fn
+ * @return RETURN
+ */
+function redirectOutput(StreamInterface $stream, $fn) : mixed
 {
 	/**
 	 * We create an output buffer that proceeds to write everything to the stream

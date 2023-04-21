@@ -1,5 +1,26 @@
 <?php namespace spitfire;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 use spitfire\contracts\core\LocationsInterface;
 use spitfire\core\Locations;
 use spitfire\exceptions\ApplicationException;
@@ -41,13 +62,21 @@ class SpitFire
 		$this->provider()->set(LocationsInterface::class, $this->locations);
 	}
 	
-	public static function baseUrl()
+	/**
+	 * @throws ApplicationException
+	 */
+	public static function baseUrl() : string
 	{
 		/**
 		 * If the application has a url defined as the base url for the application,
 		 * we use that.
 		 */
-		if (config('app.url')) {
+		if (config('app.url') !== null) {
+			/**
+			 * The app.url must obviously be a string.
+			 */
+			assert(is_string(config('app.url')));
+			
 			return config('app.url');
 		}
 		
@@ -59,6 +88,8 @@ class SpitFire
 		if (cli()) {
 			throw new ApplicationException('CLI applications require the app.url config to be defined', 2104191131);
 		}
+		
+		assert(is_string($_SERVER['PHP_SELF']));
 		
 		/**
 		 * Poorly configured applications can always fall back to guessing the base url.

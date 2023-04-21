@@ -1,12 +1,8 @@
 <?php namespace spitfire\core\http\request\components;
 
-use Psr\Http\Message\ServerRequestInterface;
-use spitfire\core\Headers;
-use spitfire\core\Request;
-use spitfire\exceptions\ApplicationException;
-
 /*
- * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +17,14 @@ use spitfire\exceptions\ApplicationException;
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * MA 02110-13 01  USA
+ *
  */
+
+use Psr\Http\Message\ServerRequestInterface;
+use spitfire\core\Headers;
+use spitfire\exceptions\ApplicationException;
+
 trait HasHeaders
 {
 	
@@ -117,7 +119,7 @@ trait HasHeaders
 		assert($this instanceof ServerRequestInterface);
 		
 		$headers = clone $this->headers;
-		$headers->addTo($name, (array)$value);
+		$headers->append($name, (array)$value);
 		
 		$copy = clone $this;
 		$copy->headers = $headers;

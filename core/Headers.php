@@ -1,6 +1,27 @@
 <?php namespace spitfire\core;
 
-use BadMethodCallException;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+use InvalidArgumentException;
 use spitfire\core\http\CORS;
 
 /**
@@ -12,47 +33,90 @@ use spitfire\core\http\CORS;
 class Headers
 {
 	
-	private $status = 200;
+	private int $status = 200;
+	private string $reasonPhrase = self::STATES[200];
 	
-	private $headers = array(
+	/**
+	 * A two-dimensional array of strings that represents the headers the system sends
+	 * in response to a request.
+	 * 
+	 * @var array<string,string[]>
+	 */
+	private array $headers = array(
 		'Content-type' => ['text/html;charset=utf-8'],
 		'x-Powered-By' => ['Spitfire'],
 		'x-version'    => ['0.1 Beta']
 	);
 	
-	private $states = array(
-		 200 => '200 OK',
-		 201 => '201 Created',
-		 202 => '202 Accepted',
-		 204 => '204 No content',
-		 206 => '206 Partial Content',
-		 301 => '301 Moved Permanently',
-		 302 => '302 Found',
-		 304 => '304 Not modified',
-		 400 => '400 Invalid request',
-		 401 => '401 Unauthorized',
-		 403 => '403 Forbidden',
-		 404 => '404 Not Found',
-		 418 => '418 Im a teapot',
-		 419 => '419 Page expired',
-		 429 => '429 Too many requests',
-		 451 => '451 Unavailable for legal reasons',
-		 410 => '410 Gone',
-		 416 => '416 Range not satisfiable',
-		 500 => '500 Server Error',
-		 501 => '501 Not implemented',
-		 503 => '503 Service Unavailable'
+	const STATES = array(
+		200 => 'OK',
+		201 => 'Created',
+		202 => 'Accepted',
+		204 => 'No content',
+		206 => 'Partial Content',
+		301 => 'Moved Permanently',
+		302 => 'Found',
+		304 => 'Not modified',
+		400 => 'Invalid request',
+		401 => 'Unauthorized',
+		403 => 'Forbidden',
+		404 => 'Not Found',
+		418 => 'Im a teapot',
+		419 => 'Page expired',
+		429 => 'Too many requests',
+		451 => 'Unavailable for legal reasons',
+		410 => 'Gone',
+		416 => 'Range not satisfiable',
+		500 => 'Server Error',
+		501 => 'Not implemented',
+		503 => 'Service Unavailable'
 	);
 	
-	public function set($header, $value)
+	/**
+	 * 
+	 * @param string $header
+	 * @param string[] $value
+	 * @return self
+	 */
+	public function set(string $header, array $value) : self
 	{
-		$this->headers[$header] = (array)$value;
+		$this->headers[$header] = $value;
 		return $this;
 	}
 	
-	public function addTo($header, $value)
+	/**
+	 * 
+	 * @param string $header
+	 * @param string $value
+	 * @return self
+	 */
+	public function replace(string $header, string $value) : self
 	{
-		$this->headers[$header] = array_merge($this->headers[$header]?? [], (array)$value);
+		$this->headers[$header] = [$value];
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @param string $header
+	 * @param string $value
+	 * @return self
+	 */
+	public function addTo(string $header, string $value) : self
+	{
+		$this->headers[$header] = array_merge($this->headers[$header]?? [], [$value]);
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @param string $header
+	 * @param string[] $value
+	 * @return self
+	 */
+	public function append(string $header, array $value) : self
+	{
+		$this->headers[$header] = array_merge($this->headers[$header]?? [], $value);
 		return $this;
 	}
 	
@@ -77,7 +141,7 @@ class Headers
 	 *
 	 * @return string[]
 	 */
-	public function get($header) : array
+	public function get(string $header) : array
 	{
 		return $this->headers[$header]?? [];
 	}
@@ -99,12 +163,17 @@ class Headers
 	 * Usually Spitfire will buffer all the output, so this should usually not be
 	 * an issue.
 	 */
-	public function send()
+	public function send() : void
 	{
 		http_response_code((int)$this->status);
 		
-		foreach ($this->headers as $header => $value) {
-			header("$header: $value");
+		foreach ($this->headers as $header => $values) {
+			$first = true;
+			
+			foreach ($values as $value) {
+				header(sprintf("%s: %s", $header, $value), $first);
+				$first = false;
+			}
 		}
 	}
 	
@@ -117,7 +186,7 @@ class Headers
 	 * @param string $str
 	 * @param string|null $encoding
 	 */
-	public function contentType($str, string $encoding = null)
+	public function contentType($str, string $encoding = null) : void
 	{
 		
 		if ($encoding === null) {
@@ -127,16 +196,16 @@ class Headers
 		switch ($str) {
 			case 'php':
 			case 'html':
-				$this->set('Content-type', 'text/html;charset=' . $encoding);
+				$this->replace('Content-type', 'text/html;charset=' . $encoding);
 				break;
 			case 'xml':
-				$this->set('Content-type', 'application/xml;charset=' . $encoding);
+				$this->replace('Content-type', 'application/xml;charset=' . $encoding);
 				break;
 			case 'json':
-				$this->set('Content-type', 'application/json;charset=' . $encoding);
+				$this->replace('Content-type', 'application/json;charset=' . $encoding);
 				break;
 			default:
-				$this->set('Content-type', $str);
+				$this->replace('Content-type', $str);
 		}
 	}
 	
@@ -152,35 +221,41 @@ class Headers
 		return new CORS($this);
 	}
 	
-	public function status($code = 200)
+	/**
+	 * @throws InvalidArgumentException
+	 * @return void
+	 */
+	public function status(int $code = 200, string $reasonPhrase = '') : void
 	{
-		#Check if the call was valid
-		if (!is_numeric($code)) {
-			throw new BadMethodCallException('Invalid argument. Requires a number', 1509031352);
-		}
-		if (!isset($this->states[$code])) {
-			throw new BadMethodCallException('Invalid status code', 1509031353);
+		if (!isset(self::STATES[$code])) {
+			throw new InvalidArgumentException(sprintf('Status code %s is not valid', $code));
 		}
 		
 		$this->status = $code;
+		$this->reasonPhrase = $reasonPhrase? $reasonPhrase : self::STATES[$code];
 	}
 	
-	public function getStatus()
+	public function getStatus() : int
 	{
 		return $this->status;
 	}
 	
-	public function getReasonPhrase()
+	public function getReasonPhrase() : string
 	{
-		return $this->states[$this->status];
+		return $this->reasonPhrase;
 	}
 	
-	public function redirect($location, $status = 302)
+	/**
+	 * Converts these headers into a redirect to a new location.
+	 * 
+	 * @throws InvalidArgumentException
+	 */
+	public function redirect(string $location, int $status = 302) : void
 	{
 		$this->status($status);
-		$this->set('Location', $location);
-		$this->set('Expires', date("r", time()));
-		$this->set('Cache-Control', 'no-cache, must-revalidate');
+		$this->replace('Location', $location);
+		$this->replace('Expires', date("r", time()));
+		$this->replace('Cache-Control', 'no-cache, must-revalidate');
 	}
 	
 	public static function fromGlobals() : Headers
