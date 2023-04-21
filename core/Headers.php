@@ -262,9 +262,11 @@ class Headers
 	{
 		
 		$headers = new Headers();
+		$received = getallheaders();
 		
-		foreach (array_change_key_case(getallheaders(), CASE_LOWER) as $header => $content) {
-			$headers->set($header, $content);
+		foreach (array_change_key_case($received, CASE_LOWER) as $header => $content) {
+			assert(is_string($content));
+			$headers->replace($header, $content);
 		}
 		
 		return $headers;
