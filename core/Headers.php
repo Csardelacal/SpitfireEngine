@@ -43,8 +43,8 @@ class Headers
 	 * @var array<string,string[]>
 	 */
 	private array $headers = array(
-		'Content-type' => ['text/html;charset=utf-8'],
-		'x-Powered-By' => ['Spitfire'],
+		'content-type' => ['text/html;charset=utf-8'],
+		'x-powered-by' => ['Spitfire'],
 		'x-version'    => ['0.1 Beta']
 	);
 	
@@ -80,7 +80,7 @@ class Headers
 	 */
 	public function set(string $header, array $value) : self
 	{
-		$this->headers[$header] = $value;
+		$this->headers[strtolower($header)] = $value;
 		return $this;
 	}
 	
@@ -92,7 +92,7 @@ class Headers
 	 */
 	public function replace(string $header, string $value) : self
 	{
-		$this->headers[$header] = [$value];
+		$this->headers[strtolower($header)] = [$value];
 		return $this;
 	}
 	
@@ -104,7 +104,7 @@ class Headers
 	 */
 	public function addTo(string $header, string $value) : self
 	{
-		$this->headers[$header] = array_merge($this->headers[$header]?? [], [$value]);
+		$this->headers[strtolower($header)] = array_merge($this->headers[$header]?? [], [$value]);
 		return $this;
 	}
 	
@@ -116,7 +116,7 @@ class Headers
 	 */
 	public function append(string $header, array $value) : self
 	{
-		$this->headers[$header] = array_merge($this->headers[$header]?? [], $value);
+		$this->headers[strtolower($header)] = array_merge($this->headers[$header]?? [], $value);
 		return $this;
 	}
 	
@@ -131,6 +131,8 @@ class Headers
 	 */
 	public function unset(string $header)
 	{
+		$header = strtolower($header);
+		
 		if (array_key_exists($header, $this->headers)) {
 			unset($this->headers[$header]);
 		}
@@ -143,7 +145,7 @@ class Headers
 	 */
 	public function get(string $header) : array
 	{
-		return $this->headers[$header]?? [];
+		return $this->headers[strtolower($header)]?? [];
 	}
 	
 	/**
@@ -196,16 +198,16 @@ class Headers
 		switch ($str) {
 			case 'php':
 			case 'html':
-				$this->replace('Content-type', 'text/html;charset=' . $encoding);
+				$this->replace('content-type', 'text/html;charset=' . $encoding);
 				break;
 			case 'xml':
-				$this->replace('Content-type', 'application/xml;charset=' . $encoding);
+				$this->replace('content-type', 'application/xml;charset=' . $encoding);
 				break;
 			case 'json':
-				$this->replace('Content-type', 'application/json;charset=' . $encoding);
+				$this->replace('content-type', 'application/json;charset=' . $encoding);
 				break;
 			default:
-				$this->replace('Content-type', $str);
+				$this->replace('content-type', $str);
 		}
 	}
 	
@@ -253,9 +255,9 @@ class Headers
 	public function redirect(string $location, int $status = 302) : void
 	{
 		$this->status($status);
-		$this->replace('Location', $location);
-		$this->replace('Expires', date("r", time()));
-		$this->replace('Cache-Control', 'no-cache, must-revalidate');
+		$this->replace('location', $location);
+		$this->replace('expires', date("r", time()));
+		$this->replace('cache-control', 'no-cache, must-revalidate');
 	}
 	
 	public static function fromGlobals() : Headers

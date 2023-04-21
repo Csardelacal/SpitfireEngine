@@ -75,7 +75,7 @@ trait HasHeaders
 	{
 		$header = $this->headers->get($name);
 		
-		if (empty($header)) {
+		if (!empty($header)) {
 			return implode(',', $header);
 		}
 		else {

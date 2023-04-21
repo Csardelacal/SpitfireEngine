@@ -46,6 +46,15 @@ class HeadersTest extends TestCase
 		$this->assertEquals('application/xml;charset=utf-8', $t->get('Content-type')[0]);
 	}
 	
+	public function testCrazyCase()
+	{
+		
+		$t = new Headers();
+		
+		$t->replace('ConTENT-TypE', 'application/json;charset=utf-8');
+		$this->assertEquals('application/json;charset=utf-8', $t->get('content-type')[0]);
+	}
+	
 	/**
 	 */
 	public function testInvalidStatus()
