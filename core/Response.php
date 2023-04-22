@@ -84,6 +84,7 @@ class Response implements ResponseInterface
 		
 		if ($headers) {
 			foreach ($headers as $header => $content) {
+				assert(is_array($content));
 				$this->headers->set($header, $content);
 			}
 		}
