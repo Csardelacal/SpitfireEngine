@@ -883,16 +883,16 @@
         },
         {
             "name": "spitfire/collection",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spitfire-php/collection.git",
-                "reference": "71e25df2a05d0ebae067b7b850dc1fcd29b41f44"
+                "reference": "0cdc33a1fcc580c6f32d71a2a50a60f806411981"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/71e25df2a05d0ebae067b7b850dc1fcd29b41f44",
-                "reference": "71e25df2a05d0ebae067b7b850dc1fcd29b41f44",
+                "url": "https://api.github.com/repos/spitfire-php/collection/zipball/0cdc33a1fcc580c6f32d71a2a50a60f806411981",
+                "reference": "0cdc33a1fcc580c6f32d71a2a50a60f806411981",
                 "shasum": ""
             },
             "require-dev": {
@@ -919,9 +919,9 @@
             "description": "Provides collections for spitfire/engine",
             "support": {
                 "issues": "https://github.com/spitfire-php/collection/issues",
-                "source": "https://github.com/spitfire-php/collection/tree/0.2.0"
+                "source": "https://github.com/spitfire-php/collection/tree/0.2.1"
             },
-            "time": "2023-01-09T19:37:44+00:00"
+            "time": "2023-04-27T16:35:45+00:00"
         },
         {
             "name": "spitfire/dependency-provider",
@@ -1993,16 +1993,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.263.14",
+            "version": "3.269.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "7a6a43fad8899e3be3c46471fa3802331620e36b"
+                "reference": "6d759ef9f24f0c7f271baf8014f41fc0cfdfbf78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7a6a43fad8899e3be3c46471fa3802331620e36b",
-                "reference": "7a6a43fad8899e3be3c46471fa3802331620e36b",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6d759ef9f24f0c7f271baf8014f41fc0cfdfbf78",
+                "reference": "6d759ef9f24f0c7f271baf8014f41fc0cfdfbf78",
                 "shasum": ""
             },
             "require": {
@@ -2082,9 +2082,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.263.14"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.269.0"
             },
-            "time": "2023-04-20T18:21:44+00:00"
+            "time": "2023-04-26T18:21:04+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -3507,16 +3507,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.20.0",
+            "version": "1.20.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "10553ab3f0337ff1a71433c3417d7eb2a3eec1fd"
+                "reference": "6c04009f6cae6eda2f040745b6b846080ef069c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/10553ab3f0337ff1a71433c3417d7eb2a3eec1fd",
-                "reference": "10553ab3f0337ff1a71433c3417d7eb2a3eec1fd",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/6c04009f6cae6eda2f040745b6b846080ef069c2",
+                "reference": "6c04009f6cae6eda2f040745b6b846080ef069c2",
                 "shasum": ""
             },
             "require": {
@@ -3546,9 +3546,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.20.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.20.3"
             },
-            "time": "2023-04-20T11:18:07+00:00"
+            "time": "2023-04-25T09:01:03+00:00"
         },
         {
             "name": "phpstan/phpstan",

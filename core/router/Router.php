@@ -1,5 +1,26 @@
 <?php namespace spitfire\core\router;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 use Closure;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -7,6 +28,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
+use spitfire\exceptions\ApplicationException;
 
 /**
  * Routers are tools that allow your application to listen on alternative urls and
@@ -74,6 +96,7 @@ class Router extends Routable
 	 * one that can be used to respond to the request it will stop looking for
 	 * another possible rewrite.
 	 *
+	 * @throws ApplicationException
 	 * @param ServerRequestInterface $request
 	 * @return RouterResult
 	 */
@@ -81,7 +104,7 @@ class Router extends Routable
 	{
 		
 		#Combine routes from the router and server
-		$routes = $this->getRoutes()->toArray();
+		$routes = parent::getRoutes()->toArray();
 		
 		#Test the routes
 		foreach ($routes as $route) { /*@var $route Route*/
@@ -201,5 +224,18 @@ class Router extends Routable
 		 * we return null to indicate that there is no such route available.
 		 */
 		return null;
+	}
+	
+	/**
+	 * Returns all the routes this router and it's descendants contains.
+	 * 
+	 * @return Collection<Route>
+	 */
+	public function getRoutes() : Collection
+	{
+		$routes = parent::getRoutes();
+		$this->children->each(fn(Router $e) => $routes->add($e->getRoutes()));
+		
+		return $routes;
 	}
 }
