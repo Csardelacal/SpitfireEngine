@@ -33,7 +33,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 	
 	public function testBasicEvent1() {
 		
-		$dispatcher = new EventDispatch();
+		$dispatcher = new EventTarget();
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			$e->preventDefault();
@@ -49,7 +49,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 	
 	public function testBasicEventNoOverride() {
 		
-		$dispatcher = new EventDispatch();
+		$dispatcher = new EventTarget();
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			return 'hello ' . $e->payload(); 
@@ -69,7 +69,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testBasicEventMultipleListeners() {
 		
-		$dispatcher = new EventDispatch();
+		$dispatcher = new EventTarget();
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			$e->preventDefault();

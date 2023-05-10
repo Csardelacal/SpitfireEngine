@@ -1,14 +1,8 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\collection\Collection;
-use spitfire\collection\TypedCollection;
-use spitfire\event\EventDispatch;
-use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\identifiers\TableIdentifier;
-use spitfire\storage\database\identifiers\TableIdentifierInterface;
-
 /*
- * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Copyright (C) 2021-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +17,17 @@ use spitfire\storage\database\identifiers\TableIdentifierInterface;
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * MA 02110-13 01  USA
+ *
  */
+
+use spitfire\collection\Collection;
+use spitfire\collection\TypedCollection;
+use spitfire\event\EventTarget;
+use spitfire\exceptions\ApplicationException;
+use spitfire\storage\database\identifiers\TableIdentifier;
+use spitfire\storage\database\identifiers\TableIdentifierInterface;
+
 
 /**
  * The layout is basically a list of columns and indexes that makes up the schema
@@ -70,7 +73,7 @@ class Layout implements LayoutInterface
 	
 	/**
 	 *
-	 * @var EventDispatch
+	 * @var EventTarget
 	 */
 	private $events;
 	
@@ -83,7 +86,7 @@ class Layout implements LayoutInterface
 		$this->tablename = $tablename;
 		$this->fields = new TypedCollection(Field::class);
 		$this->indexes = new TypedCollection(IndexInterface::class);
-		$this->events = new EventDispatch();
+		$this->events = new EventTarget();
 	}
 	
 	/**
@@ -113,6 +116,7 @@ class Layout implements LayoutInterface
 	/**
 	 * Gets a certain field from the layout.
 	 *
+	 * @throws ApplicationException
 	 * @param string $name
 	 * @return Field
 	 */
@@ -362,9 +366,9 @@ class Layout implements LayoutInterface
 	 * operations that update the record before it's written to the database, or prevent
 	 * deletions when soft deletes are on.
 	 *
-	 * @return EventDispatch
+	 * @return EventTarget
 	 */
-	public function events() : EventDispatch
+	public function events() : EventTarget
 	{
 		return $this->events;
 	}

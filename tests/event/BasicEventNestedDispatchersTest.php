@@ -29,8 +29,8 @@ class BasicEventNestedDispatchersTest extends TestCase
 	
 	public function testNestedDispatchers1() {
 		
-		$parent = new EventDispatch();
-		$child = new EventDispatch($parent);
+		$parent = new EventTarget();
+		$child = new EventTarget($parent);
 		
 		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			return 'hello ' . $e->payload();
@@ -47,8 +47,8 @@ class BasicEventNestedDispatchersTest extends TestCase
 	
 	public function testNestedDispatchers2() {
 		
-		$parent = new EventDispatch();
-		$child = new EventDispatch($parent);
+		$parent = new EventTarget();
+		$child = new EventTarget($parent);
 		
 		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
@@ -66,8 +66,8 @@ class BasicEventNestedDispatchersTest extends TestCase
 	
 	public function testNestedDispatchersNoBubble() {
 		
-		$parent = new EventDispatch();
-		$child = new EventDispatch($parent);
+		$parent = new EventTarget();
+		$child = new EventTarget($parent);
 		
 		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			return 'hello ' . $e->payload();

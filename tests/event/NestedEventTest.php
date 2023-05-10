@@ -32,7 +32,7 @@ class NestedEventTest extends TestCase
 	
 	public function testNestedEventMultipleListeners() {
 		
-		$dispatcher = new EventDispatch();
+		$dispatcher = new EventTarget();
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) use ($dispatcher) { 
 			$e->preventDefault();

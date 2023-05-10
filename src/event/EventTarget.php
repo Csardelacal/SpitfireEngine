@@ -24,12 +24,12 @@
 
 use Closure;
 
-class EventDispatch
+class EventTarget
 {
 	
 	/**
 	 *
-	 * @var EventDispatch|null
+	 * @var EventTarget|null
 	 */
 	private $parent = null;
 	
@@ -39,7 +39,7 @@ class EventDispatch
 	 */
 	private $hooks;
 	
-	public function __construct(EventDispatch $parent = null)
+	public function __construct(EventTarget $parent = null)
 	{
 		$this->parent = $parent;
 		$this->hooks = [];
