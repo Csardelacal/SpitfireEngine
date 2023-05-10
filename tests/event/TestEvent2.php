@@ -1,4 +1,4 @@
-<?php namespace spitfire\event\tests;
+<?php namespace tests\spitfire\event;
 
 /*
  *

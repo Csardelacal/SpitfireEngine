@@ -22,7 +22,7 @@
 
 
 use PHPUnit\Framework\TestCase;
-use spitfire\event\tests\TestEvent;
+use tests\spitfire\event\TestEvent;
 
 class BasicEventNestedDispatchersTest extends TestCase
 {

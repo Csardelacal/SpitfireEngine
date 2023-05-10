@@ -22,7 +22,7 @@
  */
 
 
-use spitfire\event\tests\TestEvent;
+use tests\spitfire\event\TestEvent;
 
 
 /**

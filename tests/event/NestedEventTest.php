@@ -23,8 +23,8 @@
 
 
 use PHPUnit\Framework\TestCase;
-use spitfire\event\tests\TestEvent;
-use spitfire\event\tests\TestEvent2;
+use tests\spitfire\event\TestEvent;
+use tests\spitfire\event\TestEvent2;
 
 class NestedEventTest extends TestCase
 {
