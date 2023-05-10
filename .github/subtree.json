@@ -19,6 +19,11 @@
             "name": "exceptions",
             "directory": "src/exceptions/",
             "target": "git@github.com:spitfire-php/exceptions.git"
+        },
+        {
+            "name": "event",
+            "directory": "src/event/",
+            "target": "git@github.com:spitfire-php/event.git"
         }
     ]
 }
