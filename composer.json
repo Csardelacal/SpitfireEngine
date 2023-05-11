@@ -1,6 +1,6 @@
 {
 	"name": "spitfire/engine",
-	"license": "MIT",
+	"license" : "LGPL-3.0+",
 	"homepage": "https://spitfirephp.com",
 	
 	"description": "Spitfire is a simple framework for web development",
