@@ -46,13 +46,16 @@
 		"spitfire/contracts" : "self.version",
 		"spitfire/defer" : "self.version",
 		"spitfire/database" : "self.version",
-		"spitfire/event" : "self.version"
+		"spitfire/event" : "self.version",
+		"spitfire/kernel" : "self.version"
 	},
 	
 	"provide": {
 		"spitfire/contracts" : "self.version",
 		"spitfire/defer" : "self.version",
-		"spitfire/database" : "self.version"
+		"spitfire/database" : "self.version",
+		"spitfire/event" : "self.version",
+		"spitfire/kernel" : "self.version"
 	},
 
 	"autoload": {
@@ -64,7 +67,8 @@
 			"spitfire\\defer\\": "./src/defer/",
 			"spitfire\\storage\\": "./src/storage/",
 			"spitfire\\contracts\\": "./src/contracts/",
-			"spitfire\\event\\": "./src/event/"
+			"spitfire\\event\\": "./src/event/",
+			"spitfire\\core\\kernel\\": "./src/core/kernel/"
 		}
 
 	},

@@ -24,6 +24,11 @@
             "name": "event",
             "directory": "src/event/",
             "target": "git@github.com:spitfire-php/event.git"
+        },
+        {
+            "name": "kernel",
+            "directory": "src/core/kernel/",
+            "target": "git@github.com:spitfire-php/kernel.git"
         }
     ]
 }

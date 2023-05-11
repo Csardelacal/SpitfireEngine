@@ -1,0 +1,17 @@
+{
+	"name": "spitfire/kernel",
+	"description": "Spitfire kernels",
+	"type": "library",
+	"license": "LGPL",
+	"authors": [
+		{
+			"name": "César de la Cal Bretschneider",
+			"email": "cesar@magic3w.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"spitfire\\core\\kernel\\": "./"
+		}
+	}
+}

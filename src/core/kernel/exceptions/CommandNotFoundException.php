@@ -2,7 +2,7 @@
 
 use spitfire\exceptions\ApplicationException;
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
