@@ -11,7 +11,8 @@
 	],
 	"require": {
 		"spitfire/contracts" : "self.version",
-		"symfony/console": "^6"
+		"symfony/console": "^6",
+		"psr/http-server-handler": "^1.0"
 	},
 	"autoload": {
 		"psr-4": {
