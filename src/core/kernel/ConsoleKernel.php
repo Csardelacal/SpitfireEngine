@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\kernel;
 
+use Psr\Container\ContainerInterface;
 use spitfire\_init\LoadConfiguration;
 use spitfire\_init\ProvidersInit;
 use spitfire\_init\ProvidersRegister;
@@ -54,10 +55,9 @@ class ConsoleKernel implements ConsoleKernelInterface
 	/**
 	 * @todo Populate the application name and version.
 	 */
-	public function __construct()
+	public function __construct(Application $application)
 	{
-		$this->application = new Application(__DIR__);
-		spitfire()->provider()->set(Application::class, $this->application);
+		$this->application = $application;
 	}
 	
 	/**
@@ -87,6 +87,7 @@ class ConsoleKernel implements ConsoleKernelInterface
 	 * command and execute it.
 	 *
 	 * @throws CommandNotFoundException
+	 * @throws \Exception
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
 	 * @return int

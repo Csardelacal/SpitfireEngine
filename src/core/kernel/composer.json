@@ -10,7 +10,8 @@
 		}
 	],
 	"require": {
-		"spitfire/contracts" : "self.version"
+		"spitfire/contracts" : "self.version",
+		"symfony/console": "^6"
 	},
 	"autoload": {
 		"psr-4": {
