@@ -1,16 +1,27 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
 	backupGlobals="true" 
-	backupStaticAttributes="false" 
 	colors="false" 
-	convertErrorsToExceptions="false" 
-	convertNoticesToExceptions="false" 
-	convertWarningsToExceptions="false" 
-	forceCoversAnnotation="false" 
 	processIsolation="false" 
-	stopOnError="false" stopOnFailure="false" stopOnIncomplete="false" stopOnSkipped="false" stopOnRisky="false" timeoutForSmallTests="1" timeoutForMediumTests="10" timeoutForLargeTests="60" verbose="false">
-  <coverage processUncoveredFiles="false">
+	stopOnError="false" 
+	stopOnFailure="false" 
+	stopOnIncomplete="false" 
+	stopOnSkipped="false" 
+	stopOnRisky="false" 
+	timeoutForSmallTests="1" 
+	timeoutForMediumTests="10" 
+	timeoutForLargeTests="60" 
+	cacheDirectory=".phpunit.cache" 
+	backupStaticProperties="false" 
+	requireCoverageMetadata="false">
+  <coverage>
+    <report>
+      <clover outputFile="/tmp/coverage.xml"/>
+    </report>
+  </coverage>
+  <logging/>
+  <source>
     <include>
       <directory suffix=".php">.</directory>
     </include>
@@ -18,9 +29,5 @@
       <directory suffix=".php">tests</directory>
       <directory suffix=".php">vendor</directory>
     </exclude>
-    <report>
-      <clover outputFile="/tmp/coverage.xml"/>
-    </report>
-  </coverage>
-  <logging/>
+  </source>
 </phpunit>
