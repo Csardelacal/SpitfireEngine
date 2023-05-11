@@ -9,6 +9,9 @@
 			"email": "cesar@magic3w.com"
 		}
 	],
+	"require": {
+		"spitfire/contracts" : "self.version"
+	},
 	"autoload": {
 		"psr-4": {
 			"spitfire\\core\\kernel\\": "./"
