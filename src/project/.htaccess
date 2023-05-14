@@ -1,0 +1,8 @@
+
+#Enable mod rewrite to send requests to Spitfire
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+
+	RewriteRule ^(\.well-known/.*)$ $1 [L]
+	RewriteRule (.*) public/$1 [L]
+</IfModule>

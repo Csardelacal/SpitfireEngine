@@ -1,0 +1,47 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * This is the main file of Spitfire, it is in charge of loading
+ * system settings (for custom operation) and also of summoning
+ * spitfire and loading the adequate controller for every single
+ * request. It also makes sure that error logging is sent to
+ * terminal / log file instead of to the user.
+ * 
+ * @package Spitfire
+ * @author César de la Cal <cesar@magic3w.com>
+ * @copyright 2018 Magic3W - All rights reserved
+ */
+
+use spitfire\contracts\core\kernel\ConsoleKernelInterface;
+use spitfire\core\kernel\ConsoleKernel;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+/* Include Spitfire core.
+ */
+define('BASEDIR', __DIR__);
+
+include __DIR__ . '/vendor/autoload.php';
+include __DIR__ . '/bin/bootstrap.php';
+
+/**
+ * We need the arguments from argv. ArgV will contain the arguments as 
+ * follows:
+ * 
+ *  - The first argument is the name of the executable (in this case our console file)
+ *  - The second argument will be the name of the command to be executed
+ *  - The remaining are arguments for our system to parse
+ */
+$args = $argv;
+array_shift($args);
+$comm = array_shift($args);
+
+/**
+ * @var ConsoleKernel
+ */
+$kernel = spitfire()->provider()->get(ConsoleKernel::class);
+spitfire()->provider()->set(ConsoleKernelInterface::class, $kernel);
+spitfire()->provider()->set(ConsoleKernel::class, $kernel);
+
+exit( $kernel->handle(new ArgvInput(), new ConsoleOutput()) );
