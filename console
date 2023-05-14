@@ -11,6 +11,7 @@
  * @package Spitfire
  * @author César de la Cal <cesar@magic3w.com>
  * @copyright 2018 Magic3W - All rights reserved
+ * @todo Move this into the template
  */
 
 use Monolog\Handler\StreamHandler;
@@ -44,4 +45,4 @@ spitfire()->provider()->set(LoggerInterface::class, new Monolog\Logger('log', [n
  * @var ConsoleKernel
  */
 $kernel = spitfire()->provider()->get(ConsoleKernel::class);
-exit($kernel->handle(new ArgvInput, new ConsoleOutput));
+exit(boot($kernel)->handle(new ArgvInput, new ConsoleOutput));

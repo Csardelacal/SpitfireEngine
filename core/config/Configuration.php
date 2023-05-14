@@ -1,5 +1,6 @@
 <?php namespace spitfire\core\config;
 
+use AssertionError;
 use spitfire\contracts\ConfigurationInterface;
 use spitfire\exceptions\ApplicationException;
 use spitfire\support\arrays\DotNotationAccessor;
@@ -51,7 +52,7 @@ class Configuration implements ConfigurationInterface
 	 * Contains the configuration array. This array contains the flattened config
 	 * from the configuration files (even if these contain arrays to set up the stuff)
 	 *
-	 * @var string[]
+	 * @var mixed[]
 	 */
 	private $data;
 	
@@ -63,7 +64,10 @@ class Configuration implements ConfigurationInterface
 	 */
 	private $interface;
 	
-	public function __construct($data = [])
+	/**
+	 * @param mixed[] $data
+	 */
+	public function __construct(array $data = [])
 	{
 		$this->data = $data;
 		$this->interface = new DotNotationAccessor($this->data);
@@ -75,9 +79,9 @@ class Configuration implements ConfigurationInterface
 	 *
 	 * @param string $key
 	 * @param mixed $fallback
-	 * @return string|int|bool|float|null
+	 * @return mixed
 	 */
-	public function get(string $key, $fallback = null) : string|int|bool|float|null
+	public function get(string $key, $fallback = null) : mixed
 	{
 		return $this->interface->has($key)? $this->interface->get($key) : $fallback;
 	}
@@ -92,8 +96,14 @@ class Configuration implements ConfigurationInterface
 	
 	public function getAll(string $key): array
 	{
+		if (!$this->interface->has($key)) {
+			return [];
+		}
+		
 		$raw = $this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN)?: [];
 		$_ret = [];
+		
+		assert(is_array($raw));
 		
 		array_walk_recursive($raw, function (string $element) use(&$_ret) : void {
 			$_ret[] = $element;
@@ -105,7 +115,7 @@ class Configuration implements ConfigurationInterface
 	/**
 	 * Get a configuration object for the given subtree. This means that the 
 	 * 
-	 * @throws ApplicationException
+	 * @throws AssertionError	
 	 * @param string $key
 	 * @return ConfigurationInterface
 	 */
@@ -117,10 +127,13 @@ class Configuration implements ConfigurationInterface
 		 */
 		assume($this->interface->has($key), sprintf('Configuration does not contain key %s', $key));
 		
+		$_ret = $this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN);
+		assert(is_array($_ret));
+		
 		/**
 		 * Otherwise just return the data the application was actually requesting.
 		 */
-		return new self($this->interface->get($key, DotNotationAccessor::ALLOW_ARRAY_RETURN));
+		return new self($_ret);
 	}
 	
 	/**
@@ -157,7 +170,7 @@ class Configuration implements ConfigurationInterface
 	 * @param string $namespace
 	 * @param mixed[] $values
 	 */
-	public function import(string $namespace, $values)
+	public function import(string $namespace, array $values) : ConfigurationInterface
 	{
 		$this->interface->set($namespace, $values);
 		return $this;

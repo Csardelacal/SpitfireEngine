@@ -23,16 +23,14 @@
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use spitfire\_init\InitScriptInterface;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
 use spitfire\contracts\core\kernel;
-use spitfire\contracts\core\kernel\KernelInterface;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
 use spitfire\core\http\URLBuilder;
+use spitfire\core\kernel\KernelFactory;
 use spitfire\exceptions\ApplicationException;
-use spitfire\exceptions\user\ApplicationException as UserApplicationException;
 use spitfire\exceptions\user\NotFoundException;
 use spitfire\io\stream\Stream;
 use spitfire\model\ModelFactory;
@@ -85,44 +83,14 @@ function emit(ResponseInterface $message) : void
  * Ths function will boot a kernel, instancing it and executing the necessary scripts to
  * initialize it.
  *
+ * @throws ProviderNotFoundException
  * @template T of kernel\KernelInterface
  * @param T $kernel
  * @return T
  */
 function boot(kernel\KernelInterface $kernel) : kernel\KernelInterface
 {
-	$provider = spitfire()->provider();
-	$interfaces = [
-		kernel\ConsoleKernelInterface::class,
-		kernel\WebKernelInterface::class
-	];
-	
-	$provider->set(KernelInterface::class, $kernel);
-	
-	/**
-	 * Spitfire provides three interfaces that an application can depend on. The generic
-	 * kernel, the  console and the web kernels. The application can depend on those to
-	 * construct behavior.
-	 */
-	foreach ($interfaces as $classname) {
-		if ($kernel instanceof $classname) {
-			$provider->set($classname, $kernel);
-		}
-	}
-	
-	/**
-	 * Loop over the kernel's init script and execute them, making the kernel function.
-	 */
-	foreach ($kernel->initScripts() as $script) {
-		$_init = new $script($kernel);
-		assert($_init instanceof InitScriptInterface);
-		$_init->exec();
-	}
-	
-	/**
-	 * Return the kernel, so the application can work as expected.
-	 */
-	return $kernel;
+	return spitfire()->provider()->get(KernelFactory::class)->boot($kernel);
 }
 
 /**
@@ -489,9 +457,9 @@ function asset(string $name, string $scope = 'assets/') : string
  *
  * @param string $key The key in the configuration
  * @param mixed  $fallback The value to return if the configuration does not contain the key
- * @return string|int|bool|float|null The data for this configuration entry
+ * @return mixed The data for this configuration entry
  */
-function config($key, $fallback = null)
+function config($key, $fallback = null) : mixed
 {
 	try {
 		return spitfire()->provider()->get(Configuration::class)->get($key, $fallback);

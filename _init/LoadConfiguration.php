@@ -27,11 +27,20 @@ use Dotenv\Dotenv;
 class LoadConfiguration implements InitScriptInterface
 {
 	
+	/**
+	 * 
+	 * @throws \Dotenv\Exception\InvalidEncodingException
+	 * @throws \Dotenv\Exception\InvalidFileException
+	 * @throws \Dotenv\Exception\InvalidPathException
+	 * @return void
+	 */
 	public function exec(): void
 	{
 		
 		/**
 		 * If the cache file is available, we can use it to bootstrap the application.
+		 * 
+		 * @todo bin/config should not be a magic string
 		 */
 		if (file_exists(spitfire()->locations()->root('bin/config.php'))) {
 			spitfire()->provider()->set(Configuration::class, new Configuration(include spitfire()->locations()->root('bin/config.php')));

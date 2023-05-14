@@ -32,9 +32,9 @@ interface ConfigurationInterface
 	 *
 	 * @param string $key
 	 * @param string|null $fallback
-	 * @return string|int|bool|float|null
+	 * @return mixed
 	 */
-	public function get(string $key, ?string $fallback = null): string|int|bool|float|null;
+	public function get(string $key, ?string $fallback = null): mixed;
 	
 	/**
 	 * Retrieve a configuration from the repository. You may retrieve a config
