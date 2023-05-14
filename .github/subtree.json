@@ -29,6 +29,11 @@
             "name": "kernel",
             "directory": "src/core/kernel/",
             "target": "git@github.com:spitfire-php/kernel.git"
+        },
+        {
+            "name": "project",
+            "directory": "src/project/",
+            "target": "git@github.com:Csardelacal/Spitfire.git"
         }
     ]
 }

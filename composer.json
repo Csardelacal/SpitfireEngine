@@ -75,7 +75,7 @@
 	"autoload-dev": {
 		"psr-4": {
 			"tests\\spitfire\\": "./tests",
-			"app\\": "./app"
+			"app\\": "./src/project/app"
 		}
 	},
 	"minimum-stability": "dev",

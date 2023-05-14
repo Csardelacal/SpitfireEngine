@@ -136,6 +136,11 @@ class ConnectionManager
 		
 		assert($driver instanceof Driver);
 		
+		/**
+		 * @todo This should lazily connect the driver. If the database is not ready or not properly
+		 * configured, the connection manager will crash and nothing will work because it will sabotage
+		 * loading the other providers.
+		 */
 		$driver->connect();
 		
 		/**
