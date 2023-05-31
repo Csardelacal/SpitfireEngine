@@ -2,7 +2,7 @@
 
 use Brick\VarExporter\VarExporter;
 use spitfire\exceptions\ApplicationException;
-use spitfire\storage\database\Connection;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\migration\schemaState\SchemaMigrationExecutor;
 use spitfire\storage\database\MigrationOperationInterface;
 use spitfire\storage\database\Schema;
@@ -19,7 +19,7 @@ class MigrateCommand extends Command
 	
 	/**
 	 *
-	 * @var Connection
+	 * @var ConnectionInterface
 	 */
 	private $connection;
 	
@@ -43,12 +43,12 @@ class MigrateCommand extends Command
 	
 	/**
 	 *
-	 * @param Connection $connection
+	 * @param ConnectionInterface $connection
 	 * @param string $migrationManifestFile
 	 * @param string $schemaBaseline
 	 * @param string $schemaCacheFile
 	 */
-	public function __construct(Connection $connection, string $migrationManifestFile, string $schemaBaseline, string $schemaCacheFile)
+	public function __construct(ConnectionInterface $connection, string $migrationManifestFile, string $schemaBaseline, string $schemaCacheFile)
 	{
 		$this->connection = $connection;
 		$this->migrationManifestFile = $migrationManifestFile;

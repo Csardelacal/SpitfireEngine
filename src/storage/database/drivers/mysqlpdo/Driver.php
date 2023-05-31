@@ -90,6 +90,14 @@ class Driver implements DriverInterface
 		$pass = $this->settings->getPassword();
 		
 		/**
+		 * Without PDO, the PDO driver will obviously not work. Checking for it
+		 * to be present is a requirement.
+		 */
+		if (!class_exists(PDO::class)) {
+			throw new ApplicationException('PDO is required for the mysql driver to function');
+		}
+		
+		/**
 		 * Connect to the database to prepare for incoming queries. That way we can
 		 * start receiving queries immediately.
 		 */

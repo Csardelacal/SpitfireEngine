@@ -33,15 +33,9 @@ class DatabaseServiceProvider implements ProviderInterface
 		 */
 		$container = $container->get(Container::class);
 		
-		try {
-			
-			$container->set(ConnectionManager::class, $manager);
-			$container->set(Connection::class, $manager->get($default));
-			$container->set(ConnectionInterface::class, new ConnectionGlobal());
-		}
-		catch (ApplicationException $e) {
-			$container->get(LoggerInterface::class)->debug($e->getMessage());
-		}
+		$container->set(ConnectionManager::class, $manager);
+		$container->set(ConnectionInterface::class, new ConnectionGlobal());
+		$container->singleton(Connection::class, fn() => $manager->get($default));
 	}
 	
 	/**

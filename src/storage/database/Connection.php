@@ -2,7 +2,6 @@
 
 use PDOStatement;
 use spitfire\collection\Collection;
-use spitfire\collection\TypedCollection;
 use spitfire\exceptions\ApplicationException;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
@@ -57,10 +56,9 @@ class Connection implements ConnectionInterface
 		return $this->schema;
 	}
 	
-	public function setSchema(Schema $schema) : Connection
+	public function setSchema(Schema $schema) : void
 	{
 		$this->schema = $schema;
-		return $this;
 	}
 	
 	public function getAdapter() : Adapter
@@ -90,6 +88,7 @@ class Connection implements ConnectionInterface
 	 * Executes a migration operation on the database. This allows you to create,
 	 * upgrade or downgrade database schemas.
 	 *
+	 * @throws ApplicationException
 	 * @param MigrationOperationInterface $migration
 	 * @return bool True, if the migration has been applied
 	 */

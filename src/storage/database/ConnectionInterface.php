@@ -20,6 +20,8 @@ interface ConnectionInterface
 	 */
 	public function getSchema() : Schema;
 	
+	public function setSchema(Schema $schema) : void;
+	
 	public function getAdapter() : Adapter;
 	
 	public function getMigrationExecutor() : SchemaMigrationExecutorInterface;

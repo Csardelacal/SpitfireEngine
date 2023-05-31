@@ -1,6 +1,7 @@
 <?php namespace spitfire\storage\database;
 
 use spitfire\exceptions\ApplicationException;
+use spitfire\provider\NotFoundException;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\query\ResultInterface;
@@ -22,14 +23,17 @@ class ConnectionGlobal implements ConnectionInterface
 		$this->connection = $connection;
 	}
 	
-	/**
-	 *
-	 */
+	
 	protected function getUnderlyingConnection() : ConnectionInterface
 	{
-		return $this->connection !== null?
-		spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
-		spitfire()->provider()->get(Connection::class);
+		try {
+			return $this->connection !== null?
+			spitfire()->provider()->get(ConnectionManager::class)->get($this->connection) :
+			spitfire()->provider()->get(Connection::class);
+		}
+		catch (NotFoundException $ex) {
+			trigger_error('Connection is not available', E_USER_ERROR);
+		}
 	}
 	
 	/**
@@ -41,6 +45,11 @@ class ConnectionGlobal implements ConnectionInterface
 	public function getSchema() : Schema
 	{
 		return $this->getUnderlyingConnection()->getSchema();
+	}
+	
+	public function setSchema(Schema $schema): void
+	{
+		$this->getUnderlyingConnection()->setSchema($schema);
 	}
 	
 	public function getAdapter() : Adapter

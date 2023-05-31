@@ -64,7 +64,7 @@ class MigrationServiceProvider implements ProviderInterface
 			 * Prepare the necessary components to prepare a command for running
 			 * migrations.
 			 */
-			$connection = $container->get(Connection::class);
+			$connection = $container->get(ConnectionInterface::class);
 			
 			
 			$migrationFile  = $this->config->get('app.database.migrations.file', 'bin/migrations.php');
