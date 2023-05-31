@@ -1,8 +1,5 @@
 <?php namespace spitfire\core\kernel;
 
-use spitfire\_init\LoadConfiguration;
-use spitfire\_init\ProvidersInit;
-use spitfire\_init\ProvidersRegister;
 use spitfire\contracts\core\kernel\ConsoleKernelInterface;
 use spitfire\core\kernel\exceptions\CommandNotFoundException;
 use Symfony\Component\Console\Application;
@@ -93,28 +90,17 @@ class ConsoleKernel implements ConsoleKernelInterface
 	 */
 	public function handle(InputInterface $input, OutputInterface $output) : int
 	{
-		/**
-		 * @todo get this boot out of there.
-		 */
-		boot($this);
 		return $this->application->run($input, $output);
 	}
 	
 	/**
 	 * The list of init scripts that need to be executed in order for the kernel to
 	 * be usable.
-	 *
-	 * @todo initScripts need to be part of the kernel package so the kernels can be constructed
-	 * wihtout. Alternatively they can be moved outside the kernel.
 	 * 
 	 * @return string[]
 	 */
 	public function initScripts(): array
 	{
-		return [
-			LoadConfiguration::class,
-			ProvidersRegister::class,
-			ProvidersInit::class,
-		];
+		return [];
 	}
 }

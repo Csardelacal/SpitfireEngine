@@ -4,12 +4,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use spitfire\_init\LoadConfiguration;
-use spitfire\_init\ProvidersInit;
-use spitfire\_init\ProvidersRegister;
 use spitfire\core\http\request\handler\StaticResponseRequestHandler;
 use spitfire\core\http\request\handler\DecoratingRequestHandler;
-use spitfire\_init\InitRequest;
 use spitfire\contracts\core\kernel\WebKernelInterface;
 use spitfire\contracts\core\LocationsInterface;
 use spitfire\core\exceptions\ExceptionHandler;
@@ -106,10 +102,6 @@ class WebKernel implements WebKernelInterface, RequestHandlerInterface
 	public function initScripts(): array
 	{
 		return [
-			LoadConfiguration::class,
-			ProvidersRegister::class,
-			ProvidersInit::class,
-			InitRequest::class
 		];
 	}
 }
