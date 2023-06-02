@@ -51,7 +51,7 @@ class KernelFactory
 		foreach ($kernel->initScripts() as $script) {
 			$_init = new $script($kernel);
 			assert($_init instanceof InitScriptInterface);
-			$_init->exec();
+			$_init->exec($this->provider);
 		}
 		
 		/**

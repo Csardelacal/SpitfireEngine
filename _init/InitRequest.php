@@ -1,8 +1,10 @@
 <?php namespace spitfire\_init;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use spitfire\contracts\core\kernel\InitScriptInterface;
 use spitfire\core\Request;
+use spitfire\provider\Container;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -31,15 +33,17 @@ use spitfire\core\Request;
 class InitRequest implements InitScriptInterface
 {
 	
-	public function exec() : void
+	public function exec(ContainerInterface $container) : void
 	{
+		assert($container instanceof Container);
+		
 		$request = Request::fromGlobals();
 		
 		/**
 		 * Register the request for both the Spitfire Request class and the
 		 * RequestInterface that we received from the PSR package.
 		 */
-		spitfire()->provider()->set(ServerRequestInterface::class, $request);
-		spitfire()->provider()->set(Request::class, $request);
+		$container->set(ServerRequestInterface::class, $request);
+		$container->set(Request::class, $request);
 	}
 }

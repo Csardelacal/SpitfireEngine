@@ -1,5 +1,7 @@
 <?php namespace spitfire\contracts\core\kernel;
 
+use Psr\Container\ContainerInterface;
+
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
@@ -22,5 +24,5 @@
 interface InitScriptInterface
 {
 	
-	public function exec() : void;
+	public function exec(ContainerInterface $container) : void;
 }

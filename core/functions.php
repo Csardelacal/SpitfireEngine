@@ -145,6 +145,21 @@ function assume(bool $condition, $failure) : void
 }
 
 /**
+ * @template T
+ * @param callable():T $something
+ * @return T
+ */
+function attempt(callable $something)
+{
+	try {
+		return $something();
+	}
+	catch (Exception $e) {
+		trigger_error($e->getMessage(), E_USER_ERROR);
+	}
+}
+
+/**
  * This function allows the developer to stop the execution of the application.
  * It raises a failure exception that will prevent the code from continuing and
  * display a message to the end user that explains the situation.

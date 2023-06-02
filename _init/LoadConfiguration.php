@@ -4,7 +4,9 @@ use spitfire\contracts\ConfigurationInterface;
 use spitfire\core\config\Configuration;
 use spitfire\core\config\ConfigurationLoader;
 use Dotenv\Dotenv;
+use Psr\Container\ContainerInterface;
 use spitfire\contracts\core\kernel\InitScriptInterface;
+use spitfire\provider\Container;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -35,8 +37,9 @@ class LoadConfiguration implements InitScriptInterface
 	 * @throws \Dotenv\Exception\InvalidPathException
 	 * @return void
 	 */
-	public function exec(): void
+	public function exec(ContainerInterface $container) : void
 	{
+		assert($container instanceof Container);
 		
 		/**
 		 * If the cache file is available, we can use it to bootstrap the application.
@@ -53,7 +56,7 @@ class LoadConfiguration implements InitScriptInterface
 		$loader = new ConfigurationLoader(spitfire()->locations());
 		$config = $loader->make();
 		
-		spitfire()->provider()->set(Configuration::class, $config);
-		spitfire()->provider()->set(ConfigurationInterface::class, $config);
+		$container->set(Configuration::class, $config);
+		$container->set(ConfigurationInterface::class, $config);
 	}
 }

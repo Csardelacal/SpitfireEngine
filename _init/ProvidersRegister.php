@@ -1,8 +1,10 @@
 <?php namespace spitfire\_init;
 
+use Psr\Container\ContainerInterface;
 use spitfire\contracts\ConfigurationInterface;
 use spitfire\contracts\core\kernel\InitScriptInterface;
 use spitfire\core\service\Provider;
+use spitfire\provider\Container;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -34,8 +36,13 @@ use spitfire\core\service\Provider;
 class ProvidersRegister implements InitScriptInterface
 {
 	
-	public function exec(): void
+	public function exec(ContainerInterface $container) : void
 	{
+		/**
+		 * @todo Replace with the appropriate interface
+		 * @see src/contracts/core/ContainerInterface.php:11
+		 */
+		assert($container instanceof Container);
 		
 		/**
 		 * Instance all the service providers and call the register method, this
@@ -43,15 +50,17 @@ class ProvidersRegister implements InitScriptInterface
 		 * 
 		 * @var ConfigurationInterface
 		 */
-		$config = spitfire()->provider()->get(ConfigurationInterface::class);
+		$config = attempt(fn() => $container->get(ConfigurationInterface::class));
 		$providers = $config->getAll('app.providers');
 		
 		foreach ($providers as $name) {
+			assert(class_exists($name));
+			
 			/**
 			 * @var Provider $provider
 			 */
-			$provider = spitfire()->provider()->get($name);
-			$provider->register(spitfire()->provider());
+			$provider = attempt(fn() => $container->get($name));
+			$provider->register($container);
 		};
 	}
 }
