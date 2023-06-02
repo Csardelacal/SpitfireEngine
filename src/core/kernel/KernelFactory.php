@@ -1,6 +1,6 @@
 <?php namespace spitfire\core\kernel;
 
-use spitfire\_init\InitScriptInterface;
+use spitfire\contracts\core\kernel\InitScriptInterface;
 use spitfire\contracts\core\kernel\ConsoleKernelInterface;
 use spitfire\contracts\core\kernel\KernelInterface;
 use spitfire\contracts\core\kernel\WebKernelInterface;

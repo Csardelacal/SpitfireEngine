@@ -4,6 +4,7 @@ use spitfire\contracts\ConfigurationInterface;
 use spitfire\core\config\Configuration;
 use spitfire\core\config\ConfigurationLoader;
 use Dotenv\Dotenv;
+use spitfire\contracts\core\kernel\InitScriptInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.

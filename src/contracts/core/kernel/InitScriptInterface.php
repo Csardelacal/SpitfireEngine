@@ -1,4 +1,4 @@
-<?php namespace spitfire\_init;
+<?php namespace spitfire\contracts\core\kernel;
 
 /* 
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.

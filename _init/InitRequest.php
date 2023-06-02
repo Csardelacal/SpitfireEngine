@@ -1,6 +1,7 @@
 <?php namespace spitfire\_init;
 
 use Psr\Http\Message\ServerRequestInterface;
+use spitfire\contracts\core\kernel\InitScriptInterface;
 use spitfire\core\Request;
 
 /* 

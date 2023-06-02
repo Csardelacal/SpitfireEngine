@@ -1,6 +1,7 @@
 <?php namespace spitfire\_init;
 
 use spitfire\contracts\ConfigurationInterface;
+use spitfire\contracts\core\kernel\InitScriptInterface;
 use spitfire\core\service\Provider;
 
 /*
