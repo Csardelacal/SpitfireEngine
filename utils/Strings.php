@@ -1,5 +1,26 @@
 <?php namespace spitfire\utils;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 use spitfire\collection\Collection;
 
 class Strings
@@ -16,21 +37,6 @@ class Strings
 	{
 		$_ret = preg_replace('/[A-Z]/', '_$0', $str);
 		return strtolower(trim($_ret, '_'));
-	}
-	
-	/**
-	 * Converts under_score separated strings into camelCased. Allowing an application
-	 * to retrieve a class name from a case insensitive environment.
-	 *
-	 * @param string  $str  The input string (example: camel_case)
-	 * @param boolean $high Defines whether the first letter should be uppercase.
-	 *                      "CamelCase" (true) or "camelCase" (false)
-	 * @return string
-	 */
-	public static function underscores2camel($str, $high = true) : string
-	{
-		trigger_error("The function underscores2camel was renamed to camel", E_USER_DEPRECATED);
-		return self::camel($str, $high);
 	}
 	
 	
@@ -78,7 +84,7 @@ class Strings
 	
 	public static function endsWith(string $haystack, string $needle) : bool
 	{
-		if (!$needle) {
+		if ($needle === '') {
 			return true;
 		}
 		return strcmp(substr($haystack, 0 - strlen($needle)), $needle) === 0;
@@ -119,17 +125,6 @@ class Strings
 		} else {
 			return $string;
 		}
-	}
-	
-	/**
-	 *
-	 * @deprecated since version 0.1
-	 * @param string $str
-	 * @return string
-	 */
-	public static function strToHTML($str)
-	{
-		return Strings::urls($str);
 	}
 	
 	public static function urls(string $str, callable $cb = null) : string

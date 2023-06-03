@@ -28,7 +28,7 @@
  * to a certain hook.
  *
  * This class provides a simple iterator for the dispatch method to alleviate the
- * complexity of the EventDispatcher. This is not a public class.
+ * complexity of the Event dispatcher. This is not a public class.
  *
  * @template T of Event
  * @author César de la Cal Bretschneider <cesar@magic3w.com>
