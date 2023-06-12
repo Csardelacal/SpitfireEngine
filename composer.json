@@ -7,7 +7,6 @@
 
 	"require": {
 		"php" : "^7||^8",
-		"ext-gd" : "*",
 		"spitfire/dependency-provider": "^0.2.4",
 		"psr/log": "^3.0",
 		"spitfire/collection": "^0.2.0",
@@ -68,6 +67,7 @@
 			"spitfire\\storage\\": "./src/storage/",
 			"spitfire\\contracts\\": "./src/contracts/",
 			"spitfire\\event\\": "./src/event/",
+			"spitfire\\exceptions\\": "./src/exceptions/",
 			"spitfire\\core\\kernel\\": "./src/core/kernel/"
 		}
 
