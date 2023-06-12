@@ -46,7 +46,8 @@
 		"spitfire/defer" : "self.version",
 		"spitfire/database" : "self.version",
 		"spitfire/event" : "self.version",
-		"spitfire/kernel" : "self.version"
+		"spitfire/kernel" : "self.version",
+		"spitfire/exception" : "self.version"
 	},
 	
 	"provide": {
@@ -54,7 +55,8 @@
 		"spitfire/defer" : "self.version",
 		"spitfire/database" : "self.version",
 		"spitfire/event" : "self.version",
-		"spitfire/kernel" : "self.version"
+		"spitfire/kernel" : "self.version",
+		"spitfire/exception" : "self.version"
 	},
 
 	"autoload": {
