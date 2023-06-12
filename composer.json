@@ -6,7 +6,7 @@
 	"description": "Spitfire is a simple framework for web development",
 
 	"require": {
-		"php" : "^7||^8",
+		"php" : "^8",
 		"spitfire/dependency-provider": "^0.2.4",
 		"psr/log": "^3.0",
 		"spitfire/collection": "^0.2.0",
