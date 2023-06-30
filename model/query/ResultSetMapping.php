@@ -1,5 +1,27 @@
 <?php namespace spitfire\model\query;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+use PDOException;
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
 use spitfire\model\ActiveRecord;
@@ -11,14 +33,16 @@ use spitfire\storage\database\Record;
 
 /**
  * 
+ * @todo Add support for pivot tables (os sub-result mappings)
  * @todo Add documentation
+ * @template T of Model
  */
 class ResultSetMapping
 {
 	
 	/**
 	 * 
-	 * @var Model
+	 * @var T
 	 */
 	private Model $model;
 	
@@ -36,7 +60,7 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @param Model $model
+	 * @param T $model
 	 */
 	public function __construct(Model $model)
 	{
@@ -46,7 +70,7 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @return Model
+	 * @return T
 	 */
 	public function getModel()
 	{
@@ -86,7 +110,7 @@ class ResultSetMapping
 	/**
 	 * 
 	 * @param Collection<array<string,mixed>> $data
-	 * @return Collection<Model>
+	 * @return Collection<T>
 	 */
 	public function make(Collection $data) : Collection
 	{
@@ -119,7 +143,7 @@ class ResultSetMapping
 		/**
 		 * Once the records have been eagerly loaded, we can proceed to hydrate the models using them.
 		 * 
-		 * @var Collection<Model>
+		 * @var Collection<T>
 		 */
 		$models = $activeRecords->each(function (ActiveRecord $record) {
 			return $this->model->withHydrate($record);
@@ -128,6 +152,9 @@ class ResultSetMapping
 		return $models;
 	}
 	
+	/**
+	 * @return T
+	 */
 	public function makeOne(Record $record) : Model
 	{
 		
@@ -141,6 +168,8 @@ class ResultSetMapping
 		
 		/**
 		 * Once the records have been eagerly loaded, we can proceed to hydrate the models using them.
+		 * 
+		 * @var T
 		 */
 		return $this->model->withHydrate($activeRecord);
 		
@@ -182,6 +211,8 @@ class ResultSetMapping
 				 * the one the system uses to organize the records by.
 				 */
 				$lookfor  = $record->getUnderlyingRecord()->get($meta->localField()->getName());
+				
+				assert(is_string($lookfor) || is_int($lookfor));
 				
 				/**
 				 * If the relationship is not defined (and it's value is null) we tell the

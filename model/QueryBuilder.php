@@ -1,5 +1,26 @@
 <?php namespace spitfire\model;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 use InvalidArgumentException;
 use PDOException;
 use spitfire\collection\Collection;
@@ -33,15 +54,9 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @var ResultSetMapping
+	 * @var ResultSetMapping<T>
 	 */
 	private ResultSetMapping $mapping;
-	
-	/**
-	 *
-	 * @var ResultSetMapping
-	 */
-	private ?ResultSetMapping $pivot = null;
 	
 	/**
 	 * The with method allows the user to determine relations that should be
@@ -94,7 +109,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @return ResultSetMapping
+	 * @return ResultSetMapping<T>
 	 */
 	public function getMapping() : ResultSetMapping
 	{
@@ -103,23 +118,13 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
+	 * @param ResultSetMapping<T> $mapping
 	 * @return self<T>
 	 */
 	public function withMapping(ResultSetMapping $mapping) : QueryBuilder
 	{
 		$copy = clone $this;
 		$copy->mapping = $mapping;
-		return $copy;
-	}
-	
-	/**
-	 *
-	 * @return self<T>
-	 */
-	public function withPivot(ResultSetMapping $mapping) : QueryBuilder
-	{
-		$copy = clone $this;
-		$copy->pivot = $mapping;
 		return $copy;
 	}
 	
@@ -190,28 +195,18 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @param callable():Model|null $or This function can either: return null, return a model
 	 * or throw an exception
+	 * 
+	 * @throws PDOException
 	 * @return Model|null
 	 */
 	public function first(callable $or = null):? Model
 	{
-		
-		/**
-		 * Generate a collection of mappings for this query. If there's a pivot, there
-		 * will be several mappings, otherwise it will be just one.
-		 *
-		 * @var Collection<ResultSetMapping>
-		 */
-		$mapping = Collection::fromArray([
-			$this->mapping->with($this->with),
-			$this->pivot
-		])->filter();
-		
 		/*
 		* Fetch a single row from the database.
 		*/
 		$result = new ResultSet(
 			$this->model->getConnection()->query($this->getQuery()),
-			$mapping
+			$this->mapping->with($this->with)
 		);
 		
 		$row = $result->fetch();
@@ -225,61 +220,30 @@ class QueryBuilder implements QueryBuilderInterface
 			return $or === null? null : $or();
 		}
 		
-		/**
-		 *
-		 * @var Model
-		 */
-		$model = $row[0];
-		
-		if ($this->pivot !== null) {
-			$model->setPivot($row[0]);
-		}
-		
-		return $model;
+		return $row;
 	}
 	
 	/**
 	 *
+	 * @throws PDOException
 	 * @return Collection<Model>
 	 */
 	public function all() : Collection
 	{
-		/**
-		 * Generate a collection of mappings for this query. If there's a pivot, there
-		 * will be several mappings, otherwise it will be just one.
-		 *
-		 * @var Collection<ResultSetMapping>
-		 */
-		$mapping = Collection::fromArray([
-			$this->mapping->with($this->with),
-			$this->pivot
-		])->filter();
-		
 		/*
 		* Fetch the records from the database
 		*/
 		$result = new ResultSet(
 			$this->model->getConnection()->query($this->getQuery()),
-			$mapping
+			$this->mapping->with($this->with)
 		);
 		
-		return $result->fetchAll()->each(function ($row) {
-			/**
-			 *
-			 * @var Model
-			 */
-			$model = $row[0];
-			
-			if ($this->pivot !== null) {
-				$model->setPivot($row[0]);
-			}
-			
-			return $model;
-		});
+		return $result->fetchAll();
 	}
 	
 	/**
 	 *
+	 * @throws PDOException
 	 * @return Collection<T>
 	 */
 	public function range(int $offset, int $size) : Collection
@@ -291,37 +255,16 @@ class QueryBuilder implements QueryBuilderInterface
 		$query->range($offset, $size);
 		
 		/**
-		 * Generate a collection of mappings for this query. If there's a pivot, there
-		 * will be several mappings, otherwise it will be just one.
-		 *
-		 * @var Collection<ResultSetMapping>
+		 * Fetch the records from the database
+		 * 
+		 * @var ResultSet<T>
 		 */
-		$mapping = collect([
-			$this->mapping->with($this->with),
-			$this->pivot
-		])->filter();
-		
-		/*
-		* Fetch the records from the database
-		*/
 		$result = new ResultSet(
 			$this->model->getConnection()->query($query),
-			$mapping
+			$this->mapping->with($this->with)
 		);
 		
-		return $result->fetchAll()->each(function ($row) {
-			/**
-			 *
-			 * @var T
-			 */
-			$model = $row[0];
-			
-			if ($this->pivot !== null) {
-				$model->setPivot($row[0]);
-			}
-			
-			return $model;
-		});
+		return $result->fetchAll();
 	}
 	
 	/**

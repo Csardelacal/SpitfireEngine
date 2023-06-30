@@ -1,5 +1,27 @@
 <?php namespace spitfire\model\query;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+use PDOException;
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
@@ -12,15 +34,16 @@ use spitfire\storage\database\Record;
  * @todo If we're going to have pivots, it may be better to have them here than
  * in the ResultSetMapping (making the mapping recusrive)
  * 
+ * @template T of Model
  */
 class ResultSet
 {
 	
 	/**
 	 * 
-	 * @var Collection<ResultSetMapping>
+	 * @var ResultSetMapping<T>
 	 */
-	private Collection $maps;
+	private ResultSetMapping $map;
 	
 	/**
 	 * The underlying resultset
@@ -32,19 +55,20 @@ class ResultSet
 	/**
 	 * 
 	 * @param ResultInterface $result
-	 * @param Collection<ResultSetMapping> $map
+	 * @param ResultSetMapping<T> $map
 	 */
-	public function __construct(ResultInterface $result, Collection $map)
+	public function __construct(ResultInterface $result, ResultSetMapping $map)
 	{
 		$this->resultset = $result;
-		$this->maps = $map;
+		$this->map = $map;
 	}
 	
 	/**
 	 * 
-	 * @return Collection<Model>|false
+	 * @throws PDOException
+	 * @return T|false
 	 */
-	public function fetch() : Collection|false
+	public function fetch() : Model|false
 	{
 		$assoc = $this->resultset->fetchAssociative();
 		
@@ -52,16 +76,17 @@ class ResultSet
 			return false;
 		}
 		
-		return $this->maps->each(fn(ResultSetMapping $e) => $e->makeOne(new Record($assoc)));
+		return $this->map->makeOne(new Record($assoc));
 	}
 	
 	/**
 	 * 
-	 * @return Collection<Collection<Model>>
+	 * @throws PDOException
+	 * @return Collection<T>
 	 */
 	public function fetchAll() : Collection
 	{
 		$all = Collection::fromArray($this->resultset->fetchAllAssociative());
-		return $this->maps->each(fn(ResultSetMapping $e) => $e->make($all));
+		return $this->map->make($all);
 	}
 }
