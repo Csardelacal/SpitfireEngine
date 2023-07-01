@@ -1,5 +1,26 @@
 <?php namespace tests\spitfire\model;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 use PHPUnit\Framework\TestCase;
 use spitfire\model\attribute\Table;
 use spitfire\storage\database\ConnectionManager;
@@ -411,6 +432,67 @@ class QueryBuilderTest extends TestCase
 		$this->assertStringMatchesFormat(
 			'SELECT count(`_id`) AS `c` FROM (SELECT `test_%d`.`_id` '.
 			'FROM `test` AS `test_%d` WHERE `test_%d`.`_id` = \'1\' LIMIT 0, 101) AS `t_%d` WHERE 1',
+			$driver->queries[0]
+		);
+	}
+	
+	/**
+	 * Test whether the query builder can properly perform quick counts.
+	 */
+	public function testSum()
+	{
+		
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([
+					['__SUM__' => 1]
+				]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$this->schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter()),
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
+			)
+		);
+		
+		$model = new #[Table('test')] class ($connection) extends Model {
+			private int $_id = 0;
+			private string $my_stick;
+			private string $my_test;
+			
+			public function getId()
+			{
+				return $this->_id;
+			}
+		};
+		
+		$builder = (new QueryBuilder(
+			$model
+		))->withDefaultMapping();
+		
+		$builder->where('_id', 1)->sum('my_test');
+		$this->assertStringMatchesFormat(
+			'SELECT sum(`test_%d`.`my_test`) AS `__SUM__` FROM `test` AS `test_%d` WHERE `test_%d`.`_id` = \'1\'',
 			$driver->queries[0]
 		);
 	}

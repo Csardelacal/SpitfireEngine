@@ -24,16 +24,15 @@
 use InvalidArgumentException;
 use PDOException;
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
-use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\Aggregate;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\query\RestrictionGroup;
-use spitfire\storage\database\query\SelectExpression;
 use spitfire\utils\Mixin;
 
 /**
@@ -342,6 +341,34 @@ class QueryBuilder implements QueryBuilderInterface
 		$result = $this->model->getConnection()->query($outer)->fetchOne();
 		assert($result !== false);
 		assert(is_scalar($result));
+		
+		return (int)$result;
+	}
+	
+	/**
+	 *
+	 * @throws PDOException
+	 * @throws ApplicationException If the field does not exist
+	 */
+	public function sum(string $fieldname) : int
+	{
+		$query = $this->query->withoutSelect();
+		
+		/**
+		 * Get the primary index, and make sure that it actually exists.
+		 */
+		$field = $this->getModel()->getTable()->getField($fieldname);
+		
+		$query->aggregate(
+			$this->getQuery()->getFrom()->output()->getOutput($field->getName()),
+			new Aggregate(Aggregate::AGGREGATE_SUM),
+			'__SUM__'
+		);
+		
+		
+		$result = $this->model->getConnection()->query($query)->fetchOne();
+		assert($result !== false);
+		assert(is_scalar(($result)));
 		
 		return (int)$result;
 	}
