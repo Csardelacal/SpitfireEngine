@@ -1,20 +1,8 @@
 <?php namespace spitfire\storage\database\migration\schemaState;
 
-use spitfire\collection\Collection;
-use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
-use spitfire\storage\database\events\RecordBeforeDeleteEvent;
-use spitfire\storage\database\events\RecordBeforeInsertEvent;
-use spitfire\storage\database\events\RecordBeforeUpdateEvent;
-use spitfire\storage\database\events\SoftDeleteListener;
-use spitfire\storage\database\events\UpdateTimestampListener;
-use spitfire\storage\database\Field;
-use spitfire\storage\database\ForeignKey;
-use spitfire\storage\database\Index;
-use spitfire\storage\database\Layout;
-use spitfire\storage\database\LayoutInterface;
-
 /*
- * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Copyright (C) 2021-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,8 +17,23 @@ use spitfire\storage\database\LayoutInterface;
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * MA 02110-13 01  USA
+ *
  */
+
+use spitfire\collection\Collection;
+use spitfire\exceptions\NotFoundException;
+use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use spitfire\storage\database\events\RecordBeforeDeleteEvent;
+use spitfire\storage\database\events\RecordBeforeInsertEvent;
+use spitfire\storage\database\events\RecordBeforeUpdateEvent;
+use spitfire\storage\database\events\SoftDeleteListener;
+use spitfire\storage\database\events\UpdateTimestampListener;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\ForeignKey;
+use spitfire\storage\database\Index;
+use spitfire\storage\database\Layout;
+use spitfire\storage\database\LayoutInterface;
 
 /**
  * The table migration executor allows the application to write migrations
@@ -58,6 +61,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	/**
 	 * Adds an autoincrementing field to the table.
 	 *
+	 * @throws NotFoundException
 	 * @param string $name
 	 * @return TableMigrationExecutorInterface
 	 */
@@ -185,7 +189,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		/**
 		 * Create a field to host the data for the referenced field. Rename the field
 		 * to prefix it with the name we want to assign to this field.
-		 * 
+		 *
 		 * We swap the field to being nullable, because the remote will always be the primary
 		 * key, which is not nullable, but this makes no sense in the reference.
 		 */
@@ -193,7 +197,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		$field = $this->table->putField($name, $reference->getType(), true, false);
 		
 		$index = new ForeignKey(
-			sprintf('fk_%s', $name),
+			sprintf('fk_%s_%s', $this->table->getTableName(), $name),
 			$field,
 			($layout)->getTableReference()->getOutput($reference->getName())
 		);
@@ -228,6 +232,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * being either unnamed or having some naming convention.  In these cases spitfire will ignore
 	 * the name and use the convention.
 	 *
+	 * @throws NotFoundException
 	 * @param string $field
 	 * @return TableMigrationExecutorInterface
 	 */
@@ -247,6 +252,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	/**
 	 * Add an autoincrementing ID field so the database has a primary key.
 	 *
+	 * @throws NotFoundException
 	 * @return TableMigrationExecutorInterface
 	 */
 	public function id(): TableMigrationExecutorInterface

@@ -1,20 +1,8 @@
 <?php namespace spitfire\storage\database\migration\relational;
 
-use PDO;
-use spitfire\collection\Collection;
-use spitfire\storage\database\drivers\Adapter;
-use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
-use spitfire\storage\database\Field;
-use spitfire\storage\database\ForeignKey;
-use spitfire\storage\database\grammar\mysql\MySQLTableGrammar;
-use spitfire\storage\database\Index;
-use spitfire\storage\database\IndexInterface;
-use spitfire\storage\database\Layout;
-use spitfire\storage\database\LayoutInterface;
-use spitfire\storage\database\QuoterInterface;
-
 /*
- * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Copyright (C) 2021-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,8 +17,23 @@ use spitfire\storage\database\QuoterInterface;
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * MA 02110-13 01  USA
+ *
  */
+
+use PDO;
+use spitfire\collection\Collection;
+use spitfire\exceptions\NotFoundException;
+use spitfire\storage\database\drivers\Adapter;
+use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use spitfire\storage\database\Field;
+use spitfire\storage\database\ForeignKey;
+use spitfire\storage\database\grammar\mysql\MySQLTableGrammar;
+use spitfire\storage\database\Index;
+use spitfire\storage\database\IndexInterface;
+use spitfire\storage\database\Layout;
+use spitfire\storage\database\LayoutInterface;
+use spitfire\storage\database\QuoterInterface;
 
 /**
  */
@@ -267,10 +270,13 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 */
 		$reference = $layout->layout()->getPrimaryKey()->getFields()[0];
 		$field = $this->table->putField($name, $reference->getType(), true, false);
-		$primary = $layout->layout()->getPrimaryKey()->getFields()->first()->getName();
+		$_primary = $layout->layout()->getPrimaryKey()->getFields()->first();
+		
+		assert($_primary !== null);
+		$primary = $_primary->getName();
 		
 		$index = new ForeignKey(
-			sprintf('fk_%s', $name),
+			sprintf('fk_%s_%s', $this->table->getTableName(), $name),
 			$field,
 			($layout)->layout()->getTableReference()->getOutput($primary)
 		);
@@ -313,6 +319,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	/**
 	 * Adds a primary index to the table, using the provided field as
 	 *
+	 * @throws NotFoundException
 	 * @param string $field
 	 * @return TableMigrationExecutorInterface
 	 */
@@ -402,6 +409,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	 * an unrecoverable manner. Please make sure to perform backups of your
 	 * database before running this operation.
 	 *
+	 * @throws NotFoundException
 	 * @param string $name
 	 * @return TableMigrationExecutorInterface
 	 */
