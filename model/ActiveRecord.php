@@ -111,6 +111,9 @@ class ActiveRecord
 				$pl = $this->cache[$field];
 				return $pl->isSingle()? $pl->getPayload()->first() : $pl->getPayload();
 			}
+			else {
+				return $this->lazy($field);
+			}
 		}
 		
 		return $this->record->get($field)?? null;
