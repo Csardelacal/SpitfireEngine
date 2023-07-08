@@ -42,12 +42,10 @@ class SoftDeleteQueryListener implements ListenerInterface
 	public function __construct(string $field)
 	{
 		$this->field = $field;
-		echo 'Constructor', PHP_EOL;
 	}
 	
 	public function react(Event $event)
 	{
-		echo 'React', PHP_EOL;
 		/**
 		 * If the payload is not good, we cannot proceed.
 		 */
