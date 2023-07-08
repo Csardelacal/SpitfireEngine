@@ -1,14 +1,39 @@
 <?php namespace spitfire\model\directors;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 use ReflectionClass;
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
+use spitfire\exceptions\ApplicationException;
+use spitfire\exceptions\user\NotFoundException;
 use spitfire\model\Model;
 use spitfire\model\utils\AttributeLayoutGenerator;
 use spitfire\storage\database\diff\Generator;
 use spitfire\storage\database\LayoutInterface;
+use spitfire\storage\database\migration\schemaState\SchemaMigrationExecutor;
 use spitfire\storage\database\Schema;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,20 +54,43 @@ class SchemaDiffDirector extends Command
 		parent::__construct();
 	}
 	
-	protected function configure()
+	/**
+	 * 
+	 * @return void
+	 */
+	protected function configure() : void
 	{
-		$this->addArgument(
-			'dir',
-			InputArgument::OPTIONAL,
-			'The directory to retrieve models from',
-			$this->modelDir
-		);
+		try {
+			$this->addArgument(
+				'dir',
+				InputArgument::OPTIONAL,
+				'The directory to retrieve models from',
+				$this->modelDir
+			);
+		}
+		catch (InvalidArgumentException $ex) {
+			# This should not be happening.
+		}
 	}
 	
+	/**
+	 * 
+	 * @todo Not lovong the fact that this throws this many exceptions
+	 * @throws NotFoundException
+	 * @throws ApplicationException
+	 * @throws InvalidArgumentException
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) : int
 	{
-		$files = glob($input->getArgument('dir') . '/*.php');
+		$dir = $input->getArgument('dir');
+		assert(is_string($dir));
+		
+		$files = glob($dir . '/*.php');
 		$models = new TypedCollection(ReflectionClass::class);
+		
+		if ($files === false) {
+			throw new NotFoundException(sprintf('Could not read directory %s', $dir));
+		}
 		
 		foreach ($files as $file) {
 			$output->writeln($file);
@@ -61,7 +109,7 @@ class SchemaDiffDirector extends Command
 		}
 		
 		foreach ($models as /** @var ReflectionClass */$model) {
-			$layout = (new AttributeLayoutGenerator())->make($model);
+			$layout = (new AttributeLayoutGenerator())->make(new SchemaMigrationExecutor($this->schema), $model);
 			$this->upgrade($output, $layout);
 		}
 		
@@ -80,6 +128,9 @@ class SchemaDiffDirector extends Command
 			return;
 		}
 		
+		/**
+		 * @throws void
+		 */
 		$baseline = $this->schema->getLayoutByName($layout->getTableName());
 		$diff = (new Generator($baseline, $layout))->make();
 		

@@ -23,6 +23,7 @@
 
 
 use Attribute;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 
 /**
@@ -73,7 +74,7 @@ class LongInteger extends Type
 		return $this->nullable;
 	}
 	
-	public function migrate(TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
+	public function migrate(SchemaMigrationExecutorInterface $schema, TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
 	{
 		$migrator->long($name, $this->unsigned, $nullable);
 	}

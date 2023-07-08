@@ -1,5 +1,4 @@
 <?php namespace spitfire\model\attribute;
-
 /*
  *
  * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -22,35 +21,50 @@
  */
 
 
-use Attribute;
+use spitfire\model\ReflectionModel;
 use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 
-/**
- * The column attribute can be attached to a property of a model, allowing the
- * application to automatically generate fields or columns for the given element.
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-class Text extends Type
+class CopyOf extends Type
 {
 	
-	private ?bool $nullable;
-	
-	public function __construct(bool $nullable = null)
-	{
-		$this->nullable = $nullable;
-	}
+	private string $model;
+	private string $field;
 	
 	/**
-	 * Get the value of nullable
+	 * 
 	 */
-	public function isNullable() : ?bool
+	public function __construct(string $model, string $field)
 	{
-		return $this->nullable;
+		$this->model = $model;
+		$this->field = $field;
 	}
 	
 	public function migrate(SchemaMigrationExecutorInterface $schema, TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
 	{
-		$migrator->text($name, $nullable);
+		$model = new ReflectionModel($this->model);
+		$ref = $schema->table($model->getTableName());
+		$layout = $ref->layout();
+		
+		/**
+		 * @todo We currently enforce all primary keys to be long integers for this to work.
+		 * Technically they could be whatever they wanted.
+		 */
+		assert($layout->getField($this->field)->getType() === 'long:unsigned');
+		
+		/**
+		 * Push the field onto our model. We concatenate the local with the remote field in the
+		 * DBMS, so we get something like employee_id when referencing another taable.
+		 */
+		$migrator->long($name . $this->field, true, true);
+		
+		/**
+		 * Add the foreign key to the layout. This way the DBMS can perform integrity checks on
+		 * the two.
+		 */
+		$migrator->foreign(
+			$name,
+			$ref
+		);
 	}
 }

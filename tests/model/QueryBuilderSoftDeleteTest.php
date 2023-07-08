@@ -25,17 +25,20 @@ use PHPUnit\Framework\TestCase;
 use spitfire\model\ActiveRecord;
 use spitfire\model\attribute\BelongsToOne as AttributeBelongsToOne;
 use spitfire\model\attribute\Table;
-use spitfire\storage\database\ConnectionManager;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\model\ReflectionModel;
 use spitfire\model\relations\BelongsToOne;
+use spitfire\model\traits\WithSoftDeletes;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\test\AbstractDriver;
 use spitfire\storage\database\drivers\test\AbstractResultSet;
+use spitfire\storage\database\events\QueryBeforeCreateEvent;
+use spitfire\storage\database\events\QueryBeforeEvent;
+use spitfire\storage\database\events\SoftDeleteQueryListener;
 use spitfire\storage\database\ForeignKey;
 use spitfire\storage\database\grammar\mysql\MySQLQueryGrammar;
 use spitfire\storage\database\grammar\mysql\MySQLRecordGrammar;
@@ -46,7 +49,7 @@ use spitfire\storage\database\query\ResultInterface;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema;
 
-class QueryBuilderTest extends TestCase
+class QueryBuilderSoftDeleteTest extends TestCase
 {
 	
 	private $schema;
@@ -72,7 +75,9 @@ class QueryBuilderTest extends TestCase
 		$this->layout->putField('_id', 'int:unsigned', false, true);
 		$this->layout->putField('my_stick', 'string:255', false, false);
 		$this->layout->putField('my_test', 'string:255', false, false);
+		$this->layout->putField('removed', 'int', true, false);
 		$this->layout->primary($this->layout->getField('_id'));
+		$this->layout->events()->hook(QueryBeforeCreateEvent::class, new SoftDeleteQueryListener('removed'));
 		
 		$this->layout2 = new Layout('test2');
 		$this->layout2->putField('_id', 'int:unsigned', false, true);
@@ -122,8 +127,9 @@ class QueryBuilderTest extends TestCase
 			)
 		);
 		
-		
 		$this->model = new #[Table('test')] class ($connection) extends Model {
+			use WithSoftDeletes;
+			
 			private int $_id = 0;
 			
 			public function getId()
@@ -136,15 +142,13 @@ class QueryBuilderTest extends TestCase
 		 * PHP needs us to write the class' ID into a constant that we can use, this is
 		 * just garbled data to reference that anonymous class in the next one.
 		 */
-		if (!defined('WJKEHJjLKj374HK')) {
-			
-			define('WJKEHJjLKj374HK', $this->model::class);
+		if (!defined('JKEMLkjleKKLM')) {
+			define('JKEMLkjleKKLM', $this->model::class);
 		}
-		
 		$this->model2 = new #[Table('test2')] class ($this->model) extends Model {
 			private $parent;
 			
-			#[AttributeBelongsToOne(WJKEHJjLKj374HK, '_id')]
+			#[AttributeBelongsToOne(JKEMLkjleKKLM, '_id')]
 			private $test;
 			
 			public function __construct(Model $parent)
@@ -154,7 +158,6 @@ class QueryBuilderTest extends TestCase
 			
 			public function test()
 			{
-				trigger_error('Bad', E_USER_DEPRECATED);
 				return new BelongsToOne(
 					new Field(new ReflectionModel($this::class), 'test_id'), 
 					new Field(new ReflectionModel($this->parent::class), '_id'));
@@ -167,64 +170,6 @@ class QueryBuilderTest extends TestCase
 		$schema->putLayout($this->layout2);
 		
 		spitfire()->provider()->set(Connection::class, $connection);
-	}
-	
-	public function testBelongsToWhere()
-	{
-		
-		$driver = new class extends AbstractDriver {
-			public $queries = [];
-			
-			public function read(string $sql): ResultInterface
-			{
-				$this->queries[] = $sql;
-				return new AbstractResultSet([]);
-			}
-			
-			public function write(string $sql): int
-			{
-				$this->queries[] = $sql;
-				return 1;
-			}
-			
-			public function lastInsertId(): string|false
-			{
-				return '1';
-			}
-		};
-		
-		$connection = new Connection(
-			$this->schema,
-			new Adapter(
-				$driver,
-				new MySQLQueryGrammar(new SlashQuoter()),
-				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
-			)
-		);
-		
-		$builder = new QueryBuilder(
-			$connection,
-			new ReflectionModel($this->model2::class)
-		);
-		
-		$model = new #[Table('test2')] class ($connection) extends Model {
-			private int $_id;
-		};
-		
-		$instance = $model->withHydrate(
-			new ActiveRecord(
-				$connection,
-				new ReflectionModel($model::class),
-				new Record(['_id' => 1])
-			)
-		);
-		
-		$builder->where('test', $instance);
-		
-		$connection->query($builder->getQuery());
-		
-		$this->assertStringContainsString('`test_id` = \'1\'', $driver->queries[0]);
 	}
 	
 	public function testBelongsToWhereHas()
@@ -274,69 +219,10 @@ class QueryBuilderTest extends TestCase
 		
 		$this->assertStringContainsString('WHERE EXISTS', $driver->queries[0]);
 		$this->assertStringContainsString('`my_stick` = \'is better than bacon\'', $driver->queries[0]);
+		$this->assertStringContainsString('`removed` IS NULL', $driver->queries[0]);
 		$this->assertCount(1, $driver->queries);
 		$this->assertStringContainsString('`_id` FROM `test`', $driver->queries[0]);
 		$this->assertStringContainsString("`.`my_stick` = 'is better than bacon' AND", $driver->queries[0]);
-	}
-	
-	
-	public function testFirstRecord()
-	{
-		
-		$driver = new class extends AbstractDriver {
-			public $queries = [];
-			
-			public function read(string $sql): ResultInterface
-			{
-				$this->queries[] = $sql;
-				return new AbstractResultSet([
-					['_id' => 1, 'my_stick' => '', 'my_test' => '']
-				]);
-			}
-			
-			public function write(string $sql): int
-			{
-				$this->queries[] = $sql;
-				return 1;
-			}
-			
-			public function lastInsertId(): string|false
-			{
-				return '1';
-			}
-		};
-		
-		$connection = new Connection(
-			$this->schema,
-			new Adapter(
-				$driver,
-				new MySQLQueryGrammar(new SlashQuoter()),
-				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
-			)
-		);
-		
-		$model = new  #[Table('test')]class ($connection) extends Model {
-			private int $_id = 0;
-			private string $my_stick;
-			private string $my_test;
-			
-			public function getId()
-			{
-				return $this->_id;
-			}
-		};
-		
-		$builder = (new QueryBuilder(
-			$connection,
-			new ReflectionModel($model::class)
-		))->withDefaultMapping();
-		
-		$mapping = $builder->getMapping();
-		$this->assertEquals('my_stick', $mapping->map('my_stick')->raw()[1]);
-		
-		$result = $builder->first();
-		$this->assertInstanceOf(get_class($model), $result);
 	}
 	
 	/**
@@ -352,7 +238,7 @@ class QueryBuilderTest extends TestCase
 			{
 				$this->queries[] = $sql;
 				return new AbstractResultSet([
-					['_id' => 1, 'my_stick' => '', 'my_test' => '']
+					['_id' => 1, 'my_stick' => '', 'my_test' => '', 'removed' => null]
 				]);
 			}
 			
@@ -390,17 +276,24 @@ class QueryBuilderTest extends TestCase
 			
 		};
 		
-		
 		$builder = (new QueryBuilder(
 			$connection,
 			new ReflectionModel($model::class)
 		))->withDefaultMapping();
 		
+		/**
+		 * @todo This should be moved into a better place so the query builder can
+		 * be used more comfortably.
+		 */
+		$connection->getSchema()->getLayoutByName($model->getTableName())->events()->dispatch(
+			new QueryBeforeCreateEvent($connection, $builder->getQuery())
+		);
+		
 		$where = $builder->where('_id', 1);
 		$restrictions = $builder->getQuery()->getRestrictions();
 		
 		$this->assertInstanceOf(QueryBuilder::class, $where);
-		$this->assertEquals(1, $restrictions->restrictions()->count());
+		$this->assertEquals(2, $restrictions->restrictions()->count());
 	}
 	
 	/**
@@ -458,73 +351,13 @@ class QueryBuilderTest extends TestCase
 			new ReflectionModel($model::class)
 		))->withDefaultMapping();
 		
-		
 		$builder->where('_id', 1)->quickCount();
 		$this->assertStringMatchesFormat(
 			'SELECT count(`_id`) AS `c` FROM (SELECT `test_%d`.`_id` '.
-			'FROM `test` AS `test_%d` WHERE `test_%d`.`_id` = \'1\' LIMIT 0, 101) AS `t_%d` WHERE 1',
+			'FROM `test` AS `test_%d` WHERE `test_%d`.`removed` IS NULL AND '.
+			'`test_%d`.`_id` = \'1\' LIMIT 0, 101) AS `t_%d` WHERE 1',
 			$driver->queries[0]
 		);
 	}
 	
-	/**
-	 * Test whether the query builder can properly perform quick counts.
-	 */
-	public function testSum()
-	{
-		
-		$driver = new class extends AbstractDriver {
-			public $queries = [];
-			
-			public function read(string $sql): ResultInterface
-			{
-				$this->queries[] = $sql;
-				return new AbstractResultSet([
-					['__SUM__' => 1]
-				]);
-			}
-			
-			public function write(string $sql): int
-			{
-				$this->queries[] = $sql;
-				return 1;
-			}
-			
-			public function lastInsertId(): string|false
-			{
-				return '1';
-			}
-		};
-		
-		$connection = new Connection(
-			$this->schema,
-			new Adapter(
-				$driver,
-				new MySQLQueryGrammar(new SlashQuoter()),
-				new MySQLRecordGrammar(new SlashQuoter()),
-				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
-			)
-		);
-		
-		$model = new #[Table('test')] class ($connection) extends Model {
-			private int $_id = 0;
-			private string $my_stick;
-			private string $my_test;
-			
-			public function getId()
-			{
-				return $this->_id;
-			}
-		};
-		
-		$builder = (new QueryBuilder(
-			$model
-		))->withDefaultMapping();
-		
-		$builder->where('_id', 1)->sum('my_test');
-		$this->assertStringMatchesFormat(
-			'SELECT sum(`test_%d`.`my_test`) AS `__SUM__` FROM `test` AS `test_%d` WHERE `test_%d`.`_id` = \'1\'',
-			$driver->queries[0]
-		);
-	}
 }

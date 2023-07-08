@@ -23,6 +23,7 @@
 
 
 use Attribute;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface as MigratorInterface;
 
 /**
@@ -31,5 +32,5 @@ use spitfire\storage\database\drivers\TableMigrationExecutorInterface as Migrato
 abstract class Type
 {
 	
-	abstract public function migrate(MigratorInterface $migrator, string $name, bool $nullable): void;
+	abstract public function migrate(SchemaMigrationExecutorInterface $schema, MigratorInterface $migrator, string $name, bool $nullable): void;
 }

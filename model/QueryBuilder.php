@@ -1,4 +1,25 @@
 <?php namespace spitfire\model;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 /*
  *
@@ -30,6 +51,8 @@ use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
 use spitfire\storage\database\Aggregate;
+use spitfire\storage\database\ConnectionInterface;
+use spitfire\storage\database\events\QueryBeforeCreateEvent;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\query\RestrictionGroup;
@@ -45,11 +68,13 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	use Mixin;
 	
+	private ConnectionInterface $connection;
+	
 	/**
 	 *
-	 * @var T
+	 * @var ReflectionModel<T>
 	 */
-	private $model;
+	private ReflectionModel $model;
 	
 	/**
 	 *
@@ -73,13 +98,22 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @param T $model
+	 * @param ConnectionInterface $connection
+	 * @param ReflectionModel<T> $model
 	 */
-	public function __construct(Model $model)
+	public function __construct(ConnectionInterface $connection, ReflectionModel $model)
 	{
 		$this->model = $model;
-		$this->query = new DatabaseQuery(new QueryOrTableIdentifier($this->model->getTable()->getTableReference()));
+		$this->connection = $connection;
+		
+		$table = $connection->getSchema()->getLayoutByName($model->getTableName());
+		
+		$this->query = new DatabaseQuery(new QueryOrTableIdentifier($table->getTableReference()));
 		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
+		
+		$table->events()->dispatch(
+			new QueryBeforeCreateEvent($this->connection, $this->query, [])
+		);
 	}
 	
 	/**
@@ -95,7 +129,7 @@ class QueryBuilder implements QueryBuilderInterface
 		 * our model so it can be hydrated.
 		 */
 		$selected = $copy->query->selectAll();
-		$map = new ResultSetMapping($this->model);
+		$map = new ResultSetMapping($this->connection, $this->model);
 		
 		foreach ($selected as $select) {
 			$map->set($select->getName(), $select->getInput());
@@ -132,7 +166,7 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this->query;
 	}
 	
-	public function getModel() : Model
+	public function getModel() : ReflectionModel
 	{
 		return $this->model;
 	}
@@ -166,6 +200,11 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this;
 	}
 	
+	public function getConnection() : ConnectionInterface
+	{
+		return $this->connection;
+	}
+	
 	/**
 	 * Pass an array of strings with relationships that should be eagerly
 	 * loaded when retrieving data.
@@ -177,6 +216,19 @@ class QueryBuilder implements QueryBuilderInterface
 	{
 		$this->with = $with;
 		return $this;
+	}
+	
+	/**
+	 * 
+	 */
+	public function find($id):? Model
+	{
+		$table = $this->connection->getSchema()->getLayoutByName($this->model->getTableName());
+		$key = $table->getPrimaryKey()->getFields()->first();
+		
+		assert($key !== null);
+		
+		return $this->where($key->getName(), $id)->first();
 	}
 	
 	/**
@@ -204,7 +256,7 @@ class QueryBuilder implements QueryBuilderInterface
 		* Fetch a single row from the database.
 		*/
 		$result = new ResultSet(
-			$this->model->getConnection()->query($this->getQuery()),
+			$this->connection->query($this->getQuery()),
 			$this->mapping->with($this->with)
 		);
 		
@@ -233,7 +285,7 @@ class QueryBuilder implements QueryBuilderInterface
 		* Fetch the records from the database
 		*/
 		$result = new ResultSet(
-			$this->model->getConnection()->query($this->getQuery()),
+			$this->connection->query($this->getQuery()),
 			$this->mapping->with($this->with)
 		);
 		
@@ -259,7 +311,7 @@ class QueryBuilder implements QueryBuilderInterface
 		 * @var ResultSet<T>
 		 */
 		$result = new ResultSet(
-			$this->model->getConnection()->query($query),
+			$this->connection->query($query),
 			$this->mapping->with($this->with)
 		);
 		
@@ -277,7 +329,9 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Get the primary index, and make sure that it actually exists.
 		 */
-		$_primary = $this->getModel()->getTable()->getPrimaryKey();
+		$_table = $this->connection->getSchema()->getLayoutByName($this->model->getTableName());
+		$_primary = $_table->getPrimaryKey();
+		
 		assert($_primary !== null);
 		assert($_primary->getFields()->count() === 1);
 		
@@ -291,7 +345,7 @@ class QueryBuilder implements QueryBuilderInterface
 		);
 		
 		
-		$result = $this->model->getConnection()->query($query)->fetchOne();
+		$result = $this->connection->query($query)->fetchOne();
 		assert($result !== false);
 		assert(is_scalar(($result)));
 		
@@ -313,7 +367,8 @@ class QueryBuilder implements QueryBuilderInterface
 		 * Get the primary index, and make sure that it actually exists. The primary key also must
 		 * have exactly one field.
 		 */
-		$_primary = $this->getModel()->getTable()->getPrimaryKey();
+		$_table = $this->connection->getSchema()->getLayoutByName($this->model->getTableName());
+		$_primary = $_table->getPrimaryKey();
 		assert($_primary !== null);
 		assert($_primary->getFields()->count() === 1);
 		
@@ -338,7 +393,7 @@ class QueryBuilder implements QueryBuilderInterface
 			'c'
 		);
 		
-		$result = $this->model->getConnection()->query($outer)->fetchOne();
+		$result = $this->connection->query($outer)->fetchOne();
 		assert($result !== false);
 		assert(is_scalar($result));
 		
@@ -357,16 +412,14 @@ class QueryBuilder implements QueryBuilderInterface
 		/**
 		 * Get the primary index, and make sure that it actually exists.
 		 */
-		$field = $this->getModel()->getTable()->getField($fieldname);
-		
 		$query->aggregate(
-			$this->getQuery()->getFrom()->output()->getOutput($field->getName()),
+			$this->getQuery()->getFrom()->output()->getOutput($fieldname),
 			new Aggregate(Aggregate::AGGREGATE_SUM),
 			'__SUM__'
 		);
 		
 		
-		$result = $this->model->getConnection()->query($query)->fetchOne();
+		$result = $this->connection->query($query)->fetchOne();
 		assert($result !== false);
 		assert(is_scalar(($result)));
 		

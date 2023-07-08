@@ -23,8 +23,11 @@
 
 
 use ReflectionClass;
+use ReflectionException;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\reflection\ReflectsFields;
+use spitfire\model\reflection\ReflectsRelationships;
+use spitfire\model\relations\RelationshipContent;
 use spitfire\utils\Strings;
 
 /**
@@ -32,31 +35,46 @@ use spitfire\utils\Strings;
  * @todo Add relationships
  * @todo Add indexes?
  * @todo Cache
+ * @template T of Model
  */
 class ReflectionModel
 {
 	
-	use ReflectsFields;
+	use ReflectsFields, ReflectsRelationships;
 	
 	/**
 	 *
-	 * @var class-string
+	 * @var class-string<T>
 	 */
 	private string $classname;
 	
+	/**
+	 *
+	 * @var ReflectionClass<T>
+	 */
+	private ReflectionClass $reflection;
+	
+	/**
+	 * The name of the table on the DBMS.
+	 * 
+	 * @var string
+	 */
 	private string $tablename;
 	
 	/**
 	 * Reflects on a model. This allows Spitfire to provide metadata on the
 	 * relationships between them.
+	 * 
+	 * @param class-string<T> $classname
 	 */
 	public function __construct(string $classname)
 	{
 		$this->classname = $classname;
 		
-		$reflection = new ReflectionClass($this->classname);
+		$reflection = $this->reflection = new ReflectionClass($this->classname);
 		$this->makeTableName($reflection);
 		$this->makeFields($reflection);
+		$this->makeRelationships($reflection);
 	}
 	
 	
@@ -70,6 +88,9 @@ class ReflectionModel
 		return $this->classname;
 	}
 	
+	/**
+	 * @param ReflectionClass<Model> $reflection
+	 */
 	public function makeTablename(ReflectionClass $reflection) : void
 	{
 		
@@ -85,6 +106,44 @@ class ReflectionModel
 		}
 	}
 	
+	public function hasProperty(string $name) : bool
+	{
+		return $this->reflection->hasProperty($name);
+	}
+	
+	/**
+	 *
+	 * @param T $model
+	 * @param string $k
+	 * @param mixed $value
+	 */
+	public function writeToProperty(Model $model, string $k, $value) : void
+	{
+		assert($this->reflection->hasProperty($k));
+		
+		try {
+			$prop = $this->reflection->getProperty($k);
+		}
+		catch (ReflectionException $e) {
+			#This cannot happen since we asserted that it hasProperty
+			return;
+		}
+		
+		if ($value instanceof RelationshipContent) {
+			$value = $value->isSingle()? $value->getPayload()->first() : $value->getPayload();
+		}
+		
+		if ($prop->getType() && !$prop->getType()->allowsNull() && $value === null) {
+			return;
+		}
+		
+		/**
+		 * @todo Remove the set accessible call, this is deprecated since PHP8.1
+		 */
+		$prop->setAccessible(true);
+		$prop->setValue($model, $value);
+	}
+	
 	
 	/**
 	 * Get the name of the table the DBMS is managing when reading and or writing
@@ -95,5 +154,15 @@ class ReflectionModel
 	public function getTableName(): string
 	{
 		return $this->tablename;
+	}
+	
+	/**
+	 * 
+	 * @return T
+	 */
+	public function newInstance() : Model
+	{
+		$class = $this->classname;
+		return new $class;
 	}
 }

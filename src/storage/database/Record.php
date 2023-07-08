@@ -1,9 +1,8 @@
 <?php namespace spitfire\storage\database;
 
-use spitfire\exceptions\ApplicationException;
-
 /*
- * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,28 +17,31 @@ use spitfire\exceptions\ApplicationException;
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * MA 02110-13 01  USA
+ *
  */
+
+use spitfire\exceptions\ApplicationException;
 
 class Record
 {
 	
 	/**
 	 *
-	 * @var mixed[]
+	 * @var (scalar|null)[]
 	 */
 	private $original;
 	
 	/**
 	 * The raw data that the database contains for this record.
 	 *
-	 * @var mixed[]
+	 * @var (scalar|null)[]
 	 */
 	private $data;
 	
 	/**
 	 *
-	 * @param mixed[] $data
+	 * @param (scalar|null)[] $data
 	 */
 	public function __construct(array $data)
 	{
@@ -94,7 +96,7 @@ class Record
 	 * this method will fail when attempting to read a non-existing field.
 	 *
 	 * @param string $field
-	 * @return mixed
+	 * @return scalar|null
 	 */
 	public function get(string $field)
 	{
@@ -106,7 +108,7 @@ class Record
 	 * Sets a field to a given value.
 	 *
 	 * @param string $field
-	 * @param mixed $value
+	 * @param scalar|null $value
 	 * @return Record
 	 */
 	public function set(string $field, $value) : Record

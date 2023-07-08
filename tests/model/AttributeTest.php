@@ -1,4 +1,25 @@
 <?php namespace tests\spitfire\model;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 /*
  *
@@ -29,6 +50,9 @@ use spitfire\model\utils\AttributeLayoutGenerator;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKeyInterface;
 use spitfire\storage\database\Index;
+use spitfire\storage\database\migration\schemaState\SchemaMigrationExecutor;
+use spitfire\storage\database\Schema;
+use tests\spitfire\model\fixtures\ForeignModel;
 use tests\spitfire\model\fixtures\TestModel;
 use tests\spitfire\model\fixtures\TestModelWithImpliedColumns;
 
@@ -54,9 +78,13 @@ class AttributeTest extends TestCase
 	public function testMakeLayoutFromModel()
 	{
 		$reflection = new ReflectionClass(TestModel::class);
+		$schema = new Schema('test');
+		$context = new SchemaMigrationExecutor($schema);
 		$generator = new AttributeLayoutGenerator();
 		
-		$layout = $generator->make($reflection);
+		$schema->putLayout($generator->make($context, new ReflectionClass(ForeignModel::class)));
+		
+		$layout = $generator->make($context, $reflection);
 		$this->assertEquals('test', $layout->getTableName());
 	}
 	
@@ -70,7 +98,12 @@ class AttributeTest extends TestCase
 		$reflection = new ReflectionClass(TestModel::class);
 		$generator = new AttributeLayoutGenerator();
 		
-		$layout = $generator->make($reflection);
+		$schema = new Schema('test');
+		$context = new SchemaMigrationExecutor($schema);
+		
+		$schema->putLayout($generator->make($context, new ReflectionClass(ForeignModel::class)));
+		
+		$layout = $generator->make($context, $reflection);
 		$this->assertCount(5, $layout->getFields());
 		
 		/**
@@ -93,7 +126,12 @@ class AttributeTest extends TestCase
 		$reflection = new ReflectionClass(TestModel::class);
 		$generator = new AttributeLayoutGenerator();
 		
-		$layout = $generator->make($reflection);
+		$schema = new Schema('test');
+		$context = new SchemaMigrationExecutor($schema);
+		
+		$schema->putLayout($generator->make($context, new ReflectionClass(ForeignModel::class)));
+		
+		$layout = $generator->make($context, $reflection);
 		$indexes = $layout->getIndexes()->filter(fn($e) => $e instanceof Index);
 		$this->assertCount(2, $indexes);
 		
@@ -108,7 +146,12 @@ class AttributeTest extends TestCase
 		$reflection = new ReflectionClass(TestModel::class);
 		$generator = new AttributeLayoutGenerator();
 		
-		$layout = $generator->make($reflection);
+		$schema = new Schema('test');
+		$context = new SchemaMigrationExecutor($schema);
+		
+		$schema->putLayout($generator->make($context, new ReflectionClass(ForeignModel::class)));
+		
+		$layout = $generator->make($context, $reflection);
 		$indexes = $layout->getIndexes()->filter(fn($e) => $e instanceof ForeignKeyInterface);
 		$this->assertCount(1, $indexes);
 		
@@ -124,7 +167,12 @@ class AttributeTest extends TestCase
 		$reflection = new ReflectionClass(TestModelWithImpliedColumns::class);
 		$generator = new AttributeLayoutGenerator();
 		
-		$layout = $generator->make($reflection);
+		$schema = new Schema('test');
+		$context = new SchemaMigrationExecutor($schema);
+		
+		$schema->putLayout($generator->make($context, new ReflectionClass(ForeignModel::class)));
+		
+		$layout = $generator->make($context, $reflection);
 		
 		#$this->assertEquals(true, $layout->hasField('_id'));
 		$this->assertEquals(true, $layout->hasField('created'));

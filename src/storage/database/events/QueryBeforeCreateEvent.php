@@ -1,4 +1,4 @@
-<?php namespace spitfire\model\attribute;
+<?php namespace spitfire\storage\database\events;
 /*
  *
  * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -21,44 +21,63 @@
  */
 
 
-use Attribute;
-use spitfire\model\Model;
+use spitfire\event\Event;
+use spitfire\storage\database\ConnectionInterface;
+use spitfire\storage\database\Query;
 
-/**
- * This attribute allows a programmer to determine whether the column references another
- * column in another table. This is required for relationships to work properly and for
- * the DBMS to understand the data it contains and the relations between it.
- *
- * In most DBMS this attribute is equivalent to a foreign key. Since Spitfire does not support
- * foreign keys (as in foreign keys spanning multiple columns), we refer to this attribute
- * by a different name.
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-class References
+class QueryBeforeCreateEvent extends Event
 {
 	
 	/**
 	 *
-	 * @var class-string<Model>
+	 * @var ConnectionInterface
 	 */
-	private string $model;
+	private $driver;
 	
 	/**
 	 *
-	 * @param class-string<Model> $model
+	 * @var Query
 	 */
-	public function __construct(string $model)
+	private $query;
+	
+	/**
+	 *
+	 * @var mixed[]
+	 */
+	private $options;
+	
+	/**
+	 *
+	 * @param ConnectionInterface $driver
+	 * @param Query $query
+	 * @param mixed[] $options
+	 */
+	public function __construct(
+		ConnectionInterface $driver,
+		Query $query,
+		array $options = []
+	) {
+		$this->query = $query;
+		$this->options = $options;
+		$this->driver = $driver;
+	}
+	
+	public function getQuery() : Query
 	{
-		$this->model = $model;
+		return $this->query;
 	}
 	
 	/**
-	 * Get the value of table
 	 *
-	 * @return  class-string<Model>
+	 * @return string[]
 	 */
-	public function getModel() : string
+	public function getOptions() : array
 	{
-		return $this->model;
+		return $this->options;
+	}
+	
+	public function getConnection() : ConnectionInterface
+	{
+		return $this->driver;
 	}
 }

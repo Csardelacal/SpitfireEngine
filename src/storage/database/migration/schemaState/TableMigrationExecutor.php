@@ -24,10 +24,13 @@
 use spitfire\collection\Collection;
 use spitfire\exceptions\NotFoundException;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use spitfire\storage\database\events\QueryBeforeCreateEvent;
+use spitfire\storage\database\events\QueryBeforeEvent;
 use spitfire\storage\database\events\RecordBeforeDeleteEvent;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
 use spitfire\storage\database\events\SoftDeleteListener;
+use spitfire\storage\database\events\SoftDeleteQueryListener;
 use spitfire\storage\database\events\UpdateTimestampListener;
 use spitfire\storage\database\Field;
 use spitfire\storage\database\ForeignKey;
@@ -287,6 +290,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 	{
 		$this->table->putField('removed', 'int:unsigned', true, false);
 		$this->table->events()->hook(RecordBeforeDeleteEvent::class, new SoftDeleteListener('removed'));
+		$this->table->events()->hook(QueryBeforeCreateEvent::class, new SoftDeleteQueryListener('removed'));
 		
 		/**
 		 * @todo Add the query hook so we can ignore soft deleted records by default.

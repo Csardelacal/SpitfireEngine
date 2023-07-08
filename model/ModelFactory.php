@@ -1,9 +1,31 @@
 <?php namespace spitfire\model;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 use ReflectionClass;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\Record;
+use spitfire\storage\database\events\QueryBeforeCreateEvent;
 
 /**
  *
@@ -24,20 +46,18 @@ class ModelFactory
 	 * @param class-string $className
 	 * @todo Caching would probably help this gain some performance
 	 */
-	public function make(string $className) : Model
+	public function make(string $className) : ReflectionModel
 	{
-		$reflection = new ReflectionClass($className);
-		assert($reflection->isSubclassOf(Model::class));
-		return $reflection->newInstance($this->connection);
+		return new ReflectionModel($className);
 	}
 	
 	/**
 	 *
 	 * @param class-string $className
 	 */
-	public function from(string $className) : QueryBuilder
+	public function from(string $className, $options = []) : QueryBuilder
 	{
-		return (new QueryBuilder($this->make($className)))->withDefaultMapping();
+		return (new QueryBuilder($this->connection, $this->make($className)))->withDefaultMapping();
 	}
 	
 	/**
@@ -46,11 +66,11 @@ class ModelFactory
 	 * @param int|string $id
 	 * @return Model|null
 	 */
-	public function fetch(string $className, $id) :? Model
+	public function find(string $className, $id) :? Model
 	{
 		$model = $this->make($className);
-		$query = (new QueryBuilder($model))->withDefaultMapping();
-		$query->where($model->getTable()->getPrimaryKey()->getFields()->first()->getName(), $id);
+		$query = (new QueryBuilder($this->connection, $model))->withDefaultMapping();
+		$query->find($id);
 		return $query->first();
 	}
 	
@@ -73,6 +93,6 @@ class ModelFactory
 		}
 		
 		$record = new Record($empty);
-		return $model->withHydrate(new ActiveRecord($model, $record));
+		return $model->newInstance()->withHydrate(new ActiveRecord($this->connection, $model, $record));
 	}
 }

@@ -86,7 +86,6 @@ interface TableMigrationExecutorInterface
 	 *
 	 * @param string $name
 	 * @param string[] $options
-	 * @throws ApplicationException
 	 */
 	public function enum(string $name, array $options, bool $nullable = true) : TableMigrationExecutorInterface;
 	

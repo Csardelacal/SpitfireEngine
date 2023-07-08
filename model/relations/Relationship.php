@@ -1,12 +1,31 @@
 <?php namespace spitfire\model\relations;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
 
-use spitfire\collection\Collection;
+
 use spitfire\model\Field;
 use spitfire\model\Model;
-use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
-use spitfire\storage\database\Query;
-use spitfire\storage\database\query\RestrictionGroup;
+use spitfire\model\ReflectionModel;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\utils\Mixin;
 
 /**
@@ -47,11 +66,20 @@ abstract class Relationship implements RelationshipInterface
 		/**
 		 * If this object receives a function call that it cannot handle, forward
 		 * it to the querybuilder.
+		 * 
+		 * @todo THis exits into the global scope which should not be necessary
 		 */
-		$this->mixin(fn() => $this->startQueryBuilder());
+		$this->mixin(fn() => new QueryBuilder(
+			spitfire()->provider()->get(ConnectionInterface::class),
+			$this->getReferenced()->getModel()
+		));
 	}
 	
-	public function getModel(): Model
+	/**
+	 * 
+	 * @return ReflectionModel<REMOTE>
+	 */
+	public function getModel(): ReflectionModel
 	{
 		return $this->referenced->getModel();
 	}
@@ -82,12 +110,6 @@ abstract class Relationship implements RelationshipInterface
 	{
 		return $this->referenced;
 	}
-	
-	/**
-	 *
-	 * @return QueryBuilder<REMOTE>
-	 */
-	abstract public function startQueryBuilder(): QueryBuilder;
 	
 	abstract public function injector() : RelationshipInjectorInterface;
 }

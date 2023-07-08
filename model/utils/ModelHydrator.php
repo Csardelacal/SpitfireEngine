@@ -1,9 +1,31 @@
 <?php namespace spitfire\model\utils;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 use spitfire\model\Model;
+use spitfire\model\ReflectionModel;
 use spitfire\model\relations\RelationshipContent;
 
 class ModelHydrator
@@ -13,13 +35,13 @@ class ModelHydrator
 	{
 		
 		$keys = $model->getActiveRecord()->keys();
-		$reflection = new ReflectionClass($model);
+		$reflection = new ReflectionModel($model::class);
 		
 		foreach ($keys as $k) {
 			try {
-				self::writeToProperty(
+				$reflection->hasProperty($k) && $reflection->writeToProperty(
 					$model,
-					$reflection->getProperty($k),
+					$k,
 					$model->getActiveRecord()->get($k)
 				);
 			}
@@ -35,29 +57,5 @@ class ModelHydrator
 				trigger_error(sprintf('Model is missing property %s', $k), E_USER_NOTICE);
 			}
 		}
-	}
-	
-	/**
-	 *
-	 * @param Model $model
-	 * @param ReflectionProperty $prop
-	 * @param mixed $value
-	 */
-	private static function writeToProperty(Model $model, ReflectionProperty $prop, $value) : void
-	{
-		
-		if ($value instanceof RelationshipContent) {
-			$value = $value->isSingle()? $value->getPayload()->first() : $value->getPayload();
-		}
-		
-		if ($prop->getType() && !$prop->getType()->allowsNull() && $value === null) {
-			return;
-		}
-		
-		/**
-		 * @todo Remove the set accessible call, this is deprecated since PHP8.1
-		 */
-		$prop->setAccessible(true);
-		$prop->setValue($model, $value);
 	}
 }

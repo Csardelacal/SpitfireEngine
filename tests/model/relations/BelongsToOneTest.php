@@ -1,12 +1,38 @@
 <?php namespace tests\spitfire\model\relations;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
 use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
+use spitfire\model\attribute\BelongsToOne as AttributeBelongsToOne;
+use spitfire\model\attribute\Integer;
 use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\ReflectionModel;
 use spitfire\model\relations\BelongsToOne;
+use spitfire\model\traits\WithId;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
 use spitfire\storage\database\drivers\test\AbstractDriver;
@@ -40,19 +66,13 @@ class BelongsToOneTest extends TestCase
 	public function testCreateQuery()
 	{
 		
-		$model = new #[Table('test')] class(self::connection()) extends Model
+		$model = new #[Table('test2')] class(self::connection()) extends Model
 		{
 			
 			private $_id;
-			private $test;
 			
-			public function remote() : BelongsToOne
-			{
-				return new BelongsToOne(
-					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
-				);
-			}
+			#[AttributeBelongsToOne(TestModel::class, '_id')]
+			private $test;
 			
 			public function setTest(TestModel $t)
 			{
@@ -60,13 +80,22 @@ class BelongsToOneTest extends TestCase
 			}
 		};
 		
-		$record = new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1]));
-		$instance = $model->withHydrate($record);
-		$query = $instance->remote()->startQueryBuilder();
+		$reflection = new ReflectionModel($model::class);
+		
+		$record = new ActiveRecord(self::connection(), $reflection, new Record(['test_id' => 1]));
+		$query = $reflection->getRelationShips()['test']->newInstance()->startQueryBuilder($record);
 		
 		$query->first();
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
-		$this->assertStringContainsString(".`test` = '1'", $queries[0]);
+		$this->assertStringContainsString(".`_id` = '1'", $queries[0]);
+		
+		#Now, repeat from the model's perspective
+		$instance = $model->withHydrate($record);
+		$query = $instance->test();
+		
+		$query->first();
+		$queries = self::$connection->getAdapter()->getDriver()->queries;
+		$this->assertStringContainsString(".`_id` = '1'", $queries[0]);
 	}
 	
 	/**
@@ -76,19 +105,10 @@ class BelongsToOneTest extends TestCase
 	public function testResolveAll()
 	{
 		
-		$model = new #[Table('test')] class(self::connection()) extends Model
+		$model = new #[Table('test2')] class() extends Model
 		{
-			
-			private $_id;
+			#[AttributeBelongsToOne(TestModel::class, '_id')]
 			private $test;
-			
-			public function remote() : BelongsToOne
-			{
-				return new BelongsToOne(
-					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneTest::connection()), 'test')
-				);
-			}
 			
 			public function setTest(TestModel $t)
 			{
@@ -96,19 +116,21 @@ class BelongsToOneTest extends TestCase
 			}
 		};
 		
+		$reflection = new ReflectionModel($model::class);
+		
 		$records = Collection::fromArray([
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 2])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 3])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 5])),
+			new ActiveRecord(self::connection(), $reflection, new Record(['test_id' => 1])),
+			new ActiveRecord(self::connection(), $reflection, new Record(['test_id' => 2])),
+			new ActiveRecord(self::connection(), $reflection, new Record(['test_id' => 1])),
+			new ActiveRecord(self::connection(), $reflection, new Record(['test_id' => 1])),
+			new ActiveRecord(self::connection(), $reflection, new Record(['test_id' => 2])),
 		]);
 		
-		$model->remote()->resolveAll($records);
+		$reflection->getRelationShips()['test']->newInstance()->resolveAll($records);
 		
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
-		$this->assertStringContainsString(".`test` = '1' OR", $queries[0]);
-		$this->assertStringContainsString(".`test` = '2' OR", $queries[0]);
+		$this->assertStringContainsString(".`_id` = '1' OR", $queries[0]);
+		$this->assertStringContainsString(".`_id` = '2' OR", $queries[0]);
 	}
 	
 	public static function connection()
@@ -126,7 +148,7 @@ class BelongsToOneTest extends TestCase
 				public function read(string $sql): ResultInterface
 				{
 					$this->queries[] = $sql;
-					return new AbstractResultSet([['test' => 1]]);
+					return new AbstractResultSet([['_id' => 1, 'test' => 1]]);
 				}
 				
 				public function lastInsertId(): string|false
@@ -138,13 +160,13 @@ class BelongsToOneTest extends TestCase
 			$schema = new Schema('test');
 			$migrator = new SchemaMigrationExecutor($schema);
 			
-			$migrator->add('test2', function (TableMigrationExecutor $t) {
+			$migrator->add('test', function (TableMigrationExecutor $t) {
 				$t->id();
 				$t->int('test', true);
 			});
 			
-			$migrator->add('test', function (TableMigrationExecutor $t) {
-				$t->int('test', true);
+			$migrator->add('test2', function (TableMigrationExecutor $t) {
+				$t->int('test_id', true);
 			});
 			
 			$adapter = new Adapter(

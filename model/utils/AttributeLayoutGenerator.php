@@ -25,6 +25,7 @@
 use ReflectionAttribute;
 use ReflectionClass;
 use spitfire\collection\Collection;
+use spitfire\exceptions\ApplicationException;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\attribute\Id;
 use spitfire\model\attribute\InIndex as InIndexAttribute;
@@ -34,6 +35,7 @@ use spitfire\model\attribute\SoftDelete;
 use spitfire\model\attribute\Timestamps;
 use spitfire\model\Model;
 use spitfire\model\ReflectionModel;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface as MigratorInterface;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\LayoutInterface;
@@ -48,10 +50,11 @@ class AttributeLayoutGenerator
 	
 	/**
 	 *
+	 * @throws ApplicationException
 	 * @param ReflectionClass<Model> $reflection
 	 * @return LayoutInterface
 	 */
-	public function make(ReflectionClass $reflection) : LayoutInterface
+	public function make(SchemaMigrationExecutorInterface $schema, ReflectionClass $reflection) : LayoutInterface
 	{
 		assert($reflection->isSubclassOf(Model::class));
 		
@@ -61,10 +64,10 @@ class AttributeLayoutGenerator
 		$layout = new Layout($reflection->getName()::getTableName());
 		$migrator = new TableMigrationExecutor($layout);
 		
-		$this->addColumns($migrator, $reflection);
+		$this->addColumns($schema, $migrator, $reflection);
 		$this->addPrimary($migrator, $reflection);
 		$this->addIndexes($migrator, $reflection);
-		$this->addReferences($migrator, $reflection);
+		$this->addReferences($schema, $migrator, $reflection);
 		$this->addId($migrator, $reflection);
 		$this->addSoftDeletes($migrator, $reflection);
 		$this->addTimestamps($migrator, $reflection);
@@ -83,19 +86,20 @@ class AttributeLayoutGenerator
 	 * @param ReflectionClass<Model> $source
 	 * @return void
 	 */
-	private function addColumns(MigratorInterface $target, ReflectionClass $source) : void
+	private function addColumns(SchemaMigrationExecutorInterface $schema, MigratorInterface $target, ReflectionClass $source) : void
 	{
 		
 		$props = (new ReflectionModel($source->getName()))->getFields();
 		
 		foreach ($props as $prop) {
-			$prop->migrate($target);
+			$prop->migrate($schema, $target);
 		}
 	}
 	
 	/**
 	 * This method allows our application to add columns to our schema.
 	 *
+	 * @throws ApplicationException
 	 * @param MigratorInterface $target
 	 * @param ReflectionClass<Model> $source
 	 * @return void
@@ -161,11 +165,13 @@ class AttributeLayoutGenerator
 	/**
 	 * This method allows our application to add columns to our schema.
 	 *
+	 * @todo I think these can be superseded by relationships
+	 * @throws ApplicationException
 	 * @param MigratorInterface $target
 	 * @param ReflectionClass<Model> $source
 	 * @return void
 	 */
-	private function addReferences(MigratorInterface $target, ReflectionClass $source) : void
+	private function addReferences(SchemaMigrationExecutorInterface $schema, MigratorInterface $target, ReflectionClass $source) : void
 	{
 		$props = $source->getProperties();
 		
@@ -182,20 +188,14 @@ class AttributeLayoutGenerator
 			 * @var ReferencesAttribute
 			 */
 			$reference = $referencesAttribute[0]->newInstance();
-			
-			/**
-			 * This last parameter is a bit more delicate, since the DBAL requires the system to provide a layout from
-			 * which to extract metadata to build a compatible field. Please note that this requires the application
-			 * to have the layout metadata in the class it's referencing to be able to perform any usable work.
-			 */
-			$layout = (new AttributeLayoutGenerator())->make(new ReflectionClass($reference->getModel()));
+			$layout = $schema->table((new ReflectionModel($reference->getModel()))->getTableName());
 			
 			/**
 			 * Add the foreign key to the layout.
 			 */
 			$target->foreign(
 				$prop->getName(),
-				new TableMigrationExecutor($layout)
+				$layout
 			);
 		}
 	}
@@ -214,7 +214,7 @@ class AttributeLayoutGenerator
 			return;
 		}
 		
-		assert($reflection->getProperty('removed'));
+		assert($reflection->hasProperty('removed'));
 		$migrator->softDelete();
 	}
 	
@@ -251,7 +251,7 @@ class AttributeLayoutGenerator
 			return;
 		}
 		
-		assert($reflection->getProperty('_id'));
+		assert($reflection->hasProperty('_id'));
 		$migrator->id();
 	}
 }

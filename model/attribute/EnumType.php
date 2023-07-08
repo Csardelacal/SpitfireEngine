@@ -23,6 +23,7 @@
 
 
 use Attribute;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
 use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
 
 /**
@@ -77,7 +78,7 @@ class EnumType extends Type
 		return $this->options;
 	}
 	
-	public function migrate(TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
+	public function migrate(SchemaMigrationExecutorInterface $schema, TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
 	{
 		$migrator->enum($name, $this->options, $nullable);
 	}

@@ -1,11 +1,36 @@
 <?php namespace tests\spitfire\model\relations;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
 use PHPUnit\Framework\TestCase;
+use spitfire\model\attribute\BelongsToOne as AttributeBelongsToOne;
 use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
+use spitfire\model\QueryBuilder;
+use spitfire\model\ReflectionModel;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
@@ -39,19 +64,13 @@ class BelongsToOneInjectorTest extends TestCase
 	public function testCreateQuery()
 	{
 		
-		$model = new #[Table('test2')] class(self::connection()) extends Model
+		$model = new #[Table('test2')] class() extends Model
 		{
 			
 			private $_id;
-			private $test;
 			
-			public function remote() : BelongsToOne
-			{
-				return new BelongsToOne(
-					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneInjectorTest::connection()), 'example2')
-				);
-			}
+			#[AttributeBelongsToOne(TestModel::class, '_id')]
+			private $test;
 			
 			public function setTest(TestModel $t)
 			{
@@ -59,10 +78,16 @@ class BelongsToOneInjectorTest extends TestCase
 			}
 		};
 		
-		$query = $model->query();
+		$reflection = new ReflectionModel($model::class);
+		
+		$query = (new QueryBuilder(
+			self::connection(),
+			$reflection
+		))->withDefaultMapping();
+		
 		$query->restrictions(
 			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->has(
-				'remote',
+				'test',
 				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
 			)
 		);
@@ -72,12 +97,12 @@ class BelongsToOneInjectorTest extends TestCase
 		$this->assertStringContainsString("WHERE EXISTS (SELECT", $queries[0]);
 		
 		$this->assertStringMatchesFormat(
-			"SELECT `test2_%d`.`_id`, `test2_%d`.`test` " .
+			"SELECT `test2_%d`.`_id`, `test2_%d`.`test_id` " .
 			"FROM `test2` AS `test2_%d` " .
-			"WHERE EXISTS (SELECT `test_%d`.`example2` " .
+			"WHERE EXISTS (SELECT `test_%d`.`_id` " .
 			"FROM `test` AS `test_%d` WHERE " .
 			"`test_%d`.`example` = '1' AND ".
-			"`test_%d`.`example2` = `test2_%d`.`test`)",
+			"`test_%d`.`_id` = `test2_%d`.`test_id`)",
 			$queries[0]
 		);
 	}
@@ -87,19 +112,13 @@ class BelongsToOneInjectorTest extends TestCase
 	public function testCreateQueryWithNotExists()
 	{
 		
-		$model = new #[Table('test2')] class(self::connection()) extends Model
+		$model = new #[Table('test2')] class() extends Model
 		{
 			
 			private $_id;
-			private $test;
 			
-			public function remote() : BelongsToOne
-			{
-				return new BelongsToOne(
-					new Field($this, 'test'),
-					new Field(new TestModel(BelongsToOneInjectorTest::connection()), 'example2')
-				);
-			}
+			#[AttributeBelongsToOne(TestModel::class, '_id')]
+			private $test;
 			
 			public function setTest(TestModel $t)
 			{
@@ -107,10 +126,16 @@ class BelongsToOneInjectorTest extends TestCase
 			}
 		};
 		
-		$query = $model->query();
+		$reflection = new ReflectionModel($model::class);
+		
+		$query = (new QueryBuilder(
+			self::connection(),
+			$reflection
+		))->withDefaultMapping();
+		
 		$query->restrictions(
 			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->hasNo(
-				'remote',
+				'test',
 				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
 			)
 		);
@@ -119,12 +144,12 @@ class BelongsToOneInjectorTest extends TestCase
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
 		
 		$this->assertStringMatchesFormat(
-			"SELECT `test2_%d`.`_id`, `test2_%d`.`test` " .
+			"SELECT `test2_%d`.`_id`, `test2_%d`.`test_id` " .
 			"FROM `test2` AS `test2_%d` " .
-			"WHERE NOT EXISTS (SELECT `test_%d`.`example2` " .
+			"WHERE NOT EXISTS (SELECT `test_%d`.`_id` " .
 			"FROM `test` AS `test_%d` WHERE " .
 			"`test_%d`.`example` = '1' AND ".
-			"`test_%d`.`example2` = `test2_%d`.`test`)",
+			"`test_%d`.`_id` = `test2_%d`.`test_id`)",
 			$queries[0]
 		);
 	}
@@ -147,7 +172,7 @@ class BelongsToOneInjectorTest extends TestCase
 					$this->queries[] = $sql;
 					return new AbstractResultSet([[
 						'_id' => 1,
-						'test' => 1
+						'test_id' => 1
 					]]);
 				}
 				
@@ -162,10 +187,11 @@ class BelongsToOneInjectorTest extends TestCase
 			
 			$migrator->add('test2', function (TableMigrationExecutor $t) {
 				$t->id();
-				$t->int('test', true);
+				$t->int('test_id', true);
 			});
 			
 			$migrator->add('test', function (TableMigrationExecutor $t) {
+				$t->id();
 				$t->int('test', true);
 				$t->int('example', true);
 				$t->int('example2', true);

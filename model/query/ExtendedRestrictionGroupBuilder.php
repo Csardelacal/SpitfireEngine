@@ -1,5 +1,27 @@
 <?php namespace spitfire\model\query;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
 use BadMethodCallException;
 use spitfire\model\Model;
 use spitfire\model\QueryBuilderInterface;
@@ -7,6 +29,7 @@ use spitfire\model\relations\BelongsToOne;
 use spitfire\model\relations\HasMany;
 use spitfire\model\relations\Relationship;
 use spitfire\model\relations\RelationshipInterface;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\query\RestrictionGroup;
 
 class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
@@ -42,9 +65,9 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 		}
 		
 		if ($value instanceof Model) {
-			assert(method_exists($this->query->getModel(), $field));
+			assert($this->query->getModel()->getRelationShips()->has($field));
 			
-			$relation = $this->query->getModel()->{$field}();
+			$relation = $this->query->getModel()->getRelationShips()[$field]->newInstance();
 			
 			/**
 			 * The relationship MUST be a relationship. Otherwise we're running into
@@ -82,8 +105,8 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 	public function has(string $relation, callable $body = null) : self
 	{
 		
-		$relation = $this->query->getModel()->{$relation}();
-		assert($relation instanceof RelationshipInterface);
+		assert($this->query->getModel()->getRelationShips()->has($relation));
+		$relation = $this->query->getModel()->getRelationShips()[$relation]->newInstance();
 		
 		$relation->injector()->existence($this, $body);
 		
@@ -98,8 +121,8 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 	public function hasNo(string $relation, callable $body = null) : self
 	{
 		
-		$relation = $this->query->getModel()->{$relation}();
-		assert($relation instanceof RelationshipInterface);
+		assert($this->query->getModel()->getRelationShips()->has($relation));
+		$relation = $this->query->getModel()->getRelationShips()[$relation]->newInstance();
 		
 		$relation->injector()->absence($this, $body);
 		
@@ -109,5 +132,10 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 	public function context() : QueryBuilderInterface
 	{
 		return $this->query;
+	}
+	
+	public function connection() : ConnectionInterface
+	{
+		return $this->query->getConnection();
 	}
 }

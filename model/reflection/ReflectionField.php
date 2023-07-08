@@ -23,7 +23,8 @@
 
 
 use spitfire\model\attribute\Type;
-use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
+use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface as SchemaMigrator;
+use spitfire\storage\database\drivers\TableMigrationExecutorInterface as TableMigrator;
 
 class ReflectionField
 {
@@ -69,8 +70,14 @@ class ReflectionField
 		return $this->nullable;
 	}
 	
-	public function migrate(TableMigrationExecutorInterface $migrator)
+	/**
+	 * 
+	 * @param SchemaMigrator $schema
+	 * @param TableMigrator $migrator
+	 * @return void
+	 */
+	public function migrate(SchemaMigrator $schema, TableMigrator $migrator) : void
 	{
-		$this->type->migrate($migrator, $this->name, $this->nullable);
+		$this->type->migrate($schema, $migrator, $this->name, $this->nullable);
 	}
 }

@@ -1,4 +1,4 @@
-<?php namespace spitfire\model\attribute;
+<?php namespace spitfire\model\reflection;
 
 /*
  *
@@ -21,36 +21,46 @@
  *
  */
 
+use spitfire\model\attribute\Relationship;
+use spitfire\model\ReflectionModel;
+use spitfire\model\relations\RelationshipInterface;
 
-use Attribute;
-use spitfire\storage\database\drivers\SchemaMigrationExecutorInterface;
-use spitfire\storage\database\drivers\TableMigrationExecutorInterface;
-
-/**
- * The column attribute can be attached to a property of a model, allowing the
- * application to automatically generate fields or columns for the given element.
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-class Text extends Type
+class ReflectionRelationship
 {
+	private ReflectionModel $model;
+	private string $name;
+	private Relationship $relationship;
 	
-	private ?bool $nullable;
-	
-	public function __construct(bool $nullable = null)
+	public function __construct(ReflectionModel $model, string $name, Relationship $relationship)
 	{
-		$this->nullable = $nullable;
+		$this->model = $model;
+		$this->name = $name;
+		$this->relationship = $relationship;
 	}
 	
 	/**
-	 * Get the value of nullable
+	 * Get the value of type
+	 *
+	 * @return Relationship
 	 */
-	public function isNullable() : ?bool
+	public function getRelationship(): Relationship
 	{
-		return $this->nullable;
+		return $this->relationship;
 	}
 	
-	public function migrate(SchemaMigrationExecutorInterface $schema, TableMigrationExecutorInterface $migrator, string $name, bool $nullable): void
+	/**
+	 * Get the value of name
+	 *
+	 * @return string
+	 */
+	public function getName(): string
 	{
-		$migrator->text($name, $nullable);
+		return $this->name;
 	}
+	
+	public function newInstance() : RelationshipInterface
+	{
+		return $this->relationship->newInstance($this->model, $this->name);
+	}
+	
 }

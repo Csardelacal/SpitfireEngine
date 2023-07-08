@@ -1,5 +1,27 @@
 <?php namespace spitfire\model\relations;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
 use spitfire\model\ActiveRecord;
@@ -41,7 +63,10 @@ class BelongsToOne extends Relationship
 		 * Start by querying the referenced model. This is the model for which we
 		 * wish to return data.
 		 */
-		$query = $this->getReferenced()->getModel()->query();
+		$query = (new QueryBuilder(
+			$record->getConnection(),
+			$this->getReferenced()->getModel()
+		))->withDefaultMapping();
 		
 		/**
 		 * Find the record that this one belongs to. Please note that this is a single
@@ -67,11 +92,19 @@ class BelongsToOne extends Relationship
 	
 	public function resolveAll(Collection $records): Collection
 	{
+		
+		if ($records->isEmpty()) {
+			return new Collection(new RelationshipContent(false, new TypedCollection(Model::class)));
+		}
+		
 		/**
 		 * Start by querying the referenced model. This is the model for which we
 		 * wish to return data.
 		 */
-		$query = $this->getReferenced()->getModel()->query();
+		$query = (new QueryBuilder(
+			$records->first()->getConnection(),
+			$this->getReferenced()->getModel()
+		))->withDefaultMapping();
 		
 		/**
 		 * We create a restriction group that performs an OR on all our available records.
@@ -82,7 +115,7 @@ class BelongsToOne extends Relationship
 		$query->group(RestrictionGroup::TYPE_OR, function (RestrictionGroupBuilder $group) use ($records) {
 			foreach ($records as $record) {
 				assert($record instanceof ActiveRecord);
-				assert(get_class($record->getModel()) === get_class($this->getField()->getModel()));
+				assert($record->getModel()->getClassname() === $this->getField()->getModel()->getClassname());
 				
 				$group->where(
 					$this->getReferenced()->getName(),
@@ -101,7 +134,7 @@ class BelongsToOne extends Relationship
 			/**
 			 * Health check: See if the resulting model is actually the type that we were expecting
 			 */
-			assert(get_class($item) === get_class($this->getReferenced()->getModel()));
+			assert(get_class($item) === $this->getReferenced()->getModel()->getClassname());
 			
 			/**
 			 * Group the items by their referenced ID. Please note that on the remote table this
@@ -123,12 +156,13 @@ class BelongsToOne extends Relationship
 		return $_return;
 	}
 	
-	public function startQueryBuilder(): QueryBuilder
+	public function startQueryBuilder(ActiveRecord $parent): QueryBuilder
 	{
-		$parent = $this->getField()->getModel();
-		assert($parent->getActiveRecord() !== null);
+		$query = (new QueryBuilder(
+			$parent->getConnection(),
+			$this->getReferenced()->getModel()
+		))->withDefaultMapping();
 		
-		$query = $this->getReferenced()->getModel()->query();
 		$query->where(
 			$this->getReferenced()->getName(),
 			$parent->get($this->getField()->getName())

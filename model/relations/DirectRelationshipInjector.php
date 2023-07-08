@@ -1,10 +1,54 @@
 <?php namespace spitfire\model\relations;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 use spitfire\model\Field;
 use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilderInterface;
 use spitfire\model\QueryBuilder;
+use spitfire\storage\database\events\QueryBeforeCreateEvent;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\RestrictionGroup;
@@ -56,14 +100,16 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	public function existence(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): void
 	{
 		
+		$connection = $restrictions->connection();
+		
 		/**
 		 * Create a subquery that will link the table we're querying with the table we're referencing.
 		 * The user provided closure can write restrictions into that query.
 		 */
 		$restrictions->getDBRestrictions()
-			->whereExists(function (TableIdentifierInterface $table) use ($payload): DatabaseQuery {
+			->whereExists(function (TableIdentifierInterface $table) use ($connection, $payload): DatabaseQuery {
 				$model = $this->referenced->getModel();
-				$builder = new QueryBuilder($model);
+				$builder = new QueryBuilder($connection, $model);
 				$payload($builder->getRestrictions());
 				
 				/**
@@ -89,14 +135,16 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	public function absence(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): void
 	{
 		
+		$connection = $restrictions->connection();
+		
 		/**
 		 * Create a subquery that will link the table we're querying with the table we're referencing.
 		 * The user provided closure can write restrictions into that query.
 		 */
 		$restrictions->getDBRestrictions()
-			->whereNotExists(function (TableIdentifierInterface $table) use ($payload): DatabaseQuery {
+			->whereNotExists(function (TableIdentifierInterface $table) use ($connection, $payload): DatabaseQuery {
 				$model = $this->referenced->getModel();
-				$builder = new QueryBuilder($model);
+				$builder = new QueryBuilder($connection, $model);
 				$payload($builder->getRestrictions());
 				
 				/**

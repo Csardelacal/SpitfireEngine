@@ -26,17 +26,18 @@ use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
 use spitfire\collection\Collection;
+use spitfire\collection\OutOfBoundsException;
 use spitfire\exceptions\ApplicationException;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\relations\RelationshipContent;
 use spitfire\model\utils\ModelHydrator;
+use spitfire\provider\NotFoundException as ProviderNotFoundException;
 use spitfire\storage\database\ConnectionInterface;
-use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
-use spitfire\storage\database\Field as DatabaseField;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema as DatabaseSchema;
+use spitfire\utils\Mixin;
 use spitfire\utils\Strings;
 
 /**
@@ -49,12 +50,14 @@ use spitfire\utils\Strings;
 abstract class Model implements JsonSerializable
 {
 	
+	use Mixin;
+	
 	/**
 	 * The actual data that the record contains. The record is basically a wrapper
 	 * around the array that allows to validate data on the go and to alert the
 	 * programmer about inconsistent types.
 	 *
-	 * @var ActiveRecord|null
+	 * @var ActiveRecord<self>|null
 	 */
 	private $record;
 	
@@ -64,12 +67,6 @@ abstract class Model implements JsonSerializable
 	 * @var bool
 	 */
 	private $hydrated = false;
-	
-	/**
-	 *
-	 * @var ConnectionInterface
-	 */
-	private ConnectionInterface $connection;
 	
 	/**
 	 * If the model was retrieved as part of a relationship, it's possible that it
@@ -84,16 +81,11 @@ abstract class Model implements JsonSerializable
 	 */
 	private $pivot = null;
 	
-	public function __construct(ConnectionInterface $connection)
-	{
-		$this->connection = $connection;
-	}
-	
 	/**
 	 * Returns the activerecord this model is working on. This requires the model to be
 	 * hydrated to work.
 	 *
-	 * @return ActiveRecord
+	 * @return ActiveRecord<self>
 	 */
 	public function getActiveRecord() : ActiveRecord
 	{
@@ -128,32 +120,22 @@ abstract class Model implements JsonSerializable
 	}
 	
 	/**
-	 * More often than not, the system will wish to hydrate a database record
-	 * directly. This gets very verbose, this function just hydrates a model
-	 * with an active record for this model
-	 *
-	 * @return self
-	 */
-	public function withSelfHydrate(Record $record) : self
-	{
-		return $this->withHydrate(new ActiveRecord($this, $record));
-	}
-	
-	/**
 	 * Creates a copy of the model that is hydrated with the given record. This
 	 * allows the application to distinguish between models that carry a payload
 	 * and the ones that provide relationships and schema information.
 	 *
+	 * @param ActiveRecord<self> $record
 	 * @return self
 	 */
 	public function withHydrate(ActiveRecord $record) : self
 	{
 		assert(!$this->hydrated);
-		assert($record->getModel() === $this);
+		assert($record->getModel()->getClassname() === $this::class);
 		$copy = clone $this;
 		$copy->record = $record;
 		$copy->hydrated = true;
 		$copy->rehydrate();
+		$copy->mixin($record);
 		return $copy;
 	}
 	
@@ -189,9 +171,20 @@ abstract class Model implements JsonSerializable
 		 * Prepare the raw data and the reflection we need to perform the sync.
 		 */
 		$keys = $this->record->keys();
+		
+		/**
+		 * It's impossible that the class does not exists if we're using an instance of it
+		 * to work with it.
+		 * 
+		 * @throws void
+		 */
 		$reflection = new ReflectionClass($this);
 		
 		foreach ($keys as $k) {
+			if (!$reflection->hasProperty($k)) {
+				continue;
+			}
+			
 			try {
 				$property = $reflection->getProperty($k);
 				$value = $property->getValue($this);
@@ -202,6 +195,15 @@ abstract class Model implements JsonSerializable
 				elseif ($value instanceof Collection) {
 					$value = new RelationshipContent(false, $value);
 				}
+				
+				/**
+				 * Sanity check. The model can only hold scalars, nulls and other Models.
+				 */
+				assert(
+					$value === null ||
+					is_scalar($value) ||
+					$value instanceof RelationshipContent
+				);
 				
 				$this->record->set($k, $value);
 			}
@@ -220,54 +222,18 @@ abstract class Model implements JsonSerializable
 	 * of database error it throws an Exception and leaves the state of the
 	 * record unchanged.
 	 *
-	 * @throws ApplicationException
+	 * @param string[] $options
 	 */
-	public function store(array $options = [])
+	public function store(array $options = []) : void
 	{
 		$this->sync();
 		
 		assert($this->hydrated);
 		assert($this->record !== null);
+		$this->record->store($options);
 		
-		$primary = $this->getTable()->getPrimaryKey()->getFields()->first();
-		assert($primary instanceof DatabaseField);
-		
-		/**
-		 * If the primary key is assumed to be null on the dbms (which is not possible
-		 * the way we designed SF), the system will assume that the record does not exist
-		 * on the DBMS and therefore record a new entry in the table.
-		 */
-		if ($this->record->get($primary->getName()) === null) {
-			#Tell the table that the record is being stored
-			$event = new RecordBeforeInsertEvent(
-				$this->getConnection(),
-				$this->getTable(),
-				$this->record->getUnderlyingRecord(),
-				$options
-			);
-			$fn = function (RecordBeforeInsertEvent $event) {
-				$record = $event->getRecord();
-				#The insert function is in this closure, which allows the event to cancel storing the data
-				$this->getConnection()->insert($this->getTable(), $record);
-			};
-		}
-		else {
-			#Tell the table that the record is being stored
-			$event = new RecordBeforeUpdateEvent(
-				$this->getConnection(),
-				$this->getTable(),
-				$this->record->getUnderlyingRecord(),
-				$options
-			);
-			$fn = function (RecordBeforeUpdateEvent $event) {
-				$record = $event->getRecord();
-				#The insert function is in this closure, which allows the event to cancel storing the data
-				$this->getConnection()->update($this->getTable(), $record);
-			};
-		}
-		
-		$this->getTable()->events()->dispatch($event, $fn);
 		$this->rehydrate();
+		
 	}
 	
 	/**
@@ -277,23 +243,24 @@ abstract class Model implements JsonSerializable
 	 * When editing the primary key value this will ALWAYS return the data that
 	 * the system assumes to be in the database.
 	 *
-	 * @return int|float|string
+	 * @return scalar
 	 */
 	public function getPrimary()
 	{
+		$primary = $this->getTable()->getPrimaryKey();
+		assert($primary !== null);
+		
 		assert($this->hydrated);
 		assert($this->record !== null);
 		
-		$fields = $this->getTable()->getPrimaryKey()->getFields();
+		$fields = $primary->getFields();
 		
-		if ($fields->isEmpty()) {
-			throw new ApplicationException('Record has no primary key', 2101181306);
-		}
+		assert(!$fields->isEmpty());
 		
 		$result = $this->record->get($fields[0]->getName());
 		
 		assert($result !== null);
-		assert(!($result instanceof RelationshipContent));
+		assert(is_scalar($result));
 		
 		return $result;
 	}
@@ -304,26 +271,45 @@ abstract class Model implements JsonSerializable
 	 *
 	 * @todo Find better function name
 	 * @deprecated
-	 * @return array
+	 * @return (scalar|Model|null)[]
 	 */
 	public function getPrimaryData()
 	{
 		assert($this->hydrated);
 		assert($this->record !== null);
 		
-		$primaryFields = $this->getTable()->getPrimaryKey()->getFields();
+		$primary = $this->getTable()->getPrimaryKey();
+		assert($primary !== null);
+		
+		$primaryFields = $primary->getFields();
 		$ret = array();
 		
 		foreach ($primaryFields as $field) {
-			$ret[$field->getName()] = $this->record->get($field->getName());
+			/**
+			 * Get the record. Children cannot be the priimary key of a table.
+			 */
+			$_ = $this->record->get($field->getName());
+			assert(!($_ instanceof Collection));
+			
+			$ret[$field->getName()] = $_;
 		}
 		
 		return $ret;
 	}
 	
+	/**
+	 * 
+	 * @deprecated
+	 * @see ReflectionModel::query
+	 * @throws ProviderNotFoundException
+	 * @return QueryBuilder<self>
+	 */
 	public function query() : QueryBuilder
 	{
-		return (new QueryBuilder($this))->withDefaultMapping();
+		trigger_error('Calling Model::query directly is discouraged', E_USER_DEPRECATED);
+		return (new QueryBuilder(
+			spitfire()->provider()->get(ConnectionInterface::class), 
+			new ReflectionModel(self::class)))->withDefaultMapping();
 	}
 	
 	/**
@@ -345,7 +331,20 @@ abstract class Model implements JsonSerializable
 	 */
 	public function getTable() : Layout
 	{
-		return $this->getConnection()->getSchema()->getLayoutByName($this->getTableName());
+		/**
+		 * @todo Needs caching
+		 */
+		$reflection = new ReflectionModel($this::class);
+		
+		$schema = $this->getConnection()->getSchema();
+		$tablename = $reflection->getTableName();
+		
+		assert($schema->hasLayoutByName($tablename));
+		
+		/**
+		 * @throws void
+		 */
+		return $schema->getLayoutByName($tablename);
 	}
 	
 	/**
@@ -358,6 +357,9 @@ abstract class Model implements JsonSerializable
 		return $this->getConnection()->getSchema();
 	}
 	
+	/**
+	 * @return scalar|null|Model|Collection<Model>
+	 */
 	protected function lazy(string $field)
 	{
 		assert($this->hydrated);
@@ -366,7 +368,7 @@ abstract class Model implements JsonSerializable
 		return $this->record->get($field);
 	}
 	
-	public function __isset($name)
+	public function __isset(string $name) : bool
 	{
 		assert($this->hydrated);
 		assert($this->record !== null);
@@ -383,12 +385,15 @@ abstract class Model implements JsonSerializable
 		return sprintf('Model (%s, %s)', get_class($this), $this->getTableName());
 	}
 	
-	public function delete(array $options = [])
+	/**
+	 * @param string[] $options 
+	 */
+	public function delete(array $options = []) : void
 	{
+		$this->sync();
+		
 		assert($this->hydrated);
 		assert($this->record !== null);
-		
-		$this->sync();
 		
 		#Tell the table that the record is being deleted
 		$event = new RecordBeforeUpdateEvent(
@@ -437,9 +442,9 @@ abstract class Model implements JsonSerializable
 	 * This method is intended to aid passing data to views and rendering output, the data
 	 * exported here cannot be imported back into spitfire.
 	 *
-	 * @return array
+	 * @return scalar[]
 	 */
-	public function jsonSerialize() : mixed
+	public function jsonSerialize() : array
 	{
 		assert($this->hydrated);
 		assert($this->record !== null);
@@ -453,21 +458,13 @@ abstract class Model implements JsonSerializable
 		return $raw;
 	}
 	
-	/**
-	 * @todo This should return a database connection
-	 */
-	public function getConnection() : ConnectionInterface
-	{
-		return $this->connection;
-	}
-	
 	
 	/**
 	 *
 	 * @deprecated
 	 * @see ReflectionModel::getTablename
 	 */
-	final public static function getTableName()
+	final public static function getTableName() : string
 	{
 		$reflection = new ReflectionClass(static::class);
 		$tableAttribute = $reflection->getAttributes(TableAttribute::class);
@@ -478,6 +475,30 @@ abstract class Model implements JsonSerializable
 		}
 		else {
 			return Strings::plural(Strings::snake(Strings::rTrimString($reflection->getShortName(), 'Model')));
+		}
+	}
+	
+	public function getConnection() : ConnectionInterface
+	{
+		assert($this->record !== null);
+		return $this->record->getConnection();
+	}
+	
+	/**
+	 * @param mixed[] $args
+	 * @return mixed
+	 */
+	public function __call(string $name, array $args)
+	{
+		assert($this->record !== null);
+		
+		$reflection = $this->record->getModel();
+		
+		if ($reflection->getRelationShips()->has($name)) {
+			return $reflection
+				->getRelationShips()[$name]
+				->newInstance()
+				->startQueryBuilder($this->record);
 		}
 	}
 }

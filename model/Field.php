@@ -1,4 +1,25 @@
 <?php namespace spitfire\model;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 use spitfire\model\Model;
 
@@ -15,32 +36,39 @@ class Field
 	
 	/**
 	 * 
-	 * @var T
+	 * @var ReflectionModel<T>
 	 */
-	private Model $model;
+	private ReflectionModel $model;
+	
+	/**
+	 * The name of the field inside the Model.
+	 * 
+	 * @var string
+	 */
 	private string $name;
 	
 	/**
 	 * 
-	 * @param T $model
+	 * @param ReflectionModel<T> $model
 	 * @param string $field
 	 */
-	public function __construct(Model $model, string $field)
+	public function __construct(ReflectionModel $model, string $field)
 	{
 		$this->model = $model;
 		$this->name = $field;
 	}
 	
 	/**
+	 * Returns the Reflection of the Model the Field references.
 	 *
-	 * @return T
+	 * @return ReflectionModel<T>
 	 */
-	public function getModel() : Model
+	public function getModel() : ReflectionModel
 	{
 		return $this->model;
 	}
 	
-	public function getName()
+	public function getName() : string
 	{
 		return $this->name;
 	}
@@ -50,13 +78,8 @@ class Field
 	 * @deprecated
 	 * @see Field::getName
 	 */
-	public function getField()
+	public function getField() : string
 	{
 		return $this->name;
-	}
-	
-	public function getValue()
-	{
-		return $this->model->get($this->name);
 	}
 }

@@ -1,4 +1,4 @@
-<?php namespace spitfire\model\relations;
+<?php namespace spitfire\model\attribute;
 /*
  *
  * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -20,47 +20,32 @@
  *
  */
 
-
 use spitfire\collection\Collection;
-use spitfire\model\ActiveRecord;
-use spitfire\model\Field;
 use spitfire\model\Model;
-use spitfire\model\QueryBuilderInterface;
+use spitfire\model\reflection\ReflectionField;
+use spitfire\model\ReflectionModel;
+use spitfire\model\relations\RelationshipInterface;
 
 /**
- * A relationship describes how two models connect with each other. This is useful
- * for navigating models and building queries.
  * 
- * @template LOCAL of Model
  * @template REMOTE of Model
  */
-interface RelationshipInterface
+abstract class Relationship
 {
 	
 	/**
 	 * 
-	 * @return Field<LOCAL>
+	 * @template LOCAL of Model
+	 * @param ReflectionModel<LOCAL> $context
+	 * @param string $name
+	 * @return RelationshipInterface<LOCAL,REMOTE>
 	 */
-	public function localField() : Field;
-	
-	public function resolve(ActiveRecord $record) : RelationshipContent;
-	
-	/**
-	 *
-	 * @param Collection<ActiveRecord> $records
-	 * @return Collection<RelationshipContent>
-	 */
-	public function resolveAll(Collection $records) : Collection;
+	abstract public function newInstance(ReflectionModel $context, string $name) : RelationshipInterface;
 	
 	/**
 	 * 
-	 * @return RelationshipInjectorInterface<REMOTE>
+	 * @param string $name
+	 * @return Collection<ReflectionField>
 	 */
-	public function injector(): RelationshipInjectorInterface;
-	
-	/**
-	 * 
-	 * @return QueryBuilderInterface
-	 */
-	public function startQueryBuilder(ActiveRecord $parent): QueryBuilderInterface;
+	abstract public function getFields(string $name) : Collection;
 }

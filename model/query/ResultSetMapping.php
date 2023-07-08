@@ -1,4 +1,25 @@
 <?php namespace spitfire\model\query;
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
 
 /*
  *
@@ -26,7 +47,9 @@ use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
 use spitfire\model\ActiveRecord;
 use spitfire\model\Model;
+use spitfire\model\ReflectionModel;
 use spitfire\model\relations\RelationshipInterface;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\identifiers\FieldIdentifierInterface;
 use spitfire\storage\database\identifiers\IdentifierInterface;
 use spitfire\storage\database\Record;
@@ -42,9 +65,15 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @var T
+	 * @var ReflectionModel<T>
 	 */
-	private Model $model;
+	private ReflectionModel $model;
+	
+	/**
+	 * 
+	 * @var ConnectionInterface
+	 */
+	private ConnectionInterface $connection;
 	
 	/**
 	 *
@@ -60,17 +89,18 @@ class ResultSetMapping
 	
 	/**
 	 * 
-	 * @param T $model
+	 * @param ReflectionModel<T> $model
 	 */
-	public function __construct(Model $model)
+	public function __construct(ConnectionInterface $connection, ReflectionModel $model)
 	{
+		$this->connection = $connection;
 		$this->model = $model;
 		$this->map = new TypedCollection(FieldIdentifierInterface::class);
 	}
 	
 	/**
 	 * 
-	 * @return T
+	 * @return ReflectionModel<T>
 	 */
 	public function getModel()
 	{
@@ -131,7 +161,11 @@ class ResultSetMapping
 		});
 		
 		$activeRecords = $records->each(function (Record $r) : ActiveRecord {
-			return new ActiveRecord($this->model, $r->slice($this->makeFieldList()));
+			return new ActiveRecord(
+				$this->connection,
+				$this->model, 
+				$r->slice($this->makeFieldList())
+			);
 		});
 		
 		/**
@@ -146,7 +180,7 @@ class ResultSetMapping
 		 * @var Collection<T>
 		 */
 		$models = $activeRecords->each(function (ActiveRecord $record) {
-			return $this->model->withHydrate($record);
+			return $this->model->newInstance()->withHydrate($record);
 		});
 		
 		return $models;
@@ -158,7 +192,9 @@ class ResultSetMapping
 	public function makeOne(Record $record) : Model
 	{
 		
-		$activeRecord = new ActiveRecord($this->model, $record->slice($this->makeFieldList()));
+		$activeRecord = new ActiveRecord(
+			$this->connection,
+			$this->model, $record->slice($this->makeFieldList()));
 		
 		/**
 		 * Eagerly load the relationships needed. Eager loading reduces overhead when multiple records
@@ -171,7 +207,7 @@ class ResultSetMapping
 		 * 
 		 * @var T
 		 */
-		return $this->model->withHydrate($activeRecord);
+		return $this->model->newInstance()->withHydrate($activeRecord);
 		
 	}
 	

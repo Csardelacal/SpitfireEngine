@@ -1,11 +1,35 @@
 <?php namespace tests\spitfire\model\relations;
 
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+
 use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\model\ActiveRecord;
+use spitfire\model\attribute\HasMany as AttributeHasMany;
 use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\ReflectionModel;
 use spitfire\model\relations\HasMany;
 use spitfire\storage\database\Connection;
 use spitfire\storage\database\drivers\Adapter;
@@ -46,13 +70,8 @@ class HasManyTest extends TestCase
 			private $_id;
 			private $test;
 			
-			public function remote() : HasMany
-			{
-				return new HasMany(
-					new Field($this, '_id'), # gets referenced by
-					new Field(new TestModel(HasManyTest::connection()), 'test')
-				);
-			}
+			#[AttributeHasMany(TestModel::class, 'test')]
+			private TestModel $remote;
 			
 			public function setTest(TestModel $t)
 			{
@@ -60,9 +79,10 @@ class HasManyTest extends TestCase
 			}
 		};
 		
-		$record = new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1]));
-		$instance = $model->withHydrate($record);
-		$query = $instance->remote()->startQueryBuilder();
+		$reflection = new ReflectionModel($model::class);
+		
+		$record = new ActiveRecord(self::$connection, $reflection, new Record(['_id' => 1, 'test' => 1]));
+		$query = $reflection->getRelationShips()['remote']->newInstance()->startQueryBuilder($record);
 		
 		$query->first();
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
@@ -83,13 +103,8 @@ class HasManyTest extends TestCase
 			private $_id;
 			private $test;
 			
-			public function remote() : HasMany
-			{
-				return new HasMany(
-					new Field($this, '_id'), # gets referenced by
-					new Field(new TestModel(HasManyTest::connection()), 'test')
-				);
-			}
+			#[AttributeHasMany(TestModel::class, 'test')]
+			private TestModel $remote;
 			
 			public function setTest(TestModel $t)
 			{
@@ -97,15 +112,17 @@ class HasManyTest extends TestCase
 			}
 		};
 		
+		$reflection = new ReflectionModel($model::class);
+		
 		$records = Collection::fromArray([
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 2, 'test' => 2])),
-			new ActiveRecord($model, new Record(['_id' => 3, 'test' => 3])),
-			new ActiveRecord($model, new Record(['_id' => 1, 'test' => 1])),
-			new ActiveRecord($model, new Record(['_id' => 5, 'test' => 5])),
+			new ActiveRecord(self::$connection, $reflection, new Record(['_id' => 1, 'test' => 1])),
+			new ActiveRecord(self::$connection, $reflection, new Record(['_id' => 2, 'test' => 2])),
+			new ActiveRecord(self::$connection, $reflection, new Record(['_id' => 3, 'test' => 3])),
+			new ActiveRecord(self::$connection, $reflection, new Record(['_id' => 1, 'test' => 1])),
+			new ActiveRecord(self::$connection, $reflection, new Record(['_id' => 5, 'test' => 5])),
 		]);
 		
-		$model->remote()->resolveAll($records);
+		$reflection->getRelationShips()['remote']->newInstance()->resolveAll($records);
 		
 		$queries = self::$connection->getAdapter()->getDriver()->queries;
 		$this->assertStringContainsString(".`test` = '1' OR", $queries[0]);
