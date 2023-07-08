@@ -197,7 +197,7 @@ class TableMigrationExecutor implements TableMigrationExecutorInterface
 		 * key, which is not nullable, but this makes no sense in the reference.
 		 */
 		$reference = $layout->getPrimaryKey()->getFields()[0];
-		$field = $this->table->putField($name, $reference->getType(), true, false);
+		$field = $this->table->putField($name . $reference->getName(), $reference->getType(), true, false);
 		
 		$index = new ForeignKey(
 			sprintf('fk_%s_%s', $this->table->getTableName(), $name),

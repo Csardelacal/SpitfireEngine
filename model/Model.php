@@ -195,6 +195,9 @@ abstract class Model implements JsonSerializable
 				elseif ($value instanceof Collection) {
 					$value = new RelationshipContent(false, $value);
 				}
+				elseif ($value === null && $this->getActiveRecord()->getModel()->getRelationShips()->has($k)) {
+					$value = new RelationshipContent(true, new Collection());
+				}
 				
 				/**
 				 * Sanity check. The model can only hold scalars, nulls and other Models.
