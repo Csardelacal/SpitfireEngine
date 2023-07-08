@@ -85,7 +85,7 @@ class BelongsToOne extends Relationship
 		$result = $query->all();
 		
 		assert($result->count() === 1);
-		assert($result->containsOnly(get_class($this->getReferenced()->getModel())));
+		assert($result->containsOnly($this->getReferenced()->getModel()->getClassname()));
 		
 		return new RelationshipContent(true, $result);
 	}
