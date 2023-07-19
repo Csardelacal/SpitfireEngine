@@ -20,12 +20,9 @@
  *
  */
 
-
-use ReflectionClass;
-use spitfire\storage\database\Connection;
+use spitfire\collection\OutOfBoundsException;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\Record;
-use spitfire\storage\database\events\QueryBeforeCreateEvent;
 
 /**
  *
@@ -43,7 +40,9 @@ class ModelFactory
 	
 	/**
 	 *
-	 * @param class-string $className
+	 * @template K of Model
+	 * @param class-string<K> $className
+	 * @return ReflectionModel<K>
 	 * @todo Caching would probably help this gain some performance
 	 */
 	public function make(string $className) : ReflectionModel
@@ -53,30 +52,37 @@ class ModelFactory
 	
 	/**
 	 *
-	 * @param class-string $className
+	 * @template K of Model
+	 * @param class-string<K> $className
+	 * @return QueryBuilderBuilder<K>
 	 */
-	public function from(string $className, $options = []) : QueryBuilder
+	public function from(string $className) : QueryBuilderBuilder
 	{
-		return (new QueryBuilder($this->connection, $this->make($className)))->withDefaultMapping();
+		/**
+		 * @var QueryBuilderBuilder<K>
+		 */
+		return new QueryBuilderBuilder($this->connection, $this->make($className));
 	}
 	
 	/**
 	 *
-	 * @param string $className
+	 * @template K of Model
+	 * @param class-string<K> $className
 	 * @param int|string $id
-	 * @return Model|null
+	 * @return K|null
 	 */
 	public function find(string $className, $id) :? Model
 	{
 		$model = $this->make($className);
 		$query = (new QueryBuilder($this->connection, $model))->withDefaultMapping();
-		$query->find($id);
-		return $query->first();
+		return $query->find($id);
 	}
 	
 	/**
 	 *
-	 * @param class-string $className
+	 * @template K of Model
+	 * @throws OutOfBoundsException
+	 * @param class-string<K> $className
 	 */
 	public function create(string $className) : Model
 	{

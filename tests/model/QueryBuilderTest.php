@@ -518,7 +518,9 @@ class QueryBuilderTest extends TestCase
 		};
 		
 		$builder = (new QueryBuilder(
-			$model
+			$connection,
+			new ReflectionModel($model::class),
+			[]
 		))->withDefaultMapping();
 		
 		$builder->where('_id', 1)->sum('my_test');

@@ -100,8 +100,9 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @param ConnectionInterface $connection
 	 * @param ReflectionModel<T> $model
+	 * @param scalar[] $options
 	 */
-	public function __construct(ConnectionInterface $connection, ReflectionModel $model)
+	public function __construct(ConnectionInterface $connection, ReflectionModel $model, array $options = [])
 	{
 		$this->model = $model;
 		$this->connection = $connection;
@@ -112,7 +113,7 @@ class QueryBuilder implements QueryBuilderInterface
 		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
 		
 		$table->events()->dispatch(
-			new QueryBeforeCreateEvent($this->connection, $this->query, [])
+			new QueryBeforeCreateEvent($this->connection, $this->query, $options)
 		);
 	}
 	
@@ -220,6 +221,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 * 
+	 * @return T
 	 */
 	public function find($id):? Model
 	{

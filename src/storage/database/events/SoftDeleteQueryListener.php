@@ -33,6 +33,11 @@ use spitfire\event\ListenerInterface;
 class SoftDeleteQueryListener implements ListenerInterface
 {
 	
+	const OPTION__NAME = 'trashed';
+	const OPTION_INCLUDE = 'include';
+	const OPTION_EXCLUDE = 'exclude';
+	const OPTION_TRASHED = 'only';
+	
 	/**
 	 *
 	 * @var string
@@ -44,7 +49,10 @@ class SoftDeleteQueryListener implements ListenerInterface
 		$this->field = $field;
 	}
 	
-	public function react(Event $event)
+	/**
+	 * @throws BadMethodCallException If the option is invalid
+	 */
+	public function react(Event $event) : void
 	{
 		/**
 		 * If the payload is not good, we cannot proceed.
@@ -60,7 +68,7 @@ class SoftDeleteQueryListener implements ListenerInterface
 		 * The default behavior is to just exclude trashed items. This means we need
 		 * to add a restriction to exclude sof deleted items.
 		 */
-		if (!isset($options['trashed']) || $options['trashed'] === 'exclude') {
+		if (!isset($options[self::OPTION__NAME]) || $options[self::OPTION__NAME] === self::OPTION_EXCLUDE) {
 			$event->getQuery()->getRestrictions()->where($field, null);
 			return;
 		}
@@ -69,7 +77,7 @@ class SoftDeleteQueryListener implements ListenerInterface
 		 * If we received an include value for trashed, we will assume that the developer
 		 * wishes to include all the results.
 		 */
-		if ($options['trashed'] === 'include') {
+		if ($options[self::OPTION__NAME] === self::OPTION_INCLUDE) {
 			return;
 		}
 		
@@ -77,7 +85,7 @@ class SoftDeleteQueryListener implements ListenerInterface
 		 * When we ask for only deleted values, we are requesting the application to omit
 		 * all the non deleted values and to return only deleted
 		 */
-		if ($options['trashed'] === 'only') {
+		if ($options[self::OPTION__NAME] === self::OPTION_TRASHED) {
 			$event->getQuery()->getRestrictions()->where($field, '!=', null);
 			return;
 		}

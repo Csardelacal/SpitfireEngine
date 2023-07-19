@@ -27,6 +27,7 @@ use spitfire\model\attribute\BelongsToOne as AttributeBelongsToOne;
 use spitfire\model\attribute\Table;
 use spitfire\model\Field;
 use spitfire\model\Model;
+use spitfire\model\ModelFactory;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
 use spitfire\model\ReflectionModel;
@@ -281,19 +282,87 @@ class QueryBuilderSoftDeleteTest extends TestCase
 			new ReflectionModel($model::class)
 		))->withDefaultMapping();
 		
-		/**
-		 * @todo This should be moved into a better place so the query builder can
-		 * be used more comfortably.
-		 */
-		$connection->getSchema()->getLayoutByName($model->getTableName())->events()->dispatch(
-			new QueryBeforeCreateEvent($connection, $builder->getQuery())
-		);
-		
 		$where = $builder->where('_id', 1);
 		$restrictions = $builder->getQuery()->getRestrictions();
 		
 		$this->assertInstanceOf(QueryBuilder::class, $where);
 		$this->assertEquals(2, $restrictions->restrictions()->count());
+	}
+	
+	/**
+	 * Tests the withTrashed and onlyTrashed shorthands for the query builder
+	 */
+	public function testModelFactoryShortHands()
+	{
+		
+		$driver = new class extends AbstractDriver {
+			public $queries = [];
+			
+			public function read(string $sql): ResultInterface
+			{
+				$this->queries[] = $sql;
+				return new AbstractResultSet([
+					['_id' => 1, 'my_stick' => '', 'my_test' => '', 'removed' => null]
+				]);
+			}
+			
+			public function write(string $sql): int
+			{
+				$this->queries[] = $sql;
+				return 1;
+			}
+			
+			public function lastInsertId(): string|false
+			{
+				return '1';
+			}
+		};
+		
+		$connection = new Connection(
+			$this->schema,
+			new Adapter(
+				$driver,
+				new MySQLQueryGrammar(new SlashQuoter()),
+				new MySQLRecordGrammar(new SlashQuoter()),
+				new MySQLSchemaGrammar(new MySQLQueryGrammar(new SlashQuoter))
+			)
+		);
+		
+		$model = new #[Table('test')] class ($connection) extends Model {
+			use WithSoftDeletes;
+			
+			private int $_id = 0;
+			private string $my_stick;
+			private string $my_test;
+			
+			public function getId()
+			{
+				return $this->_id;
+			}
+			
+		};
+		
+		$factory = new ModelFactory($connection);
+		
+		# 1. Only the not trashed
+		$driver->queries = [];
+		$builder = $factory->from($model::class);
+		$builder->all();
+		$sql = $driver->queries[0];
+		$this->assertStringContainsString("`removed` IS NULL", $sql);
+		
+		# 2. Only the trashed
+		$driver->queries = [];
+		$factory->from($model::class)->onlyTrashed()->all();
+		$sql = $driver->queries[0];
+		$this->assertStringContainsString("`removed` IS NOT NULL", $sql);
+		
+		# 3. All of them
+		$driver->queries = [];
+		$builder = $factory->from($model::class)->withTrashed();
+		$builder->all();
+		$sql = $driver->queries[0];
+		$this->assertStringNotContainsString("`removed` IS", $sql);
 	}
 	
 	/**

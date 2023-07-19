@@ -111,6 +111,20 @@ class ReflectionModel
 		return $this->reflection->hasProperty($name);
 	}
 	
+	public function hasTrait(string $traitname) : bool
+	{
+		assert(trait_exists($traitname));
+		$reflection = $this->reflection;
+		
+		do {
+			if (in_array($traitname, class_uses($this->classname))) {
+				return true;
+			}
+		} while ($reflection = $reflection->getParentClass());
+		
+		return false;
+	}
+	
 	/**
 	 *
 	 * @param T $model
