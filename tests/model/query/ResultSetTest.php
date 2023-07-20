@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\model\query\ResultSet;
 use spitfire\model\query\ResultSetMapping;
+use spitfire\model\ReflectionModel;
 use spitfire\storage\database\ConnectionGlobal;
 use spitfire\storage\database\query\ResultInterface;
 use tests\spitfire\model\fixtures\TestModel;
@@ -52,7 +53,7 @@ class ResultSetTest extends TestCase
 				public function rowCount(): int { return 0; }
 				public function free(): void { }
 			},
-			new ResultSetMapping(new TestModel(new ConnectionGlobal()))
+			new ResultSetMapping(new ConnectionGlobal(), new ReflectionModel(TestModel::class))
 		);
 		
 		$this->assertCount(0, $resultset->fetchAll());

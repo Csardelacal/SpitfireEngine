@@ -121,7 +121,7 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 	public function hasNo(string $relation, callable $body = null) : self
 	{
 		
-		assert($this->query->getModel()->getRelationShips()->has($relation));
+		assert($this->query->getModel()->getRelationShips()->has($relation), sprintf('Could not find relation %s', $relation));
 		$relation = $this->query->getModel()->getRelationShips()[$relation]->newInstance();
 		
 		$relation->injector()->absence($this, $body);

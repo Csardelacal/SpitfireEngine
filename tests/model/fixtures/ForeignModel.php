@@ -22,7 +22,7 @@
  */
 
 
-use spitfire\model\attribute\Integer;
+use spitfire\model\attribute\LongInteger;
 use spitfire\model\attribute\Primary;
 use spitfire\model\attribute\Table;
 use spitfire\model\Model;
@@ -33,9 +33,9 @@ class ForeignModel extends Model
 	
 	/**
 	 *
-	 * @var string
+	 * @var int
 	 */
-	#[Integer()]
+	#[LongInteger(true)]
 	#[Primary()]
-	private string $test;
+	private int $test;
 }

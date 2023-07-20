@@ -112,7 +112,7 @@ class AttributeTest extends TestCase
 		$this->assertNotEmpty($layout->getFields()->filter(fn(Field $e) => $e->getName() === 'test')->first());
 		$this->assertNotEmpty($layout->getFields()->filter(fn(Field $e) => $e->getName() === 'example')->first());
 		$this->assertNotEmpty($layout->getFields()->filter(fn(Field $e) => $e->getName() === 'example2')->first());
-		$this->assertNotEmpty($layout->getFields()->filter(fn(Field $e) => $e->getName() === 'foreign')->first());
+		$this->assertNotEmpty($layout->getFields()->filter(fn(Field $e) => $e->getName() === 'foreigntest')->first());
 		
 		/**
 		 * Check the type of the fields is correct
@@ -159,7 +159,7 @@ class AttributeTest extends TestCase
 		
 		$this->assertCount(1, $index->getFields());
 		$this->assertEquals('fk_test_foreign', $index->getName());
-		$this->assertEquals('foreign', $index->getFields()[0]->getName());
+		$this->assertEquals('foreigntest', $index->getFields()[0]->getName());
 	}
 	
 	public function testWithImpliedColumns()

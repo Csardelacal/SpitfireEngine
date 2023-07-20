@@ -50,21 +50,17 @@ class CopyOf extends Type
 		 * @todo We currently enforce all primary keys to be long integers for this to work.
 		 * Technically they could be whatever they wanted.
 		 */
-		assert($layout->getField($this->field)->getType() === 'long:unsigned');
+		assert($layout->getField($this->field)->getType() === 'long:unsigned', sprintf('Field %s should be long:unsigned', $this->field));
 		
 		/**
 		 * Push the field onto our model. We concatenate the local with the remote field in the
 		 * DBMS, so we get something like employee_id when referencing another taable.
 		 */
-		$migrator->long($name . $this->field, true, true);
+		$migrator->long($name, true, true);
 		
 		/**
-		 * Add the foreign key to the layout. This way the DBMS can perform integrity checks on
-		 * the two.
+		 * There's explicitly no call to $migrator->foreign(). This would generate two references when
+		 * creating the tables. This is not expected behavior
 		 */
-		$migrator->foreign(
-			$name,
-			$ref
-		);
 	}
 }

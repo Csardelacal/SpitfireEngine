@@ -172,7 +172,10 @@ class BelongsToOneInjectorTest extends TestCase
 					$this->queries[] = $sql;
 					return new AbstractResultSet([[
 						'_id' => 1,
-						'test_id' => 1
+						'test' => 1,
+						'test_id' => 1,
+						'example' => 1,
+						'example2' => 1
 					]]);
 				}
 				
