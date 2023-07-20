@@ -23,9 +23,7 @@
 
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
-use spitfire\exceptions\ApplicationException;
 use spitfire\model\relations\RelationshipContent;
-use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\events\RecordBeforeInsertEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
@@ -104,19 +102,26 @@ class ActiveRecord
 	public function get(string $field)
 	{
 		/**
-		 * If the model has a relationship for this field, we will proceed to lazy load the model.
+		 * If the model has no relationship for this field, we just return the
+		 * value the record holds for it.
 		 */
-		if ($this->model->getRelationShips()->has($field)) {
-			if ($this->cache->has($field)) {
-				$pl = $this->cache[$field];
-				return $pl->isSingle()? $pl->getPayload()->first() : $pl->getPayload();
-			}
-			else {
-				return $this->lazy($field);
-			}
+		if (!$this->model->getRelationShips()->has($field)) {
+			return $this->record->get($field)?? null;
 		}
 		
-		return $this->record->get($field)?? null;
+		/**
+		 * Implicit else. The model holds a relationship for the field, therefore
+		 * the data needs to either be retrieved from a cache or lazy loaded.
+		 */
+		if ($this->cache->has($field)) {
+			$pl = $this->cache[$field];
+		}
+		else {
+			$pl =  $this->lazy($field);
+		}
+		
+		return $pl->isSingle()? $pl->getPayload()->first() : $pl->getPayload();
+		
 	}
 	
 	/**

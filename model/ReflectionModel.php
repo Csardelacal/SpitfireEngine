@@ -24,6 +24,7 @@
 
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use spitfire\model\attribute\Table as TableAttribute;
 use spitfire\model\reflection\ReflectsFields;
 use spitfire\model\reflection\ReflectsRelationships;
@@ -109,6 +110,14 @@ class ReflectionModel
 	public function hasProperty(string $name) : bool
 	{
 		return $this->reflection->hasProperty($name);
+	}
+	
+	/**
+	 * @throws ReflectionException If no property exists
+	 */
+	public function getProperty(string $name) : ReflectionProperty
+	{
+		return $this->reflection->getProperty($name);
 	}
 	
 	public function hasTrait(string $traitname) : bool

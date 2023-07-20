@@ -178,7 +178,7 @@ abstract class Model implements JsonSerializable
 		 * 
 		 * @throws void
 		 */
-		$reflection = new ReflectionClass($this);
+		$reflection = new ReflectionModel($this::class);
 		
 		foreach ($keys as $k) {
 			if (!$reflection->hasProperty($k)) {
@@ -186,6 +186,9 @@ abstract class Model implements JsonSerializable
 			}
 			
 			try {
+				/**
+				 * @throws void We already check the property exists
+				 */
 				$property = $reflection->getProperty($k);
 				$value = $property->getValue($this);
 				
@@ -195,8 +198,12 @@ abstract class Model implements JsonSerializable
 				elseif ($value instanceof Collection) {
 					$value = new RelationshipContent(false, $value);
 				}
-				elseif ($value === null && $this->getActiveRecord()->getModel()->getRelationShips()->has($k)) {
-					$value = new RelationshipContent(true, new Collection());
+				elseif ($value === null && $reflection->getRelationShips()->has($k)) {
+					/**
+					 * @var Collection<Model>
+					 */
+					$content = new Collection();
+					$value = new RelationshipContent(true, $content);
 				}
 				
 				/**
