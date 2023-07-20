@@ -230,8 +230,7 @@ class StoreTest extends TestCase
 			
 			public function getForeign()
 			{
-				return $this->foreign;
-				#return $this->foreign?? $this->lazy('foreign');
+				return $this->foreign?? $this->lazy('foreign');
 			}
 		};
 		

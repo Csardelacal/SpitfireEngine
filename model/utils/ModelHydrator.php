@@ -21,12 +21,9 @@
  */
 
 
-use ReflectionClass;
 use ReflectionException;
-use ReflectionProperty;
 use spitfire\model\Model;
 use spitfire\model\ReflectionModel;
-use spitfire\model\relations\RelationshipContent;
 
 class ModelHydrator
 {
@@ -34,7 +31,7 @@ class ModelHydrator
 	public static function hydrate(Model $model) : void
 	{
 		
-		$keys = $model->getActiveRecord()->keys();
+		$keys = $model->getActiveRecord()->getUnderlyingRecord()->keys();
 		$reflection = new ReflectionModel($model::class);
 		
 		foreach ($keys as $k) {
