@@ -192,6 +192,15 @@ abstract class Model implements JsonSerializable
 				 * @throws void We already check the property exists
 				 */
 				$property = $reflection->getProperty($k);
+				
+				/**
+				 * If the model does not have this property, we cannot synchronize it.
+				 * In that event, the underlying record is unaffected.
+				 */
+				if (!$property->isInitialized($this)) {
+					continue;
+				}
+				
 				$value = $property->getValue($this);
 				
 				if ($value instanceof Model) {
