@@ -30,6 +30,7 @@ use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
+use spitfire\model\QueryBuilderBuilder;
 use spitfire\model\ReflectionModel;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\storage\database\Connection;
@@ -88,7 +89,7 @@ class BelongsToOneInjectorTest extends TestCase
 		$query->restrictions(
 			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->has(
 				'test',
-				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
+				fn(QueryBuilderBuilder $query) : QueryBuilder => $query->where('example', 1)
 			)
 		);
 		
@@ -136,7 +137,7 @@ class BelongsToOneInjectorTest extends TestCase
 		$query->restrictions(
 			fn(ExtendedRestrictionGroupBuilder $builder) => $builder->hasNo(
 				'test',
-				fn(RestrictionGroupBuilder $query) => $query->where('example', 1)
+				fn(QueryBuilderBuilder $query) : QueryBuilder => $query->where('example', 1)
 			)
 		);
 		

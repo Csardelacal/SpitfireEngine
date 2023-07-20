@@ -54,7 +54,10 @@ class QueryBuilderBuilder
 		$this->model = $model;
 		
 		$this->delegate(
-			fn() => (new QueryBuilder($this->connection, $this->model, $this->options))->withDefaultMapping()
+			function() {
+				$builder = new QueryBuilder($this->connection, $this->model, $this->options);
+				return $this->options['noselect']?? false? $builder : $builder->withDefaultMapping();
+			}
 		);
 	}
 	
@@ -77,6 +80,11 @@ class QueryBuilderBuilder
 			SoftDeleteQueryListener::OPTION__NAME,
 			SoftDeleteQueryListener::OPTION_TRASHED
 		);
+	}
+	
+	public function withoutSelects() : self
+	{
+		return $this->withOption('noselect', true);
 	}
 	
 	public function withTrashed() : self

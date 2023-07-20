@@ -30,6 +30,7 @@ use spitfire\model\Model;
 use spitfire\model\ModelFactory;
 use spitfire\model\query\RestrictionGroupBuilder;
 use spitfire\model\QueryBuilder;
+use spitfire\model\QueryBuilderBuilder;
 use spitfire\model\ReflectionModel;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\model\traits\WithSoftDeletes;
@@ -212,8 +213,8 @@ class QueryBuilderSoftDeleteTest extends TestCase
 			new ReflectionModel($this->model2::class)
 		))->withDefaultMapping();
 		
-		$builder->has('test', function (RestrictionGroupBuilder $builder) {
-			$builder->where('my_stick', 'is better than bacon');
+		$builder->has('test', function (QueryBuilderBuilder $builder) : QueryBuilder {
+			return $builder->where('my_stick', 'is better than bacon');
 		});
 		
 		$connection->query($builder->getQuery());

@@ -48,6 +48,7 @@ use spitfire\model\Model;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilderInterface;
 use spitfire\model\QueryBuilder;
+use spitfire\model\QueryBuilderBuilder;
 use spitfire\storage\database\events\QueryBeforeCreateEvent;
 use spitfire\storage\database\identifiers\TableIdentifierInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
@@ -87,15 +88,12 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	{
 		$this->field = $field;
 		$this->referenced = $referenced;
-		
-		assert($this->field->getName() !== null);
-		assert($this->referenced->getName() !== null);
 	}
 	
 	/**
 	 *
 	 * @param ExtendedRestrictionGroupBuilder $restrictions
-	 * @param callable(RestrictionGroupBuilderInterface):void|null $payload
+	 * @param callable(QueryBuilderBuilder<REMOTE>):QueryBuilder<REMOTE> $payload
 	 */
 	public function existence(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): void
 	{
@@ -109,8 +107,7 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 		$restrictions->getDBRestrictions()
 			->whereExists(function (TableIdentifierInterface $table) use ($connection, $payload): DatabaseQuery {
 				$model = $this->referenced->getModel();
-				$builder = new QueryBuilder($connection, $model);
-				$payload($builder->getRestrictions());
+				$builder = $payload((new QueryBuilderBuilder($connection, $model))->withoutSelects());
 				
 				/**
 				 * Create the restriction that filters the second table by connecting it to the first one.
@@ -130,7 +127,7 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	/**
 	 *
 	 * @param ExtendedRestrictionGroupBuilder $restrictions
-	 * @param callable(RestrictionGroupBuilderInterface):void|null $payload
+	 * @param callable(QueryBuilderBuilder<REMOTE>):QueryBuilder<REMOTE> $payload
 	 */
 	public function absence(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): void
 	{
@@ -144,8 +141,7 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 		$restrictions->getDBRestrictions()
 			->whereNotExists(function (TableIdentifierInterface $table) use ($connection, $payload): DatabaseQuery {
 				$model = $this->referenced->getModel();
-				$builder = new QueryBuilder($connection, $model);
-				$payload($builder->getRestrictions());
+				$builder = $payload((new QueryBuilderBuilder($connection, $model))->withoutSelects());
 				
 				/**
 				 * Create the restriction that filters the second table by connecting it to the first one.
