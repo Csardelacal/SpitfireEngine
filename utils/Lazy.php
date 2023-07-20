@@ -55,7 +55,7 @@ trait Lazy
 		
 		assert(is_object($delegate));
 		
-		if (method_exists($delegate, $name)) {
+		if (method_exists($delegate, $name) || method_exists($delegate, "__call")) {
 			return $delegate->$name(...$args);
 		}
 		
