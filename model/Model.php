@@ -33,7 +33,9 @@ use spitfire\model\relations\RelationshipContent;
 use spitfire\model\utils\ModelHydrator;
 use spitfire\provider\NotFoundException as ProviderNotFoundException;
 use spitfire\storage\database\ConnectionInterface;
+use spitfire\storage\database\events\RecordBeforeDeleteEvent;
 use spitfire\storage\database\events\RecordBeforeUpdateEvent;
+use spitfire\storage\database\events\RecordEvent;
 use spitfire\storage\database\Layout;
 use spitfire\storage\database\Record;
 use spitfire\storage\database\Schema as DatabaseSchema;
@@ -406,15 +408,15 @@ abstract class Model implements JsonSerializable
 		assert($this->record !== null);
 		
 		#Tell the table that the record is being deleted
-		$event = new RecordBeforeUpdateEvent(
+		$event = new RecordBeforeDeleteEvent(
 			$this->getConnection(),
 			$this->getTable(),
 			$this->record->getUnderlyingRecord(),
 			$options
 		);
-		$fn = function (Record $record) {
-			#The insert function is in this closure, which allows the event to cancel storing the data
-			$this->getConnection()->update($this->getTable(), $record);
+		$fn = function (RecordEvent $event) {
+			#The insert function is in this closure, which allows the event to cancel deleting the data
+			$this->getConnection()->delete($this->getTable(), $event->getRecord());
 		};
 		
 		$this->getTable()->events()->dispatch($event, $fn);
