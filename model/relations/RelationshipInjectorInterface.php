@@ -31,7 +31,7 @@ use spitfire\model\QueryBuilderBuilder;
  * for navigating models and building queries. The injector provides a mechanism for
  * performing the necessary operations on the query to test whether related records
  * exist on it.
- * 
+ *
  * @template REMOTE of Model
  */
 interface RelationshipInjectorInterface
@@ -39,17 +39,17 @@ interface RelationshipInjectorInterface
 	
 	/**
 	 *
-	 * @param RestrictionGroupBuilder $query
+	 * @param RestrictionGroupBuilder<REMOTE> $query
 	 * @param callable(QueryBuilderBuilder<REMOTE>):QueryBuilder<REMOTE> $payload
 	 */
-	public function existence(RestrictionGroupBuilder $query, callable $payload = null) : void;
+	public function existence(RestrictionGroupBuilder $query, callable $payload) : void;
 	
 	/**
 	 * Usually, testing for absence is symmetrical to testing for existence, but in order to allow
 	 * the application to customize it if needed, this is an option.
 	 *
-	 * @param RestrictionGroupBuilder $query
+	 * @param RestrictionGroupBuilder<REMOTE> $query
 	 * @param callable(QueryBuilderBuilder<REMOTE>):QueryBuilder<REMOTE> $payload
 	 */
-	public function absence(RestrictionGroupBuilder $query, callable $payload = null) : void;
+	public function absence(RestrictionGroupBuilder $query, callable $payload) : void;
 }

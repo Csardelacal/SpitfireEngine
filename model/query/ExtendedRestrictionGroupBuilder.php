@@ -24,6 +24,8 @@
 
 use BadMethodCallException;
 use spitfire\model\Model;
+use spitfire\model\QueryBuilder;
+use spitfire\model\QueryBuilderBuilder;
 use spitfire\model\QueryBuilderInterface;
 use spitfire\model\relations\BelongsToOne;
 use spitfire\model\relations\HasMany;
@@ -32,11 +34,22 @@ use spitfire\model\relations\RelationshipInterface;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\query\RestrictionGroup;
 
+/**
+ * @template T of Model
+ */
 class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 {
 	
-	private $query;
+	/**
+	 *
+	 * @var QueryBuilderInterface<T>
+	 */
+	private QueryBuilderInterface $query;
 	
+	/**
+	 *
+	 * @param QueryBuilderInterface<T> $queryBuilder
+	 */
 	public function __construct(QueryBuilderInterface $queryBuilder, RestrictionGroup $restrictionGroup)
 	{
 		$this->query = $queryBuilder;
@@ -47,6 +60,9 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 		);
 	}
 	
+	/**
+	 * @throws BadMethodCallException
+	 */
 	public function where(...$args): RestrictionGroupBuilder
 	{
 		switch (count($args)) {
@@ -65,6 +81,7 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 		}
 		
 		if ($value instanceof Model) {
+			assert(is_string($field));
 			assert($this->query->getModel()->getRelationShips()->has($field));
 			
 			$relation = $this->query->getModel()->getRelationShips()[$field]->newInstance();
@@ -99,10 +116,13 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 	/**
 	 *
 	 * @todo These methods imply that only a querybuilder can use them
+	 * @todo Make this work with null bodies
+	 *
 	 * @param string $relation
-	 * @param callable(RestrictionGroupBuilderInterface):void|null $body
+	 * @param callable(QueryBuilderBuilder<Model>): QueryBuilder<Model> $body
+	 * @return QueryBuilderInterface<T>
 	 */
-	public function has(string $relation, callable $body = null) : self
+	public function has(string $relation, callable $body) : QueryBuilderInterface
 	{
 		
 		assert($this->query->getModel()->getRelationShips()->has($relation));
@@ -110,15 +130,16 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 		
 		$relation->injector()->existence($this, $body);
 		
-		return $this;
+		return $this->query;
 	}
 	
 	/**
 	 *
 	 * @param string $relation
-	 * @param callable(RestrictionGroupBuilderInterface):void|null $body
+	 * @param callable(QueryBuilderBuilder<Model>): QueryBuilder<Model> $body
+	 * @return QueryBuilderInterface<T>
 	 */
-	public function hasNo(string $relation, callable $body = null) : self
+	public function hasNo(string $relation, callable $body) : QueryBuilderInterface
 	{
 		
 		assert($this->query->getModel()->getRelationShips()->has($relation), sprintf('Could not find relation %s', $relation));
@@ -126,9 +147,13 @@ class ExtendedRestrictionGroupBuilder extends RestrictionGroupBuilder
 		
 		$relation->injector()->absence($this, $body);
 		
-		return $this;
+		return $this->query;
 	}
 	
+	/**
+	 *
+	 * @return QueryBuilderInterface<T>
+	 */
 	public function context() : QueryBuilderInterface
 	{
 		return $this->query;

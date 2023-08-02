@@ -1,4 +1,5 @@
 <?php namespace spitfire\model;
+
 /*
  *
  * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -23,16 +24,21 @@
 
 use spitfire\collection\Collection;
 use spitfire\model\query\RestrictionGroupBuilder;
+use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\Query as DatabaseQuery;
 
 /**
  *
+ * @template T of Model
  */
 interface QueryBuilderInterface
 {
 	
 	public function getQuery() : DatabaseQuery;
 	
+	/**
+	 * @return ReflectionModel<T>
+	 */
 	public function getModel() : ReflectionModel;
 	
 	/**
@@ -48,17 +54,17 @@ interface QueryBuilderInterface
 	 * components of the query.
 	 *
 	 * @param callable(RestrictionGroupBuilder):void $do
-	 * @return QueryBuilder
+	 * @return QueryBuilderInterface<T>
 	 */
-	public function restrictions(callable $do) : QueryBuilder;
+	public function restrictions(callable $do) : QueryBuilderInterface;
 	
 	/**
 	 *
 	 * @param string $type
 	 * @param callable(RestrictionGroupBuilder):void $do
-	 * @return QueryBuilder
+	 * @return QueryBuilderInterface<T>
 	 */
-	public function group(string $type, callable $do) : QueryBuilder;
+	public function group(string $type, callable $do) : QueryBuilderInterface;
 	
 	/**
 	 *
@@ -70,11 +76,16 @@ interface QueryBuilderInterface
 	
 	/**
 	 *
-	 * @return Collection<Model>
+	 * @return Collection<T>
 	 */
 	public function all() : Collection;
 	
+	/**
+	 * @return Collection<T>
+	 */
 	public function range(int $offset, int $size) : Collection;
 	
 	public function count() : int;
+	
+	public function getConnection() : ConnectionInterface;
 }

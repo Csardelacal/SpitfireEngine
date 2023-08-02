@@ -1,4 +1,5 @@
 <?php namespace spitfire\model\relations;
+
 /*
  *
  * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -58,7 +59,7 @@ use spitfire\storage\database\query\RestrictionGroup;
  * Direct relationships are usually the BelongsToOne or HasMany kind of. Querying for
  * existence or absence, simply means looking up whether the remote (referenced) table
  * contains a record that matches what we established.
- * 
+ *
  * @template LOCAL of Model
  * @template REMOTE of Model
  * @implements RelationshipInjectorInterface<REMOTE>
@@ -67,20 +68,20 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 {
 	
 	/**
-	 * 
+	 *
 	 * @var Field<LOCAL>
 	 */
 	private Field $field;
 	
 	/**
-	 * 
+	 *
 	 * @var Field<REMOTE>
 	 */
 	private Field $referenced;
 	
 	
 	/**
-	 * 
+	 *
 	 * @param Field<LOCAL> $field
 	 * @param Field<REMOTE> $referenced
 	 */
@@ -92,10 +93,10 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 	
 	/**
 	 *
-	 * @param ExtendedRestrictionGroupBuilder $restrictions
+	 * @param ExtendedRestrictionGroupBuilder<REMOTE> $restrictions
 	 * @param callable(QueryBuilderBuilder<REMOTE>):QueryBuilder<REMOTE> $payload
 	 */
-	public function existence(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): void
+	public function existence(ExtendedRestrictionGroupBuilder $restrictions, callable $payload): void
 	{
 		
 		$connection = $restrictions->connection();
@@ -119,17 +120,25 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 				);
 				
 				$query = $builder->getQuery();
+				
+				/**
+				 * The query may not select anything from the result. If it did,
+				 * the code is broken and the behavior is unpredictable.
+				 */
+				assert($query->getOutputs()->count() === 0);
+				
 				$query->selectField($query->getFrom()->output()->getOutput($this->referenced->getName()));
+				
 				return $query;
 			});
 	}
 	
 	/**
 	 *
-	 * @param ExtendedRestrictionGroupBuilder $restrictions
+	 * @param ExtendedRestrictionGroupBuilder<REMOTE> $restrictions
 	 * @param callable(QueryBuilderBuilder<REMOTE>):QueryBuilder<REMOTE> $payload
 	 */
-	public function absence(ExtendedRestrictionGroupBuilder $restrictions, ?callable $payload = null): void
+	public function absence(ExtendedRestrictionGroupBuilder $restrictions, callable $payload): void
 	{
 		
 		$connection = $restrictions->connection();
@@ -154,6 +163,13 @@ class DirectRelationshipInjector implements RelationshipInjectorInterface
 				
 				$query = $builder->getQuery();
 				$query->selectField($query->getFrom()->output()->getOutput($this->referenced->getName()));
+				
+				/**
+				 * The query may not select more than one field from the result. If it did,
+				 * the code is broken and the behavior is unpredictable.
+				 */
+				assert($query->getOutputs()->count() === 1);
+				
 				return $query;
 			});
 	}

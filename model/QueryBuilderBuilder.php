@@ -23,14 +23,16 @@
 
 namespace spitfire\model;
 
+use BadMethodCallException;
 use Illuminate\Support\Traits\Macroable;
+use spitfire\collection\OutOfBoundsException;
 use spitfire\model\traits\WithSoftDeletes;
 use spitfire\storage\database\ConnectionInterface;
 use spitfire\storage\database\events\SoftDeleteQueryListener;
 use spitfire\utils\Lazy;
 
 /**
- * 
+ *
  * @template T of Model
  * @mixin QueryBuilder<T>
  */
@@ -45,22 +47,34 @@ class QueryBuilderBuilder
 	}
 	
 	private ConnectionInterface $connection;
+	
+	/**
+	 * @var ReflectionModel<T>
+	 */
 	private ReflectionModel $model;
+	
+	/**
+	 * @var array<string,scalar>
+	 */
 	private array $options = [];
 	
+	/**
+	 *
+	 * @param ReflectionModel<T> $model
+	 */
 	public function __construct(ConnectionInterface $connection, ReflectionModel $model)
 	{
 		$this->connection = $connection;
 		$this->model = $model;
 		
-		$this->delegate(
-			function() {
-				$builder = new QueryBuilder($this->connection, $this->model, $this->options);
-				return $this->options['noselect']?? false? $builder : $builder->withDefaultMapping();
-			}
-		);
+		$this->delegate(fn() => $this->build());
 	}
 	
+	/**
+	 *
+	 * @param scalar $value
+	 * @return QueryBuilderBuilder<T>
+	 */
 	public function withOption(string $option, $value) : self
 	{
 		$copy = clone $this;
@@ -71,6 +85,8 @@ class QueryBuilderBuilder
 	/**
 	 * If the model is soft deleting, this method can be used to query only data
 	 * that has been trashed.
+	 *
+	 * @return self<T>
 	 */
 	public function onlyTrashed() : self
 	{
@@ -82,11 +98,19 @@ class QueryBuilderBuilder
 		);
 	}
 	
+	/**
+	 *
+	 * @return self<T>
+	 */
 	public function withoutSelects() : self
 	{
 		return $this->withOption('noselect', true);
 	}
 	
+	/**
+	 *
+	 * @return self<T>
+	 */
 	public function withTrashed() : self
 	{
 		assert($this->model->hasTrait(WithSoftDeletes::class));
@@ -97,7 +121,22 @@ class QueryBuilderBuilder
 		);
 	}
 	
-	public function __call($method, $parameters)
+	/**
+	 *
+	 * @throws OutOfBoundsException
+	 * @return QueryBuilder<T>
+	 */
+	public function build() : QueryBuilder
+	{
+		$builder = new QueryBuilder($this->connection, $this->model, $this->options);
+		return $this->options['noselect']?? false? $builder : $builder->withDefaultMapping();
+	}
+	
+	/**
+	 * @throws BadMethodCallException
+	 * @param mixed[] $parameters
+	 */
+	public function __call(string $method, array $parameters) : mixed
 	{
 		if (self::hasMacro($method)) {
 			return $this->illuInvoke($method, $parameters);

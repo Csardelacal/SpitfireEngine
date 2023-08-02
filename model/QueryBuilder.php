@@ -1,25 +1,4 @@
 <?php namespace spitfire\model;
-/*
- *
- * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-13 01  USA
- *
- */
-
 
 /*
  *
@@ -42,9 +21,33 @@
  *
  */
 
+
+/*
+ *
+ * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-13 01  USA
+ *
+ */
+
+use BadMethodCallException;
 use InvalidArgumentException;
 use PDOException;
 use spitfire\collection\Collection;
+use spitfire\collection\OutOfBoundsException;
 use spitfire\exceptions\ApplicationException;
 use spitfire\model\query\ExtendedRestrictionGroupBuilder;
 use spitfire\model\query\RestrictionGroupBuilder;
@@ -56,17 +59,18 @@ use spitfire\storage\database\events\QueryBeforeCreateEvent;
 use spitfire\storage\database\Query as DatabaseQuery;
 use spitfire\storage\database\query\QueryOrTableIdentifier;
 use spitfire\storage\database\query\RestrictionGroup;
-use spitfire\utils\Mixin;
+use spitfire\utils\Lazy;
 
 /**
  *
  * @template T of Model
+ * @implements QueryBuilderInterface<T>
  * @mixin RestrictionGroupBuilder
  */
 class QueryBuilder implements QueryBuilderInterface
 {
 	
-	use Mixin;
+	use Lazy;
 	
 	private ConnectionInterface $connection;
 	
@@ -98,6 +102,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
+	 * @throws OutOfBoundsException
 	 * @param ConnectionInterface $connection
 	 * @param ReflectionModel<T> $model
 	 * @param scalar[] $options
@@ -110,7 +115,7 @@ class QueryBuilder implements QueryBuilderInterface
 		$table = $connection->getSchema()->getLayoutByName($model->getTableName());
 		
 		$this->query = new DatabaseQuery(new QueryOrTableIdentifier($table->getTableReference()));
-		$this->mixin(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
+		$this->delegate(fn() => new ExtendedRestrictionGroupBuilder($this, $this->query->getRestrictions()));
 		
 		$table->events()->dispatch(
 			new QueryBeforeCreateEvent($this->connection, $this->query, $options)
@@ -176,7 +181,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @throws InvalidArgumentException
 	 * @param RestrictionGroup::TYPE_* $type
-	 * @param callable(ExtendedRestrictionGroupBuilder):void $do
+	 * @param callable(ExtendedRestrictionGroupBuilder<T>):void $do
 	 * @return self<T>
 	 */
 	public function group(string $type, callable $do) : QueryBuilder
@@ -220,12 +225,16 @@ class QueryBuilder implements QueryBuilderInterface
 	}
 	
 	/**
-	 * 
-	 * @return T
+	 *
+	 * @throws BadMethodCallException
+	 * @throws OutOfBoundsException
+	 * @throws PDOException
+	 * @return T|null
 	 */
-	public function find($id):? Model
+	public function find(int|string $id):? Model
 	{
 		$table = $this->connection->getSchema()->getLayoutByName($this->model->getTableName());
+		assert($table->getPrimaryKey() !== null);
 		$key = $table->getPrimaryKey()->getFields()->first();
 		
 		assert($key !== null);
@@ -235,6 +244,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
+	 * @throws BadMethodCallException
 	 * @param mixed $args
 	 * @return self<T>
 	 */
@@ -246,11 +256,11 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
-	 * @param callable():Model|null $or This function can either: return null, return a model
+	 * @param callable():T|null $or This function can either: return null, return a model
 	 * or throw an exception
-	 * 
+	 *
 	 * @throws PDOException
-	 * @return Model|null
+	 * @return T|null
 	 */
 	public function first(callable $or = null):? Model
 	{
@@ -309,7 +319,7 @@ class QueryBuilder implements QueryBuilderInterface
 		
 		/**
 		 * Fetch the records from the database
-		 * 
+		 *
 		 * @var ResultSet<T>
 		 */
 		$result = new ResultSet(
@@ -322,6 +332,7 @@ class QueryBuilder implements QueryBuilderInterface
 	
 	/**
 	 *
+	 * @throws OutOfBoundsException
 	 * @throws PDOException
 	 */
 	public function count() : int
@@ -359,6 +370,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 * as soon as it found the n records it's supposed to look for.
 	 *
 	 * @throws PDOException
+	 * @throws OutOfBoundsException
 	 * @see https://sql-bits.com/check-if-more-than-n-rows-are-returned/
 	 */
 	public function quickCount(int $upto = 101) : int
@@ -405,7 +417,6 @@ class QueryBuilder implements QueryBuilderInterface
 	/**
 	 *
 	 * @throws PDOException
-	 * @throws ApplicationException If the field does not exist
 	 */
 	public function sum(string $fieldname) : int
 	{
