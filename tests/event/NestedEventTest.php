@@ -36,21 +36,21 @@ class NestedEventTest extends TestCase
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) use ($dispatcher) { 
 			$e->preventDefault();
-			return 'hello ' . $dispatcher->dispatch(new TestEvent2($e->payload()), function (TestEvent2 $e) {
+			$e->setPayload('hello ' . $dispatcher->dispatch(new TestEvent2($e->payload()), function (TestEvent2 $e) {
 				return $e->payload() . 'a';
-			}); 
+			})->payload()); 
 		}));
 		
 		$dispatcher->hook(TestEvent2::class, new Listener(function (TestEvent2 $e) { 
 			$e->preventDefault();
-			return $e->payload() . 's'; 
+			$e->setPayload($e->payload() . 's');
 		}));
 		
 		$result = $dispatcher->dispatch(new TestEvent('world'), function (TestEvent $e) {
-			return 'bye ' . $e->payload();
+			$e->setPayload('bye ' . $e->payload());
 		});
 		
-		$this->assertEquals($result, 'hello worlds');
+		$this->assertEquals($result->payload(), 'hello worlds');
 	}
 	
 }

@@ -37,14 +37,14 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			$e->preventDefault();
-			return $e->payload() . ' world'; 
+			$e->setPayload($e->payload() . ' world'); 
 		}));
 		
 		$result = $dispatcher->dispatch(new TestEvent('hello'), function (TestEvent $e) {
-			return $e->payload() . ' death';
+			$e->setPayload($e->payload() . ' death');
 		});
 		
-		$this->assertEquals($result, 'hello world');
+		$this->assertEquals($result->payload(), 'hello world');
 	}
 	
 	public function testBasicEventNoOverride() {
@@ -52,14 +52,14 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		$dispatcher = new EventTarget();
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
-			return 'hello ' . $e->payload(); 
+			$e->setPayload('hello ' . $e->payload());
 		}));
 		
 		$result = $dispatcher->dispatch(new TestEvent('world'), function (TestEvent $e) {
-			return 'bye ' . $e->payload();
+			$e->setPayload('bye ' . $e->payload());
 		});
 		
-		$this->assertEquals($result, 'bye world');
+		$this->assertEquals($result->payload(), 'bye hello world');
 	}
 	
 	/**
@@ -73,7 +73,7 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
 			$e->preventDefault();
-			return 'hello ' . $e->payload(); 
+			$e->setPayload('hello ' . $e->payload());
 		}));
 		
 		/*
@@ -81,13 +81,13 @@ class BasicEventTest extends \PHPUnit\Framework\TestCase
 		 * preventdefault anew.
 		 */
 		$dispatcher->hook(TestEvent::class, new Listener(function (TestEvent $e) { 
-			return 'stop ' . $e->payload(); 
+			$e->setPayload('stop ' . $e->payload());
 		}));
 		
 		$result = $dispatcher->dispatch(new TestEvent('world'), function (TestEvent $e) {
-			return 'bye ' . $e->payload();
+			$e->setPayload('bye ' . $e->payload());
 		});
 		
-		$this->assertEquals($result, 'stop world');
+		$this->assertEquals($result->payload(), 'stop hello world');
 	}
 }

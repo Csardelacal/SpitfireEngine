@@ -44,4 +44,9 @@ class TestEvent extends Event
 	{
 		return $this->payload;
 	}
+	
+	public function setPayload(string $payload)
+	{
+		$this->payload = $payload;
+	}
 }

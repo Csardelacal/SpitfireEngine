@@ -180,6 +180,21 @@ function fail(int $status, string $message = '') : void
 }
 
 /**
+ * @template T
+ * @param T|null $subject
+ * @return T
+ * @throws AssertionError
+ */
+function notnull($subject)
+{
+	if ($subject === null) {
+		throw new AssertionError('Variable cannot be null');
+	}
+	
+	return $subject;
+}
+
+/**
  * Shorthand function to create / retrieve the model the application is using
  * to store data. We could consider this a little DB handler factory.
  *

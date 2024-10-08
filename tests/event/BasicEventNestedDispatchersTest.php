@@ -33,16 +33,16 @@ class BasicEventNestedDispatchersTest extends TestCase
 		$child = new EventTarget($parent);
 		
 		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
-			return 'hello ' . $e->payload();
+			$e->setPayload('hello ' . $e->payload());
 		}));
 		
 		$parent->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
-			return 'bye ' . $e->payload();
+			$e->setPayload('bye ' . $e->payload());
 		}));
 		
 		$result = $child->dispatch(new TestEvent('world'), null);
-		$this->assertEquals('bye world', $result);
+		$this->assertEquals('bye hello world', $result->payload());
 	}
 	
 	public function testNestedDispatchers2() {
@@ -52,16 +52,16 @@ class BasicEventNestedDispatchersTest extends TestCase
 		
 		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
-			return 'hello ' . $e->payload();
+			$e->setPayload('hello ' . $e->payload());
 		}));
 		
 		$parent->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
-			return 'bye ' . $e->payload();
+			$e->setPayload('bye ' . $e->payload());
 		}));
 		
 		$result = $child->dispatch(new TestEvent('world'), null);
-		$this->assertEquals('hello world', $result);
+		$this->assertEquals('hello world', $result->payload());
 	}
 	
 	public function testNestedDispatchersNoBubble() {
@@ -70,15 +70,15 @@ class BasicEventNestedDispatchersTest extends TestCase
 		$child = new EventTarget($parent);
 		
 		$child->hook(TestEvent::class, new Listener(function (TestEvent $e) {
-			return 'hello ' . $e->payload();
+			$e->setPayload('hello ' . $e->payload());
 		}));
 		
 		$parent->hook(TestEvent::class, new Listener(function (TestEvent $e) {
 			$e->stopPropagation();
-			return 'bye ' . $e->payload();
+			$e->setPayload('bye ' . $e->payload());
 		}));
 		
 		$result = $child->dispatch((new TestEvent('world'))->preventBubbling(), null);
-		$this->assertEquals('hello world', $result);
+		$this->assertEquals('hello world', $result->payload());
 	}
 }

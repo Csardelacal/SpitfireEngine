@@ -79,14 +79,14 @@ class EventTarget
 	 * to the buffer.
 	 *
 	 * Usually, the application will invoke it like this:
-	 * <code>&lt;?= $this->event->dispatch('myapp.output.url.homepage', function () { return url(); }); </code>
+	 * <code>&lt;?= $dispatcher->dispatch(new Event('http://test.com'), function () { return url(); }); </code>
 	 *
 	 * The listener for our custom homepage link may look something like this:
 	 * <code>
-	 * spitfire()->getApplication('forum')->event->hook('myapp.output.url.homepage',
+	 * $dispatcher->hook(Event::class,
 	 *   new Listener(function (Event$event) {
 	 *     $event->preventDefault();
-	 *     return 'https://mywebsite.com';
+	 *     $event->setURL('https://mywebsite.com');
 	 *   }
 	 * );
 	 * </code>
@@ -103,8 +103,9 @@ class EventTarget
 	 * really depends on the vendor of the event, please refer to their documentation
 	 * for specifics.
 	 *
-	 * @param Event $event
-	 * @param Closure|null $continue
+	 * @template T of Event
+	 * @param T $event
+	 * @param \Closure(T):void|null $continue
 	 * @return mixed
 	 */
 	public function dispatch(Event $event, Closure $continue = null)
@@ -114,7 +115,6 @@ class EventTarget
 		 * By default, the return of an event will be null. This means that no listener
 		 * interacted with the event.
 		 */
-		$_r = null;
 		$hook = get_class($event);
 		
 		/*
@@ -123,40 +123,27 @@ class EventTarget
 		 * in higher levels.
 		 */
 		if (isset($this->hooks[$hook])) {
-			$t  = $this->hooks[$hook]->dispatch($event);
-			$_r = $t === null? $_r : $t;
-		}
-		
-		/*
-		 * If our hook was stopped by any of the listeners we already interacted with,
-		 * the system should return the value we received earlier.
-		 */
-		if ($event->isStopped()) {
-			return $_r;
-		}
-		
-		/*
-		 * Otherwise, if the event bubbles and it has a parent, we continue within
-		 * the parent.
-		 */
-		if ($event->bubbles() && $this->parent) {
-			$t = $this->parent->dispatch($event, $continue);
-			return $t? $t : $_r;
-		}
-		
-		/*
-		 * A listener can request the event to continue bubbling and allow the other
-		 * hooks to interact with the event, but the listener may have requested the
-		 * original code to not be executed.
-		 */
-		if ($event->isPrevented()) {
-			return $_r;
+			$this->hooks[$hook]->dispatch($event);
 		}
 		
 		/**
 		 * By default we fall back to the original application's predefined behavior.
 		 * This allows the application to react to behavior that was not overridden.
+		 * 
+		 * A listener can request the event to continue bubbling and allow the other
+		 * hooks to interact with the event, but the listener may have requested the
+		 * original code to not be executed.
 		 */
-		return $continue? $continue($event) : $_r;
+		(!$event->isPrevented() && $continue)? $continue($event) : null;
+		
+		/*
+		 * Otherwise, if the event bubbles and it has a parent, we continue within
+		 * the parent. This assumes that the 
+		 */
+		if (!$event->isStopped() && $event->bubbles() && $this->parent) {
+			$this->parent->dispatch($event, $continue);
+		}
+		
+		return $event;
 	}
 }

@@ -407,7 +407,8 @@ abstract class Model implements JsonSerializable
 	}
 	
 	/**
-	 * @param string[] $options 
+	 * @param string[] $options
+	 * @throws \AssertionError
 	 */
 	public function delete(array $options = []) : void
 	{
@@ -420,7 +421,7 @@ abstract class Model implements JsonSerializable
 		$event = new RecordBeforeDeleteEvent(
 			$this->getConnection(),
 			$this->getTable(),
-			$this->record->getUnderlyingRecord(),
+			notnull($this->record)->getUnderlyingRecord(),
 			$options
 		);
 		$fn = function (RecordEvent $event) {
