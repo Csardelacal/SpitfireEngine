@@ -39,7 +39,7 @@ class EventTarget
 	 */
 	private $hooks;
 	
-	public function __construct(EventTarget $parent = null)
+	public function __construct(?EventTarget $parent = null)
 	{
 		$this->parent = $parent;
 		$this->hooks = [];
@@ -108,7 +108,7 @@ class EventTarget
 	 * @param \Closure(T):void|null $continue
 	 * @return mixed
 	 */
-	public function dispatch(Event $event, Closure $continue = null)
+	public function dispatch(Event $event, ?Closure $continue = null)
 	{
 		
 		/*
