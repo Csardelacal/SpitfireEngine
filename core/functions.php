@@ -556,25 +556,29 @@ function scope(object $ctx, callable $do)
  */
 function redirectOutput(StreamInterface $stream, $fn) : mixed
 {
-	/**
-	 * We create an output buffer that proceeds to write everything to the stream
-	 * we provided. This allows the application to send the output to StdErr, a file
-	 * or anything like that.
-	 *
-	 * We pass a two to the chunk size to cause the buffer to always output the data
-	 * and use it as a redirection instead of a buffer.
-	 */
-	ob_start(fn($str) => $stream->write($str)? '' : '', 2);
-	
-	/**
-	 * Call the function that could be producing output. All the output will be sent
-	 * to the buffer and stream.
-	 */
-	$_return = $fn();
-	
-	/**
-	 * Terminate and flush the buffer, then return the value we provided.
-	 */
-	ob_end_flush();
-	return $_return;
+	try {
+		/**
+		 * We create an output buffer that proceeds to write everything to the stream
+		 * we provided. This allows the application to send the output to StdErr, a file
+		 * or anything like that.
+		 *
+		 * We pass a two to the chunk size to cause the buffer to always output the data
+		 * and use it as a redirection instead of a buffer.
+		 */
+		ob_start(fn($str) => $stream->write($str)? '' : '', 2);
+		
+		/**
+		 * Call the function that could be producing output. All the output will be sent
+		 * to the buffer and stream.
+		 */
+		$_return = $fn();
+		
+		/**
+		 * Terminate and flush the buffer, then return the value we provided.
+		 */
+		return $_return;
+	}
+	finally {
+		ob_end_clean();
+	}
 }
