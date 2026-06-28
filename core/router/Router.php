@@ -162,7 +162,7 @@ class Router extends Routable
 	 * @param Closure $do
 	 * @return Router
 	 */
-	public function scope(string $scope, Closure $do = null) : Router
+	public function scope(string $scope, ?Closure $do = null) : Router
 	{
 		$child = new Router(rtrim($this->getPrefix(), '/') . '/' . ltrim($scope, '/'));
 		$do && $do($child);

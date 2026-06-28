@@ -48,7 +48,7 @@ class Parameters
 	 * @param string|null $value
 	 * @return Parameters
 	 */
-	public function addParameter(string $key, string $value = null) : Parameters
+	public function addParameter(string $key, ?string $value = null) : Parameters
 	{
 		$this->parameters[$key] = $value;
 		return $this;

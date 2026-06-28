@@ -127,7 +127,7 @@ class Strings
 		}
 	}
 	
-	public static function urls(string $str, callable $cb = null) : string
+	public static function urls(string $str, ?callable $cb = null) : string
 	{
 		$urlRegex = '#(https?://[a-zA-z0-9%&?/.\-_=+;@\#]+)#';
 		$flip = false;

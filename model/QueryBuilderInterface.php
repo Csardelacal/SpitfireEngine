@@ -72,7 +72,7 @@ interface QueryBuilderInterface
 	 * or throw an exception
 	 * @return Model|null
 	 */
-	public function first(callable $or = null):? Model;
+	public function first(?callable $or = null):? Model;
 	
 	/**
 	 *

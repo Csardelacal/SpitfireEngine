@@ -36,7 +36,7 @@ class Text extends Type
 	
 	private ?bool $nullable;
 	
-	public function __construct(bool $nullable = null)
+	public function __construct(?bool $nullable = null)
 	{
 		$this->nullable = $nullable;
 	}

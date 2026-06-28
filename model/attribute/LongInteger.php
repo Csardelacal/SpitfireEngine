@@ -52,7 +52,7 @@ class LongInteger extends Type
 	 */
 	private ?bool $nullable;
 	
-	public function __construct(bool $unsigned = false, bool $nullable = null)
+	public function __construct(bool $unsigned = false, ?bool $nullable = null)
 	{
 		$this->unsigned = $unsigned;
 		$this->nullable = $nullable;

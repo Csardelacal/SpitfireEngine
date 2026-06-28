@@ -50,7 +50,7 @@ class CharsetEncoder
 	 * @param string|null $str The string encoded with the database's encoding
 	 * @return string|null The string encoded with Spitfire's encoding
 	 */
-	public function encode(string $str = null):? string 
+	public function encode(?string $str = null):? string 
 	{
 		if ($str === null)    { return null; }
 		if (is_numeric($str)) { return $str; }
@@ -64,7 +64,7 @@ class CharsetEncoder
 	 * @param string|null $str The string encoded with Spitfire's encoding
 	 * @return string|null The string encoded with the database's encoding
 	 */
-	public function decode(string $str = null) :? string 
+	public function decode(?string $str = null) :? string 
 	{
 		if ($str === null)    { return null; }
 		if (is_numeric($str)) { return $str; }

@@ -42,7 +42,7 @@ class CharacterString extends Type
 	
 	private int $length;
 	
-	public function __construct(int $length = 255, bool $nullable = null)
+	public function __construct(int $length = 255, ?bool $nullable = null)
 	{
 		$this->nullable = $nullable;
 		$this->length = $length;

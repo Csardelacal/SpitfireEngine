@@ -54,7 +54,7 @@ class SelectExpression
 	 * @param string|null $alias
 	 * @param Aggregate|null $aggregate
 	 */
-	public function __construct(FieldIdentifierInterface $input, string $alias = null, Aggregate $aggregate = null)
+	public function __construct(FieldIdentifierInterface $input, ?string $alias = null, ?Aggregate $aggregate = null)
 	{
 		assert($aggregate === null || $alias !== null);
 		$this->input = $input;
@@ -115,7 +115,7 @@ class SelectExpression
 	 *
 	 * @param string|null $alias
 	 */
-	public function setAlias(string $alias = null) : SelectExpression
+	public function setAlias(?string $alias = null) : SelectExpression
 	{
 		$this->alias = $alias;
 		return $this;

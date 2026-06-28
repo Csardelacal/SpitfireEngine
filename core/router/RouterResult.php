@@ -33,7 +33,7 @@ class RouterResult
 	 */
 	private $handler;
 	
-	public function __construct(RequestHandlerInterface $handler = null)
+	public function __construct(?RequestHandlerInterface $handler = null)
 	{
 		$this->handler = $handler;
 	}

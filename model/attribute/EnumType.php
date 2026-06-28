@@ -51,7 +51,7 @@ class EnumType extends Type
 	 * @param string[] $options
 	 * @param bool $nullable
 	 */
-	public function __construct(array $options, bool $nullable = null)
+	public function __construct(array $options, ?bool $nullable = null)
 	{
 		$this->nullable = $nullable;
 		$this->options = $options;

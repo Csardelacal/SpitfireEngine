@@ -122,9 +122,9 @@ class Response implements ResponseInterface
 	/**
 	 * 
 	 */
-	public function withStatus(int $code, string $reasonPhrase = ''): Response 
+	public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface 
 	{
-		return new Response($this->body, $code, $reasonPhrase, $this->headers->all());
+		return new self($this->body, $code, $reasonPhrase, $this->headers->all());
 	}
 	
 	/**

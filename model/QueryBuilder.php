@@ -262,7 +262,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 * @throws PDOException
 	 * @return T|null
 	 */
-	public function first(callable $or = null):? Model
+	public function first(?callable $or = null):? Model
 	{
 		/*
 		* Fetch a single row from the database.

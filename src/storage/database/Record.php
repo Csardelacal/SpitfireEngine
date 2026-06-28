@@ -56,7 +56,7 @@ class Record
 	 * @param string|null $field
 	 * @return bool
 	 */
-	public function isChanged(string $field = null) : bool
+	public function isChanged(?string $field = null) : bool
 	{
 		/**
 		 * If the field does not exist, this application is broken. This scenario should

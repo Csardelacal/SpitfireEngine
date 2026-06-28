@@ -13,7 +13,7 @@ abstract class SessionMiddleware implements MiddlewareInterface
 	private SessionHandlerInterface $handler;
 	private string $name;
 	
-	public function __construct(SessionHandlerInterface $handler, string $name = null)
+	public function __construct(SessionHandlerInterface $handler, ?string $name = null)
 	{
 		$this->handler = $handler;
 		$this->name    = $name?: session_name();

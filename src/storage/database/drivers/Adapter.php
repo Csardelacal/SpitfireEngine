@@ -39,9 +39,9 @@ class Adapter
 	
 	public function __construct(
 		DriverInterface $driver,
-		QueryGrammarInterface $queryGrammar = null,
-		RecordGrammarInterface $recordGrammar = null,
-		SchemaGrammarInterface $schemaGrammar = null
+		?QueryGrammarInterface $queryGrammar = null,
+		?RecordGrammarInterface $recordGrammar = null,
+		?SchemaGrammarInterface $schemaGrammar = null
 	) {
 		$this->driver = $driver;
 		$this->queryGrammar = $queryGrammar ?: $driver->getDefaultQueryGrammar();

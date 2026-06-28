@@ -18,7 +18,7 @@ class ConnectionGlobal implements ConnectionInterface
 {
 	private ?string $connection;
 	
-	public function __construct(string $connection = null)
+	public function __construct(?string $connection = null)
 	{
 		$this->connection = $connection;
 	}

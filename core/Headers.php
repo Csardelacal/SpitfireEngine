@@ -188,7 +188,7 @@ class Headers
 	 * @param string $str
 	 * @param string|null $encoding
 	 */
-	public function contentType($str, string $encoding = null) : void
+	public function contentType($str, ?string $encoding = null) : void
 	{
 		
 		if ($encoding === null) {

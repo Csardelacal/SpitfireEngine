@@ -119,7 +119,7 @@ class Query
 	 * @param TableIdentifierInterface $table
 	 * @param Closure $fn
 	 */
-	public function joinTable(TableIdentifierInterface $table, Closure $fn = null) : JoinTable
+	public function joinTable(TableIdentifierInterface $table, ?Closure $fn = null) : JoinTable
 	{
 		$join = new JoinTable(new Alias(new QueryOrTableIdentifier($table), $table->withAlias()));
 		$this->joins->push($join);
@@ -169,7 +169,7 @@ class Query
 	 * @param int|null $amt
 	 * @return Query
 	 */
-	public function range(int $skip = null, int $amt = null) : Query
+	public function range(?int $skip = null, ?int $amt = null) : Query
 	{
 		$this->offset = $skip;
 		$this->limit  = $amt;
@@ -228,7 +228,7 @@ class Query
 	 * @param TableIdentifierInterface $table
 	 * @return Collection<SelectExpression>
 	 */
-	public function selectAll(TableIdentifierInterface $table = null) : Collection
+	public function selectAll(?TableIdentifierInterface $table = null) : Collection
 	{
 		$_t = $table !== null? $table : $this->from->output();
 		
@@ -242,7 +242,7 @@ class Query
 		return $add;
 	}
 	
-	public function select(string $name, string $alias = null) : SelectExpression
+	public function select(string $name, ?string $alias = null) : SelectExpression
 	{
 		$field = $this->from->output()->getOutput($name);
 		$expression = new SelectExpression($field, $alias);
@@ -251,7 +251,7 @@ class Query
 		return $expression;
 	}
 	
-	public function selectField(FieldIdentifier $field, string $alias = null) : SelectExpression
+	public function selectField(FieldIdentifier $field, ?string $alias = null) : SelectExpression
 	{
 		$expression = new SelectExpression($field, $alias);
 		$this->select->push($expression);
