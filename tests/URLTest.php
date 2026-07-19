@@ -83,4 +83,10 @@ class URLTest extends TestCase
 		$url = $this->builder->to(['TestController', 'index'], ['a' => 'my', 'b' => 'url']);
 		$this->assertEquals('/my/url', $url);
 	}
+	
+	public function testReverserWithDefaultParameters(): void
+	{
+		$url = $this->builder->to(['ContentController', 'page'], []);
+		$this->assertEquals('/static/homepage', $url);
+	}
 }

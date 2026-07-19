@@ -88,7 +88,8 @@
 			"./vendor/bin/phpstan analyse --level 5 .",
 			"echo 'Analyzing changed files with strict rules'",
 			"./vendor/bin/phpstan analyse -c phpstan-strict.neon --level 9 $(git --no-pager diff --name-only --diff-filter=MARC | grep '.php') || true",
-			"./vendor/bin/phpunit tests/"
+			"./vendor/bin/phpunit tests/",
+			"./vendor/bin/phpcs -n -p --ignore=vendor,app,bin --standard=./vendor/magic3w/php-coding-standard/.phpcs.xml $(git diff master --diff-filter=d --name-only | grep -E '\\.php$')"
 		],
 		"test-strict" : [
 			"./vendor/bin/phpstan analyse -c phpstan-strict.neon --level 9 .",

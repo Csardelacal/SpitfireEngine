@@ -40,16 +40,16 @@ class URIPattern
 	 * URL. This is mostly used for debugging and information purposes, letting
 	 * the developer know which rule we're working on.
 	 */
-	private $pattern;
+	private string $pattern;
 	
 	/**
 	 * The subpatterns array allows the application to override the standard search
 	 * pattern to allow for more intricate expressions. For example, the application
 	 * could determine that it will only accept alphanumeric characters, a single
 	 * character, or similar.
-	 * 
+	 *
 	 * By default, routes will capture anything but slashes.
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private array $subpatterns = [];
@@ -62,7 +62,7 @@ class URIPattern
 	 * collection itself) can never be empty. It was pretty adamant about the fact
 	 * that a Collection<array> cannot contain non-empty-array for some reason.
 	 *
-	 * @var Collection<non-empty-array<int,string>>
+	 * @var Collection<non-empty-list<string>>
 	 */
 	private $variables;
 	
@@ -110,6 +110,11 @@ class URIPattern
 		$this->subpatterns[$var] = $matches;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @throws ApplicationException If the pattern is invalid and cannot be compiled into a regular expression
+	 */
 	public function compile() : string
 	{
 		
@@ -131,23 +136,23 @@ class URIPattern
 		 *
 		 * To do so, we generate a regular expression from the pattern we received, that we
 		 * can now use to test the routes and see whether they match.
-		 * 
+		 *
 		 * Note: The `(?:/|$)` expression is a non capturing group (not a lookaround). For
 		 * some reason I forgot this fact and it's taken me a while to relearn
-		 * 
+		 *
 		 * @see https://www.php.net/manual/en/regexp.reference.subpatterns.php
-		 * 
-		 * > The fact that plain parentheses fulfill two functions is not always helpful. 
+		 *
+		 * > The fact that plain parentheses fulfill two functions is not always helpful.
 		 * > There are often times when a grouping subpattern is required without a capturing
-		 * > requirement. If an opening parenthesis is followed by "?:", the subpattern does 
+		 * > requirement. If an opening parenthesis is followed by "?:", the subpattern does
 		 * > not do any capturing, and is not counted when computing the number of any subsequent
-		 * > capturing subpatterns. 
+		 * > capturing subpatterns.
 		 */
 		return sprintf($template, preg_replace_callback(
 			['/\//', '/\{([^\}]+)\}/'],
 			function (array $match) : string {
-				switch(count($match)) {
-					case 1: 
+				switch (count($match)) {
+					case 1:
 						# When a slash is matched in the expression, it's either a slash
 						# or the end of the matches.
 						return '(?:/|$)';
@@ -170,6 +175,7 @@ class URIPattern
 	 *
 	 * @param string $uri
 	 * @return \spitfire\core\router\Parameters
+	 * @throws ApplicationException
 	 */
 	public function test(string $uri) :? Parameters
 	{
@@ -248,28 +254,45 @@ class URIPattern
 	 * of patterns and parameters.
 	 *
 	 * @param string[] $parameters
-	 * @return string
+	 * @return ?string
 	 * @throws ApplicationException
 	 */
-	public function reverse($parameters)
+	public function reverse($parameters) : ?string
 	{
-		/**
-		 * A second, very similar expression, is used to extract the variables that we need.
-		 */
-		$fn = function ($match) use ($parameters) {
-			$pieces = explode(':', $match[1], 2);
-			$variable = reset($pieces);
-			
-			if (!array_key_exists($variable, $parameters)) {
-				throw new ApplicationException(sprintf('Undefined URL variable %s in %s', $variable, $this->pattern), 2110141646);
-			}
-			
-			return $parameters[$variable];
-		};
-		
-		return preg_replace_callback('/\{([^\}]+)\}/', $fn, $this->pattern);
+		return preg_replace_callback(
+			'/\{([^\}]+)\}/', 
+			function (array $match) use ($parameters) : string {
+				$pieces = explode(':', $match[1], 2);
+				$variable = reset($pieces);
+				
+				/**
+				 * The default value for the variable, if specified should be used if the variable is not present in the
+				 * parameters array.
+				 */
+				$default = $pieces[1]?? null;
+				
+				if (!array_key_exists($variable, $parameters) && $default === null) {
+					throw new ApplicationException(
+						sprintf('Undefined URL variable %s in %s', $variable, $this->pattern),
+						2110141646
+					);
+				}
+				
+				$_ret = $parameters[$variable]?? $default;
+				assert(is_string($_ret), 'The variable must be a string');
+				return $_ret;
+			}, 
+			$this->pattern
+		);
 	}
 	
+	/**
+	 * Creates a new URI Pattern from a string or returns the pattern if it was already an instance of URIPattern.
+	 * 
+	 * @param string|URIPattern $str
+	 * @return URIPattern
+	 * @throws \InvalidArgumentException If the pattern is not a string or an instance of URIPattern
+	 */
 	public static function make($str)
 	{
 		if ($str instanceof URIPattern) {
