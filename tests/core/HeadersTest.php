@@ -23,7 +23,7 @@
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use spitfire\core\Headers;
+use spitfire\http\Headers;
 
 class HeadersTest extends TestCase
 {

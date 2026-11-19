@@ -3,7 +3,7 @@
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use spitfire\core\Response;
+use spitfire\http\Response;
 
 class StaticResponseRequestHandler implements RequestHandlerInterface
 {

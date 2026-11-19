@@ -1,4 +1,4 @@
-<?php namespace spitfire\core;
+<?php namespace spitfire\http;
 
 /*
  *

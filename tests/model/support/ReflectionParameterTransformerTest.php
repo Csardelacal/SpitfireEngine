@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
-use spitfire\core\Request;
+use spitfire\http\Request;
 use spitfire\model\support\ReflectionParameterTransformer;
 
 class ReflectionParameterTransformerTest extends TestCase

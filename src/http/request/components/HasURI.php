@@ -2,7 +2,7 @@
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use spitfire\core\Request;
+use spitfire\http\Request;
 use spitfire\io\Get;
 
 /*

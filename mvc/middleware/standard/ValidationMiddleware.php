@@ -7,7 +7,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
-use spitfire\core\ResponseFactory;
+use spitfire\http\ResponseFactory;
 use spitfire\exceptions\ApplicationException;
 use spitfire\provider\Container;
 

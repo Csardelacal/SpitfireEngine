@@ -21,7 +21,6 @@
  *
  */
 
-use spitfire\core\Headers;
 
 /* 
  * The MIT License
@@ -74,7 +73,7 @@ class CORS
 	 * 
 	 * @param Headers $headers
 	 */
-	public function __construct(Headers$headers)
+	public function __construct(Headers $headers)
 	{
 		$this->headers = $headers;
 	}

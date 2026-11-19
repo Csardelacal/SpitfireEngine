@@ -3,10 +3,10 @@
 use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use spitfire\core\Headers;
+use spitfire\http\Headers;
 use spitfire\http\request\handler\RouterClosureRequestHandler;
-use spitfire\core\Request;
-use spitfire\core\Response;
+use spitfire\http\Request;
+use spitfire\http\Response;
 use spitfire\core\router\URIPattern;
 use spitfire\io\stream\Stream;
 

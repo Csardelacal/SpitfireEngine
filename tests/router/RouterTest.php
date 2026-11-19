@@ -28,8 +28,8 @@
 
 use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
-use spitfire\core\Headers;
-use spitfire\core\Request;
+use spitfire\http\Headers;
+use spitfire\http\Request;
 use spitfire\core\router\Router;
 use spitfire\core\router\RouterResult;
 use spitfire\core\router\URIPattern;

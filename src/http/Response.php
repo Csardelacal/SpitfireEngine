@@ -1,4 +1,4 @@
-<?php namespace spitfire\core;
+<?php namespace spitfire\http;
 /*
  *
  * Copyright (C) 2023-2023 César de la Cal Bretschneider <cesar@magic3w.com>.

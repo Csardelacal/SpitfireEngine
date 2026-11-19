@@ -3,7 +3,7 @@
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use spitfire\contracts\core\kernel\InitScriptInterface;
-use spitfire\core\Request;
+use spitfire\http\Request;
 use spitfire\provider\Container;
 
 /* 
@@ -37,7 +37,7 @@ class InitRequest implements InitScriptInterface
 	{
 		assert($container instanceof Container);
 		
-		$request = Request::fromGlobals();
+		$request = Request::fromGlobals($container);
 		
 		/**
 		 * Register the request for both the Spitfire Request class and the

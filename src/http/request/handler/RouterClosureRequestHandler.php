@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionFunction;
-use spitfire\core\Response;
+use spitfire\http\Response;
 use spitfire\core\router\Route;
 use spitfire\core\router\URIPattern;
 use spitfire\exceptions\ApplicationException;

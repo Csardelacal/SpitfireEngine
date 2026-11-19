@@ -27,7 +27,7 @@ use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
 use spitfire\contracts\core\kernel;
 use spitfire\core\exceptions\FailureException;
-use spitfire\core\Response;
+use spitfire\http\Response;
 use spitfire\http\URLBuilder;
 use spitfire\core\kernel\KernelFactory;
 use spitfire\exceptions\ApplicationException;

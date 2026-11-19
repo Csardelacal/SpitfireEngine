@@ -1,6 +1,7 @@
-<?php namespace spitfire\core;
+<?php namespace spitfire\http;
 
 use magic3w\http\url\reflection\URLReflection;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -92,7 +93,7 @@ class Request implements ServerRequestInterface
 	 *
 	 * @return Request
 	 */
-	public static function fromGlobals() : Request
+	public static function fromGlobals(ContainerInterface $container) : Request
 	{
 		
 		/**
@@ -112,7 +113,7 @@ class Request implements ServerRequestInterface
 		 */
 		$uri = URLReflection::fromGlobals();
 		
-		$uploads = self::filesFromGlobals(spitfire()->provider()->get(UploadFileStreamFactoryInterface::class));
+		$uploads = self::filesFromGlobals($container->get(UploadFileStreamFactoryInterface::class));
 		
 		/**
 		 * The PSR strongly suggests that both the cookie and server variable should be directly

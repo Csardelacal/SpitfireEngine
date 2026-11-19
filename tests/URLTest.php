@@ -4,9 +4,9 @@ use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
-use spitfire\core\Headers;
+use spitfire\http\Headers;
 use spitfire\http\URLBuilder;
-use spitfire\core\Request;
+use spitfire\http\Request;
 use spitfire\core\router\Router;
 use spitfire\io\stream\Stream;
 

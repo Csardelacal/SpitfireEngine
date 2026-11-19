@@ -7,7 +7,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionClass;
 use spitfire\contracts\core\LocationsInterface;
-use spitfire\core\Response;
+use spitfire\http\Response;
 use spitfire\io\stream\Stream;
 use spitfire\io\template\View;
 

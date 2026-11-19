@@ -9,7 +9,7 @@ use spitfire\http\request\handler\DecoratingRequestHandler;
 use spitfire\contracts\core\kernel\WebKernelInterface;
 use spitfire\contracts\core\LocationsInterface;
 use spitfire\core\exceptions\ExceptionHandler;
-use spitfire\core\Response;
+use spitfire\http\Response;
 use spitfire\core\router\Router;
 use spitfire\core\router\RoutingMiddleware;
 use spitfire\io\stream\Stream;

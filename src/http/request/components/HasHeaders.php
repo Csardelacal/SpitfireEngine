@@ -22,7 +22,7 @@
  */
 
 use Psr\Http\Message\ServerRequestInterface;
-use spitfire\core\Headers;
+use spitfire\http\Headers;
 use spitfire\exceptions\ApplicationException;
 
 trait HasHeaders

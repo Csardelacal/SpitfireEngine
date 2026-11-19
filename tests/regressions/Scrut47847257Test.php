@@ -2,8 +2,8 @@
 
 use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
-use spitfire\core\Headers;
-use spitfire\core\Request;
+use spitfire\http\Headers;
+use spitfire\http\Request;
 use spitfire\io\stream\Stream;
 
 /**
