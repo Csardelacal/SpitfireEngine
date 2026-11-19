@@ -1,0 +1,22 @@
+{
+	"name": "spitfire/http",
+	"license" : "LGPL-3.0+",
+	"homepage": "https://spitfirephp.com",
+	
+	"description": "HTTP package for spitfire",
+
+	"require": {
+		"php" : "^8",
+		"spitfire/dependency-provider": "^0.2.8"
+	},
+	
+	"suggest": {
+		"spitfire/router" : "^0.1"
+	},
+
+	"autoload": {
+		"psr-4": {
+			"spitfire\\http\\": "./"
+		}
+	}
+}

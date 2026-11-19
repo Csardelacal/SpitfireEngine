@@ -1,6 +1,4 @@
-<?php namespace spitfire\core\http\request\components;
-
-use Psr\Http\Message\ServerRequestInterface;
+<?php namespace spitfire\http\request\components;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -20,41 +18,28 @@ use Psr\Http\Message\ServerRequestInterface;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait HasCookies
+trait HasServerParams
 {
 	
 	/**
-	 * Allows your app to maintain a copy of the COOKIE variable. This is especially
-	 * useful when writing tests considering different requests as you will easily
-	 * be able to swap the values.
+	 * The server parameter array contains all the runtime information the server
+	 * has about itself and the current request. Usually this data is directly
+	 * originated from $_SERVER
 	 *
-	 * @var mixed
+	 * @var string[]
 	 */
-	private $cookie;
-	
+	private $serverParams;
 	
 	/**
+	 * The server params function returns the equivalent of the _SERVER
+	 * superglobal. We generally set the content of the variable to _SERVER
+	 * but you may come across implementations that override it completely
+	 * or partially.
 	 *
 	 * @return string[]
 	 */
-	public function getCookieParams()
+	public function getServerParams()
 	{
-		return $this->cookie;
-	}
-	
-	/**
-	 *
-	 * @param string[] $cookies
-	 * @return ServerRequestInterface
-	 */
-	public function withCookieParams(array $cookies) : ServerRequestInterface
-	{
-		#For this trait to work properly it needs to be applied to a class that implements
-		#the request interface.
-		assert($this instanceof ServerRequestInterface);
-		
-		$copy = clone $this;
-		$copy->cookie = $cookies;
-		return $copy;
+		return $this->serverParams;
 	}
 }

@@ -22,7 +22,7 @@
  */
 
 use InvalidArgumentException;
-use spitfire\core\http\CORS;
+use spitfire\http\CORS;
 
 /**
  * The headers file allows an application to manipulate the headers of the response

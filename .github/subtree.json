@@ -30,6 +30,11 @@
             "directory": "src/core/kernel/",
             "target": "git@github.com:spitfire-php/kernel.git"
         },
+		{
+			"name": "http",
+			"directory": "src/http/",
+			"target": "git@github.com:spitfire-php/http.git"
+		},
         {
             "name": "project",
             "directory": "src/project/",

@@ -27,7 +27,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
-use spitfire\core\http\request\handler\DecoratingRequestHandler;
+use spitfire\http\request\handler\DecoratingRequestHandler;
 use spitfire\exceptions\ApplicationException;
 
 /**

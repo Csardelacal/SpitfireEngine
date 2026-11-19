@@ -28,7 +28,7 @@ use spitfire\core\config\Configuration;
 use spitfire\contracts\core\kernel;
 use spitfire\core\exceptions\FailureException;
 use spitfire\core\Response;
-use spitfire\core\http\URLBuilder;
+use spitfire\http\URLBuilder;
 use spitfire\core\kernel\KernelFactory;
 use spitfire\exceptions\ApplicationException;
 use spitfire\exceptions\user\NotFoundException;

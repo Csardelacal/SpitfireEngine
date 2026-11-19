@@ -25,8 +25,8 @@ use BadMethodCallException;
 use Closure;
 use spitfire\collection\Collection;
 use spitfire\collection\TypedCollection;
-use spitfire\core\http\request\handler\RouterActionRequestHandler;
-use spitfire\core\http\request\handler\RouterClosureRequestHandler;
+use spitfire\http\request\handler\RouterActionRequestHandler;
+use spitfire\http\request\handler\RouterClosureRequestHandler;
 
 /**
  * The routable class is the base class for both routers and router servers, 

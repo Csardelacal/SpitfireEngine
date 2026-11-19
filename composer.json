@@ -53,6 +53,7 @@
 	"provide": {
 		"spitfire/contracts" : "self.version",
 		"spitfire/defer" : "self.version",
+		"spitfire/http" : "self.version",
 		"spitfire/database" : "self.version",
 		"spitfire/event" : "self.version",
 		"spitfire/kernel" : "self.version",
@@ -66,6 +67,7 @@
 		"psr-4": {
 			"spitfire\\": "./",
 			"spitfire\\defer\\": "./src/defer/",
+			"spitfire\\http\\": "./src/http/",
 			"spitfire\\storage\\": "./src/storage/",
 			"spitfire\\contracts\\": "./src/contracts/",
 			"spitfire\\event\\": "./src/event/",

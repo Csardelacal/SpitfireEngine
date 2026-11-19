@@ -4,7 +4,7 @@ use magic3w\http\url\reflection\URLReflection;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use spitfire\core\Headers;
-use spitfire\core\http\request\handler\RouterClosureRequestHandler;
+use spitfire\http\request\handler\RouterClosureRequestHandler;
 use spitfire\core\Request;
 use spitfire\core\Response;
 use spitfire\core\router\URIPattern;

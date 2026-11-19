@@ -5,7 +5,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use spitfire\core\http\request\components as components;
+use spitfire\contracts\http\UploadFileStreamFactoryInterface;
+use spitfire\http\request\components as components;
 use spitfire\io\stream\Stream;
 
 /*
@@ -111,7 +112,7 @@ class Request implements ServerRequestInterface
 		 */
 		$uri = URLReflection::fromGlobals();
 		
-		$uploads = self::filesFromGlobals();
+		$uploads = self::filesFromGlobals(spitfire()->provider()->get(UploadFileStreamFactoryInterface::class));
 		
 		/**
 		 * The PSR strongly suggests that both the cookie and server variable should be directly

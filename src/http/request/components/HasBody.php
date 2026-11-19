@@ -1,6 +1,7 @@
-<?php namespace spitfire\core\http\request\components;
+<?php namespace spitfire\http\request\components;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -20,59 +21,37 @@ use Psr\Http\Message\ServerRequestInterface;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait HasAttributes
+trait HasBody
 {
-	/**
-	 *
-	 * @var mixed
-	 */
-	private $attributes;
 	
 	/**
 	 *
-	 * @return mixed[]
+	 * @var StreamInterface
 	 */
-	public function getAttributes()
+	private $body;
+	
+	/**
+	 * Returns the content that is to be sent with the body. This is a string your
+	 * application has to set beforehand.
+	 *
+	 * In case you're using Spitfire's Context object to manage the context the
+	 * response will get the view it contains and render that before returning it.
+	 *
+	 * @return StreamInterface
+	 */
+	public function getBody() : StreamInterface
 	{
-		return $this->attributes;
+		return $this->body;
 	}
 	
-	public function getAttribute($name, $default = null)
-	{
-		return array_key_exists($name, $this->attributes)? $this->attributes[$name] : $default;
-	}
-	
-	/**
-	 * Override a single attribute that the server received. Please note that
-	 * this method does not support nested access, so you cannot override a
-	 * key in a nested attribute.
-	 *
-	 * @return ServerRequestInterface
-	 */
-	public function withAttribute($name, $value) : ServerRequestInterface
+	public function withBody(StreamInterface $body) : ServerRequestInterface
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
 		assert($this instanceof ServerRequestInterface);
 		
 		$copy = clone $this;
-		$copy->attributes[$name] = $value;
-		return $copy;
-	}
-	
-	/**
-	 * Removes the attribute from the request.
-	 *
-	 * @return ServerRequestInterface
-	 */
-	public function withoutAttribute($name) : ServerRequestInterface
-	{
-		#For this trait to work properly it needs to be applied to a class that implements
-		#the request interface.
-		assert($this instanceof ServerRequestInterface);
-		
-		$copy = clone $this;
-		unset($copy->attributes[$name]);
+		$copy->body = $body;
 		return $copy;
 	}
 }

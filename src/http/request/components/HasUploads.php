@@ -1,8 +1,9 @@
-<?php namespace spitfire\core\http\request\components;
+<?php namespace spitfire\http\request\components;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use spitfire\io\UploadFile;
+use spitfire\contracts\http\UploadFileStreamFactoryInterface;
+use spitfire\http\UploadFile;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -24,6 +25,14 @@ use spitfire\io\UploadFile;
  */
 trait HasUploads
 {
+	
+	/**
+	 * Upload stream factory used to create streams for uploaded files.
+	 * 
+	 * @var UploadFileStreamFactoryInterface
+	 */
+	private UploadFileStreamFactoryInterface $factory;
+	
 	/**
 	 * The array tree of uploads, this is a mix of UploadInterfaces and arrays. The
 	 * application can the use the array to manipulate the uploaded file.
@@ -63,9 +72,10 @@ trait HasUploads
 	/**
 	 *
 	 * @todo Support nested file arrays.
+	 * @param UploadFileStreamFactoryInterface $factory The factory used to create streams for the uploaded files.
 	 * @return UploadedFileInterface[]
 	 */
-	public static function filesFromGlobals() : array
+	public static function filesFromGlobals(UploadFileStreamFactoryInterface $factory) : array
 	{
 		$_return = [];
 		
@@ -84,6 +94,7 @@ trait HasUploads
 			 * Add the uploaded file to the list of uploads.
 			 */
 			$_return[$key] = new UploadFile(
+				$factory,
 				$upload['tmp_name'],
 				$upload['name'],
 				$upload['type'],

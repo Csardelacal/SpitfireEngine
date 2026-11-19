@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\http\request\middleware;
+<?php namespace spitfire\http\request\middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

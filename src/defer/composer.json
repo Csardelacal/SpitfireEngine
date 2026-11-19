@@ -9,7 +9,8 @@
 		"php" : "^8",
 		"andrewbreksa/rsmq": "^2.0",
 		"symfony/console": "^5.4||^6.2",
-		"spitfire/dependency-provider": "^0.2.8"
+        "psr/container": "^2.0",
+		"spitfire/exceptions": "self.version"
 	},
 
 	"autoload": {

@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use spitfire\collection\Collection;
 use spitfire\core\config\Configuration;
 use spitfire\core\Headers;
-use spitfire\core\http\URLBuilder;
+use spitfire\http\URLBuilder;
 use spitfire\core\Request;
 use spitfire\core\router\Router;
 use spitfire\io\stream\Stream;

@@ -1,7 +1,6 @@
-<?php namespace spitfire\core\http\request\components;
+<?php namespace spitfire\http\request\components;
 
 use Psr\Http\Message\ServerRequestInterface;
-use spitfire\core\Request;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -21,36 +20,41 @@ use spitfire\core\Request;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait HasParsedBody
+trait HasCookies
 {
 	
 	/**
+	 * Allows your app to maintain a copy of the COOKIE variable. This is especially
+	 * useful when writing tests considering different requests as you will easily
+	 * be able to swap the values.
 	 *
 	 * @var mixed
 	 */
-	private $parsedBody;
+	private $cookie;
+	
 	
 	/**
 	 *
-	 * @param null|mixed[] $data
+	 * @return string[]
 	 */
-	public function withParsedBody($data) : ServerRequestInterface
+	public function getCookieParams()
+	{
+		return $this->cookie;
+	}
+	
+	/**
+	 *
+	 * @param string[] $cookies
+	 * @return ServerRequestInterface
+	 */
+	public function withCookieParams(array $cookies) : ServerRequestInterface
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
 		assert($this instanceof ServerRequestInterface);
 		
 		$copy = clone $this;
-		$copy->parsedBody = $data;
+		$copy->cookie = $cookies;
 		return $copy;
-	}
-	
-	/**
-	 *
-	 * @return mixed[]
-	 */
-	public function getParsedBody()
-	{
-		return $this->parsedBody;
 	}
 }

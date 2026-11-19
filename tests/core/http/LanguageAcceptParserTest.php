@@ -1,4 +1,4 @@
-<?php namespace tests\spitfire\core\http;
+<?php namespace tests\spitfire\http;
 
 /* 
  * The MIT License
@@ -31,14 +31,14 @@ class LanguageAcceptParserTest extends TestCase
 	
 	/**
 	 * 
-	 * @covers \spitfire\core\http\LanguageAcceptParser::parse()
-	 * @covers \spitfire\core\http\LanguageAccept::validateFormat()
-	 * @covers \spitfire\core\http\LanguageAccept::makeLocales()
-	 * @covers \spitfire\core\http\LanguageAccept::makePriority()
+	 * @covers \spitfire\http\LanguageAcceptParser::parse()
+	 * @covers \spitfire\http\LanguageAccept::validateFormat()
+	 * @covers \spitfire\http\LanguageAccept::makeLocales()
+	 * @covers \spitfire\http\LanguageAccept::makePriority()
 	 */
 	public function testParser()
 	{
-		$parser = new \spitfire\core\http\LanguageAcceptParser('ru', 'da, en-gb;q=0.8, en;q=0.7');
+		$parser = new \spitfire\http\LanguageAcceptParser('ru', 'da, en-gb;q=0.8, en;q=0.7');
 		$res    = $parser->parse();
 		
 		$this->assertEquals('da', reset($res)->getLanguage());

@@ -1,4 +1,6 @@
-<?php namespace spitfire\core\http\request\components;
+<?php namespace spitfire\http\request\components;
+
+use Psr\Http\Message\ServerRequestInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -18,28 +20,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait HasServerParams
+trait HasParsedBody
 {
 	
 	/**
-	 * The server parameter array contains all the runtime information the server
-	 * has about itself and the current request. Usually this data is directly
-	 * originated from $_SERVER
 	 *
-	 * @var string[]
+	 * @var mixed
 	 */
-	private $serverParams;
+	private $parsedBody;
 	
 	/**
-	 * The server params function returns the equivalent of the _SERVER
-	 * superglobal. We generally set the content of the variable to _SERVER
-	 * but you may come across implementations that override it completely
-	 * or partially.
 	 *
-	 * @return string[]
+	 * @param null|mixed[] $data
 	 */
-	public function getServerParams()
+	public function withParsedBody($data) : ServerRequestInterface
 	{
-		return $this->serverParams;
+		#For this trait to work properly it needs to be applied to a class that implements
+		#the request interface.
+		assert($this instanceof ServerRequestInterface);
+		
+		$copy = clone $this;
+		$copy->parsedBody = $data;
+		return $copy;
+	}
+	
+	/**
+	 *
+	 * @return mixed[]
+	 */
+	public function getParsedBody()
+	{
+		return $this->parsedBody;
 	}
 }

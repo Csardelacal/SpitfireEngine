@@ -1,7 +1,6 @@
-<?php namespace spitfire\core\http\request\components;
+<?php namespace spitfire\http\request\components;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -21,37 +20,37 @@ use Psr\Http\Message\StreamInterface;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-trait HasBody
+trait HasProtocolVersion
 {
 	
 	/**
+	 * The version of the HTTP protocol being used for this request.
 	 *
-	 * @var StreamInterface
+	 * @var string
 	 */
-	private $body;
+	private $version = '1.1';
 	
-	/**
-	 * Returns the content that is to be sent with the body. This is a string your
-	 * application has to set beforehand.
-	 *
-	 * In case you're using Spitfire's Context object to manage the context the
-	 * response will get the view it contains and render that before returning it.
-	 *
-	 * @return StreamInterface
-	 */
-	public function getBody() : StreamInterface
-	{
-		return $this->body;
-	}
-	
-	public function withBody(StreamInterface $body) : ServerRequestInterface
+	public function withProtocolVersion($version) : ServerRequestInterface
 	{
 		#For this trait to work properly it needs to be applied to a class that implements
 		#the request interface.
 		assert($this instanceof ServerRequestInterface);
 		
 		$copy = clone $this;
-		$copy->body = $body;
+		$copy->version = $version;
+		
 		return $copy;
+	}
+	
+	/**
+	 * Returns the version of the HTTP protocol used to send this request. For PHP most of this
+	 * is transparent when handling a request, so it's possible that this data is actually not
+	 * properly poulated.
+	 *
+	 * @return string
+	 */
+	public function getProtocolVersion() : string
+	{
+		return $this->version;
 	}
 }

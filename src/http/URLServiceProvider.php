@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\http;
+<?php namespace spitfire\http;
 
 use Psr\Container\ContainerInterface;
 use spitfire\core\config\Configuration;

@@ -1,4 +1,4 @@
-<?php namespace spitfire\core\http\request\handler;
+<?php namespace spitfire\http\request\handler;
 
 use Closure;
 use Psr\Http\Message\ResponseInterface;
