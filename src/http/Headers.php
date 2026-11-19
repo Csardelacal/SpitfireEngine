@@ -61,6 +61,7 @@ class Headers
 		401 => 'Unauthorized',
 		403 => 'Forbidden',
 		404 => 'Not Found',
+		413 => 'Payload Too Large',
 		418 => 'Im a teapot',
 		419 => 'Page expired',
 		429 => 'Too many requests',

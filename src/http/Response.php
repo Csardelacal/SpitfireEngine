@@ -214,10 +214,10 @@ class Response implements ResponseInterface
 		$header = $this->headers->get($name);
 		
 		if (empty($header)) {
-			return implode(',', $header); 
+			return ''; 
 		}
 		else {
-			return ''; 
+			return implode(',', $header);
 		}
 	}
 	
@@ -260,7 +260,7 @@ class Response implements ResponseInterface
 	public function withAddedHeader($name, $value): Response 
 	{
 		$headers = $this->headers->all();
-		$headers[$name] = array_merge($headers[$name], (array)$value);
+		$headers[$name] = array_merge($headers[$name]?? [], (array)$value);
 		
 		return new Response($this->body, $this->headers->getStatus(), $this->headers()->getReasonPhrase(), $headers);
 	}

@@ -3,12 +3,11 @@
 use magic3w\http\url\reflection\URLReflection;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use spitfire\contracts\http\UploadFileStreamFactoryInterface;
 use spitfire\http\request\components as components;
-use spitfire\io\stream\Stream;
 
 /*
  * Copyright (C) 2021 César de la Cal Bretschneider <cesar@magic3w.com>.
@@ -113,7 +112,7 @@ class Request implements ServerRequestInterface
 		 */
 		$uri = URLReflection::fromGlobals();
 		
-		$uploads = self::filesFromGlobals($container->get(UploadFileStreamFactoryInterface::class));
+		$uploads = self::filesFromGlobals($container->get(StreamFactoryInterface::class));
 		
 		/**
 		 * The PSR strongly suggests that both the cookie and server variable should be directly
@@ -129,7 +128,9 @@ class Request implements ServerRequestInterface
 		 * Please note that this doesn't apply to simulated get requests, where the client requested
 		 * the data to be treated as POST.
 		 */
-		$body = new Stream(fopen('php://input', 'r'), true, true, false);
+		$_body = fopen('php://input', 'r');
+		assert(is_resource($_body), 'Failed to open php://input as a resource');
+		$body = $container->get(StreamFactoryInterface::class)->createStreamFromResource($_body);
 		
 		$request = new Request($method, $uri, $headers, $cookies, $serverParams, $body, $uploads);
 		

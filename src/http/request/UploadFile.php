@@ -1,9 +1,9 @@
 <?php namespace spitfire\http;
 
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
-use spitfire\contracts\http\UploadFileStreamFactoryInterface;
 use spitfire\exceptions\ApplicationException;
 
 /**
@@ -23,7 +23,7 @@ class UploadFile implements UploadedFileInterface
 	/**
 	 * The factory used to create streams for this upload.
 	 */
-	private UploadFileStreamFactoryInterface $factory;
+	private StreamFactoryInterface $factory;
 	
 	/**
 	 * Contains the raw metadata that was initially sent with the _FILES array.
@@ -76,7 +76,7 @@ class UploadFile implements UploadedFileInterface
 	 * @param int $size
 	 * @param int $error
 	 */
-	public function __construct(UploadFileStreamFactoryInterface $factory, string $tmp, string $name, string $contentType, int $size, int $error)
+	public function __construct(StreamFactoryInterface $factory, string $tmp, string $name, string $contentType, int $size, int $error)
 	{
 		$this->factory = $factory;
 		$this->tmp = $tmp;
@@ -101,7 +101,7 @@ class UploadFile implements UploadedFileInterface
 			throw new RuntimeException(sprintf('File %s does not exist', $this->tmp), 2110131541);
 		}
 		
-		return $this->factory->create($this->tmp);
+		return $this->factory->createStreamFromFile($this->tmp);
 	}
 	
 	

@@ -1,8 +1,8 @@
 <?php namespace spitfire\http\request\components;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use spitfire\contracts\http\UploadFileStreamFactoryInterface;
 use spitfire\http\UploadFile;
 
 /*
@@ -29,9 +29,9 @@ trait HasUploads
 	/**
 	 * Upload stream factory used to create streams for uploaded files.
 	 * 
-	 * @var UploadFileStreamFactoryInterface
+	 * @var StreamFactoryInterface
 	 */
-	private UploadFileStreamFactoryInterface $factory;
+	private StreamFactoryInterface $factory;
 	
 	/**
 	 * The array tree of uploads, this is a mix of UploadInterfaces and arrays. The
@@ -72,10 +72,10 @@ trait HasUploads
 	/**
 	 *
 	 * @todo Support nested file arrays.
-	 * @param UploadFileStreamFactoryInterface $factory The factory used to create streams for the uploaded files.
+	 * @param StreamFactoryInterface $factory The factory used to create streams for the uploaded files.
 	 * @return UploadedFileInterface[]
 	 */
-	public static function filesFromGlobals(UploadFileStreamFactoryInterface $factory) : array
+	public static function filesFromGlobals(StreamFactoryInterface $factory) : array
 	{
 		$_return = [];
 		
@@ -89,6 +89,11 @@ trait HasUploads
 			 * data during runtime.
 			 */
 			assume(!is_array($upload['name']), 'File array support is currently disabled');
+			assume(is_string($upload['tmp_name']), 'Temporary file name must be a string');
+			assume(is_string($upload['name']), 'Original file name must be a string');
+			assume(is_string($upload['type']), 'File type must be a string');
+			assume(is_int($upload['error']), 'Upload error must be an integer');
+			assume(is_int($upload['size']), 'File size must be an integer');
 			
 			/**
 			 * Add the uploaded file to the list of uploads.
