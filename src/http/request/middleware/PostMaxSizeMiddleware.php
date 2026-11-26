@@ -10,28 +10,41 @@ class PostMaxSizeMiddleware implements MiddlewareInterface
 	
 	private ResponseInterface $response;
 	
-	public function __construct(ResponseInterface $response)
+	private int $limit;
+	
+	public function __construct(ResponseInterface $response, ?int $limit = null)
 	{
 		$this->response = $response;
+		
+		/**
+		 * In case of a missing limit, we fall back to the server's post_max_size setting.
+		 * This will allow us to determine whether the original request exceeded
+		 * maximum size.
+		 *
+		 * Generally in this situation the request is worthless, since the server is
+		 * receiving a truncated request at best. In the case of a custom limit we
+		 * can protect certain endpoints from receiving excessively large requests.
+		 *
+		 */
+		try {
+			$this->limit = $limit ?? self::parse(ini_get('post_max_size')?: '8M');
+		}
+		catch (\Exception $e) {
+			$this->limit = 8 * 1024 * 1024; // Fallback to 8M if parsing fails
+		}
 	}
 	
+	/**
+	 * 
+	 * @throws \Exception If the configured post_max_size cannot be parsed into bytes.
+	 */
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
 		
 		$headers = $request->getHeader('content-length');
 		$content_length = $headers ? reset($headers) : false;
 		
-		/**
-		 * Get the server's maximum post message size. This will allow us to determine
-		 * whether the original request exceeded maximum size.
-		 * 
-		 * Generally in this situation the request is worthless, since the server is
-		 * receiving a truncated request at best.
-		 */
-		$max = self::parse(ini_get('post_max_size')?: '8M');
-		
-		if ($content_length !== false && (int)$content_length > $max)
-		{
+		if ($content_length !== false && (int)$content_length > $this->limit) {
 			return $this->response;
 		}
 		
@@ -39,9 +52,9 @@ class PostMaxSizeMiddleware implements MiddlewareInterface
 	}
 	
 	/**
-	 * Parses the size provided as a string and returns the size in bytes or 
+	 * Parses the size provided as a string and returns the size in bytes or
 	 * throws on failure.
-	 * 
+	 *
 	 * This is a copy of the logic used in Filesize::parse to convert human-readable
 	 * file size strings into byte values. But we would have to create a
 	 * separate repository for it when splitting.
